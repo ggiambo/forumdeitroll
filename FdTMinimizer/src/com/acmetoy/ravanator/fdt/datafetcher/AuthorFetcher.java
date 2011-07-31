@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 public class AuthorFetcher implements Runnable {
 	
 	private static final String NUMBERS = "1234567890";
+	
+	private static final Logger LOG = Logger.getLogger(AuthorFetcher.class);
 
 	private Element authorContainer;
 	private CallBackClass callBackClass;
@@ -30,10 +32,12 @@ public class AuthorFetcher implements Runnable {
 			String rnk = extractNumber(html, html.lastIndexOf(":") + 1);
 			messages = Integer.parseInt(msg);
 			ranking = Integer.parseInt(rnk);
+			LOG.info("messages: " + messages);
+			LOG.info("ranking: " + ranking);
 			
 			callBackClass.callBack(this);
 		} catch (Exception e) {
-			Logger.getRootLogger().error(e);
+			LOG.error(e);
 		}
 	}
 	

@@ -12,6 +12,8 @@ public class AuthorAvatarFetcher implements Runnable {
 	
 	private static final String AVATAR_URL_PI = "http://punto-informatico.it/community/avatar/";
 	private static final String AVATAR_URL_FDT = "http://www.forumdeitroll.it/community/avatar/";
+	
+	private static final Logger LOG = Logger.getLogger(AuthorAvatarFetcher.class);
 
 	private Element authorContainer;
 	private CallBackClass callBackClass;
@@ -30,13 +32,14 @@ public class AuthorAvatarFetcher implements Runnable {
 			for (Element elem : elements) {
 				String src = elem.getAttributeValue("src");
 				if (src != null && (src.startsWith(AVATAR_URL_PI) || src.startsWith(AVATAR_URL_FDT))) {
+					LOG.info("Got avatar for '" + src + "'");
 					avatar = WebUtilities.getPageAsBytes(src);
 					break;
 				}
 			}
 			callBackClass.callBack(this);
 		} catch (Exception e) {
-			Logger.getRootLogger().error(e);
+			LOG.error(e);
 		}
 	}
 

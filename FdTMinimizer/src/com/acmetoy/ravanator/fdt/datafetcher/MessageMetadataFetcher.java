@@ -16,9 +16,9 @@ public class MessageMetadataFetcher implements Runnable {
 	
 	private static final Logger LOG = Logger.getLogger(MessageMetadataFetcher.class);
 	
-	private long id;
 	private CallBackClass callBackClass;
 	
+	private long id;
 	private String author;
 	private Date date;
 	private long threadId;
@@ -34,33 +34,59 @@ public class MessageMetadataFetcher implements Runnable {
 		try {
 			Source source = WebUtilities.getPage("http://www.forumdeitroll.it/HTM.aspx?m_id=" + id);
 			
-			for (Element elem : source.getAllElementsByClass("nick")) {
-				if (elem.getAttributeValue("style") == null) {
-					continue;
+			List<Element> elements = source.getAllElementsByClass("nick");
+			if (elements.size() == 0) {
+				// single message
+				Element elem = source.getAllElementsByClass("divthread").get(1);
+				String content = elem.getContent().toString();
+				content = content.substring(content.indexOf(">") + 1).trim();
+				String stringDate = "";
+				if (content.contains(" alle ")) {
+					// Giambo alle 10.21 - voto: 0
+					author = content.substring(0, content.indexOf(" alle "));
+					stringDate = content.substring(content.indexOf(author) + author.length());
+					stringDate = stringDate.replace(" alle ", "");
+					stringDate = stringDate.substring(0, stringDate.indexOf("-")).trim();
+					String firstPart = new SimpleDateFormat("dd/MM/yy").format(new Date());
+					stringDate = firstPart + " " + stringDate.replace("alle", "").trim();
+					
+				} else if (content.contains(" il ")) {
+					// Giambo il 30/07/11 10.13 - voto: 0
+					author = content.substring(0, content.indexOf(" il "));
+					stringDate = content.substring(content.indexOf(author) + author.length());
+					stringDate = stringDate.replace(" il ", "");
+					stringDate = stringDate.substring(0, stringDate.indexOf("-")).trim();
 				}
-				for (String styles : elem.getAttributeValue("style").split(";")) {
-					String[] style = styles.trim().split(":");
-					LOG.info("styles :" + styles);
-					if (style.length == 2) {
-						if ("background-color".equals(style[0].trim()) && "#a5ceff".equals(style[1].trim())) {
-							// author
-							String content = elem.getContent().toString();
-							author = content.substring(0, content.indexOf("<")).trim();
-							LOG.info("author :" + author);
-							// date
-							content = elem.getAllElementsByClass("data").get(0).getContent().toString();
-							String stringDate = "";
-							if (content.contains("alle")) {
-								//  alle 11.31
-								String firstPart = new SimpleDateFormat("MM/dd/yy").format(new Date());
-								stringDate = firstPart + " " + content.replace("alle", "").trim();
-							} else if (content.contains("il")) {
-								// il 19/02/11 12.17
-								stringDate = content.replace("il", "").trim();
+				date = new SimpleDateFormat("dd/MM/yy HH.mm").parse(stringDate);
+			} else {
+				for (Element elem : elements) {
+					if (elem.getAttributeValue("style") == null) {
+						continue;
+					}
+					for (String styles : elem.getAttributeValue("style").split(";")) {
+						String[] style = styles.trim().split(":");
+						LOG.debug("styles :" + styles);
+						if (style.length == 2) {
+							if ("background-color".equals(style[0].trim()) && "#a5ceff".equals(style[1].trim())) {
+								// author
+								String content = elem.getContent().toString();
+								author = content.substring(0, content.indexOf("<")).trim();
+								LOG.info("author :" + author);
+								// date
+								content = elem.getAllElementsByClass("data").get(0).getContent().toString();
+								String stringDate = "";
+								if (content.contains("alle")) {
+									//  alle 11.31
+									String firstPart = new SimpleDateFormat("dd/MM/yy").format(new Date());
+									stringDate = firstPart + " " + content.replace("alle", "").trim();
+								} else if (content.contains("il")) {
+									// il 19/02/11 12.17
+									stringDate = content.replace("il", "").trim();
+								}
+								LOG.info("stringDate :" + stringDate);
+								date = new SimpleDateFormat("dd/MM/yy HH.mm").parse(stringDate);
+								// parentId
 							}
-							LOG.info("stringDate :" + stringDate);
-							date = new SimpleDateFormat("MM/dd/yy HH.mm").parse(stringDate);
-							// parentId
 						}
 					}
 				}

@@ -3,7 +3,6 @@ package com.acmetoy.ravanator.fdt.datafetcher;
 import java.util.List;
 
 import net.htmlparser.jericho.Element;
-import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 
 import org.apache.log4j.Logger;
@@ -28,20 +27,18 @@ public class PageFetcher implements Runnable {
 
 		try {
 			Source source = WebUtilities.getPage(MAINPAGE + pageNr);
-			List<Element> linkElements = source.getAllElements(HTMLElementName.DIV);
+			List<Element> linkElements = source.getAllElementsByClass("divthread");
 			for (Element elem : linkElements) {
-				if ("divthread".equals(elem.getAttributeValue("class"))) {
-					LOG.info("Found 'divthread' element");
-					for (Element e : elem.getChildElements()) {
-						String elemClass = e.getAttributeValue("class");
-						LOG.info("'elemClass' = '" + elemClass);
-						if ("textcapothread".equals(elemClass) || "nick".equals(elemClass)) {
-							String href = e.getAttributeValue("href");
-							LOG.info("'href' = '" + href);
-							Long id = new Long(href.replaceAll("m.aspx\\?m_id=", "").replaceAll("&m_rid=0", ""));
-							if (!MessagePersistence.getInstance().hasMessage(id)) {
-								new Thread(new MessageFetcherCallBack(id)).start();
-							}
+				LOG.debug("Found 'divthread' element");
+				for (Element e : elem.getChildElements()) {
+					String elemClass = e.getAttributeValue("class");
+					LOG.debug("'elemClass' = '" + elemClass);
+					if ("textcapothread".equals(elemClass) || "nick".equals(elemClass)) {
+						String href = e.getAttributeValue("href");
+						LOG.debug("'href' = '" + href);
+						Long id = new Long(href.replaceAll("m.aspx\\?m_id=", "").replaceAll("&m_rid=0", ""));
+						if (!MessagePersistence.getInstance().hasMessage(id)) {
+							new Thread(new MessageFetcherCallBack(id)).start();
 						}
 					}
 				}

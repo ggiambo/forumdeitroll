@@ -6,6 +6,9 @@
         <dependent-module archiveName="FdTPersistence.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/FdTPersistence/FdTPersistence">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/FdTPersistence/lib/log4j-1.2.16.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="FdTViewer"/>
         <property name="java-output-path" value="/FdTViewer/build/classes"/>
     </wb-module>

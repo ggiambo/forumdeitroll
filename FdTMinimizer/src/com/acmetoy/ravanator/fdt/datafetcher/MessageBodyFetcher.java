@@ -12,6 +12,8 @@ import net.htmlparser.jericho.Source;
 
 public class MessageBodyFetcher implements Runnable {
 	
+	private static final Logger LOG = Logger.getLogger(MessageBodyFetcher.class);
+	
 	private long id;
 	private CallBackClass callBackClass;
 
@@ -50,7 +52,7 @@ public class MessageBodyFetcher implements Runnable {
 			} 
 			callBackClass.callBack(this);
 		} catch (Exception e) {
-			Logger.getRootLogger().error(e);
+			LOG.error(e);
 		}
 	}
 	

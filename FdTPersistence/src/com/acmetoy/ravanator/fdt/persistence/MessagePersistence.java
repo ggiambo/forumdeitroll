@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 
 public class MessagePersistence extends Persistence {
+	
+	private static final Logger LOG = Logger.getLogger(Persistence.class);
 	
 	private static MessagePersistence instance;
 
@@ -48,6 +52,7 @@ public class MessagePersistence extends Persistence {
 			msg.put("author", author);
 		}
 		getDb().getCollection("messages").save(msg);
+		LOG.info("Persisted message '" + id + "'");
 	}
 	
 	public final boolean hasMessage(long id) {
@@ -63,7 +68,8 @@ public class MessagePersistence extends Persistence {
 	public List<DBObject> getMessagesByDate(int limit) {
 		
 		List<DBObject> ret = new ArrayList<DBObject>(limit);
-		DBCursor cur = getDb().getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1)).limit(limit);
+//		DBCursor cur = getDb().getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1)).limit(limit);
+		DBCursor cur = getDb().getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1));
 		while (cur.hasNext()) {
 			ret.add(cur.next());
 		}

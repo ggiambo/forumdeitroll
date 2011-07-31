@@ -2,11 +2,15 @@ package com.acmetoy.ravanator.fdt.persistence;
 
 import java.net.UnknownHostException;
 
+import org.apache.log4j.Logger;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 
 public class AuthorPersistence extends Persistence {
+
+	private static final Logger LOG = Logger.getLogger(AuthorPersistence.class);
 
 	private static AuthorPersistence instance;
 
@@ -41,6 +45,7 @@ public class AuthorPersistence extends Persistence {
 		msg.put("messages", messages);
 		msg.put("avatar", avatar);
 		getDb().getCollection("authors").save(msg);
+		LOG.info("Persisted author '" + nick + "'");
 	}
 	
 	public DBObject getAuthor(String nick) {
