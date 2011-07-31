@@ -39,7 +39,7 @@ public class AuthorAvatarFetcher implements Runnable {
 			}
 			callBackClass.callBack(this);
 		} catch (Exception e) {
-			LOG.error(e);
+			LOG.error(e.toString());
 		}
 	}
 

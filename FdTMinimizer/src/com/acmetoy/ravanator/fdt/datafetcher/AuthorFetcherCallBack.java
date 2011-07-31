@@ -44,7 +44,11 @@ public class AuthorFetcherCallBack  implements Runnable, CallBackClass {
 				LOG.info("'AuthorAvatarFetcher' calledBack: count=" + count);
 				AuthorAvatarFetcher authorAvatarFetcher = (AuthorAvatarFetcher)source;
 				avatar = authorAvatarFetcher.getAvatar();
-				LOG.info("avatar.length=" + avatar.length);
+				if (avatar != null) {
+					LOG.info("avatar.length=" + avatar.length);
+				} else {
+					LOG.info("'" + nick + "' has no avatar");
+				}
 				count++; // expected 2 callback
 			} else {
 				throw new Exception("Unknown class " + source.getClass().getName());

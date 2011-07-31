@@ -66,14 +66,29 @@ public class MessagePersistence extends Persistence {
 	}
 	
 	public List<DBObject> getMessagesByDate(int limit) {
-		
 		List<DBObject> ret = new ArrayList<DBObject>(limit);
-//		DBCursor cur = getDb().getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1)).limit(limit);
-		DBCursor cur = getDb().getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1));
+		DBCursor cur = getDb().getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1)).limit(limit);
 		while (cur.hasNext()) {
 			ret.add(cur.next());
 		}
-		
+		return ret;
+	}
+	
+	public List<DBObject> getMessagesByDate(int limit, int page) {
+		List<DBObject> ret = new ArrayList<DBObject>(limit);
+		DBCursor cur = getDb().getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1)).skip(page*limit).limit(limit);
+		while (cur.hasNext()) {
+			ret.add(cur.next());
+		}
+		return ret;
+	}
+	
+	public List<DBObject> getMessagesByThread(long threadId) {
+		DBCursor cur = getDb().getCollection("messages").find(new BasicDBObject("threadId", threadId));
+		List<DBObject> ret = new ArrayList<DBObject>(cur.count());
+		while (cur.hasNext()) {
+			ret.add(cur.next());
+		}
 		return ret;
 	}
 	
