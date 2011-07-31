@@ -23,6 +23,10 @@
 			<taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
 			<taglib-location>/WEB-INF/tlds/fmt.tld</taglib-location>
 		</taglib>
+		<taglib>
+			<taglib-uri>http://ravanator.acmetoy.com/jsp/jstl/fdt</taglib-uri>
+			<taglib-location>/WEB-INF/tlds/fdt.tld</taglib-location>
+		</taglib>
 	</jsp-config>
 
 	<welcome-file-list>
