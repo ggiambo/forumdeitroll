@@ -1,8 +1,6 @@
 package com.acmetoy.ravanator.fdt;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -3,6 +3,7 @@ package com.acmetoy.ravanator.fdt;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -15,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessagePersistence;
+import com.acmetoy.ravanator.fdt.persistence.StatusPersistence;
 import com.mongodb.DBObject;
 
 public class MainServlet extends HttpServlet {
@@ -58,6 +60,12 @@ public class MainServlet extends HttpServlet {
 	
 	public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		try {
+			Date lastScan = StatusPersistence.getInstance().getLastScan();
+			if (lastScan == null || new Date().getTime() - lastScan.getTime() < 1 * 60 * 1000) {
+				// trigger a scan of the last page
+				StatusPersistence.getInstance().updateScanDate();
+			}
+			
 			String action = req.getParameter("action");
 			if (action == null || action.trim().length() == 0) {
 				req.setAttribute("messages", MessagePersistence.getInstance().getMessagesByDate(15));
