@@ -4,8 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -70,8 +70,7 @@ public class MainServlet extends HttpServlet {
 			if (action == null || action.trim().length() == 0) {
 				req.setAttribute("messages", MessagePersistence.getInstance().getMessagesByDate(15));
 				req.setAttribute("pageNr", "0");
-				RequestDispatcher rd = getServletContext().getRequestDispatcher("/WEB-INF/pages/result.jsp");
-				rd.forward(req, res);
+				getServletContext().getRequestDispatcher("/WEB-INF/pages/result.jsp").forward(req, res);
 			} else if ("avatar".equals(action)) {
 				String nick = req.getParameter("nick");
 				DBObject author = AuthorPersistence.getInstance().getAuthor(nick);
@@ -88,16 +87,18 @@ public class MainServlet extends HttpServlet {
 				String pageNr = req.getParameter("pageNr");
 				req.setAttribute("pageNr", pageNr);
 				req.setAttribute("messages", MessagePersistence.getInstance().getMessagesByDate(15,  Integer.parseInt(pageNr)));
-				RequestDispatcher rd = getServletContext().getRequestDispatcher("/WEB-INF/pages/result.jsp");
-				rd.forward(req, res);
+				getServletContext().getRequestDispatcher("/WEB-INF/pages/result.jsp").forward(req, res);
 			} else if ("thread".equals(action)) {
 				String threadId = req.getParameter("threadId");
-				req.setAttribute("messages", MessagePersistence.getInstance().getMessagesByThread(Integer.parseInt(threadId)));
-				RequestDispatcher rd = getServletContext().getRequestDispatcher("/WEB-INF/pages/result.jsp");
-				rd.forward(req, res);
+				List<DBObject> msgs = MessagePersistence.getInstance().getMessagesByThread(Integer.parseInt(threadId));
+				req.setAttribute("messages", new ThreadTree(msgs, Long.parseLong(threadId)).asList());
+				
+				getServletContext().getRequestDispatcher("/WEB-INF/pages/thread.jsp").forward(req, res);
 			}
 		} catch (Exception e) {
 			res.getWriter().write(e.toString());
 		}
 	}
+	
+	
 }
