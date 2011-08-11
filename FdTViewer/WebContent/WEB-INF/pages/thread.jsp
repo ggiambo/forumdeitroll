@@ -18,9 +18,9 @@
 		<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 		
 		<c:forEach items="${messages}" var="msg" varStatus="index">
-			<c:set var="margin" value="${msg['indent'] * 15}"/>
+			<c:set var="margin" value="${msg.indent * 15}"/>
 			<div style="border:1px solid black; margin: 5px 5px; margin-left:${margin}px; width:600px;">
-				<c:forEach begin="1" end="${msg['indent']}">
+				<c:forEach begin="1" end="${msg.indent}">
 					<div style="border:1px solid black; margin: 3px;">
 				</c:forEach>
 				<c:choose>
@@ -32,17 +32,17 @@
 					</c:otherwise>
 				</c:choose>
 				<div style="margin: 5px 5px; margin-right: 5px; ${background}">
-					<img src="${contextPath}/Main?action=avatar&nick=${msg['author']}"/>
-					Scritto da <i><c:out value="${msg['author']}"/></i>
-					alle <fmt:formatDate value="${msg['date']}" pattern="dd.MM.yyyy hh:mm:ss"/><br/><br/>
-					<b><a href="${contextPath}/Main?action=thread&threadId=${msg['threadId']}"/>${msg['subject']}</a></b><br/>
+					<img src="${contextPath}/Main?action=avatar&nick=${msg.author}"/>
+					Scritto da <i><c:out value="${msg.author}"/></i>
+					alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy hh:mm:ss"/><br/><br/>
+					<b><a href="${contextPath}/Main?action=thread&threadId=${msg.threadId}"/>${msg.subject}</a></b><br/>
 					<div style="padding: 15px;">
-						<fdt:quote>${msg['text']}</fdt:quote>
+						<fdt:quote>${msg.text}</fdt:quote>
 						<%-- close open tags --%>
 						</b></i></u>
 					</div>
 				</div>
-				<c:forEach begin="1" end="${msg['indent']}">
+				<c:forEach begin="1" end="${msg.indent}">
 					</div>
 				</c:forEach>
 			</div>

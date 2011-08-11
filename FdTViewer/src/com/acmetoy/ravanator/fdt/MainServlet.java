@@ -3,7 +3,7 @@ package com.acmetoy.ravanator.fdt;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
@@ -12,17 +12,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
-import com.acmetoy.ravanator.fdt.persistence.AuthorPersistence;
-import com.acmetoy.ravanator.fdt.persistence.MessagePersistence;
-import com.acmetoy.ravanator.fdt.persistence.StatusPersistence;
-import com.mongodb.DBObject;
+import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
+import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
+import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 
 public class MainServlet extends HttpServlet {
 	
-	private static final Logger LOG = Logger.getLogger(MainServlet.class);
-
 	private static final long serialVersionUID = 1L;
 	
 	private byte[] notAuthenticated;
@@ -50,7 +45,7 @@ public class MainServlet extends HttpServlet {
 			}
 			noAvatar = bos.toByteArray();
 		} catch (IOException e) {
-			LOG.error("Cannot read default images", e);
+			throw new ServletException("Cannot read default images", e);
 		}
 	}
 
@@ -60,23 +55,17 @@ public class MainServlet extends HttpServlet {
 	
 	public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		try {
-			Date lastScan = StatusPersistence.getInstance().getLastScan();
-			if (lastScan == null || new Date().getTime() - lastScan.getTime() < 1 * 60 * 1000) {
-				// trigger a scan of the last page
-				StatusPersistence.getInstance().updateScanDate();
-			}
-			
 			String action = req.getParameter("action");
 			if (action == null || action.trim().length() == 0) {
-				req.setAttribute("messages", MessagePersistence.getInstance().getMessagesByDate(15));
+				req.setAttribute("messages", PersistenceFactory.getPersistence().getMessagesByDate(15));
 				req.setAttribute("pageNr", "0");
 				getServletContext().getRequestDispatcher("/WEB-INF/pages/result.jsp").forward(req, res);
 			} else if ("avatar".equals(action)) {
 				String nick = req.getParameter("nick");
-				DBObject author = AuthorPersistence.getInstance().getAuthor(nick);
+				AuthorDTO author = PersistenceFactory.getPersistence().getAuthor(nick);
 				if (author != null) {
-					if (author.get("avatar") != null) {
-						res.getOutputStream().write((byte[])author.get("avatar"));
+					if (author.getAvatar() != null) {
+						res.getOutputStream().write(author.getAvatar());
 					} else {
 						res.getOutputStream().write(noAvatar);
 					}
@@ -86,12 +75,16 @@ public class MainServlet extends HttpServlet {
 			} else if ("page".equals(action)) {
 				String pageNr = req.getParameter("pageNr");
 				req.setAttribute("pageNr", pageNr);
-				req.setAttribute("messages", MessagePersistence.getInstance().getMessagesByDate(15,  Integer.parseInt(pageNr)));
+				req.setAttribute("messages", PersistenceFactory.getPersistence().getMessagesByDate(15,  Integer.parseInt(pageNr)));
 				getServletContext().getRequestDispatcher("/WEB-INF/pages/result.jsp").forward(req, res);
 			} else if ("thread".equals(action)) {
 				String threadId = req.getParameter("threadId");
-				List<DBObject> msgs = MessagePersistence.getInstance().getMessagesByThread(Integer.parseInt(threadId));
-				req.setAttribute("messages", new ThreadTree(msgs, Long.parseLong(threadId)).asList());
+				List<MessageDTO> msgs = PersistenceFactory.getPersistence().getMessagesByThread(Integer.parseInt(threadId));
+				List<IndentMessageDTO> indentMsg = new ArrayList<IndentMessageDTO>(msgs.size());
+				for (MessageDTO dto : msgs) {
+					indentMsg.add(new IndentMessageDTO(dto));
+				}
+				req.setAttribute("messages", new ThreadTree(indentMsg, Long.parseLong(threadId)).asList());
 				
 				getServletContext().getRequestDispatcher("/WEB-INF/pages/thread.jsp").forward(req, res);
 			}

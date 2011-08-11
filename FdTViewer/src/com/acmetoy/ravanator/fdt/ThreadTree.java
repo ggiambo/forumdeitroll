@@ -3,29 +3,27 @@ package com.acmetoy.ravanator.fdt;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.DBObject;
-
 public class ThreadTree {
 
 	private TreeNode root;
 
-	public ThreadTree(List<DBObject> msgs, Long threadId) {
-		msgs.get(0).put("indent", 0);
+	public ThreadTree(List<IndentMessageDTO> msgs, Long threadId) {
+		msgs.get(0).setIndent(0);
 		root = new TreeNode(msgs.get(0), null);
 		for (int i = 1; i < msgs.size(); i++) {
-			DBObject msg = msgs.get(i);
-			Long parentId = (Long) msg.get("parentId");
+			IndentMessageDTO msg = msgs.get(i);
+			Long parentId = msg.getParentId();
 			TreeNode parent = findNode(parentId, root);
 			new TreeNode(msg, parent);
 		}
 	}
 
-	public List<DBObject> asList() {
+	public List<IndentMessageDTO> asList() {
 		return asList(root);
 	}
 
-	private List<DBObject> asList(TreeNode node) {
-		List<DBObject> res = new ArrayList<DBObject>();
+	private List<IndentMessageDTO> asList(TreeNode node) {
+		List<IndentMessageDTO> res = new ArrayList<IndentMessageDTO>();
 		res.add(node.data);
 		for (TreeNode n : node.children) {
 			res.addAll(asList(n));
@@ -33,8 +31,8 @@ public class ThreadTree {
 		return res;
 	}
 
-	private TreeNode findNode(Long nodeId, TreeNode node) {
-		if (node.data.get("id").equals(nodeId)) {
+	private TreeNode findNode(long nodeId, TreeNode node) {
+		if (node.data.getId() == nodeId) {
 			return node;
 		}
 		for (TreeNode n : node.children) {
@@ -48,16 +46,16 @@ public class ThreadTree {
 
 	private class TreeNode {
 		
-		private DBObject data;
+		private IndentMessageDTO data;
 		private List<TreeNode> children;
 
-		public TreeNode(DBObject data, TreeNode parent) {
+		public TreeNode(IndentMessageDTO data, TreeNode parent) {
 			this.data = data;
 			this.children = new ArrayList<TreeNode>();
 			if (parent != null) {
 				parent.children.add(this);
-				Integer indent = (Integer) parent.data.get("indent");
-				data.put("indent", indent + 1);
+				Integer indent = parent.data.getIndent();
+				data.setIndent(indent + 1);
 			}
 		}
 

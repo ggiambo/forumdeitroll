@@ -3,7 +3,7 @@
 	<name>FdTViewer</name>
 	<comment></comment>
 	<projects>
-		<project>FdTPersistence</project>
+		<project>FdTSucker</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
