@@ -33,17 +33,21 @@
 			</c:choose>
 			<div style="margin: 5px; width:600px;border-bottom:1px solid black;${background}">
 				<img src="${contextPath}/Main?action=avatar&nick=${msg.author}"/>
+				<c:if test="${!empty msg.forum}">
+					<span style="color:#97A28A"><b>${msg.forum}</b></span>
+				</c:if>
+				<br/>
 				Scritto da 
-					<i>
-						<c:choose>
-							<c:when test="${empty msg.author}">
-								Non autenticato
-							</c:when>
-							<c:otherwise>
-								<c:out value="${msg.author}"/>
-							</c:otherwise>
-						</c:choose>
-					</i>
+				<i>
+					<c:choose>
+						<c:when test="${empty msg.author}">
+							Non autenticato
+						</c:when>
+						<c:otherwise>
+							<c:out value="${msg.author}"/>
+						</c:otherwise>
+					</c:choose>
+				</i>
 				alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy hh:mm:ss"/><br/><br/>
 				<b><a href="${contextPath}/Main?action=thread&threadId=${msg.threadId}"/>${msg.subject}</a></b><br/>
 				<div style="padding: 15px;">

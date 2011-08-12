@@ -17,6 +17,8 @@
 	<body>
 		<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 		
+		<a href="${contextPath}/Main">&lt;&lt;</a>
+		
 		<c:forEach items="${messages}" var="msg" varStatus="index">
 			<c:set var="margin" value="${msg.indent * 15}"/>
 			<div style="border:1px solid black; margin: 5px 5px; margin-left:${margin}px; width:600px;">
@@ -33,9 +35,23 @@
 				</c:choose>
 				<div style="margin: 5px 5px; margin-right: 5px; ${background}">
 					<img src="${contextPath}/Main?action=avatar&nick=${msg.author}"/>
-					Scritto da <i><c:out value="${msg.author}"/></i>
+					<c:if test="${!empty msg.forum}">
+						<span style="color:#97A28A"><b>${msg.forum}</b></span>
+					</c:if>
+					<br/>
+					Scritto da 
+					<i>
+						<c:choose>
+							<c:when test="${empty msg.author}">
+								Non autenticato
+							</c:when>
+							<c:otherwise>
+								<c:out value="${msg.author}"/>
+							</c:otherwise>
+						</c:choose>
+					</i>
 					alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy hh:mm:ss"/><br/><br/>
-					<b><a href="${contextPath}/Main?action=thread&threadId=${msg.threadId}"/>${msg.subject}</a></b><br/>
+					<b>${msg.subject}</b><br/>
 					<div style="padding: 15px;">
 						<fdt:quote>${msg.text}</fdt:quote>
 						<%-- close open tags --%>
@@ -47,6 +63,8 @@
 				</c:forEach>
 			</div>
 		</c:forEach>
+		
+		<a href="${contextPath}/Main">&lt;&lt;</a>
 		
 	</body>
 	
