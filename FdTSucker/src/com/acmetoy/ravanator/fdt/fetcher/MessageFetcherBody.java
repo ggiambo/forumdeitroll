@@ -67,7 +67,7 @@ public class MessageFetcherBody extends Thread {
 		if (elements.size() == 1) {
 			author = elements.get(0).getAllElements("a").get(0).getContent().toString();
 			// insert / update author
-			new AuthorFetcher(authorContainer, author).run();
+			new AuthorFetcher(authorContainer, author).start();
 		}
 		
 		// set forum

@@ -33,7 +33,6 @@ public class MySQLPersistence implements Persistence {
 		conn = DriverManager.getConnection(url, username, password);
 	}
 
-	@Override
 	public AuthorDTO getAuthor(String nick) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -57,7 +56,6 @@ public class MySQLPersistence implements Persistence {
 		return null;
 	}
 
-	@Override
 	public long getLastMessageId() {
 		long lastMessageId = -1;
 		PreparedStatement ps = null;
@@ -76,7 +74,6 @@ public class MySQLPersistence implements Persistence {
 		return lastMessageId;
 	}
 
-	@Override
 	public MessageDTO getMessage(long id) {
 		MessageDTO message = new MessageDTO();
 		PreparedStatement ps = null;
@@ -103,7 +100,6 @@ public class MySQLPersistence implements Persistence {
 		return message;
 	}
 
-	@Override
 	public List<MessageDTO> getMessagesByDate(int limit) {
 		List<MessageDTO> messages = new ArrayList<MessageDTO>();
 		PreparedStatement ps = null;
@@ -132,7 +128,6 @@ public class MySQLPersistence implements Persistence {
 		return messages;
 	}
 
-	@Override
 	public List<MessageDTO> getMessagesByDate(int limit, int page) {
 		List<MessageDTO> messages = new ArrayList<MessageDTO>();
 		PreparedStatement ps = null;
@@ -162,7 +157,6 @@ public class MySQLPersistence implements Persistence {
 		return messages;
 	}
 
-	@Override
 	public List<MessageDTO> getMessagesByThread(long threadId) {
 		List<MessageDTO> messages = new ArrayList<MessageDTO>();
 		PreparedStatement ps = null;
@@ -191,7 +185,6 @@ public class MySQLPersistence implements Persistence {
 		return messages;
 	}
 
-	@Override
 	public boolean hasAuthor(String nick) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -208,7 +201,6 @@ public class MySQLPersistence implements Persistence {
 		return false;
 	}
 
-	@Override
 	public boolean hasMessage(long id) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -225,7 +217,6 @@ public class MySQLPersistence implements Persistence {
 		return false;
 	}
 
-	@Override
 	public void insertAuthor(AuthorDTO author) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -243,7 +234,6 @@ public class MySQLPersistence implements Persistence {
 		}
 	}
 	
-	@Override
 	public void updateAuthor(AuthorDTO author) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -261,7 +251,6 @@ public class MySQLPersistence implements Persistence {
 		}
 	}
 
-	@Override
 	public void insertMessage(MessageDTO message) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;

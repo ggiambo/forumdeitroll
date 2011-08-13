@@ -42,6 +42,7 @@ public class WebUtilities {
 		while ((count = bis.read(buffer)) != -1) {
 			bos.write(buffer, 0, count);
 		}
+		bis.close();
 		bos.flush();
 		bos.close();
 

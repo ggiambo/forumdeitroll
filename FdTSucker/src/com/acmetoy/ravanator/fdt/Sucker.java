@@ -2,8 +2,8 @@ package com.acmetoy.ravanator.fdt;
 
 import java.util.List;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.Source;
@@ -40,10 +40,18 @@ public class Sucker extends TimerTask {
 		}
 		LOG.info("Latest available message id database:" + lastMessageInDb);
 		
-		ExecutorService exec = Executors.newFixedThreadPool(4);
+		BlockingQueue<String> threadQueue = new ArrayBlockingQueue<String>(4);
 		// get all messages
 		while (lastMessageInDb < lastMessageId) {
-			exec.execute(new MessageFetcher(lastMessageId));
+			MessageFetcher mf = new MessageFetcher(lastMessageId, threadQueue);
+			LOG.debug("Created fetcher for message id " +  lastMessageId + ", queue size " + threadQueue.size());
+			try {
+				threadQueue.put("dummy");
+			} catch (InterruptedException e) {
+				LOG.fatal("Cannot add thread to queue", e);
+				continue;
+			}
+			mf.start();
 			lastMessageId--;
 		}
 	}

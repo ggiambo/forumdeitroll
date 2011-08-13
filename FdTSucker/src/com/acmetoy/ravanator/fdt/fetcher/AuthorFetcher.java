@@ -24,9 +24,9 @@ public class AuthorFetcher extends Thread {
 	@Override
 	public void run() {
 		AuthorFetcherAvatar avatar = new AuthorFetcherAvatar(authorContainer);
-		avatar.run();
+		avatar.start();
 		AuthorFetcherData data = new AuthorFetcherData(authorContainer);
-		data.run();
+		data.start();
 		// wait for threads to end
 		try {
 			avatar.join();
