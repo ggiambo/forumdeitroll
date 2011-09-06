@@ -102,8 +102,8 @@
 					echo $txt;
 				} else {
 					$nrQuotes = strlen(str_replace(" ", "", $matches[0])) / 4;
-					$index = $nrQuotes % count($QUOTE);
-					$color = $QUOTE[$index];
+					$idx = $nrQuotes % count($QUOTE);
+					$color = $QUOTE[$idx];
 					echo "<span style='color:".$color."'>";
 					echo $txt;
 					echo "</span>";
