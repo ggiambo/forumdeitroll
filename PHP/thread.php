@@ -31,7 +31,7 @@
 	mysql_connect("localhost", "fdtsucker", "fdtsucker") or die(mysql_error());
 	mysql_select_db("fdtsucker") or die(mysql_error());
 
-	$query = sprintf("SELECT * FROM messages WHERE threadid = %s ORDER BY date ASC", mysql_real_escape_string($_GET['threadId']));
+	$query = sprintf("SELECT * FROM messages WHERE threadid = '%s' ORDER BY date ASC", mysql_real_escape_string($_GET['threadId']));
 	$result = mysql_query($query) or die(mysql_error());
 	
 	// build the thread tree
