@@ -12,7 +12,7 @@
         <dependent-module archiveName="FdTSucker.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/FdTSucker/FdTSucker">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <property name="context-root" value="FdTViewer"/>
+        <property name="context-root" value="fdtduezero"/>
         <property name="java-output-path" value="/FdTViewer/build/classes"/>
     </wb-module>
 </project-modules>

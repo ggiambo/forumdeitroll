@@ -132,6 +132,16 @@ public class MongoPersistence implements Persistence {
 		return toAuthorDTO(out.toMap());
 	}
 	
+	public List<MessageDTO> getMessagesByAuthor(String author, int limit, int page) {
+		List<MessageDTO> ret = new ArrayList<MessageDTO>(limit);
+		DBCursor cur = db.getCollection("messages").find(new BasicDBObject("author", author)).sort(new BasicDBObject("date", -1)).skip(page * limit).limit(
+				limit);
+		while (cur.hasNext()) {
+			ret.add(toMessageDTO(cur.next().toMap()));
+		}
+		return ret;
+	}
+	
 	private MessageDTO toMessageDTO(Map<?, ?> map) {
 		MessageDTO out = new MessageDTO();
 		try {
@@ -151,5 +161,6 @@ public class MongoPersistence implements Persistence {
 		}
 		return out;
 	}
+
 	
 }

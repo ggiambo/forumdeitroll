@@ -75,114 +75,84 @@ public class MySQLPersistence implements Persistence {
 	}
 
 	public MessageDTO getMessage(long id) {
-		MessageDTO message = new MessageDTO();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = ?");
 			ps.setLong(1, id);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				message.setId(rs.getLong("id")); 
-				message.setParentId(rs.getLong("parentId")); 
-				message.setThreadId(rs.getLong("threadId")); 
-				message.setText(rs.getString("text"));
-				message.setSubject(rs.getString("subject")); 
-				message.setAuthor(rs.getString("author"));
-				message.setForum(rs.getString("forum"));
-				message.setDate(rs.getDate("date"));
+			List<MessageDTO> res = getMessages(ps.executeQuery());
+			if (res.size() == 1) {
+				return res.get(1);
 			}
 		} catch (SQLException e) {
-			LOG.error("Cannot insert message " + message.toString(), e);
+			LOG.error("Cannot get message with id " + id, e);
 		} finally {
 			closeResources(rs, ps);
 		}
-		return message;
+		return new MessageDTO();
 	}
 
 	public List<MessageDTO> getMessagesByDate(int limit) {
-		List<MessageDTO> messages = new ArrayList<MessageDTO>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY date DESC LIMIT ?");
 			ps.setInt(1, limit);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				MessageDTO message = new MessageDTO();
-				message.setId(rs.getLong("id")); 
-				message.setParentId(rs.getLong("parentId")); 
-				message.setThreadId(rs.getLong("threadId")); 
-				message.setText(rs.getString("text"));
-				message.setSubject(rs.getString("subject")); 
-				message.setAuthor(rs.getString("author"));
-				message.setForum(rs.getString("forum"));
-				message.setDate(rs.getDate("date"));
-				messages.add(message);
-			}
+			return getMessages(ps.executeQuery());
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit, e);
 		} finally {
 			closeResources(rs, ps);
 		}
-		return messages;
+		return new ArrayList<MessageDTO>();
 	}
 
 	public List<MessageDTO> getMessagesByDate(int limit, int page) {
-		List<MessageDTO> messages = new ArrayList<MessageDTO>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY date DESC LIMIT ?, ?");
 			ps.setInt(1, limit*page);
-			ps.setInt(2, limit*(page + 1));
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				MessageDTO message = new MessageDTO();
-				message.setId(rs.getLong("id")); 
-				message.setParentId(rs.getLong("parentId")); 
-				message.setThreadId(rs.getLong("threadId")); 
-				message.setText(rs.getString("text"));
-				message.setSubject(rs.getString("subject")); 
-				message.setAuthor(rs.getString("author"));
-				message.setForum(rs.getString("forum"));
-				message.setDate(rs.getDate("date"));
-				messages.add(message);
-			}
+			ps.setInt(2, limit);
+			return getMessages(ps.executeQuery());
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
 			closeResources(rs, ps);
 		}
-		return messages;
+		return new ArrayList<MessageDTO>();
+	}
+	
+	public List<MessageDTO> getMessagesByAuthor(String author, int limit, int page) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT * FROM messages where author = ? ORDER BY date DESC LIMIT ?, ?");
+			ps.setString(1, author);
+			ps.setInt(2, limit*page);
+			ps.setInt(3, limit);
+			return getMessages(ps.executeQuery());
+		} catch (SQLException e) {
+			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
+		} finally {
+			closeResources(rs, ps);
+		}
+		return new ArrayList<MessageDTO>();
 	}
 
 	public List<MessageDTO> getMessagesByThread(long threadId) {
-		List<MessageDTO> messages = new ArrayList<MessageDTO>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			ps = conn.prepareStatement("SELECT * FROM messages WHERE threadId = ? ORDER BY id ASC");
 			ps.setLong(1, threadId);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				MessageDTO message = new MessageDTO();
-				message.setId(rs.getLong("id")); 
-				message.setParentId(rs.getLong("parentId")); 
-				message.setThreadId(rs.getLong("threadId")); 
-				message.setText(rs.getString("text"));
-				message.setSubject(rs.getString("subject")); 
-				message.setAuthor(rs.getString("author"));
-				message.setForum(rs.getString("forum"));
-				message.setDate(rs.getDate("date"));
-				messages.add(message);
-			}
+			return getMessages(ps.executeQuery());
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with threadId " + threadId, e);
 		} finally {
 			closeResources(rs, ps);
 		}
-		return messages;
+		return new ArrayList<MessageDTO>();
 	}
 
 	public boolean hasAuthor(String nick) {
@@ -288,6 +258,23 @@ public class MySQLPersistence implements Persistence {
 				// ignore
 			}
 		}
+	}
+	
+	private List<MessageDTO> getMessages(ResultSet rs) throws SQLException {
+		List<MessageDTO> messages = new ArrayList<MessageDTO>();
+		while (rs.next()) {
+			MessageDTO message = new MessageDTO();
+			message.setId(rs.getLong("id")); 
+			message.setParentId(rs.getLong("parentId")); 
+			message.setThreadId(rs.getLong("threadId")); 
+			message.setText(rs.getString("text"));
+			message.setSubject(rs.getString("subject")); 
+			message.setAuthor(rs.getString("author"));
+			message.setForum(rs.getString("forum"));
+			message.setDate(rs.getDate("date"));
+			messages.add(message);
+		}
+		return messages;
 	}
 
 }

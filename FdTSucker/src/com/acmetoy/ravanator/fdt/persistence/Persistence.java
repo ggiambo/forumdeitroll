@@ -25,6 +25,7 @@ public interface Persistence {
 	public void updateAuthor(AuthorDTO author);
 	
 	public AuthorDTO getAuthor(String nick);
-	
+
+	public List<MessageDTO> getMessagesByAuthor(String author, int pageSize, int page);
 
 }

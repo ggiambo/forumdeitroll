@@ -15,16 +15,17 @@
 	</head>
 	
 	<body>
-		<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
-		
-		<a href="${contextPath}/Main">&lt;&lt;</a>
-		
+	
+		<h4><a href="${pageContext.request.contextPath}/Messages">Inizio</a><br/></h4>
+
 		<c:forEach items="${messages}" var="msg" varStatus="index">
 			<c:set var="margin" value="${msg.indent * 15}"/>
 			<div style="border:1px solid black; margin: 5px 5px; margin-left:${margin}px; width:600px;">
+			
 				<c:forEach begin="1" end="${msg.indent}">
 					<div style="border:1px solid black; margin: 3px;">
 				</c:forEach>
+			
 				<c:choose>
 					<c:when test="${index.count % 2 == 0}">
 						<c:set var="background" value="background-color: #F6F6F6"/>
@@ -34,7 +35,7 @@
 					</c:otherwise>
 				</c:choose>
 				<div style="margin: 5px 5px; margin-right: 5px; ${background}">
-					<img src="${contextPath}/Main?action=avatar&nick=${msg.author}"/>
+					<img src="${contextPath}?action=getAvatar&nick=${msg.author}"/>
 					<c:if test="${!empty msg.forum}">
 						<span style="color:#97A28A"><b>${msg.forum}</b></span>
 					</c:if>
@@ -55,16 +56,18 @@
 					<div style="padding: 15px;">
 						<fdt:quote>${msg.text}</fdt:quote>
 						<%-- close open tags --%>
-						</b></i></u>
+						<c:out escapeXml="false" value="</b></i></u>"/>
 					</div>
 				</div>
+				
 				<c:forEach begin="1" end="${msg.indent}">
 					</div>
 				</c:forEach>
+				
 			</div>
 		</c:forEach>
 		
-		<a href="${contextPath}/Main">&lt;&lt;</a>
+		<h4><a href="${pageContext.request.contextPath}/Messages">Inizio</a><br/></h4>
 		
 	</body>
 	

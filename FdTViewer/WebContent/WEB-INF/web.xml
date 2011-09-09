@@ -3,15 +3,24 @@
 	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	id="WebApp_ID" version="2.5">
-	<display-name>FdTViewer</display-name>
+	<display-name>FdTDueZero</display-name>
 
 	<servlet>
-		<servlet-name>FdT Viewer</servlet-name>
-		<servlet-class>com.acmetoy.ravanator.fdt.MainServlet</servlet-class>
+		<servlet-name>Messages</servlet-name>
+		<servlet-class>com.acmetoy.ravanator.fdt.servlets.Messages</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>FdT Viewer</servlet-name>
-		<url-pattern>/Main</url-pattern>
+		<servlet-name>Messages</servlet-name>
+		<url-pattern>/Messages</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Thread</servlet-name>
+		<servlet-class>com.acmetoy.ravanator.fdt.servlets.Thread</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Thread</servlet-name>
+		<url-pattern>/Thread</url-pattern>
 	</servlet-mapping>
 
 	<jsp-config>
@@ -22,6 +31,10 @@
 		<taglib>
 			<taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
 			<taglib-location>/WEB-INF/tlds/fmt.tld</taglib-location>
+		</taglib>
+		<taglib>
+			<taglib-uri>http://java.sun.com/jsp/jstl/fn</taglib-uri>
+			<taglib-location>/WEB-INF/tlds/fn.tld</taglib-location>
 		</taglib>
 		<taglib>
 			<taglib-uri>http://ravanator.acmetoy.com/jsp/jstl/fdt</taglib-uri>
