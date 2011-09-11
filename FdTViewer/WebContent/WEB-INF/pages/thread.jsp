@@ -16,7 +16,7 @@
 	
 	<body>
 	
-		<h4><a href="${pageContext.request.contextPath}/Messages">Inizio</a><br/></h4>
+		<h4><a href="Messages">Inizio</a><br/></h4>
 
 		<c:forEach items="${messages}" var="msg" varStatus="index">
 			<c:set var="margin" value="${msg.indent * 15}"/>
@@ -35,7 +35,7 @@
 					</c:otherwise>
 				</c:choose>
 				<div style="margin: 5px 5px; margin-right: 5px; ${background}">
-					<img src="${contextPath}?action=getAvatar&nick=${msg.author}"/>
+					<img src="?action=getAvatar&nick=${msg.author}"/>
 					<c:if test="${!empty msg.forum}">
 						<span style="color:#97A28A"><b>${msg.forum}</b></span>
 					</c:if>
@@ -67,7 +67,7 @@
 			</div>
 		</c:forEach>
 		
-		<h4><a href="${pageContext.request.contextPath}/Messages">Inizio</a><br/></h4>
+		<h4><a href="Messages">Inizio</a><br/></h4>
 		
 	</body>
 	
