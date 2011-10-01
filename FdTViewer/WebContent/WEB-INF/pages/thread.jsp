@@ -51,7 +51,7 @@
 							</c:otherwise>
 						</c:choose>
 					</i>
-					alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy hh:mm:ss"/><br/><br/>
+					alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy HH:mm:ss"/><br/><br/>
 					<b>${msg.subject}</b><br/>
 					<div style="padding: 15px;">
 						<fdt:quote>${msg.text}</fdt:quote>

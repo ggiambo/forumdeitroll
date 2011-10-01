@@ -52,7 +52,7 @@
 						</c:otherwise>
 					</c:choose>
 				</i>
-				alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy hh:mm:ss"/><br/><br/>
+				alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy HH:mm:ss"/><br/><br/>
 				<b><a href="Threads?action=getByThread&threadId=${msg.threadId}"/>${msg.subject}</a></b><br/>
 				<div style="padding: 15px;">
 					<fdt:quote search="${param.search}">${msg.text}</fdt:quote>
