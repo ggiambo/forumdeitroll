@@ -17,7 +17,7 @@
 		&nbsp;&nbsp;|&nbsp;&nbsp;
 		<jsp:include page="prevNext.jsp"/>
 
-		<c:forEach items="${threads}" var="thread" varStatus="index">
+		<c:forEach items="${messages}" var="thread" varStatus="index">
 			<c:choose>
 				<c:when test="${index.count % 2 == 0}">
 					<c:set var="background" value="background-color: #FFFFFF"/>
@@ -27,7 +27,6 @@
 				</c:otherwise>
 			</c:choose>
 			<div style="margin: 5px; width:600px;border-bottom:1px solid black;${background}">
-				<img src="?action=getAvatar&nick=${thread.author}"/>
 				<c:if test="${!empty thread.forum}">
 					<span style="color:#97A28A"><b>${thread.forum}</b></span>
 				</c:if>

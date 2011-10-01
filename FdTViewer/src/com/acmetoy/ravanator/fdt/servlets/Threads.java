@@ -36,7 +36,7 @@ public class Threads extends MainServlet {
 
 	@Override
 	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.setAttribute("threads", PersistenceFactory.getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
+		req.setAttribute("messages", PersistenceFactory.getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
 		return "threads.jsp";
 	}
 

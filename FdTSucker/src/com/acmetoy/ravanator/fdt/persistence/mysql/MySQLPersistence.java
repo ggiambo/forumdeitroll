@@ -356,7 +356,7 @@ public class MySQLPersistence implements Persistence {
 			message.setSubject(rs.getString("subject")); 
 			message.setAuthor(rs.getString("author"));
 			message.setForum(rs.getString("forum"));
-			message.setDate(rs.getDate("date"));
+			message.setDate(rs.getTimestamp("date"));
 			messages.add(message);
 		}
 		return messages;
