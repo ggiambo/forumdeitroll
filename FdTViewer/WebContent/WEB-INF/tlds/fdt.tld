@@ -18,6 +18,13 @@
     <name>quote</name>
     <tag-class>com.acmetoy.ravanator.fdt.QuoteTag</tag-class>
     <body-content>JSP</body-content>
+	<attribute>
+		<description>Searched word to highlight</description>
+        <name>search</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+    </attribute>
   </tag>
 
 

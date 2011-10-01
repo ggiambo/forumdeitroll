@@ -1,4 +1,4 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core"  prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
@@ -17,17 +17,22 @@
 		<c:if test="${action == 'getByAuthor'}">
 			<h4>Messaggi scritti da <i>${param.author}</i></h4>
 		</c:if>
-		<h4><a href="Messages">Inizio</a><br/></h4>
-	
-		<jsp:include page="prevNext.jsp"/>
+			Messaggi ordinati per <a href="Threads">Data inizio discussione</a> o <a href="Messages">Cronologicamente</a>
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+			<jsp:include page="prevNext.jsp"/>
+			&nbsp;&nbsp;|&nbsp;&nbsp;
+		<form action="Messages" method="get" style="display: inline;">
+			<input type="hidden" name="action" value="search"/>
+			<input name="search" value="${param.search}"/><input type="submit" value="Cerca"/>
+		</form>
 
 		<c:forEach items="${messages}" var="msg" varStatus="index">
 			<c:choose>
 				<c:when test="${index.count % 2 == 0}">
-					<c:set var="background" value="background-color: #F6F6F6"/>
+					<c:set var="background" value="background-color: #FFFFFF"/>
 				</c:when>
 				<c:otherwise>
-					<c:set var="background" value="background-color: #FFFFFF"/>
+					<c:set var="background" value="background-color: #F6F6F6"/>
 				</c:otherwise>
 			</c:choose>
 			<div style="margin: 5px; width:600px;border-bottom:1px solid black;${background}">
@@ -43,14 +48,14 @@
 							Non autenticato
 						</c:when>
 						<c:otherwise>
-							<b><a href="?action=getByAuthor&author=${msg.author}">${msg.author}</a></b><br/>
+							<b><a href="?action=getByAuthor&author=${msg.author}">${msg.author}</a></b>
 						</c:otherwise>
 					</c:choose>
 				</i>
 				alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy hh:mm:ss"/><br/><br/>
-				<b><a href="Thread?action=getByThread&threadId=${msg.threadId}"/>${msg.subject}</a></b><br/>
+				<b><a href="Threads?action=getByThread&threadId=${msg.threadId}"/>${msg.subject}</a></b><br/>
 				<div style="padding: 15px;">
-					<fdt:quote>${msg.text}</fdt:quote>
+					<fdt:quote search="${param.search}">${msg.text}</fdt:quote>
 					<%-- close open tags --%>
 					<c:out escapeXml="false" value="</b></i></u>"/>
 				</div>

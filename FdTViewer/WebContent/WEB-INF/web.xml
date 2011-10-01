@@ -15,12 +15,12 @@
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>Thread</servlet-name>
-		<servlet-class>com.acmetoy.ravanator.fdt.servlets.Thread</servlet-class>
+		<servlet-name>Threads</servlet-name>
+		<servlet-class>com.acmetoy.ravanator.fdt.servlets.Threads</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Thread</servlet-name>
-		<url-pattern>/Thread</url-pattern>
+		<servlet-name>Threads</servlet-name>
+		<url-pattern>/Threads</url-pattern>
 	</servlet-mapping>
 
 	<jsp-config>

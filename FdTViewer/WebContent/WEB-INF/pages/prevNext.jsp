@@ -1,5 +1,5 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core"  prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fn"  prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 
 <c:if test="${!empty pageNr}">
 	<c:if test="${pageNr gt 0}">

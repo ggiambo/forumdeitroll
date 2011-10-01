@@ -8,6 +8,11 @@ import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 public class Messages extends MainServlet {
 
 	private static final long serialVersionUID = 1L;
+	
+	@Override
+	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		return getByPage(req, res);
+	}
 
 	/**
 	 * I messaggi di questa pagina (Dimensione PAGE_SIZE) in ordine di data
@@ -18,7 +23,7 @@ public class Messages extends MainServlet {
 	 */
 	public String getByPage(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setAttribute("messages", PersistenceFactory.getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req)));
-		return "result.jsp";
+		return "messages.jsp";
 	}
 	
 	/**
@@ -32,17 +37,15 @@ public class Messages extends MainServlet {
 		String author = req.getParameter("author");
 		req.setAttribute("specificParams", "&author=" + author);
 		req.setAttribute("messages", PersistenceFactory.getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req)));
-		return "result.jsp";
+		return "messages.jsp";
 	}
 	
-	private int getPageNr(HttpServletRequest req) {
-		// pageNr
-		String pageNr = req.getParameter("pageNr");
-		if (pageNr == null) {
-			pageNr = "0";
-		}
-		req.setAttribute("pageNr", pageNr);
-		return Integer.parseInt(pageNr);
+
+	public String search(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String search = req.getParameter("search");
+		req.setAttribute("specificParams", "&search=" + search);
+		req.setAttribute("messages", PersistenceFactory.getPersistence().searchMessages(search, PAGE_SIZE, getPageNr(req)));
+		return "messages.jsp";
 	}
 
 }

@@ -1,25 +1,11 @@
 package com.acmetoy.ravanator.fdt.persistence;
 
-import java.util.Date;
 
-public class MessageDTO {
+public class MessageDTO extends ThreadDTO {
 
-	private long id;
 	private long parentId;
 	private long threadId;
 	private String text;
-	private String subject;
-	private String author;
-	private String forum;
-	private Date date;
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
 
 	public long getParentId() {
 		return parentId;
@@ -45,51 +31,16 @@ public class MessageDTO {
 		this.text = text;
 	}
 
-	public String getSubject() {
-		return subject;
-	}
-
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-
-	public String getAuthor() {
-		return author;
-	}
-
-	public void setAuthor(String author) {
-		this.author = author;
-	}
-
-	public String getForum() {
-		return forum;
-	}
-
-	public void setForum(String forum) {
-		this.forum = forum;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-	
 	public boolean isValid() {
-		boolean valid = true;
+		boolean valid = super.isValid();
 		valid &= parentId != -1;
 		valid &= threadId != -1;
-		valid &= subject != null;
 		valid &= text != null;
-		valid &= date != null;
 		return valid;
 	}
 	
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("id:").append(id).append(",");
+		StringBuilder sb = new StringBuilder(super.toString());
 		sb.append("parentId:").append(parentId).append(",");
 		sb.append("threadId:").append(threadId).append(",");
 		sb.append("text:");
@@ -99,10 +50,6 @@ public class MessageDTO {
 			sb.append(text);
 		}
 		sb.append(",");
-		sb.append("subject:").append(subject).append(",");
-		sb.append("author:").append(author).append(",");
-		sb.append("forum:").append(forum).append(",");
-		sb.append("date:").append(date);
 		return sb.toString();
 	}
 }

@@ -14,13 +14,19 @@ public class QuoteTag extends BodyTagSupport {
 	private static final String[] QUOTE = new String[] { "#007BDF", "#00AF59", "#9A00EF", "#AF6F00" };
 
 	private static final long serialVersionUID = 1L;
+	
+	private String search;
 
 	public int doAfterBody() throws JspTagException {
 		JspWriter out = getBodyContent().getEnclosingWriter();
 		String body = getBodyContent().getString();
 		String[] lines = body.split("<BR>");
 		StringBuilder res = new StringBuilder();
+		boolean highlightSearch = search != null && search.trim().length() != 0;
 		for (String line : lines) {
+			if (highlightSearch && line.contains(search)) {
+				line = line.replaceAll(search, "<span style='background-color:yellow'>" + search + "</span>");
+			}
 			res.setLength(0);
 			res.append(line);
 			Matcher m = PATTERN.matcher(line);
@@ -32,12 +38,20 @@ public class QuoteTag extends BodyTagSupport {
 					res.insert(0, "<span style='color:" + color + "'>");
 					res.append("</span>");
 				}
-				res.append("<BR>");
+				res.append("<BR>\n");
 				out.print(res.toString());
 			} catch (IOException e) {
 				throw new JspTagException(e);
 			}
 		}
 		return SKIP_BODY;
+	}
+
+	public void setSearch(String search) {
+		this.search = search;
+	}
+
+	public String getSearch() {
+		return search;
 	}
 }

@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.Persistence;
+import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -18,6 +19,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 
+@Deprecated
 public class MongoPersistence implements Persistence {
 
 	private static final Logger LOG = Logger.getLogger(MongoPersistence.class);
@@ -86,6 +88,17 @@ public class MongoPersistence implements Persistence {
 		}
 		return ret;
 	}
+	
+	public List<ThreadDTO> getThreads(int limit, int page) {
+		List<ThreadDTO> ret = new ArrayList<ThreadDTO>(limit);
+		BasicDBObject query = new BasicDBObject("id", new BasicDBObject("$in", db.getCollection("messages").distinct("threadId")));
+		DBCursor cur = db.getCollection("messages").find(query).sort(new BasicDBObject("date", -1)).skip(page * limit).limit(
+				limit);
+		while (cur.hasNext()) {
+			ret.add(toThreadDTO(cur.next().toMap()));
+		}
+		return ret;
+	}
 
 	public List<MessageDTO> getMessagesByThread(long threadId) {
 		DBCursor cur = db.getCollection("messages").find(new BasicDBObject("threadId", threadId));
@@ -142,12 +155,34 @@ public class MongoPersistence implements Persistence {
 		return ret;
 	}
 	
+	public long countMessages() {
+		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
+	}
+
+	public List<MessageDTO> searchMessages(String search, int pageSize, int pageNr) {
+		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
+	}
+	
+	public List<Long> getParentIds(int limit, int page) {
+		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
+	}
+	
 	private MessageDTO toMessageDTO(Map<?, ?> map) {
 		MessageDTO out = new MessageDTO();
 		try {
 			BeanUtils.populate(out, map);
 		} catch (Exception e) {
 			LOG.info("Cannot populate MessageDTO with " + map);
+		}
+		return out;
+	}
+	
+	private ThreadDTO toThreadDTO(Map<?, ?> map) {
+		ThreadDTO out = new ThreadDTO();
+		try {
+			BeanUtils.populate(out, map);
+		} catch (Exception e) {
+			LOG.info("Cannot populate ThreadDTO with " + map);
 		}
 		return out;
 	}
@@ -162,5 +197,4 @@ public class MongoPersistence implements Persistence {
 		return out;
 	}
 
-	
 }

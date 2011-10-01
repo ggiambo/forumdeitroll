@@ -1,5 +1,5 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core"  prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
 <%@page import="java.util.Map"%>
@@ -16,7 +16,7 @@
 	
 	<body>
 	
-		<h4><a href="Messages">Inizio</a><br/></h4>
+		Messaggi ordinati per <a href="Threads">Data inizio discussione</a> o <a href="Messages">Cronologicamente</a>
 
 		<c:forEach items="${messages}" var="msg" varStatus="index">
 			<c:set var="margin" value="${msg.indent * 15}"/>
@@ -28,10 +28,10 @@
 			
 				<c:choose>
 					<c:when test="${index.count % 2 == 0}">
-						<c:set var="background" value="background-color: #F6F6F6"/>
+						<c:set var="background" value="background-color: #FFFFFF"/>
 					</c:when>
 					<c:otherwise>
-						<c:set var="background" value="background-color: #FFFFFF"/>
+						<c:set var="background" value="background-color: #F6F6F6"/>
 					</c:otherwise>
 				</c:choose>
 				<div style="margin: 5px 5px; margin-right: 5px; ${background}">
@@ -66,8 +66,6 @@
 				
 			</div>
 		</c:forEach>
-		
-		<h4><a href="Messages">Inizio</a><br/></h4>
 		
 	</body>
 	

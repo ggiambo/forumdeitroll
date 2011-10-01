@@ -53,12 +53,21 @@ public abstract class MainServlet extends HttpServlet {
 			throw new ServletException("Cannot read default images", e);
 		}
 	}
+	
+	/**
+	 * Metodo di default, quando nessuna "action" e' definita.
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	public abstract String init(HttpServletRequest req, HttpServletResponse res) throws Exception;
 
-	public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	public final void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		doPost(req, res);
 	}
 
-	public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		
 		// this context
 		req.setAttribute("contextPath", req.getRequestURL());
@@ -66,7 +75,7 @@ public abstract class MainServlet extends HttpServlet {
 		// action
 		String action = req.getParameter("action");
 		if (action == null || action.trim().length() == 0) {
-			action = "getByPage";
+			action = "init";
 		}
 		req.setAttribute("action", action);
 		
@@ -104,6 +113,16 @@ public abstract class MainServlet extends HttpServlet {
 			res.getOutputStream().write(notAuthenticated);
 		}
 		return null;
+	}
+	
+	protected int getPageNr(HttpServletRequest req) {
+		// pageNr
+		String pageNr = req.getParameter("pageNr");
+		if (pageNr == null) {
+			pageNr = "0";
+		}
+		req.setAttribute("pageNr", pageNr);
+		return Integer.parseInt(pageNr);
 	}
 
 }

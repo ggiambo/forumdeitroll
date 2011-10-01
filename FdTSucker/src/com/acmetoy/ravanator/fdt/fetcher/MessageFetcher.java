@@ -68,7 +68,9 @@ public class MessageFetcher extends Thread {
 			}
 		} finally {
 			try {
-				threadQueue.take();
+				if (threadQueue != null) {
+					threadQueue.take();
+				}
 			} catch (InterruptedException e) {
 				LOG.fatal("Cannot remove thread from queue", e);
 			}

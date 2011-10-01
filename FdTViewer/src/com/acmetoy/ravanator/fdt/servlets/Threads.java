@@ -11,7 +11,7 @@ import com.acmetoy.ravanator.fdt.ThreadTree;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 
-public class Thread extends MainServlet {
+public class Threads extends MainServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -32,6 +32,12 @@ public class Thread extends MainServlet {
 		req.setAttribute("messages", new ThreadTree(indentMsg, Long.parseLong(threadId)).asList());
 
 		return "thread.jsp";
+	}
+
+	@Override
+	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		req.setAttribute("threads", PersistenceFactory.getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
+		return "threads.jsp";
 	}
 
 }

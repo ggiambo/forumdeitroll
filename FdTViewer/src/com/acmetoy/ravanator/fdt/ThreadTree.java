@@ -3,6 +3,8 @@ package com.acmetoy.ravanator.fdt;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
+
 public class ThreadTree {
 
 	private TreeNode root;
@@ -14,6 +16,22 @@ public class ThreadTree {
 			IndentMessageDTO msg = msgs.get(i);
 			Long parentId = msg.getParentId();
 			TreeNode parent = findNode(parentId, root);
+			if (parent == null) {
+				// sould not happen !
+				MessageDTO fakeParent = new MessageDTO();
+				fakeParent.setAuthor("");
+				fakeParent.setDate(msg.getDate());
+				fakeParent.setForum(msg.getForum());
+				fakeParent.setId(msg.getParentId());
+				fakeParent.setSubject(msg.getSubject());
+				fakeParent.setText("<span style='color:red'>Inesistente</span>");
+				fakeParent.setThreadId(threadId);
+				try {
+					parent = new TreeNode(new IndentMessageDTO(fakeParent), root);
+				} catch (Exception e) {
+					parent = root;
+				}
+			}
 			new TreeNode(msg, parent);
 		}
 	}
