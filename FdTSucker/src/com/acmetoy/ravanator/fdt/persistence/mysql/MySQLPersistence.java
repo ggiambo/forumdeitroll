@@ -390,9 +390,28 @@ public class MySQLPersistence extends Persistence {
 			message.setAuthor(rs.getString("author"));
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
+			message.setNumberOfMessages(getNumberOfMessages(message.getId()));
 			messages.add(message);
 		}
 		return messages;
+	}
+	
+	private int getNumberOfMessages(long threadId) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT count(id) FROM messages WHERE threadId = ?");
+			ps.setLong(1, threadId);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			closeResources(rs, null);
+		}
+		return 0;
 	}
 
 }

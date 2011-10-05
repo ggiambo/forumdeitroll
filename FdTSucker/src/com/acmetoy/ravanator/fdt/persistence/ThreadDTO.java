@@ -9,6 +9,7 @@ public class ThreadDTO {
 	private String subject;
 	private String author;
 	private String forum;
+	private int setNumberOfMessages;
 	
 	public boolean isValid() {
 		boolean valid = true;
@@ -55,6 +56,14 @@ public class ThreadDTO {
 
 	public void setForum(String forum) {
 		this.forum = forum;
+	}
+	
+	public int getNumberOfMessages() {
+		return setNumberOfMessages;
+	}
+	
+	public void setNumberOfMessages(int setNumberOfMessages) {
+		this.setNumberOfMessages = setNumberOfMessages;
 	}
 
 }

@@ -30,6 +30,16 @@
 						<span style="color:#97A28A"><b>${thread.forum}</b></span>
 					</c:if>
 					<br/>
+					${thread.numberOfMessages}
+					<c:choose>
+						<c:when test="${thread.numberOfMessages > 1}">
+							messaggi
+						</c:when>
+						<c:otherwise>
+							messaggio
+						</c:otherwise>
+					</c:choose>
+					<br/>
 					<b><a href="Threads?action=getByThread&threadId=${thread.id}"/>${thread.subject}</a></b>
 					<br/>
 					Iniziato da 
@@ -43,7 +53,8 @@
 							</c:otherwise>
 						</c:choose>
 					</i>
-					alle <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy HH:mm:ss"/><br/><br/>
+					alle <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy HH:mm:ss"/>
+					<br/><br/>
 				</div>
 			</c:forEach>
 		
