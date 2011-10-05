@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.fetcher.MessageFetcher;
 import com.acmetoy.ravanator.fdt.persistence.Persistence;
-import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 
 public class Repair extends TimerTask {
 
@@ -28,7 +27,7 @@ public class Repair extends TimerTask {
 	public void run() {
 		Persistence pers = null;
 		try {
-			pers = PersistenceFactory.getPersistence();
+			pers = Persistence.getInstance();
 		} catch (Exception e) {
 			LOG.error("Cannot get latest available message id database", e);
 			return;

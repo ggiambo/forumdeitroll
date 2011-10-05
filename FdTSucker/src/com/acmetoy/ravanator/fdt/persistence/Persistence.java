@@ -1,39 +1,69 @@
 package com.acmetoy.ravanator.fdt.persistence;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Properties;
 
-public interface Persistence {
-	
-	public void insertMessage(MessageDTO message);
-	
-	public boolean hasMessage(long id);
-	
-	public List<ThreadDTO> getThreads(int limit, int page);
-	
-	public MessageDTO getMessage(long id);
-	
-	public List<MessageDTO> getMessagesByDate(int limit);
-	
-	public List<MessageDTO> getMessagesByDate(int limit, int page);
-	
-	public List<MessageDTO> getMessagesByThread(long threadId);
+import org.apache.log4j.Logger;
 
-	public List<MessageDTO> getMessagesByAuthor(String author, int pageSize, int page);
+import com.acmetoy.ravanator.fdt.FdTConfig;
 
-	public long getLastMessageId();
+public abstract class Persistence {
 	
-	public boolean hasAuthor(String nick);
+	private static final Logger LOG = Logger.getLogger(Persistence.class);
 
-	public void insertAuthor(AuthorDTO author);
+	private static Persistence instance;
 
-	public void updateAuthor(AuthorDTO author);
+	public static synchronized Persistence getInstance() throws Exception {
+		if (instance == null) {
+			try {
+				String persistenceNickName = FdTConfig.getProperty("persistence.nickName");
+				String databaseClass = FdTConfig.getProperty(persistenceNickName + ".class");
+				Class<? extends Persistence> c = Class.forName(databaseClass).asSubclass(Persistence.class);
+				Constructor<? extends Persistence> cons = c.getConstructor(Properties.class);
+				instance = cons.newInstance(FdTConfig.getDatabaseConfig(persistenceNickName));
+			} catch (Exception e) {
+				LOG.error("Cannot instantiate Persistence " + FdTConfig.getProperty("persistence.nickName"), e);
+				throw e;
+			}
+		}
+		return instance;
+	}
 	
-	public AuthorDTO getAuthor(String nick);
-
-	public List<MessageDTO> searchMessages(String search, int pageSize, int pageNr);
-
-	public long countMessages();
+	public abstract void insertMessage(MessageDTO message);
 	
-	public List<Long> getParentIds(int limit, int page);
+	public abstract boolean hasMessage(long id);
+	
+	public abstract List<String> getForums();
+
+	public abstract List<ThreadDTO> getThreads(int limit, int page);
+	
+	public abstract MessageDTO getMessage(long id);
+	
+	public abstract List<MessageDTO> getMessagesByDate(int limit);
+	
+	public abstract List<MessageDTO> getMessagesByDate(int limit, int page);
+	
+	public abstract List<MessageDTO> getMessagesByThread(long threadId);
+
+	public abstract List<MessageDTO> getMessagesByAuthor(String author, int pageSize, int page);
+	
+	public abstract List<MessageDTO> getMessagesByForum(String forum, int pageSize, int page);
+
+	public abstract long getLastMessageId();
+	
+	public abstract boolean hasAuthor(String nick);
+
+	public abstract void insertAuthor(AuthorDTO author);
+
+	public abstract void updateAuthor(AuthorDTO author);
+	
+	public abstract AuthorDTO getAuthor(String nick);
+
+	public abstract List<MessageDTO> searchMessages(String search, int pageSize, int pageNr);
+
+	public abstract long countMessages();
+	
+	public abstract List<Long> getParentIds(int limit, int page);
 
 }

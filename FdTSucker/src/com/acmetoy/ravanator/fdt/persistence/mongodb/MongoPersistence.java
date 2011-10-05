@@ -20,7 +20,7 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 
 @Deprecated
-public class MongoPersistence implements Persistence {
+public class MongoPersistence extends Persistence {
 
 	private static final Logger LOG = Logger.getLogger(MongoPersistence.class);
 
@@ -164,6 +164,14 @@ public class MongoPersistence implements Persistence {
 	}
 	
 	public List<Long> getParentIds(int limit, int page) {
+		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
+	}
+	
+	public List<MessageDTO> getMessagesByForum(String forum, int pageSize, int page) {
+		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
+	}
+	
+	public List<String> getForums() {
 		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
 	}
 	

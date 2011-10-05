@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
-import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
+import com.acmetoy.ravanator.fdt.persistence.Persistence;
 
 public abstract class MainServlet extends HttpServlet {
 
@@ -22,10 +22,14 @@ public abstract class MainServlet extends HttpServlet {
 	
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
+	
+	private Persistence persistence;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
+		
+		
 		try {
 			// anonimo
 			InputStream is = config.getServletContext().getResourceAsStream("/images/avataranonimo.gif");
@@ -49,8 +53,15 @@ public abstract class MainServlet extends HttpServlet {
 			
 			//
 			config.getServletContext().setAttribute("PAGE_SIZE", PAGE_SIZE);
+
 		} catch (IOException e) {
 			throw new ServletException("Cannot read default images", e);
+		}
+		
+		try {
+			persistence = Persistence.getInstance();
+		} catch (Exception e) {
+			throw new ServletException("Cannot instantiate persistence", e);
 		}
 	}
 	
@@ -69,6 +80,9 @@ public abstract class MainServlet extends HttpServlet {
 
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		
+		// forums
+		req.setAttribute("forums", getPersistence().getForums());
+		
 		// this context
 		req.setAttribute("contextPath", req.getRequestURL());
 		
@@ -85,12 +99,20 @@ public abstract class MainServlet extends HttpServlet {
 			String pageForward = (String)method.invoke(this, req, res);
 			// forward
 			if (pageForward != null) {
-				getServletContext().getRequestDispatcher("/WEB-INF/pages/" + pageForward).forward(req, res);
+				getServletContext().getRequestDispatcher("/pages/" + pageForward).forward(req, res);
 			}
 
 		} catch (Exception e) {
 			res.getWriter().write(e.toString());
 		}
+	}
+	
+	/**
+	 * La persistence inizializzata
+	 * @return
+	 */
+	protected final Persistence getPersistence() {
+		return persistence;
 	}
 
 	/**
@@ -102,7 +124,7 @@ public abstract class MainServlet extends HttpServlet {
 	 */
 	public String getAvatar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String nick = req.getParameter("nick");
-		AuthorDTO author = PersistenceFactory.getPersistence().getAuthor(nick);
+		AuthorDTO author = getPersistence().getAuthor(nick);
 		if (author != null) {
 			if (author.getAvatar() != null) {
 				res.getOutputStream().write(author.getAvatar());
@@ -115,6 +137,11 @@ public abstract class MainServlet extends HttpServlet {
 		return null;
 	}
 	
+	/**
+	 * Ritorna la pagina attuale se definita come req param, altrimenti 0. Setta il valore come req attr.
+	 * @param req
+	 * @return
+	 */
 	protected int getPageNr(HttpServletRequest req) {
 		// pageNr
 		String pageNr = req.getParameter("pageNr");
@@ -123,6 +150,15 @@ public abstract class MainServlet extends HttpServlet {
 		}
 		req.setAttribute("pageNr", pageNr);
 		return Integer.parseInt(pageNr);
+	}
+	
+	/**
+	 * Messaggio mostrato tra l'header e la navigazione
+	 * @param req
+	 * @param navigationMessage
+	 */
+	protected void setNavigationMessage(HttpServletRequest req, String navigationMessage) {
+		req.setAttribute("navigationMessage", navigationMessage);
 	}
 
 }

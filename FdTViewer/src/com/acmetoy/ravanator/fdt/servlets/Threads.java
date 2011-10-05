@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.acmetoy.ravanator.fdt.IndentMessageDTO;
 import com.acmetoy.ravanator.fdt.ThreadTree;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
-import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 
 public class Threads extends MainServlet {
 
@@ -23,20 +22,25 @@ public class Threads extends MainServlet {
 	 * @throws Exception
 	 */
 	public String getByThread(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String threadId = req.getParameter("threadId");
-		List<MessageDTO> msgs = PersistenceFactory.getPersistence().getMessagesByThread(Integer.parseInt(threadId));
+		Long threadId = Long.parseLong(req.getParameter("threadId"));
+		List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
 		List<IndentMessageDTO> indentMsg = new ArrayList<IndentMessageDTO>(msgs.size());
 		for (MessageDTO dto : msgs) {
 			indentMsg.add(new IndentMessageDTO(dto));
 		}
-		req.setAttribute("messages", new ThreadTree(indentMsg, Long.parseLong(threadId)).asList());
+		req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
+		setNavigationMessage(req, "Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>");
 
 		return "thread.jsp";
 	}
 
+	/**
+	 * Ordinati per thread
+	 */
 	@Override
 	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.setAttribute("messages", PersistenceFactory.getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
+		req.setAttribute("messages", getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
+		setNavigationMessage(req, "Ordinati per data inizio discussione");
 		return "threads.jsp";
 	}
 

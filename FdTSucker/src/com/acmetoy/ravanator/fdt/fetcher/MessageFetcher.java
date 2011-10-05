@@ -5,7 +5,7 @@ import java.util.concurrent.BlockingQueue;
 import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
-import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
+import com.acmetoy.ravanator.fdt.persistence.Persistence;
 
 public class MessageFetcher extends Thread {
 
@@ -62,7 +62,7 @@ public class MessageFetcher extends Thread {
 			log.append("]");
 			LOG.info(log.toString());
 			try {
-				PersistenceFactory.getPersistence().insertMessage(message);
+				Persistence.getInstance().insertMessage(message);
 			} catch (Exception e) {
 				LOG.error("Cannot persist with messageId " + messageId, e);
 			}

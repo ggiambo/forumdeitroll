@@ -16,7 +16,7 @@ import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.Persistence;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 
-public class MySQLPersistence implements Persistence {
+public class MySQLPersistence extends Persistence {
 
 	private static final Logger LOG = Logger.getLogger(MySQLPersistence.class);
 	
@@ -32,6 +32,22 @@ public class MySQLPersistence implements Persistence {
 		String url = "jdbc:mysql://" + host + ":" + port + "/" + dbname;
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
 		conn = DriverManager.getConnection(url, username, password);
+	}
+	
+	public List<String> getForums() {
+		ResultSet rs = null;
+		List<String> result = new ArrayList<String>();
+		try {
+			rs = conn.prepareStatement("SELECT DISTINCT forum FROM messages WHERE forum IS NOT NULL ORDER BY forum ASC").executeQuery();
+			while (rs.next()) {
+				result.add(rs.getString(1));
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get Forums", e);
+		} finally {
+			closeResources(rs, null);
+		}
+		return result;
 	}
 
 	public AuthorDTO getAuthor(String nick) {
@@ -130,6 +146,23 @@ public class MySQLPersistence implements Persistence {
 		try {
 			ps = conn.prepareStatement("SELECT * FROM messages where author = ? ORDER BY date DESC LIMIT ?, ?");
 			ps.setString(1, author);
+			ps.setInt(2, limit*page);
+			ps.setInt(3, limit);
+			return getMessages(ps.executeQuery());
+		} catch (SQLException e) {
+			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
+		} finally {
+			closeResources(rs, ps);
+		}
+		return new ArrayList<MessageDTO>();
+	}
+	
+	public List<MessageDTO> getMessagesByForum(String forum, int limit, int page) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY date DESC LIMIT ?, ?");
+			ps.setString(1, forum);
 			ps.setInt(2, limit*page);
 			ps.setInt(3, limit);
 			return getMessages(ps.executeQuery());

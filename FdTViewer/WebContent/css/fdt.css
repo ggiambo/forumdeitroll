@@ -1,0 +1,96 @@
+body,html {
+	font-family: 'Helvetica';
+	font-size: 15px;
+	margin: 0;
+	padding: 0;
+	color: #000;
+}
+
+#header {
+	padding: 5px 10px;
+	background: #B9C1B1;
+}
+
+h1 {
+	margin: 0;
+}
+
+#nav {
+	padding: 5px 10px;
+}
+
+#nav ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#nav li {
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+
+#main {
+	float: left;
+	width: 500px;
+	padding: 10px;
+	padding: 0px;
+}
+
+h2 {
+	margin: 0 0 1em;
+}
+
+#sidebar {
+	float: left;
+	width: 200px;
+	padding: 10px;
+	background: #D6D6D6;
+}
+
+#footer {
+	clear: both;
+	padding: 5px 10px;
+	background: #B9C1B1;
+}
+
+#footer p {
+	margin: 0;
+}
+
+* html #footer {
+	height: 1px;
+}
+
+div.msgEven {
+	padding: 5px; 
+	background-color: #FFFFFF;
+}
+
+div.msgOdd {
+	padding: 5px; 
+	background-color: #F6F6F6;
+}
+
+div.msgHeader {
+	height: 100px;
+	width: 100%;
+	margin-bottom: 5px;
+}
+
+span.forum {
+	margin-left:5px;
+	color:#97A28A;
+}
+
+span.author {
+	margin-left:5px;
+	position: relative; 
+	top: 20%
+}
+
+h4 {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}

@@ -5,11 +5,9 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import com.acmetoy.ravanator.fdt.persistence.mongodb.MongoPersistence;
-
 public class FdTConfig {
 
-	private static final Logger LOG = Logger.getLogger(MongoPersistence.class);
+	private static final Logger LOG = Logger.getLogger(FdTConfig.class);
 
 	private static Properties properties;
 	
