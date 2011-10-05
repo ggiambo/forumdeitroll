@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 public class Messages extends MainServlet {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return getByPage(req, res);
@@ -24,7 +24,7 @@ public class Messages extends MainServlet {
 		setNavigationMessage(req, "Ordinati cronologicamente");
 		return "messages.jsp";
 	}
-	
+
 	/**
 	 * I messaggi di questo autore in ordine di data
 	 * @param req
@@ -39,7 +39,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("messages", getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req)));
 		return "messages.jsp";
 	}
-	
+
 	public String getByForum(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String forum = req.getParameter("forum");
 		req.setAttribute("specificParams", "&forum=" + forum);
@@ -47,7 +47,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("messages", getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req)));
 		return "messages.jsp";
 	}
-	
+
 	/**
 	 * Ricerca in tutti i messaggi
 	 * @param req

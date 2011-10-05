@@ -3,7 +3,7 @@ package com.acmetoy.ravanator.fdt;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 
 public class IndentMessageDTO extends MessageDTO {
-	
+
 	public IndentMessageDTO(MessageDTO dto) throws Exception {
 		setId(dto.getId());
 		setParentId(dto.getParentId());

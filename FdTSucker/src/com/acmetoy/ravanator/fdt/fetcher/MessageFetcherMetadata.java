@@ -35,10 +35,10 @@ public class MessageFetcherMetadata extends Thread {
 		// threadId
 		List<Element> elements = source.getAllElementsByClass("textcapothread");
 		if (elements.isEmpty()) {
-			LOG.warn("Cannot fetch body of message " + id + ": no funcbarthread");
+			LOG.warn("Cannot fetch metadata of message " + id + ": no textcapothread");
 			return;
 		}
-		
+
 		Element elem = elements.get(0);
 		String href = elem.getAttributeValue("href");
 		int start = href.indexOf("=") + 1;
@@ -51,7 +51,7 @@ public class MessageFetcherMetadata extends Thread {
 
 	/**
 	 * Complicato ! Non toccarlo o muori :) !
-	 * 
+	 *
 	 * @param id
 	 * @param source
 	 * @return

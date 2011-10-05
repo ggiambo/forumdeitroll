@@ -19,17 +19,17 @@ public abstract class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected static final int PAGE_SIZE = 15;
-	
+
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
-	
+
 	private Persistence persistence;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		
-		
+
+
 		try {
 			// anonimo
 			InputStream is = config.getServletContext().getResourceAsStream("/images/avataranonimo.gif");
@@ -50,21 +50,21 @@ public abstract class MainServlet extends HttpServlet {
 				bos.write(buffer, 0, count);
 			}
 			noAvatar = bos.toByteArray();
-			
+
 			//
 			config.getServletContext().setAttribute("PAGE_SIZE", PAGE_SIZE);
 
 		} catch (IOException e) {
 			throw new ServletException("Cannot read default images", e);
 		}
-		
+
 		try {
 			persistence = Persistence.getInstance();
 		} catch (Exception e) {
 			throw new ServletException("Cannot instantiate persistence", e);
 		}
 	}
-	
+
 	/**
 	 * Metodo di default, quando nessuna "action" e' definita.
 	 * @param req
@@ -79,20 +79,20 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		
+
 		// forums
 		req.setAttribute("forums", getPersistence().getForums());
-		
+
 		// this context
 		req.setAttribute("contextPath", req.getRequestURL());
-		
+
 		// action
 		String action = req.getParameter("action");
 		if (action == null || action.trim().length() == 0) {
 			action = "init";
 		}
 		req.setAttribute("action", action);
-		
+
 		try {
 			// call via reflection
 			Method method = this.getClass().getMethod(action, HttpServletRequest.class, HttpServletResponse.class);
@@ -106,7 +106,7 @@ public abstract class MainServlet extends HttpServlet {
 			res.getWriter().write(e.toString());
 		}
 	}
-	
+
 	/**
 	 * La persistence inizializzata
 	 * @return
@@ -136,7 +136,7 @@ public abstract class MainServlet extends HttpServlet {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Ritorna la pagina attuale se definita come req param, altrimenti 0. Setta il valore come req attr.
 	 * @param req
@@ -151,7 +151,7 @@ public abstract class MainServlet extends HttpServlet {
 		req.setAttribute("pageNr", pageNr);
 		return Integer.parseInt(pageNr);
 	}
-	
+
 	/**
 	 * Messaggio mostrato tra l'header e la navigazione
 	 * @param req

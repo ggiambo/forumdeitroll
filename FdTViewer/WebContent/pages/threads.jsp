@@ -5,15 +5,15 @@
 	<head>
 		<link href="css/fdt.css" type="text/css" rel="stylesheet"/>
 	</head>
-	
+
 	<body>
-	
+
 	<div id="header"><h1>FdT Due Zero !</h1></div>
-			
+
 		<jsp:include page="incNav.jsp"/>
-		
+
 		<jsp:include page="incSidebar.jsp"/>
-		
+
 		<div id="main">
 
 			<c:forEach items="${messages}" var="thread" varStatus="index">
@@ -42,7 +42,7 @@
 					<br/>
 					<b><a href="Threads?action=getByThread&threadId=${thread.id}"/>${thread.subject}</a></b>
 					<br/>
-					Iniziato da 
+					Iniziato da
 					<i>
 						<c:choose>
 							<c:when test="${empty thread.author}">
@@ -57,12 +57,12 @@
 					<br/><br/>
 				</div>
 			</c:forEach>
-		
+
 		</div>
-	
+
 		<div id="footer">
 			<jsp:include page="incPrevNext.jsp" />
-		</div>	
+		</div>
 
 	</body>
 </html>

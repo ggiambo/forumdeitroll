@@ -14,7 +14,7 @@ public class QuoteTag extends BodyTagSupport {
 	private static final String[] QUOTE = new String[] { "#007BDF", "#00AF59", "#9A00EF", "#AF6F00" };
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private String search;
 
 	public int doAfterBody() throws JspTagException {

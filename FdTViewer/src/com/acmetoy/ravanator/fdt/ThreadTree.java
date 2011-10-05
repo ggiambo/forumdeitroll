@@ -62,8 +62,8 @@ public class ThreadTree {
 		return null;
 	}
 
-	private class TreeNode {
-		
+	private static class TreeNode {
+
 		private IndentMessageDTO data;
 		private List<TreeNode> children;
 

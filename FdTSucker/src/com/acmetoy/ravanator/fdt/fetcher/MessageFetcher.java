@@ -17,7 +17,7 @@ public class MessageFetcher extends Thread {
 	public MessageFetcher(long messageId) {
 		this.messageId = messageId;
 	}
-	
+
 	public MessageFetcher(long messageId, BlockingQueue<String> threadQueue) {
 		this.messageId = messageId;
 		this.threadQueue = threadQueue;
@@ -76,5 +76,5 @@ public class MessageFetcher extends Thread {
 			}
 		}
 	}
-	
+
 }

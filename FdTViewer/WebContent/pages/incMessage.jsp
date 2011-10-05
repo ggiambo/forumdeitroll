@@ -12,7 +12,7 @@
 </c:choose>
 
 <div class="${class}">
-	
+
 	<div class="msgHeader">
 		<div style="float:left">
 			<img src="?action=getAvatar&nick=${msg.author}"/>
@@ -21,7 +21,7 @@
 			<span class="forum"><b>${msg.forum}</b></span><br/>
 		</c:if>
 		<span class="author">
-			Scritto da 
+			Scritto da
 			<i>
 				<c:choose>
 					<c:when test="${empty msg.author}">
@@ -34,17 +34,17 @@
 			</i>
 			alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy HH:mm:ss"/>
 		</span>
-	
+
 	</div>
-	
+
 	<span style="width:100%; margin:5px;">
 		<b><a href="Threads?action=getByThread&threadId=${msg.threadId}"/>${msg.subject}</a></b>
 	</span>
-	
+
 	<div style="padding: 10px;">
 		<fdt:quote search="${param.search}">${msg.text}</fdt:quote>
 		<%-- close open tags --%>
 		<c:out escapeXml="false" value="</b></i></u>"/>
 	</div>
-	
+
 </div>

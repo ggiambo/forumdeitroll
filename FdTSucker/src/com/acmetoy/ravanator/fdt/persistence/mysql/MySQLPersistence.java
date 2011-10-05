@@ -19,7 +19,7 @@ import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 public class MySQLPersistence extends Persistence {
 
 	private static final Logger LOG = Logger.getLogger(MySQLPersistence.class);
-	
+
 	private Connection conn;
 
 	public MySQLPersistence(Properties databaseConfig) throws Exception {
@@ -33,23 +33,27 @@ public class MySQLPersistence extends Persistence {
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
 		conn = DriverManager.getConnection(url, username, password);
 	}
-	
+
+	@Override
 	public List<String> getForums() {
+		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<String> result = new ArrayList<String>();
 		try {
-			rs = conn.prepareStatement("SELECT DISTINCT forum FROM messages WHERE forum IS NOT NULL ORDER BY forum ASC").executeQuery();
+			ps = conn.prepareStatement("SELECT DISTINCT forum FROM messages WHERE forum IS NOT NULL ORDER BY forum ASC");
+			rs = ps.executeQuery();
 			while (rs.next()) {
 				result.add(rs.getString(1));
 			}
 		} catch (SQLException e) {
 			LOG.error("Cannot get Forums", e);
 		} finally {
-			closeResources(rs, null);
+			closeResources(rs, ps);
 		}
 		return result;
 	}
 
+	@Override
 	public AuthorDTO getAuthor(String nick) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -91,6 +95,7 @@ public class MySQLPersistence extends Persistence {
 		return lastMessageId;
 	}
 
+	@Override
 	public MessageDTO getMessage(long id) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -109,6 +114,7 @@ public class MySQLPersistence extends Persistence {
 		return new MessageDTO();
 	}
 
+	@Override
 	public List<MessageDTO> getMessagesByDate(int limit) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -124,6 +130,7 @@ public class MySQLPersistence extends Persistence {
 		return new ArrayList<MessageDTO>();
 	}
 
+	@Override
 	public List<MessageDTO> getMessagesByDate(int limit, int page) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -139,7 +146,8 @@ public class MySQLPersistence extends Persistence {
 		}
 		return new ArrayList<MessageDTO>();
 	}
-	
+
+	@Override
 	public List<MessageDTO> getMessagesByAuthor(String author, int limit, int page) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -156,7 +164,8 @@ public class MySQLPersistence extends Persistence {
 		}
 		return new ArrayList<MessageDTO>();
 	}
-	
+
+	@Override
 	public List<MessageDTO> getMessagesByForum(String forum, int limit, int page) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -173,7 +182,8 @@ public class MySQLPersistence extends Persistence {
 		}
 		return new ArrayList<MessageDTO>();
 	}
-	
+
+	@Override
 	public List<Long> getParentIds(int limit, int page) {
 		List<Long> result = new ArrayList<Long>();
 		PreparedStatement ps = null;
@@ -194,6 +204,7 @@ public class MySQLPersistence extends Persistence {
 		return result;
 	}
 
+	@Override
 	public List<ThreadDTO> getThreads(int limit, int page) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -210,7 +221,8 @@ public class MySQLPersistence extends Persistence {
 		}
 		return result;
 	}
-	
+
+	@Override
 	public List<MessageDTO> getMessagesByThread(long threadId) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -225,7 +237,8 @@ public class MySQLPersistence extends Persistence {
 		}
 		return new ArrayList<MessageDTO>();
 	}
-	
+
+	@Override
 	public List<MessageDTO> searchMessages(String search, int limit, int page) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -244,6 +257,7 @@ public class MySQLPersistence extends Persistence {
 		return result;
 	}
 
+	@Override
 	public boolean hasAuthor(String nick) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -260,6 +274,7 @@ public class MySQLPersistence extends Persistence {
 		return false;
 	}
 
+	@Override
 	public boolean hasMessage(long id) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -276,6 +291,7 @@ public class MySQLPersistence extends Persistence {
 		return false;
 	}
 
+	@Override
 	public void insertAuthor(AuthorDTO author) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -292,7 +308,8 @@ public class MySQLPersistence extends Persistence {
 			closeResources(rs, ps);
 		}
 	}
-	
+
+	@Override
 	public void updateAuthor(AuthorDTO author) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -310,6 +327,7 @@ public class MySQLPersistence extends Persistence {
 		}
 	}
 
+	@Override
 	public void insertMessage(MessageDTO message) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -331,22 +349,25 @@ public class MySQLPersistence extends Persistence {
 			closeResources(rs, ps);
 		}
 	}
-	
+
+	@Override
 	public long countMessages() {
+		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			rs = conn.prepareStatement("SELECT count(id) FROM messages").executeQuery();
+			ps = conn.prepareStatement("SELECT count(id) FROM messages");
+			rs = ps.executeQuery();
 			if (rs.next()) {
 				return rs.getLong(1);
 			}
 		} catch (SQLException e) {
 			LOG.error("Cannot count messages", e);
 		} finally {
-			closeResources(rs, null);
+			closeResources(rs, ps);
 		}
 		return 0;
 	}
-	
+
 	private void closeResources(ResultSet rs, PreparedStatement ps) {
 		if (rs != null) {
 			try {
@@ -363,16 +384,16 @@ public class MySQLPersistence extends Persistence {
 			}
 		}
 	}
-	
+
 	private List<MessageDTO> getMessages(ResultSet rs) throws SQLException {
 		List<MessageDTO> messages = new ArrayList<MessageDTO>();
 		while (rs.next()) {
 			MessageDTO message = new MessageDTO();
-			message.setId(rs.getLong("id")); 
-			message.setParentId(rs.getLong("parentId")); 
-			message.setThreadId(rs.getLong("threadId")); 
+			message.setId(rs.getLong("id"));
+			message.setParentId(rs.getLong("parentId"));
+			message.setThreadId(rs.getLong("threadId"));
 			message.setText(rs.getString("text"));
-			message.setSubject(rs.getString("subject")); 
+			message.setSubject(rs.getString("subject"));
 			message.setAuthor(rs.getString("author"));
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
@@ -380,13 +401,13 @@ public class MySQLPersistence extends Persistence {
 		}
 		return messages;
 	}
-	
+
 	private List<ThreadDTO> getThreads(ResultSet rs) throws SQLException {
 		List<ThreadDTO> messages = new ArrayList<ThreadDTO>();
 		while (rs.next()) {
 			ThreadDTO message = new ThreadDTO();
-			message.setId(rs.getLong("id")); 
-			message.setSubject(rs.getString("subject")); 
+			message.setId(rs.getLong("id"));
+			message.setSubject(rs.getString("subject"));
 			message.setAuthor(rs.getString("author"));
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
@@ -395,7 +416,7 @@ public class MySQLPersistence extends Persistence {
 		}
 		return messages;
 	}
-	
+
 	private int getNumberOfMessages(long threadId) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -409,7 +430,7 @@ public class MySQLPersistence extends Persistence {
 		} catch (SQLException e) {
 			LOG.error("Cannot count messages", e);
 		} finally {
-			closeResources(rs, null);
+			closeResources(rs, ps);
 		}
 		return 0;
 	}

@@ -38,6 +38,7 @@ public class MongoPersistence extends Persistence {
 		auth.ensureIndex("nick");
 	}
 
+	@Override
 	public void insertMessage(MessageDTO message) {
 		BasicDBObject msg = new BasicDBObject();
 		msg.put("id", message.getId());
@@ -58,18 +59,21 @@ public class MongoPersistence extends Persistence {
 		LOG.info("Persisted message '" + message.getId() + "'");
 	}
 
+	@Override
 	public boolean hasMessage(long id) {
 		return db.getCollection("messages").find(new BasicDBObject("id", id)).count() > 0;
 	}
 
+	@Override
 	public MessageDTO getMessage(long id) {
 		DBObject msg = new BasicDBObject();
 		msg.put("id", id);
 		return toMessageDTO(db.getCollection("messages").findOne(msg).toMap());
-		
-		
+
+
 	}
 
+	@Override
 	public List<MessageDTO> getMessagesByDate(int limit) {
 		List<MessageDTO> ret = new ArrayList<MessageDTO>(limit);
 		DBCursor cur = db.getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1)).limit(limit);
@@ -79,6 +83,7 @@ public class MongoPersistence extends Persistence {
 		return ret;
 	}
 
+	@Override
 	public List<MessageDTO> getMessagesByDate(int limit, int page) {
 		List<MessageDTO> ret = new ArrayList<MessageDTO>(limit);
 		DBCursor cur = db.getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1)).skip(page * limit).limit(
@@ -88,7 +93,8 @@ public class MongoPersistence extends Persistence {
 		}
 		return ret;
 	}
-	
+
+	@Override
 	public List<ThreadDTO> getThreads(int limit, int page) {
 		List<ThreadDTO> ret = new ArrayList<ThreadDTO>(limit);
 		BasicDBObject query = new BasicDBObject("id", new BasicDBObject("$in", db.getCollection("messages").distinct("threadId")));
@@ -100,6 +106,7 @@ public class MongoPersistence extends Persistence {
 		return ret;
 	}
 
+	@Override
 	public List<MessageDTO> getMessagesByThread(long threadId) {
 		DBCursor cur = db.getCollection("messages").find(new BasicDBObject("threadId", threadId));
 		List<MessageDTO> ret = new ArrayList<MessageDTO>(cur.count());
@@ -109,6 +116,7 @@ public class MongoPersistence extends Persistence {
 		return ret;
 	}
 
+	@Override
 	public long getLastMessageId() {
 		DBObject o = db.getCollection("messages").findOne(new BasicDBObject(), new BasicDBObject("id", 1));
 		if (o == null) {
@@ -117,10 +125,12 @@ public class MongoPersistence extends Persistence {
 		return (Long) o.get("id");
 	}
 
+	@Override
 	public final boolean hasAuthor(String nick) {
 		return db.getCollection("authors").find(new BasicDBObject("nick", nick)).count() > 0;
 	}
 
+	@Override
 	public void insertAuthor(AuthorDTO author) {
 		BasicDBObject msg = new BasicDBObject();
 		msg.put("nick", author.getNick());
@@ -130,11 +140,13 @@ public class MongoPersistence extends Persistence {
 		db.getCollection("authors").save(msg);
 		LOG.info("Persisted author '" + author.getNick() + "'");
 	}
-	
+
+	@Override
 	public void updateAuthor(AuthorDTO author) {
 		insertAuthor(author);
 	}
 
+	@Override
 	public AuthorDTO getAuthor(String nick) {
 		BasicDBObject author = new BasicDBObject();
 		author.put("nick", nick);
@@ -144,7 +156,8 @@ public class MongoPersistence extends Persistence {
 		}
 		return toAuthorDTO(out.toMap());
 	}
-	
+
+	@Override
 	public List<MessageDTO> getMessagesByAuthor(String author, int limit, int page) {
 		List<MessageDTO> ret = new ArrayList<MessageDTO>(limit);
 		DBCursor cur = db.getCollection("messages").find(new BasicDBObject("author", author)).sort(new BasicDBObject("date", -1)).skip(page * limit).limit(
@@ -154,23 +167,28 @@ public class MongoPersistence extends Persistence {
 		}
 		return ret;
 	}
-	
+
+	@Override
 	public long countMessages() {
 		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
 	}
 
+	@Override
 	public List<MessageDTO> searchMessages(String search, int pageSize, int pageNr) {
 		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
 	}
-	
+
+	@Override
 	public List<Long> getParentIds(int limit, int page) {
 		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
 	}
-	
+
+	@Override
 	public List<MessageDTO> getMessagesByForum(String forum, int pageSize, int page) {
 		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
 	}
-	
+
+	@Override
 	public List<String> getForums() {
 		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
 	}
@@ -184,7 +202,7 @@ public class MongoPersistence extends Persistence {
 		}
 		return out;
 	}
-	
+
 	private ThreadDTO toThreadDTO(Map<?, ?> map) {
 		ThreadDTO out = new ThreadDTO();
 		try {
@@ -194,7 +212,7 @@ public class MongoPersistence extends Persistence {
 		}
 		return out;
 	}
-	
+
 	private AuthorDTO toAuthorDTO(Map<?, ?> map) {
 		AuthorDTO out = new AuthorDTO();
 		try {
