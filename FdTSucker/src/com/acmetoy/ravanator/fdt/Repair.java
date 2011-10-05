@@ -56,8 +56,13 @@ public class Repair extends TimerTask {
 				LOG.info(logMessage.toString());
 				i = -1;
 			}
+			if (page == numberOfPages - 1) {
+				LOG.info(logMessage.toString());
+			}
+			
 			i++;
 		}
+		
 		
 		while (missingIds.size() > 0) {
 			LOG.info("Found  " + missingIds.size() + " missing messages");
@@ -74,6 +79,8 @@ public class Repair extends TimerTask {
 				}
 			}
 		}
+		
+		LOG.info("Done.");
 
 	}
 	
