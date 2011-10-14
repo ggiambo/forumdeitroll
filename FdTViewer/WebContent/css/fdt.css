@@ -36,10 +36,20 @@ h1 {
 	width: 500px;
 	padding: 10px;
 	padding: 0px;
+	margin-left: 5px;
 }
 
 h2 {
 	margin: 0 0 1em;
+}
+
+#sidebarSmall {
+	float: left;
+	width: 10px;
+	height: 100%;
+	display: none;
+	background: #D6D6D6;
+	padding: 5px;
 }
 
 #sidebar {
@@ -47,6 +57,13 @@ h2 {
 	width: 200px;
 	padding: 10px;
 	background: #D6D6D6;
+}
+
+span.openCloseSidebar {
+	float: right; 
+	background: #EEEEEE;
+	padding: 2px;
+	border: 1px outset black;
 }
 
 #footer {

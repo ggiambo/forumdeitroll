@@ -4,6 +4,13 @@
 <html>
 	<head>
 		<link href="css/fdt.css" type="text/css" rel="stylesheet"/>
+		<script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
+		<script type="text/javascript" src="js/fdt.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				initSidebarStatus();
+			});
+		</script>
 	</head>
 
 	<body>
@@ -19,13 +26,13 @@
 			<c:forEach items="${messages}" var="thread" varStatus="index">
 				<c:choose>
 					<c:when test="${index.count % 2 == 0}">
-						<c:set var="background" value="background-color: #FFFFFF"/>
+						<c:set var="class" value="msgEven"/>
 					</c:when>
 					<c:otherwise>
-						<c:set var="background" value="background-color: #F6F6F6"/>
+						<c:set var="class" value="msgOdd"/>
 					</c:otherwise>
 				</c:choose>
-				<div style="margin: 5px; width:600px;border-bottom:1px solid black;${background}">
+				<div class="${class}">
 					<c:if test="${!empty thread.forum}">
 						<span style="color:#97A28A"><b>${thread.forum}</b></span>
 					</c:if>
@@ -56,6 +63,7 @@
 					alle <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy HH:mm:ss"/>
 					<br/><br/>
 				</div>
+				<hr/>
 			</c:forEach>
 
 		</div>

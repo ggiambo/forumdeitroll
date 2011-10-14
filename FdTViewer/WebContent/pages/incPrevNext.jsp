@@ -3,10 +3,10 @@
 
 <c:if test="${!empty pageNr}">
 	<c:if test="${pageNr gt 0}">
-		<a href="?action=${action}&pageNr=${pageNr - 1}${specificParams}">&lt;</a>
+		<a href="?action=${action}&pageNr=${pageNr - 1}${specificParams}"><img src="images/left_arrow.gif"/></a>&nbsp;
 	</c:if>
-	 &nbsp;Pagina ${pageNr + 1}
+	 Pagina ${pageNr + 1}
 	 <c:if test="${fn:length(messages) gt PAGE_SIZE - 1}">
-		<a href="?action=${action}&pageNr=${pageNr + 1}${specificParams}">&gt;</a>
+		&nbsp;<a href="?action=${action}&pageNr=${pageNr + 1}${specificParams}"><img src="images/right_arrow.gif"/></a>
 	</c:if>
 </c:if>

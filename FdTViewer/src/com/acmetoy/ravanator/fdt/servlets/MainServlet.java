@@ -136,6 +136,32 @@ public abstract class MainServlet extends HttpServlet {
 		}
 		return null;
 	}
+	
+	/**
+	 * Setta nella session lo stato della sidebar (Aperta/chiusa)
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	public String sidebarStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String sidebarStatus = req.getParameter("sidebarStatus");
+		// set sidebar status
+		if (sidebarStatus != null && sidebarStatus.trim().length() != 0) {
+			req.getSession().setAttribute("sidebarStatus", sidebarStatus);
+		} else {
+			// get sidebar status
+			sidebarStatus = (String) req.getSession().getAttribute("sidebarStatus");
+			if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
+				// default: show
+				sidebarStatus = "show";
+				req.getSession().setAttribute("sidebarStatus", sidebarStatus);
+			}
+		}
+		res.getWriter().write(sidebarStatus);
+		res.flushBuffer();
+		return null;
+	}
 
 	/**
 	 * Ritorna la pagina attuale se definita come req param, altrimenti 0. Setta il valore come req attr.
