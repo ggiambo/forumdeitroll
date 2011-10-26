@@ -9,8 +9,9 @@ public class Main {
 
 	public static void main(String[] args) {
 		new Timer().schedule(new Sucker(), new Date(), ONE_MINUTE); // every minute
-		new Timer().schedule(new Repair(), new Date(), 60 * ONE_MINUTE); // every hour
-		new Timer().schedule(new SuckBack(), new Date(System.currentTimeMillis() + 10 * ONE_MINUTE)); // start it only once, in 10 minutes
+		//new Timer().schedule(new Repair(), new Date(), 60 * ONE_MINUTE); // every hour
+		new Timer().schedule(new Relink(), new Date()); // start it only once
+		//new Timer().schedule(new SuckBack(), new Date(System.currentTimeMillis() + 10 * ONE_MINUTE)); // start it only once, in 10 minutes
 	}
 
 }

@@ -3,6 +3,8 @@
 <html>
 	<head>
 		<link href="css/fdt.css" type="text/css" rel="stylesheet"/>
+		<link rel="icon" href="favicon.ico" type="image/x-icon"/>
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/> 
 	</head>
 
 	<body>

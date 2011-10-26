@@ -32,3 +32,17 @@ function showSidebar() {
 		jQuery.ajax("?action=sidebarStatus&sidebarStatus=show");
 	});
 }
+
+function showIframe(type, msgId) {
+	// remove previous iframe
+	// create iframe
+	var iframeString = "<iframe src='http://www.forumdeitroll.it/r.aspx?m_id=" + msgId;
+	if (type == "quote") {
+		iframeString += "&quote=1";
+	}
+	iframeString += "&m_rid=0'></iframe>";
+	var iframe = $(iframeString);
+	iframe.css("width", "750px");
+	iframe.css("height", "680px");
+	$("#msg" + msgId).append(iframe);
+}

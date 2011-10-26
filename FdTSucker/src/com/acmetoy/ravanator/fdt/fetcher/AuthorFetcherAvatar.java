@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import net.htmlparser.jericho.Element;
+import net.htmlparser.jericho.HTMLElementName;
 
 import com.acmetoy.ravanator.fdt.WebUtilities;
 
@@ -24,7 +25,7 @@ public class AuthorFetcherAvatar extends Thread {
 
 	@Override
 	public void run() {
-		List<Element> elements = authorContainer.getAllElements("img");
+		List<Element> elements = authorContainer.getAllElements(HTMLElementName.IMG);
 		for (Element elem : elements) {
 			String src = elem.getAttributeValue("src");
 			if (src != null && (src.startsWith(AVATAR_URL_PI) || src.startsWith(AVATAR_URL_FDT))) {

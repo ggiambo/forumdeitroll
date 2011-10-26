@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 
 import net.htmlparser.jericho.Element;
+import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 
 import org.apache.log4j.Logger;
@@ -15,7 +16,7 @@ import com.acmetoy.ravanator.fdt.WebUtilities;
 
 public class MessageFetcherBody extends Thread {
 
-	private static final Logger LOG = Logger.getLogger(MessageFetcherMetadata.class);
+	private static final Logger LOG = Logger.getLogger(MessageFetcherBody.class);
 
 	private long id;
 
@@ -45,12 +46,12 @@ public class MessageFetcherBody extends Thread {
 			return;
 		}
 		Element elem = elements.get(0);
-		text = elem.getAllElements("div").get(0).getContent().toString();
+		text = elem.getAllElements(HTMLElementName.DIV).get(0).getContent().toString();
 
 		// set subject
 		elem = source.getAllElementsByClass("topbarthread").get(1);
-		elem = elem.getAllElements("td").get(2);
-		subject = elem.getAllElements("b").get(0).getContent().toString();
+		elem = elem.getAllElements(HTMLElementName.TD).get(2);
+		subject = elem.getAllElements(HTMLElementName.B).get(0).getContent().toString();
 		
 		// set date
 		String d = elem.getContent().toString();
@@ -65,14 +66,14 @@ public class MessageFetcherBody extends Thread {
 		Element authorContainer = source.getAllElementsByClass("fh4").get(0);
 		elements = authorContainer.getAllElementsByClass("nick");
 		if (elements.size() == 1) {
-			author = elements.get(0).getAllElements("a").get(0).getContent().toString();
+			author = elements.get(0).getAllElements(HTMLElementName.A).get(0).getContent().toString();
 			// insert / update author
 			new AuthorFetcher(authorContainer, author).start();
 		}
 		
 		// set forum
 		elem = source.getAllElementsByClass("fh2").get(1);
-		elements = elem.getAllElements("a");
+		elements = elem.getAllElements(HTMLElementName.A);
 		if (elements.size() == 1) {
 			forum = elements.get(0).getContent().toString();
 		}

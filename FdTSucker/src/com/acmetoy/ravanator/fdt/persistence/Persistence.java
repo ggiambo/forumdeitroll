@@ -66,4 +66,6 @@ public abstract class Persistence {
 
 	public abstract List<Long> getParentIds(int limit, int page);
 
+	public abstract void updateMessageParentId(long id, long parentId);
+	
 }

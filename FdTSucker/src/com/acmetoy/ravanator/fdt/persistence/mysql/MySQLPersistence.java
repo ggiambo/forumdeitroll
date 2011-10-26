@@ -349,6 +349,23 @@ public class MySQLPersistence extends Persistence {
 			closeResources(rs, ps);
 		}
 	}
+	
+	@Override
+	public void updateMessageParentId(long id, long parentId) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("UPDATE messages set parentId = ? WHERE Id = ?");
+			int i = 1;
+			ps.setLong(i++, parentId);
+			ps.setLong(i++, id);
+			ps.execute();
+		} catch (SQLException e) {
+			LOG.error("Cannot update message " + id + " with parentId " + parentId, e);
+		} finally {
+			closeResources(rs, ps);
+		}
+	}
 
 	@Override
 	public long countMessages() {

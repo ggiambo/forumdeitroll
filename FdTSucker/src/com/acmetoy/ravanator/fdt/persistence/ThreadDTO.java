@@ -65,5 +65,17 @@ public class ThreadDTO {
 	public void setNumberOfMessages(int setNumberOfMessages) {
 		this.setNumberOfMessages = setNumberOfMessages;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("id:").append(id).append(",");
+		sb.append("date:").append(date).append(",");
+		sb.append("subject:").append(subject).append(",");
+		sb.append("author:").append(author).append(",");
+		sb.append("forum:").append(forum).append(",");
+		sb.append("setNumberOfMessages:").append(setNumberOfMessages).append(",");
+		return sb.toString();
+	}
 
 }
