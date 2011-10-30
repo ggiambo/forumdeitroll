@@ -26,7 +26,7 @@ public class Relink extends TimerTask {
 			return;
 		}
 
-		BlockingQueue<String> threadQueue = new ArrayBlockingQueue<String>(3);
+		BlockingQueue<String> threadQueue = new ArrayBlockingQueue<String>(2);
 		long msgId = pers.getLastMessageId();
 		MessageDTO msgDTO;
 		Thread t;

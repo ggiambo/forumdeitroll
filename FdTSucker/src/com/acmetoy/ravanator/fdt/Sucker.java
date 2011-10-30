@@ -40,7 +40,7 @@ public class Sucker extends TimerTask {
 		}
 		LOG.info("Latest available message id database:" + lastMessageInDb);
 		
-		BlockingQueue<String> threadQueue = new ArrayBlockingQueue<String>(3);
+		BlockingQueue<String> threadQueue = new ArrayBlockingQueue<String>(2);
 		// get all messages
 		while (lastMessageInDb < lastMessageId) {
 			MessageFetcher mf = new MessageFetcher(lastMessageId, threadQueue);
