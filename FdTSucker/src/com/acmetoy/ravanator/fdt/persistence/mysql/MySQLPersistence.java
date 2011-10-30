@@ -329,6 +329,11 @@ public class MySQLPersistence extends Persistence {
 
 	@Override
 	public void insertMessage(MessageDTO message) {
+		
+		if (hasMessage(message.getId())) {
+			return;
+		}
+		
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
