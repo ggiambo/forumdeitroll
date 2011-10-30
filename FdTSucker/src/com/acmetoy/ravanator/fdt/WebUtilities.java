@@ -26,6 +26,9 @@ public class WebUtilities {
 				source = new Source(response.getEntity().getContent());
 			}
 		}
+		
+		httpclient.getConnectionManager().shutdown();
+		
 		return source;
 	}
 	
