@@ -62,7 +62,7 @@
 							</c:otherwise>
 						</c:choose>
 					</i>
-					alle <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy HH:mm:ss"/>
+					alle <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy HH:mm"/>
 					<br/><br/>
 				</div>
 				<hr/>

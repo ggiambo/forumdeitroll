@@ -32,7 +32,7 @@
 					</c:otherwise>
 				</c:choose>
 			</i>
-			alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy HH:mm:ss"/>
+			alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy HH:mm"/>
 		</span>
 
 	</div>
