@@ -10,6 +10,9 @@ public class ThreadTree {
 	private TreeNode root;
 
 	public ThreadTree(List<IndentMessageDTO> msgs, Long threadId) {
+		if (msgs.isEmpty()) {
+			return;
+		}
 		msgs.get(0).setIndent(0);
 		root = new TreeNode(msgs.get(0), null);
 		for (int i = 1; i < msgs.size(); i++) {
@@ -42,6 +45,11 @@ public class ThreadTree {
 
 	private List<IndentMessageDTO> asList(TreeNode node) {
 		List<IndentMessageDTO> res = new ArrayList<IndentMessageDTO>();
+		
+		if (root == null) {
+			return res;
+		}
+		
 		res.add(node.data);
 		for (TreeNode n : node.children) {
 			res.addAll(asList(n));

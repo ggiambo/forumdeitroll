@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.Persistence;
 
@@ -27,8 +29,8 @@ public abstract class MainServlet extends HttpServlet {
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
+		
 		super.init(config);
-
 
 		try {
 			// anonimo
@@ -79,6 +81,9 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		
+		// actual time
+		req.setAttribute("currentTimeMillis", System.currentTimeMillis());
 
 		// forums
 		req.setAttribute("forums", getPersistence().getForums());
@@ -103,7 +108,14 @@ public abstract class MainServlet extends HttpServlet {
 			}
 
 		} catch (Exception e) {
-			res.getWriter().write(e.toString());
+			req.setAttribute("exceptionStackTrace", ExceptionUtils.getStackTrace(e));
+			try {
+				getServletContext().getRequestDispatcher("/pages/error.jsp").forward(req, res);
+			} catch (ServletException e1) {
+				for (StackTraceElement elem : e1.getStackTrace()) {
+					res.getWriter().write(elem + "<br/>");
+				}
+			}
 		}
 	}
 

@@ -29,6 +29,7 @@ public class Threads extends MainServlet {
 			indentMsg.add(new IndentMessageDTO(dto));
 		}
 		req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
+		//req.setAttribute("messages", new ThreadTree2(indentMsg, threadId).asList());
 		setNavigationMessage(req, "Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>");
 
 		return "thread.jsp";

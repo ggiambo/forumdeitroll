@@ -73,6 +73,10 @@
 		<div id="footer">
 			<jsp:include page="incPrevNext.jsp" />
 		</div>
+		
+		<c:if test="${currentTimeMillis != null}">
+			<!--time: <%=System.currentTimeMillis() - (Long)request.getAttribute("currentTimeMillis")%> -->
+		</c:if>
 
 	</body>
 </html>
