@@ -31,10 +31,14 @@ public class Relink extends TimerTask {
 		MessageDTO msgDTO;
 		Thread t;
 		while (msgId > FIRST_FDT_MSG) {
+			msgId--;
 			msgDTO = pers.getMessage(msgId);
 			if (msgDTO.isValid()) {
 				t = new MessageRelinker(msgId, msgDTO.getParentId(), threadQueue, pers);
 			} else {
+				if (pers.hasMessage(msgId)) {
+					continue;
+				}
 				LOG.info("Try to fetch: " + msgId);
 				t = new MessageFetcher(msgId, threadQueue);
 			}
@@ -45,7 +49,6 @@ public class Relink extends TimerTask {
 				continue;
 			}
 			t.start();
-			msgId--;
 		}
 	}
 
