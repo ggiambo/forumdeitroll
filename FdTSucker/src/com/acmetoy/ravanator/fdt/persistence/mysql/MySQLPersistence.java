@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
@@ -119,7 +120,7 @@ public class MySQLPersistence extends Persistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY date DESC LIMIT ?");
+			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ?");
 			ps.setInt(1, limit);
 			return getMessages(ps.executeQuery());
 		} catch (SQLException e) {
@@ -135,7 +136,7 @@ public class MySQLPersistence extends Persistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY date DESC LIMIT ?, ?");
+			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ?, ?");
 			ps.setInt(1, limit*page);
 			ps.setInt(2, limit);
 			return getMessages(ps.executeQuery());
@@ -152,7 +153,7 @@ public class MySQLPersistence extends Persistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages where author = ? ORDER BY date DESC LIMIT ?, ?");
+			ps = conn.prepareStatement("SELECT * FROM messages where author = ? ORDER BY id DESC LIMIT ?, ?");
 			ps.setString(1, author);
 			ps.setInt(2, limit*page);
 			ps.setInt(3, limit);
@@ -170,7 +171,7 @@ public class MySQLPersistence extends Persistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY date DESC LIMIT ?, ?");
+			ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY id DESC LIMIT ?, ?");
 			ps.setString(1, forum);
 			ps.setInt(2, limit*page);
 			ps.setInt(3, limit);
@@ -210,7 +211,7 @@ public class MySQLPersistence extends Persistence {
 		ResultSet rs = null;
 		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = threadid ORDER BY date DESC LIMIT ?, ?");
+			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = threadid ORDER BY id DESC LIMIT ?, ?");
 			ps.setInt(1, limit*page);
 			ps.setInt(2, limit);
 			return getThreads(ps.executeQuery());

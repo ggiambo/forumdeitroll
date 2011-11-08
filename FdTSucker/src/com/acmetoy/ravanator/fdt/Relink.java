@@ -26,12 +26,15 @@ public class Relink extends TimerTask {
 			return;
 		}
 
-		BlockingQueue<String> threadQueue = new ArrayBlockingQueue<String>(2);
+		BlockingQueue<String> threadQueue = new ArrayBlockingQueue<String>(3);
 		long msgId = pers.getLastMessageId();
 		MessageDTO msgDTO;
 		Thread t;
 		while (msgId > FIRST_FDT_MSG) {
 			msgId--;
+			if (msgId % 100 == 0) {
+				LOG.info("Status: " + msgId);
+			}
 			msgDTO = pers.getMessage(msgId);
 			if (msgDTO.isValid()) {
 				t = new MessageRelinker(msgId, msgDTO.getParentId(), threadQueue, pers);
