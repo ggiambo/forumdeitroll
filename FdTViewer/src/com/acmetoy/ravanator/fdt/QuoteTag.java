@@ -25,7 +25,7 @@ public class QuoteTag extends BodyTagSupport {
 		boolean highlightSearch = search != null && search.trim().length() != 0;
 		for (String line : lines) {
 			if (highlightSearch && line.contains(search)) {
-				line = line.replaceAll(search, "<span style='background-color:yellow'>" + search + "</span>");
+				line = line.replaceAll("(?i)" + search, "<span style='background-color:yellow'>" + search + "</span>");
 			}
 			res.setLength(0);
 			res.append(line);

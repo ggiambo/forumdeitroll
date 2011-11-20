@@ -14,7 +14,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class WebUtilities {
 	
-	private static final int MAX_TRIALS = 5;
+	private static final long MAX_TRIALS = 5;
 
 	/**
 	 * Ritorna la pagina con l'uri specificato
@@ -88,7 +88,7 @@ public class WebUtilities {
 		return getResponse(httpclient, httpget, 1, null);
 	}
 	
-	private static HttpResponse getResponse(DefaultHttpClient httpclient, HttpGet httpget, int trial, Exception prevEx) throws Exception {
+	private static HttpResponse getResponse(DefaultHttpClient httpclient, HttpGet httpget, long trial, Exception prevEx) throws Exception {
 		if (trial == MAX_TRIALS) {
 			throw prevEx;
 		}

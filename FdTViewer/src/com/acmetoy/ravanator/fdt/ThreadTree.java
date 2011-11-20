@@ -1,88 +1,105 @@
 package com.acmetoy.ravanator.fdt;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ThreadTree {
 
-	private TreeNode root;
-
+	private List<IndentMessageDTO> list;
+	
 	public ThreadTree(List<IndentMessageDTO> msgs, Long threadId) {
-		if (msgs.isEmpty()) {
-			return;
-		}
-		msgs.get(0).setIndent(0);
-		root = new TreeNode(msgs.get(0), null);
-		for (int i = 1; i < msgs.size(); i++) {
-			IndentMessageDTO msg = msgs.get(i);
-			Long parentId = msg.getParentId();
-			TreeNode parent = findNode(parentId, root);
+		// importante: ordinati per id !
+		/*
+		Collections.sort(msgs, new Comparator<IndentMessageDTO>() {
+			public int compare(IndentMessageDTO nc1, IndentMessageDTO nc2) {
+				return (int) (nc1.getId() - nc2.getId());
+			}
+		});
+		*/
+		
+		Map<Long, TreeNode> tempMap = new HashMap<Long, TreeNode>();
+		TreeNode rootNode = null;
+
+		// build the tree
+		for (IndentMessageDTO node : msgs) {
+			if (node.getId() == node.getThreadId()) {
+				rootNode = new TreeNode(node, 0);
+				tempMap.put(node.getId(), rootNode);
+				continue;
+			}
+			TreeNode parent = tempMap.get(node.getParentId());
 			if (parent == null) {
-				// sould not happen !
-				MessageDTO fakeParent = new MessageDTO();
-				fakeParent.setAuthor("");
-				fakeParent.setDate(msg.getDate());
-				fakeParent.setForum(msg.getForum());
-				fakeParent.setId(msg.getParentId());
-				fakeParent.setSubject(msg.getSubject());
-				fakeParent.setText("<span style='color:red'>Inesistente</span>");
-				fakeParent.setThreadId(threadId);
-				try {
-					parent = new TreeNode(new IndentMessageDTO(fakeParent), root);
-				} catch (Exception e) {
-					parent = root;
-				}
+				// fallback: BUG nel set del parentId :( ...
+				parent = tempMap.get(node.getThreadId());
 			}
-			new TreeNode(msg, parent);
+			TreeNode treeNode = new TreeNode(node, parent.getContent().getIndent() + 1);
+			tempMap.put(node.getId(), treeNode);
+			parent.addChild(treeNode);
 		}
-	}
 
+		// traversa il tree
+		list = flatternTree(rootNode);
+	}
+	
 	public List<IndentMessageDTO> asList() {
-		return asList(root);
+		return list;
 	}
 
-	private List<IndentMessageDTO> asList(TreeNode node) {
-		List<IndentMessageDTO> res = new ArrayList<IndentMessageDTO>();
-		
-		if (root == null) {
-			return res;
-		}
-		
-		res.add(node.data);
-		for (TreeNode n : node.children) {
-			res.addAll(asList(n));
-		}
-		return res;
-	}
+	private List<IndentMessageDTO> flatternTree(TreeNode parent) {
+		List<IndentMessageDTO> result = new ArrayList<IndentMessageDTO>();
 
-	private TreeNode findNode(long nodeId, TreeNode node) {
-		if (node.data.getId() == nodeId) {
-			return node;
+		if (parent == null) {
+			return result;
 		}
-		for (TreeNode n : node.children) {
-			TreeNode ret = findNode(nodeId, n);
-			if (ret != null) {
-				return ret;
+		
+		result.add(parent.getContent());
+		if (parent.getChildren() != null) {
+			for (TreeNode node : parent.getChildren()) {
+				result.addAll(flatternTree(node));
 			}
 		}
-		return null;
+
+		return result;
+
 	}
 
-	private static class TreeNode {
-
-		private IndentMessageDTO data;
+	public static class TreeNode {
+		private IndentMessageDTO content;
+		// private TreeNode parent;
 		private List<TreeNode> children;
+		private boolean orderedChldren;
 
-		public TreeNode(IndentMessageDTO data, TreeNode parent) {
-			this.data = data;
+		public TreeNode(IndentMessageDTO content, int level) {
+			this.content = content;
+			this.content.setIndent(level);
 			this.children = new ArrayList<TreeNode>();
-			if (parent != null) {
-				parent.children.add(this);
-				Integer indent = parent.data.getIndent();
-				data.setIndent(indent + 1);
+		}
+
+		public IndentMessageDTO getContent() {
+			return content;
+		}
+
+		public void addChild(TreeNode child) {
+			orderedChldren = false;
+			children.add(child);
+		}
+
+		public List<TreeNode> getChildren() {
+			if (!orderedChldren) {
+				Collections.sort(children, new Comparator<TreeNode>() {
+					public int compare(TreeNode tn1, TreeNode tn2) {
+						return tn1.getContent().getDate().compareTo(
+							tn2.getContent().getDate());
+					}
+				});
+				orderedChldren = true;
 			}
+			return children;
 		}
 
 	}

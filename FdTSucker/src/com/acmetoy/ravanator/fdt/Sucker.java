@@ -11,7 +11,7 @@ import net.htmlparser.jericho.Source;
 import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.fetcher.MessageFetcher;
-import com.acmetoy.ravanator.fdt.persistence.Persistence;
+import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 
 public class Sucker extends TimerTask {
 
@@ -33,7 +33,7 @@ public class Sucker extends TimerTask {
 		// get latest messageId from local database
 		long lastMessageInDb;
 		try {
-			lastMessageInDb = Persistence.getInstance().getLastMessageId();
+			lastMessageInDb = PersistenceFactory.getInstance().getLastMessageId();
 		} catch (Exception e) {
 			LOG.error("Cannot get latest available message id database", e);
 			return;

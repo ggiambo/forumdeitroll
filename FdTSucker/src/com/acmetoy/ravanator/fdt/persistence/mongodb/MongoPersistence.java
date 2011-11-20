@@ -9,8 +9,8 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
+import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
-import com.acmetoy.ravanator.fdt.persistence.Persistence;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -20,13 +20,13 @@ import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 
 @Deprecated
-public class MongoPersistence extends Persistence {
+public class MongoPersistence implements IPersistence {
 
 	private static final Logger LOG = Logger.getLogger(MongoPersistence.class);
 
 	private DB db;
 
-	public MongoPersistence(Properties config) throws Exception {
+	public void init(Properties config) throws Exception {
 		String host = config.getProperty("host");
 		int port = Integer.parseInt(config.getProperty("port"));
 		String dbname = config.getProperty("dbname");
@@ -74,16 +74,6 @@ public class MongoPersistence extends Persistence {
 	}
 
 	@Override
-	public List<MessageDTO> getMessagesByDate(int limit) {
-		List<MessageDTO> ret = new ArrayList<MessageDTO>(limit);
-		DBCursor cur = db.getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1)).limit(limit);
-		while (cur.hasNext()) {
-			ret.add(toMessageDTO(cur.next().toMap()));
-		}
-		return ret;
-	}
-
-	@Override
 	public List<MessageDTO> getMessagesByDate(int limit, int page) {
 		List<MessageDTO> ret = new ArrayList<MessageDTO>(limit);
 		DBCursor cur = db.getCollection("messages").find(new BasicDBObject()).sort(new BasicDBObject("date", -1)).skip(page * limit).limit(
@@ -126,12 +116,7 @@ public class MongoPersistence extends Persistence {
 	}
 
 	@Override
-	public final boolean hasAuthor(String nick) {
-		return db.getCollection("authors").find(new BasicDBObject("nick", nick)).count() > 0;
-	}
-
-	@Override
-	public void insertAuthor(AuthorDTO author) {
+	public void insertUpdateAuthor(AuthorDTO author) {
 		BasicDBObject msg = new BasicDBObject();
 		msg.put("nick", author.getNick());
 		msg.put("ranking", author.getRanking());
@@ -139,11 +124,6 @@ public class MongoPersistence extends Persistence {
 		msg.put("avatar", author.getAvatar());
 		db.getCollection("authors").save(msg);
 		LOG.info("Persisted author '" + author.getNick() + "'");
-	}
-
-	@Override
-	public void updateAuthor(AuthorDTO author) {
-		insertAuthor(author);
 	}
 
 	@Override
@@ -169,17 +149,7 @@ public class MongoPersistence extends Persistence {
 	}
 
 	@Override
-	public long countMessages() {
-		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
-	}
-
-	@Override
 	public List<MessageDTO> searchMessages(String search, int pageSize, int pageNr) {
-		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
-	}
-
-	@Override
-	public List<Long> getParentIds(int limit, int page) {
 		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
 	}
 

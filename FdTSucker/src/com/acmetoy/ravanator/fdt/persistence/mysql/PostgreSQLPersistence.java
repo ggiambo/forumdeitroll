@@ -13,18 +13,17 @@ import org.apache.log4j.Logger;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 
-public class MySQLPersistence extends GenericSQLPersistence {
+public class PostgreSQLPersistence extends GenericSQLPersistence {
 
-	private static final Logger LOG = Logger.getLogger(MySQLPersistence.class);
+	private static final Logger LOG = Logger.getLogger(PostgreSQLPersistence.class);
 
 	public void init(Properties databaseConfig) throws Exception {
-		Class.forName("com.mysql.jdbc.Driver");
+		Class.forName("org.postgresql.Driver");
 		String host = databaseConfig.getProperty("host");
-		String port = databaseConfig.getProperty("port");
 		String username = databaseConfig.getProperty("username");
 		String password = databaseConfig.getProperty("password");
 		String dbname = databaseConfig.getProperty("dbname");
-		String url = "jdbc:mysql://" + host + ":" + port + "/" + dbname;
+		String url = "jdbc:postgresql://" + host  + "/" + dbname;
 		super.setupDataSource(url, username, password);
 	}
 
@@ -34,9 +33,9 @@ public class MySQLPersistence extends GenericSQLPersistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ?, ?");
-			ps.setInt(1, limit*page);
-			ps.setInt(2, limit);
+			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ? OFFSET ?");
+			ps.setInt(1, limit);
+			ps.setInt(2, limit*page);
 			return getMessages(ps.executeQuery());
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
@@ -52,10 +51,10 @@ public class MySQLPersistence extends GenericSQLPersistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages where author = ? ORDER BY id DESC LIMIT ?, ?");
+			ps = conn.prepareStatement("SELECT * FROM messages where author = ? ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps.setString(1, author);
-			ps.setInt(2, limit*page);
-			ps.setInt(3, limit);
+			ps.setInt(2, limit);
+			ps.setInt(3, limit*page);
 			return getMessages(ps.executeQuery());
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
@@ -71,10 +70,10 @@ public class MySQLPersistence extends GenericSQLPersistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY id DESC LIMIT ?, ?");
+			ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps.setString(1, forum);
-			ps.setInt(2, limit*page);
-			ps.setInt(3, limit);
+			ps.setInt(2, limit);
+			ps.setInt(3, limit*page);
 			return getMessages(ps.executeQuery());
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
@@ -91,9 +90,9 @@ public class MySQLPersistence extends GenericSQLPersistence {
 		ResultSet rs = null;
 		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = threadid ORDER BY id DESC LIMIT ?, ?");
-			ps.setInt(1, limit*page);
-			ps.setInt(2, limit);
+			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
+			ps.setInt(1, limit);
+			ps.setInt(2, limit*page);
 			return getThreads(ps.executeQuery());
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads", e);
@@ -110,10 +109,11 @@ public class MySQLPersistence extends GenericSQLPersistence {
 		ResultSet rs = null;
 		List<MessageDTO> result = new ArrayList<MessageDTO>();
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages WHERE MATCH (text) AGAINST (?) LIMIT ?, ?");
+			ps = conn.prepareStatement("SELECT *, ts_rank_cd(text_search, query, 32) AS rank FROM messages, plainto_tsquery(?) AS query " +
+					"WHERE text @@ query ORDER BY rank DESC LIMIT ? OFFSET ?");
 			ps.setString(1, search);
-			ps.setInt(2, limit*page);
-			ps.setInt(3, limit);
+			ps.setInt(2, limit);
+			ps.setInt(3, limit*page);
 			return getMessages(ps.executeQuery());
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages", e);

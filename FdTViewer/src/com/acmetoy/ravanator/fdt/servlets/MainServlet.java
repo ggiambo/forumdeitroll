@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
-import com.acmetoy.ravanator.fdt.persistence.Persistence;
+import com.acmetoy.ravanator.fdt.persistence.IPersistence;
+import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 
 public abstract class MainServlet extends HttpServlet {
 
@@ -25,7 +27,7 @@ public abstract class MainServlet extends HttpServlet {
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
 
-	private Persistence persistence;
+	private IPersistence persistence;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -61,7 +63,7 @@ public abstract class MainServlet extends HttpServlet {
 		}
 
 		try {
-			persistence = Persistence.getInstance();
+			persistence = PersistenceFactory.getInstance();
 		} catch (Exception e) {
 			throw new ServletException("Cannot instantiate persistence", e);
 		}
@@ -123,7 +125,7 @@ public abstract class MainServlet extends HttpServlet {
 	 * La persistence inizializzata
 	 * @return
 	 */
-	protected final Persistence getPersistence() {
+	protected final IPersistence getPersistence() {
 		return persistence;
 	}
 
@@ -158,17 +160,34 @@ public abstract class MainServlet extends HttpServlet {
 	 */
 	public String sidebarStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String sidebarStatus = req.getParameter("sidebarStatus");
-		// set sidebar status
-		if (sidebarStatus != null && sidebarStatus.trim().length() != 0) {
-			req.getSession().setAttribute("sidebarStatus", sidebarStatus);
-		} else {
-			// get sidebar status
+		// get sidebar status
+		if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
 			sidebarStatus = (String) req.getSession().getAttribute("sidebarStatus");
 			if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
-				// default: show
-				sidebarStatus = "show";
-				req.getSession().setAttribute("sidebarStatus", sidebarStatus);
+				// get from cookie
+				for (Cookie cookie : req.getCookies()) {
+					if ("sidebarStatus".equals(cookie.getName())) {
+						sidebarStatus = cookie.getValue();
+					}
+				}
+				if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
+    				// default: show
+    				sidebarStatus = "show";
+				}
 			}
+		}
+		req.getSession().setAttribute("sidebarStatus", sidebarStatus);
+		// set in cookie
+		boolean found = false;
+		for (Cookie c : req.getCookies()) {
+			if ("sidebarStatus".equals(c.getName())) {
+				c.setValue(sidebarStatus);
+				found = true;
+			}
+		}
+		if (!found) {
+			Cookie cookie = new Cookie("sidebarStatus", sidebarStatus);
+			res.addCookie(cookie);
 		}
 		res.getWriter().write(sidebarStatus);
 		res.flushBuffer();

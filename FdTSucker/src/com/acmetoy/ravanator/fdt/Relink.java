@@ -8,8 +8,9 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.fetcher.MessageFetcher;
 import com.acmetoy.ravanator.fdt.fetcher.MessageFetcherMetadata;
+import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
-import com.acmetoy.ravanator.fdt.persistence.Persistence;
+import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 
 public class Relink extends TimerTask {
 
@@ -18,9 +19,9 @@ public class Relink extends TimerTask {
 
 	@Override
 	public void run() {
-		Persistence pers = null;
+		IPersistence pers = null;
 		try {
-			pers = Persistence.getInstance();
+			pers = PersistenceFactory.getInstance();
 		} catch (Exception e) {
 			LOG.error("Cannot get persistence", e);
 			return;
@@ -61,13 +62,13 @@ public class Relink extends TimerTask {
 	 * @author giambo
 	 * 
 	 */
-	public class MessageRelinker extends MessageFetcherMetadata {
+	private static class MessageRelinker extends MessageFetcherMetadata {
 
 		private BlockingQueue<String> threadQueue;
-		private Persistence pers;
+		private IPersistence pers;
 		private long previousParentId;
 
-		public MessageRelinker(long id, long previousParentId, BlockingQueue<String> threadQueue, Persistence pers) {
+		public MessageRelinker(long id, long previousParentId, BlockingQueue<String> threadQueue, IPersistence pers) {
 			super(id);
 			this.previousParentId = previousParentId;
 			this.threadQueue = threadQueue;

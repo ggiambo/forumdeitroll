@@ -5,7 +5,7 @@ import net.htmlparser.jericho.Element;
 import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
-import com.acmetoy.ravanator.fdt.persistence.Persistence;
+import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 
 public class AuthorFetcher extends Thread {
 
@@ -51,12 +51,7 @@ public class AuthorFetcher extends Thread {
 		log.append("]");
 		LOG.info(log.toString());
 		try {
-			Persistence pers = Persistence.getInstance();
-			if (!pers.hasAuthor(nick)) {
-				pers.insertAuthor(author);
-			} else {
-				pers.updateAuthor(author);
-			}
+			PersistenceFactory.getInstance().insertUpdateAuthor(author);
 		} catch (Exception e) {
 			LOG.error("Cannot persist author " + nick, e);
 		}

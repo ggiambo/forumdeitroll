@@ -51,7 +51,4 @@
 		<a href="#" onClick="showIframe('', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/rispondi.gif"></a>
 		<a href="#" onClick="showIframe('quote', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/quota.gif"></a>
 	</div>
-	<%--
-	<iframe src="http://www.forumdeitroll.it/r.aspx?m_id=2634470&quote=1&m_rid=0"></iframe>	
-	--%>
 </div>

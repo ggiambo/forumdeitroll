@@ -2,10 +2,10 @@ package com.acmetoy.ravanator.fdt.fetcher;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
+
+import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.WebUtilities;
 

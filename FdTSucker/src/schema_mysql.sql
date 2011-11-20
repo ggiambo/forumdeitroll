@@ -48,29 +48,8 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `author` tinytext,
   `forum` tinytext,
   PRIMARY KEY (`id`),
+  KEY `parentId` (`parentId`),
+  KEY `threadId` (`threadId`),
   FULLTEXT KEY `text` (`text`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `messagetags`
---
-
-CREATE TABLE IF NOT EXISTS `messagetags` (
-  `messageId` int(11) NOT NULL,
-  `tagName` varchar(12) NOT NULL,
-  KEY `messageId` (`messageId`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `tags`
---
-
-CREATE TABLE IF NOT EXISTS `tags` (
-  `tagName` varchar(12) NOT NULL,
-  `used` int(11) NOT NULL,
-  UNIQUE KEY `tagName` (`tagName`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;

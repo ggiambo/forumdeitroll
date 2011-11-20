@@ -34,15 +34,41 @@ function showSidebar() {
 }
 
 function showIframe(type, msgId) {
-	// remove previous iframe
-	// create iframe
-	var iframeString = "<iframe src='http://www.forumdeitroll.it/r.aspx?m_id=" + msgId;
+	// close button
+	var closeImg = $("<img/>");
+	closeImg.attr("src", "images/close.jpeg");
+	// link enclosing close button
+	var link = $("<a/>");
+	link.css("float", "right");
+	link.css("padding", "5px");
+	link.click(function() {
+		$("#" + divId).remove();
+	});
+	
+	link.append(closeImg);
+
+	// iframe forumdeitroll
+	var iframe = $("<iframe/>");
+	var iframesrc = "http://www.forumdeitroll.it/r.aspx?m_id=" + msgId;
 	if (type == "quote") {
-		iframeString += "&quote=1";
+		iframesrc += "&quote=1";
 	}
-	iframeString += "&m_rid=0'></iframe>";
-	var iframe = $(iframeString);
+	iframe.attr("src", iframesrc);
 	iframe.css("width", "750px");
 	iframe.css("height", "680px");
-	$("#msg" + msgId).append(iframe);
+	
+	// containerdiv
+	var div = $("<div/>");
+	var divId = "iframeId" + msgId;
+	div.css("width", "750px");
+	div.attr("id", divId);
+	
+	div.append(link);
+	div.append(iframe);
+	
+	$("#msg" + msgId).append(div);
+}
+
+function closeIframe(divId) {
+	$("#" + divId).remove();
 }
