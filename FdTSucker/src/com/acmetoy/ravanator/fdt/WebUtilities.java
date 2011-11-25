@@ -6,15 +6,21 @@ import java.io.ByteArrayOutputStream;
 import net.htmlparser.jericho.Attribute;
 import net.htmlparser.jericho.Source;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.ContentEncodingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.util.EntityUtils;
 
 public class WebUtilities {
 	
 	private static final long MAX_TRIALS = 5;
+	
+	private static ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager();
 
 	/**
 	 * Ritorna la pagina con l'uri specificato
@@ -25,22 +31,24 @@ public class WebUtilities {
 	public static Source getPage(String uri) throws Exception {
 		
 		Source source = null;
-		
-		ContentEncodingHttpClient httpclient = new ContentEncodingHttpClient();
+		HttpClient httpClient = new DefaultHttpClient(cm);
+		HttpEntity entity = null;
 		try {
     		HttpGet httpget = new HttpGet(uri);
-    		HttpResponse response = getResponse(httpclient, httpget);
+    		HttpResponse response = getResponse(httpClient, httpget);
     
     		source = new Source(response.getEntity().getContent());
     		for (Attribute a : source.getURIAttributes()) {
     			if ("action".equals(a.getKey()) && "disclaimer.aspx".equals(a.getValue())) {
     				// perform login (get page again)
-    				response = getResponse(httpclient, httpget);
-    				source = new Source(response.getEntity().getContent());
+    				response = getResponse(httpClient, httpget);
+    				entity = response.getEntity();
+    				source = new Source(entity.getContent());
     			}
     		}
 		} finally {
-			httpclient.getConnectionManager().shutdown();
+			EntityUtils.consume(entity);
+			
 		}
 		
 		return source;
@@ -84,11 +92,11 @@ public class WebUtilities {
 	 * @return
 	 * @throws Exception
 	 */
-	private static HttpResponse getResponse(DefaultHttpClient httpclient, HttpGet httpget) throws Exception {
+	private static HttpResponse getResponse(HttpClient httpclient, HttpGet httpget) throws Exception {
 		return getResponse(httpclient, httpget, 1, null);
 	}
 	
-	private static HttpResponse getResponse(DefaultHttpClient httpclient, HttpGet httpget, long trial, Exception prevEx) throws Exception {
+	private static HttpResponse getResponse(HttpClient httpclient, HttpGet httpget, long trial, Exception prevEx) throws Exception {
 		if (trial == MAX_TRIALS) {
 			throw prevEx;
 		}
