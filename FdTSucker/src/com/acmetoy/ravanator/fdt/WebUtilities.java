@@ -104,7 +104,7 @@ public class WebUtilities {
 			return httpclient.execute(httpget);
 		} catch (HttpHostConnectException e) {
 			Thread.sleep(trial*200);
-			return getResponse(httpclient, httpget, trial++, e);
+			return getResponse(httpclient, httpget, trial + 1, e);
 		}
 	}
 

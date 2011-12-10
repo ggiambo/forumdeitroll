@@ -27,33 +27,37 @@ public class Relink extends TimerTask {
 			return;
 		}
 
-		BlockingQueue<String> threadQueue = new ArrayBlockingQueue<String>(3);
-		long msgId = pers.getLastMessageId();
-		MessageDTO msgDTO;
-		Thread t;
-		while (msgId > FIRST_FDT_MSG) {
-			msgId--;
-			if (msgId % 100 == 0) {
-				LOG.info("Status: " + msgId);
-			}
-			msgDTO = pers.getMessage(msgId);
-			if (msgDTO.isValid()) {
-				t = new MessageRelinker(msgId, msgDTO.getParentId(), threadQueue, pers);
-			} else {
-				if (pers.hasMessage(msgId)) {
-					continue;
-				}
-				LOG.info("Try to fetch: " + msgId);
-				t = new MessageFetcher(msgId, threadQueue);
-			}
-			try {
-				threadQueue.put("dummy");
-			} catch (InterruptedException e) {
-				LOG.fatal("Cannot add thread to queue", e);
-				continue;
-			}
-			t.start();
+		BlockingQueue<String> threadQueue = new ArrayBlockingQueue<String>(4);
+		long msgIdTop = pers.getLastMessageId();
+		long msgIdBottom = FIRST_FDT_MSG;
+		while (msgIdTop > msgIdBottom) {
+			relink(msgIdTop--, threadQueue, pers);
+			relink(msgIdBottom++, threadQueue, pers);
 		}
+	}
+	
+	private void relink(long msgId, BlockingQueue<String> threadQueue, IPersistence pers) {
+		if (msgId % 100 == 0) {
+			LOG.info("Status: " + msgId);
+		}
+		MessageDTO msgDTO = pers.getMessage(msgId);
+		Thread t;
+		if (msgDTO.isValid()) {
+			t = new MessageRelinker(msgId, msgDTO.getParentId(), threadQueue, pers);
+		} else {
+			if (pers.hasMessage(msgId)) {
+				return;
+			}
+			LOG.info("Try to fetch: " + msgId);
+			t = new MessageFetcher(msgId, threadQueue);
+		}
+		try {
+			threadQueue.put("dummy");
+		} catch (InterruptedException e) {
+			LOG.fatal("Cannot add thread to queue", e);
+			return;
+		}
+		t.start();
 	}
 
 	/**
@@ -92,6 +96,10 @@ public class Relink extends TimerTask {
 			}
 		}
 
+	}
+	
+	public static void main(String[] args) {
+		new Relink().run();
 	}
 
 }
