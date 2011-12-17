@@ -1,4 +1,4 @@
-package com.acmetoy.ravanator.fdt.persistence.mysql;
+package com.acmetoy.ravanator.fdt.persistence.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -120,24 +120,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.execute();
 		} catch (SQLException e) {
 			LOG.error("Cannot insert message " + message.toString(), e);
-		} finally {
-			close(rs, ps, conn);
-		}
-	}
-	
-	@Override
-	public void updateMessageParentId(long id, long parentId) {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("UPDATE messages set parentId = ? WHERE Id = ?");
-			int i = 1;
-			ps.setLong(i++, parentId);
-			ps.setLong(i++, id);
-			ps.execute();
-		} catch (SQLException e) {
-			LOG.error("Cannot update message " + id + " with parentId " + parentId, e);
 		} finally {
 			close(rs, ps, conn);
 		}

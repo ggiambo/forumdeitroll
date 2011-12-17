@@ -163,11 +163,6 @@ public class MongoPersistence implements IPersistence {
 		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
 	}
 	
-	@Override
-	public void updateMessageParentId(long id, long parentId) {
-		throw new RuntimeException("MongoPersistence is deprecated, use MySQL");
-	}
-	
 	private MessageDTO toMessageDTO(Map<?, ?> map) {
 		MessageDTO out = new MessageDTO();
 		try {

@@ -1,4 +1,4 @@
-package com.acmetoy.ravanator.fdt.persistence.mysql;
+package com.acmetoy.ravanator.fdt.persistence.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

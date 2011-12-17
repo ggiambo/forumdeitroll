@@ -1,4 +1,4 @@
-package com.acmetoy.ravanator.fdt.persistence.mysql;
+package com.acmetoy.ravanator.fdt.persistence.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -109,8 +109,9 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 		ResultSet rs = null;
 		List<MessageDTO> result = new ArrayList<MessageDTO>();
 		try {
-			ps = conn.prepareStatement("SELECT *, ts_rank_cd(text_search, query, 32) AS rank FROM messages, plainto_tsquery(?) AS query " +
-					"WHERE text @@ query ORDER BY rank DESC LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement("SELECT *, ts_rank_cd(text_search, query, 32) AS rank " +
+					"FROM messages, to_tsquery('pg_catalog.italian', ?) query " +
+					"WHERE query @@ text_search ORDER BY rank DESC LIMIT ? OFFSET ?");
 			ps.setString(1, search);
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*page);

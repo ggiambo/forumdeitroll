@@ -33,6 +33,4 @@ public interface IPersistence {
 
 	public List<MessageDTO> searchMessages(String search, int pageSize, int pageNr);
 
-	public void updateMessageParentId(long id, long parentId);
-	
 }
