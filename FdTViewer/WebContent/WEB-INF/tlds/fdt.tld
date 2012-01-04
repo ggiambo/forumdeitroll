@@ -13,10 +13,10 @@
 
   <tag>
     <description>
-        Colorize quotes.
+        Format the message to be displayed.
     </description>
-    <name>quote</name>
-    <tag-class>com.acmetoy.ravanator.fdt.QuoteTag</tag-class>
+    <name>msg</name>
+    <tag-class>com.acmetoy.ravanator.fdt.MessageTag</tag-class>
     <body-content>JSP</body-content>
 	<attribute>
 		<description>Searched word to highlight</description>

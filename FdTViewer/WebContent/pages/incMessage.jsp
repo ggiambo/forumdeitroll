@@ -42,13 +42,13 @@
 	</span>
 
 	<div style="padding: 10px;">
-		<fdt:quote search="${param.search}">${msg.text}</fdt:quote>
+		<fdt:msg search="${param.search}">${msg.text}</fdt:msg>
 		<%-- close open tags --%>
 		<c:out escapeXml="false" value="</b></i></u>"/>
 	</div>
 	
 	<div style="background: #D6D6D6;height:20px;display:table-cell; vertical-align:middle; width:600px; padding:0px 0px 2px 2px">
-		<a href="#" onClick="showIframe('', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/rispondi.gif"></a>
-		<a href="#" onClick="showIframe('quote', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/quota.gif"></a>
+		<a href="#" onClick="showReplyDiv('reply', '${msg.id}', '${msg.threadId}');return false;"><img style="vertical-align: middle;" src="images/rispondi.gif"></a>
+		<a href="#" onClick="showReplyDiv('quote', '${msg.id}', '${msg.threadId}');return false;"><img style="vertical-align: middle;" src="images/quota.gif"></a>
 	</div>
 </div>

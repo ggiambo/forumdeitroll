@@ -33,42 +33,14 @@ function showSidebar() {
 	});
 }
 
-function showIframe(type, msgId) {
-	// close button
-	var closeImg = $("<img/>");
-	closeImg.attr("src", "images/close.jpeg");
-	// link enclosing close button
-	var link = $("<a/>");
-	link.css("float", "right");
-	link.css("padding", "5px");
-	link.click(function() {
-		$("#" + divId).remove();
+function showReplyDiv(type, parentId, threadId) {
+	$.get("Messages?action=showReplyDiv&type=" + type + "&parentId=" + parentId + "&threadId=" + threadId,
+		function (data) {
+			$("#msg" + parentId).append($(data));
 	});
-	
-	link.append(closeImg);
-
-	// iframe forumdeitroll
-	var iframe = $("<iframe/>");
-	var iframesrc = "http://www.forumdeitroll.it/r.aspx?m_id=" + msgId;
-	if (type == "quote") {
-		iframesrc += "&quote=1";
-	}
-	iframe.attr("src", iframesrc);
-	iframe.css("width", "750px");
-	iframe.css("height", "680px");
-	
-	// containerdiv
-	var div = $("<div/>");
-	var divId = "iframeId" + msgId;
-	div.css("width", "750px");
-	div.attr("id", divId);
-	
-	div.append(link);
-	div.append(iframe);
-	
-	$("#msg" + msgId).append(div);
 }
 
-function closeIframe(divId) {
-	$("#" + divId).remove();
+function send(parentId, threadId) {
+	var text = $("#textarea_" + parentId).val();
+	$.post("Messages?action=insertMessage", { parentId: parentId, threadId: threadId, text:  text});
 }

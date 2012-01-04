@@ -5,6 +5,7 @@
 		<link href="css/fdt.css" type="text/css" rel="stylesheet"/>
 		<script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
 		<script type="text/javascript" src="js/fdt.js"></script>
+		<script type="text/javascript" src="js/preview.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function() {
 				initSidebarStatus();
