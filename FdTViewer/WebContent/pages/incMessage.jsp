@@ -11,6 +11,8 @@
 	</c:otherwise>
 </c:choose>
 
+<a href="#msg${msg.id}"></a>
+
 <div class="${class}" id="msg${msg.id}">
 
 	<div class="msgHeader">
@@ -38,7 +40,7 @@
 	</div>
 
 	<span style="width:100%; margin:5px;">
-		<b><a href="Threads?action=getByThread&threadId=${msg.threadId}"/>${msg.subject}</a></b>
+		<b><a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}"/>${msg.subject}</a></b>
 	</span>
 
 	<div style="padding: 10px;">
@@ -47,8 +49,8 @@
 		<c:out escapeXml="false" value="</b></i></u>"/>
 	</div>
 	
-	<div style="background: #D6D6D6;height:20px;display:table-cell; vertical-align:middle; width:600px; padding:0px 0px 2px 2px">
-		<a href="#" onClick="showReplyDiv('reply', '${msg.id}', '${msg.threadId}');return false;"><img style="vertical-align: middle;" src="images/rispondi.gif"></a>
-		<a href="#" onClick="showReplyDiv('quote', '${msg.id}', '${msg.threadId}');return false;"><img style="vertical-align: middle;" src="images/quota.gif"></a>
+	<div id="buttons_${msg.id}" style="background: #D6D6D6;height:20px;display:table-cell; vertical-align:middle; width:600px; padding:0px 0px 2px 2px">
+		<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/rispondi.gif"></a>
+		<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/quota.gif"></a>
 	</div>
 </div>

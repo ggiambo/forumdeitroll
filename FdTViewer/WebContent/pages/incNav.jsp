@@ -11,6 +11,8 @@
 		<li>|</li>
 		<li><a href="Messages">Cronologicamente</a></li>
 		<li>|</li>
+		<li><a href="Messages?action=newMessage&forum=${param.forum }">Nuovo messaggio</a>
+		<li>|</li>
 		<li><jsp:include page="incPrevNext.jsp"/></li>
 	</ul>
 </div>

@@ -7,18 +7,13 @@
 	<body>
 
 		<div id="header"><h1>FdT Due Zero !</h1></div>
-
+		
 		<jsp:include page="incNav.jsp"/>
-
+		
 		<jsp:include page="incSidebar.jsp"/>
 
 		<div id="main">
-			<c:forEach items="${messages}" var="msg" varStatus="index">
-				<c:set var="msg" value="${msg}" scope="request"/>
-				<c:set var="index" value="${index}" scope="request"/>
-				<jsp:include page="incMessage.jsp"/>
-				<hr/>
-			</c:forEach>
+			<jsp:include page="incReplyMessage.jsp"/>
 		</div>
 
 		<div id="footer">

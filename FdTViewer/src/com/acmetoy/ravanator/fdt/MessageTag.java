@@ -15,7 +15,8 @@ public class MessageTag extends BodyTagSupport {
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("^(&gt;\\ ?)+");
 	private static final Pattern PATTERN_IMG = Pattern.compile("\\[img\\](.*?)\\[/img\\]");
-	private static final Pattern PATTERN_URL = Pattern.compile( "([^\"]|^)(http[s]?://(.+?))( |$)" );
+	private static final Pattern PATTERN_URL = Pattern.compile("([^\"]|^)(http[s]?://(.+?))( |$)");
+	private static final Pattern PATTERN_CODE = Pattern.compile("\\[code\\](.*?)\\[/code\\]");
 	private static final String[] QUOTE = new String[] { "#007BDF", "#00AF59", "#9A00EF", "#AF6F00" };
 
 	private static final long serialVersionUID = 1L;
@@ -25,6 +26,15 @@ public class MessageTag extends BodyTagSupport {
 	public int doAfterBody() throws JspTagException {
 		JspWriter out = getBodyContent().getEnclosingWriter();
 		String body = getBodyContent().getString();
+		
+		// code
+		Matcher m = PATTERN_CODE.matcher(body);
+		if (m.find()) {
+			String replace = "<pre style='border:1px dotted black'>" + m.group(1).replaceAll("<BR>", "\n") + "</pre>";
+			body = m.replaceFirst(replace);
+			m = PATTERN_CODE.matcher(body);
+		}
+		
 		String[] lines = body.split("<BR>");
 		StringBuilder res = new StringBuilder();
 		
@@ -43,7 +53,7 @@ public class MessageTag extends BodyTagSupport {
 			}
 			
 			// img
-			Matcher m = PATTERN_IMG.matcher(line);
+			m = PATTERN_IMG.matcher(line);
 			if (m.find()) {
 				String replace = "<a class=\"preview\" href=\"" + m.group(1) + "\"><img width=\"150px\" src=\"" + m.group(1) + "\"/></a>";
 				line = m.replaceFirst(replace);

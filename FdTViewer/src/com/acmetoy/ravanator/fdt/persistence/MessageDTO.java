@@ -3,9 +3,9 @@ package com.acmetoy.ravanator.fdt.persistence;
 
 public class MessageDTO extends ThreadDTO {
 
-	private long parentId;
-	private long threadId;
-	private String text;
+	private long parentId = -1;
+	private long threadId = -1;
+	private String text = null;
 
 	public long getParentId() {
 		return parentId;

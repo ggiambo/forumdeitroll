@@ -7,7 +7,7 @@ public interface IPersistence {
 	
 	public void init(Properties databaseConfig) throws Exception;
 
-	public void insertMessage(MessageDTO message);
+	public long insertMessage(MessageDTO message);
 
 	public List<String> getForums();
 
@@ -25,6 +25,10 @@ public interface IPersistence {
 
 	public AuthorDTO getAuthor(String nick);
 
+	public AuthorDTO getAuthor(String nick, String MD5password);
+
+	public void updateAuthor(AuthorDTO author);
+	
 	public List<MessageDTO> searchMessages(String search, int pageSize, int pageNr);
 
 }

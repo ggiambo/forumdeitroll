@@ -4,12 +4,12 @@ import java.util.Date;
 
 public class ThreadDTO {
 
-	private long id;
-	private Date date;
-	private String subject;
-	private String author;
-	private String forum;
-	private int setNumberOfMessages;
+	private long id = -1;
+	private Date date = null;
+	private String subject = null;
+	private String author = null;
+	private String forum = null;
+	private int setNumberOfMessages = -1;
 	
 	public boolean isValid() {
 		boolean valid = true;

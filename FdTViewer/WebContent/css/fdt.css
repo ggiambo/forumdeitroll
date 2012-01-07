@@ -112,11 +112,18 @@ h4 {
 	margin-bottom: 5px;
 }
 
-#preview{
+#preview {
 	position: absolute;
 	border: 1px solid #ccc;
 	background: #333;
 	padding: 5px;
 	display: none;
 	color: #fff;
+}
+
+.fakeButton {
+	border:1px outset;
+	padding:1px 5px;
+	background-color: Gainsboro;
+	cursor: pointer;
 }

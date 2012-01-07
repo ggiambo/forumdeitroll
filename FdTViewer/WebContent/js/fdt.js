@@ -33,14 +33,53 @@ function showSidebar() {
 	});
 }
 
-function showReplyDiv(type, parentId, threadId) {
-	$.get("Messages?action=showReplyDiv&type=" + type + "&parentId=" + parentId + "&threadId=" + threadId,
-		function (data) {
+function showReplyDiv(type, parentId) {
+	$.get("Messages?action=showReplyDiv&type=" + type + "&parentId=" + parentId,
+		function(data) {
 			$("#msg" + parentId).append($(data));
+			$("#buttons_" + parentId).hide();
 	});
 }
 
-function send(parentId, threadId) {
-	var text = $("#textarea_" + parentId).val();
-	$.post("Messages?action=insertMessage", { parentId: parentId, threadId: threadId, text:  text});
+function closeReplyDiv(parentId) {
+	$("#reply_" + parentId).remove();
+	$("#buttons_" + parentId).show();
 }
+
+function send(parentId) {
+	var text = $("#reply_" + parentId + " :input[name='text']").val();
+	var nick = $("#reply_" + parentId + " :input[name='nick']").val();
+	var pass = $("#reply_" + parentId + " :input[name='pass']").val();
+	var subject = $("#reply_" + parentId + " :input[name='subject']").val();
+	var forum = $("#reply_" + parentId + " :input[name='forum']").val();
+	var captcha = $("#reply_" + parentId + " :input[name='captcha']").val();
+	jQuery.ajax({
+		type: "POST",
+        url: "Messages?action=insertMessage",
+        data: { parentId: parentId, text:  text, nick: nick, pass: pass, subject: subject, forum: forum, captcha: captcha},
+        success: function(data) {
+			var wl = window.location;
+			var newUrl = wl.protocol + "//" + wl.host + wl.pathname.substr(0, wl.pathname.lastIndexOf("/"));
+			window.location = newUrl + data;
+        	},
+        error: function(data) {
+        	alert(data.responseText);
+        }
+	});
+}
+
+function insert(openTag, closeTag, parentId) {
+	var element = $("#reply_" + parentId + " :input[name='text']").get(0);
+	if (document.selection) {
+		element.focus();
+		sel = document.selection.createRange();
+		sel.text = openTag + sel.text + closeTag;
+	} else if (element.selectionStart || element.selectionStart == '0') {
+		element.focus();
+		var startPos = element.selectionStart;
+		var endPos = element.selectionEnd;
+		element.value = element.value.substring(0, startPos) + openTag + element.value.substring(startPos, endPos) + closeTag + element.value.substring(endPos, element.value.length);
+	} else {
+		element.value += openTag + closeTag;
+	}
+} 

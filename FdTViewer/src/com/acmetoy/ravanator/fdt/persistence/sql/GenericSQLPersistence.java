@@ -53,14 +53,22 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 	
 	@Override
-	public void insertMessage(MessageDTO message) {
+	public long insertMessage(MessageDTO message) {
+		if (message.getParentId() != -1) {
+			return insertReplyMessage(message);
+		} else {
+			return insertNewMessage(message);
+		}
+	}
+
+	private long insertReplyMessage(MessageDTO message) {
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("INSERT INTO messages (id, parentId, threadId, text, subject, author, forum, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
-			ps.setLong(i++, message.getId());
 			ps.setLong(i++, message.getParentId());
 			ps.setLong(i++, message.getThreadId());
 			ps.setString(i++, message.getText());
@@ -69,11 +77,50 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(i++, message.getForum());
 			ps.setTimestamp(i++, new java.sql.Timestamp(message.getDate().getTime()));
 			ps.execute();
+			// get generated id
+			rs = ps.getGeneratedKeys();
+			rs.next();
+			return rs.getLong(1);
 		} catch (SQLException e) {
 			LOG.error("Cannot insert message " + message.toString(), e);
 		} finally {
 			close(rs, ps, conn);
 		}
+		return -1;
+	}
+	
+	private long insertNewMessage(MessageDTO message) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date) " +
+					"VALUES (-1, -1, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			int i = 1;
+			ps.setString(i++, message.getText());
+			ps.setString(i++, message.getSubject());
+			ps.setString(i++, message.getAuthor());
+			ps.setString(i++, message.getForum());
+			ps.setTimestamp(i++, new java.sql.Timestamp(message.getDate().getTime()));
+			ps.execute();
+			// get generated id
+			rs = ps.getGeneratedKeys();
+			rs.next();
+			long id = rs.getLong(1);
+			//  new message, update threadId and parentId
+			ps = conn.prepareStatement("UPDATE messages SET parentId=?, threadId=? WHERE id=?");
+			i = 1;
+			ps.setLong(i++, id);
+			ps.setLong(i++, id);
+			ps.setLong(i++, id);
+			ps.execute();
+			return id;
+		} catch (SQLException e) {
+			LOG.error("Cannot insert message " + message.toString(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return -1;
 	}
 	
 	@Override
@@ -122,11 +169,39 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			AuthorDTO dto = new AuthorDTO();
+			AuthorDTO dto = null;
 			ps = conn.prepareStatement("SELECT * FROM authors WHERE NICK = ?");
 			ps.setString(1, nick);
 			rs = ps.executeQuery();
 			while (rs.next()) {
+				dto = new AuthorDTO();
+				dto.setNick(rs.getString("nick"));
+				dto.setRanking(rs.getInt("ranking"));
+				dto.setAvatar(rs.getBytes("avatar"));
+				dto.setMessages(rs.getInt("messages"));
+				return dto;
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get Author " + nick, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return null;
+	}
+
+	@Override
+	public AuthorDTO getAuthor(String nick, String MD5pass) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			AuthorDTO dto = null;
+			ps = conn.prepareStatement("SELECT * FROM authors WHERE nick = ? AND password = ?");
+			ps.setString(1, nick);
+			ps.setString(2, MD5pass);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				dto = new AuthorDTO();
 				dto.setNick(rs.getString("nick"));
 				dto.setRanking(rs.getInt("ranking"));
 				dto.setAvatar(rs.getBytes("avatar"));
@@ -156,6 +231,24 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 		return new ArrayList<MessageDTO>();
+	}
+
+	@Override
+	public void updateAuthor(AuthorDTO author) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("UPDATE authors SET messages = ?, avatar = ? where nick = ?");
+			ps.setInt(1, author.getMessages());
+			ps.setBytes(2, author.getAvatar());
+			ps.setString(3, author.getNick());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			LOG.error("Cannot update author " + author, e);
+		} finally {
+			close(rs, ps, conn);
+		}
 	}
 	
 	protected List<MessageDTO> getMessages(ResultSet rs) throws SQLException {
