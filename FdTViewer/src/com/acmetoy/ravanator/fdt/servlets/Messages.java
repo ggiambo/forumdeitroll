@@ -127,7 +127,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("messages", getPersistence().searchMessages(search, PAGE_SIZE, getPageNr(req)));
 		return "messages.jsp";
 	}
-	
+
 	/**
 	 * Popola il div per la risposta/quota messaggio
 	 * @param req
@@ -145,7 +145,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("emoMap", emoMap);
 		return "newMessage.jsp";
 	}
-	
+
 	/**
 	 * Popola il div per la risposta/quota messaggio
 	 * @param req
@@ -161,7 +161,7 @@ public class Messages extends MainServlet {
 		if ("quote".equals(type)) {
 			MessageDTO msgDTO = getPersistence().getMessage(Long.parseLong(parentId));
 			String text = msgDTO.getText().trim();
-			
+
 			// quote
 			Matcher m = PATTERN_QUOTE.matcher(text);
 			while (m.find()) {
@@ -175,7 +175,7 @@ public class Messages extends MainServlet {
 				text = m.replaceFirst(newBegin.toString());
 				m = PATTERN_QUOTE.matcher(text);
 			}
-			
+
 			String author = msgDTO.getAuthor();
 			text = "\r\nScritto da: " + (author != null ? author : "") + "\r\n>" + text;
 			msgDTO.setText(text);
@@ -185,10 +185,10 @@ public class Messages extends MainServlet {
 		// faccine - ordinate per key
 		TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
 		req.setAttribute("emoMap", emoMap);
-		
+
 		return "incReplyMessage.jsp";
 	}
-	
+
 	/**
 	 * Inserisce un nuovo messaggio
 	 * @param req
@@ -197,8 +197,8 @@ public class Messages extends MainServlet {
 	 * @throws Exception
 	 */
 	public String insertMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		
-		
+
+
 		// check username and pass
 		String nick = req.getParameter("nick");
 		nick = StringUtils.isEmpty(nick) ? null : nick.trim();
@@ -218,12 +218,12 @@ public class Messages extends MainServlet {
 			}
 			author.setMessages(author.getMessages() + 1);
 		}
-		
+
 		// se non autenticato, richiedi captcha
 		if (author == null) {
 			String captcha = req.getParameter("captcha");
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
-			if (!correctAnswer.equals(captcha)) {
+			if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
 				res.setContentType("text/plain");
 				res.setStatus(500);
 				Writer w = res.getWriter();
@@ -233,18 +233,18 @@ public class Messages extends MainServlet {
 				return null;
 			}
 		}
-		
+
 		String text = req.getParameter("text");
-		
+
 		// replace dei caratteri HTML
 		text = text.replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\n", "<BR>");
-		
+
 		// restore <i>, <b>, <u> e <s>
 		for (String t : new String[] {"i", "b", "u", "s"}) {
 			text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
 			text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
 		}
-		
+
 		// evita inject in img
 		Pattern p = Pattern.compile("\\[img\\]((.*?)\"(.*?))\\[/img\\]");
 		Matcher m = p.matcher(text);
@@ -253,7 +253,7 @@ public class Messages extends MainServlet {
 			text = m.replaceFirst(Matcher.quoteReplacement("[img]" + replace + "[/img]"));
 			 m = p.matcher(text);
 		}
-		
+
 		// testo di almeno di 10 caratteri ...
 		if (StringUtils.isEmpty(text) || text.length() < 10) {
 			res.setContentType("text/plain");
@@ -264,7 +264,7 @@ public class Messages extends MainServlet {
 			w.close();
 			return null;
 		}
-		
+
 		// testo al massimo di 5000 caratteri ...
 		if (text.length() > 5000) {
 			res.setContentType("text/plain");
@@ -275,7 +275,7 @@ public class Messages extends MainServlet {
 			w.close();
 			return null;
 		}
-		
+
 		// reply o messaggio nuovo ?
 		MessageDTO msgOut = getPersistence().getMessage(Long.parseLong(req.getParameter("parentId")));
 		String forum;
@@ -287,7 +287,7 @@ public class Messages extends MainServlet {
 			forum = msgOut.getForum();
 			subject = msgOut.getSubject();
 		}
-		
+
 		// subject almeno di 5 caratteri, cribbio !
 		if (StringUtils.isEmpty(subject) || subject.trim().length() < 5) {
 			res.setContentType("text/plain");
@@ -298,7 +298,7 @@ public class Messages extends MainServlet {
 			w.close();
 			return null;
 		}
-		
+
 		MessageDTO msg = new MessageDTO();
 		msg.setAuthor(author != null ? nick : null);
 		msg.setDate(new Date());
@@ -312,12 +312,12 @@ public class Messages extends MainServlet {
 		if (author != null) {
 			getPersistence().updateAuthor(author);
 		}
-		
+
 		long msgId = getPersistence().insertMessage(msg);
 		if (msgOut.getId() == -1) {
 			msg.setThreadId(msgId);
 		}
-		
+
 		// redirect
 		res.setContentType("text/plain");
 		Writer out = res.getWriter();
@@ -327,7 +327,7 @@ public class Messages extends MainServlet {
 
 		return null;
 	}
-	
+
 	public String getCaptcha(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		Captcha captcha = new Captcha.Builder(150, 50)
 				.addText(new NumbersAnswerProducer(6))
@@ -342,11 +342,11 @@ public class Messages extends MainServlet {
 		req.getSession().setAttribute("captcha", captcha.getAnswer());
 		return null;
 	}
-	
+
 	public static Map<String, String> getEmoMap() {
 		return new HashMap<String, String>(EMO_MAP);
 	}
-	
+
 	private String md5(String input) throws NoSuchAlgorithmException {
 		String result = input;
 		if (input != null) {
@@ -360,5 +360,5 @@ public class Messages extends MainServlet {
 		}
 		return result;
 	}
-	
+
 }
