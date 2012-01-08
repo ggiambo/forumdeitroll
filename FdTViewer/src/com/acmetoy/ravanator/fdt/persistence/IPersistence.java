@@ -7,7 +7,7 @@ public interface IPersistence {
 	
 	public void init(Properties databaseConfig) throws Exception;
 
-	public long insertMessage(MessageDTO message);
+	public MessageDTO insertMessage(MessageDTO message);
 
 	public List<String> getForums();
 

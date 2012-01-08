@@ -33,12 +33,15 @@
 		<c:if test="${isNewMessage == true}">
 			Oggetto: <input name="subject"/>
 		</c:if>
+		<c:if test="${not empty param.forum}">
+			Forum <i>${param.forum}</i>
+		</c:if>
 		<textarea name="text" tabindex="2" rows="20" style="font-size:13px; width:100%">${message.text}</textarea><br/>
 		Nome: <input name="nick" size="10"/> Password: <input type="password" name="pass" size="10"/>
 		<input type="hidden" name="forum" value="${forum }"/>
-		<input type="button" value="Invia" onClick="send(${parentId})"/>
 		<div style="margin: 3px">
 			<img src="Messages?action=getCaptcha" style="vertical-align:middle"/>&nbsp;<input name="captcha" size="5"/> (Solo per ANOnimi)
+			<input type="button" value="Invia" onClick="send(${parentId})"/>
 		</div>
 	</div>
 </div>

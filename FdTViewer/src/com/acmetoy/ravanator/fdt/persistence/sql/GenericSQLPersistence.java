@@ -53,11 +53,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 	
 	@Override
-	public long insertMessage(MessageDTO message) {
+	public MessageDTO insertMessage(MessageDTO message) {
 		if (message.getParentId() != -1) {
-			return insertReplyMessage(message);
+			return getMessage(insertReplyMessage(message));
 		} else {
-			return insertNewMessage(message);
+			return getMessage(insertNewMessage(message));
 		}
 	}
 
@@ -168,25 +168,23 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		AuthorDTO dto = new AuthorDTO();
 		try {
-			AuthorDTO dto = null;
 			ps = conn.prepareStatement("SELECT * FROM authors WHERE NICK = ?");
 			ps.setString(1, nick);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				dto = new AuthorDTO();
 				dto.setNick(rs.getString("nick"));
 				dto.setRanking(rs.getInt("ranking"));
 				dto.setAvatar(rs.getBytes("avatar"));
 				dto.setMessages(rs.getInt("messages"));
-				return dto;
 			}
 		} catch (SQLException e) {
 			LOG.error("Cannot get Author " + nick, e);
 		} finally {
 			close(rs, ps, conn);
 		}
-		return null;
+		return dto;
 	}
 
 	@Override
@@ -194,26 +192,24 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		AuthorDTO dto = new AuthorDTO();
 		try {
-			AuthorDTO dto = null;
 			ps = conn.prepareStatement("SELECT * FROM authors WHERE nick = ? AND password = ?");
 			ps.setString(1, nick);
 			ps.setString(2, MD5pass);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				dto = new AuthorDTO();
 				dto.setNick(rs.getString("nick"));
 				dto.setRanking(rs.getInt("ranking"));
 				dto.setAvatar(rs.getBytes("avatar"));
 				dto.setMessages(rs.getInt("messages"));
-				return dto;
 			}
 		} catch (SQLException e) {
 			LOG.error("Cannot get Author " + nick, e);
 		} finally {
 			close(rs, ps, conn);
 		}
-		return null;
+		return dto;
 	}
 
 	@Override

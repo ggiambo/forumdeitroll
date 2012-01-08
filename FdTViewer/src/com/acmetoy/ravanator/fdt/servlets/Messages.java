@@ -190,6 +190,71 @@ public class Messages extends MainServlet {
 	}
 	
 	/**
+	 * Ritorna una stringa diversa da null da mostrare come messaggio d'errore all'utente
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	private String validateInsertMessage(HttpServletRequest req) throws Exception {
+
+		String text = req.getParameter("text");
+		
+		// testo di almeno di 5 caratteri ...
+		if (StringUtils.isEmpty(text) || text.length() < 5) {
+			return "Un po di fantasia, scrivi almeno 5 caratteri ...";
+		}
+		
+		// testo al massimo di 5000 caratteri ...
+		if (text.length() > 5000) {
+			return "Sei piu' logorroico di una Wakka, stai sotto i 5000 caratteri !";
+		}
+		
+		// subject almeno di 5 caratteri, cribbio !
+		long parentId;
+		try { 
+			parentId = Long.parseLong(req.getParameter("parentId"));
+		} catch (NumberFormatException e) {
+			return "Il valore " + req.getParameter("parentId") + " assomiglia poco a un numero ...";
+		}
+		if (parentId == -1) {
+			// nuovo messaggio
+			String subject = req.getParameter("subject");
+			if (StringUtils.isEmpty(subject) || subject.trim().length() < 5) {
+				return "Oggetto di almeno di 5 caratteri, cribbio !";
+			}
+		}
+		
+		// check username and pass, se inseriti
+		String nick = req.getParameter("nick");
+		String pass = req.getParameter("pass");
+		AuthorDTO author = null;
+		if (!StringUtils.isEmpty(nick) && !StringUtils.isEmpty(pass)) {
+			author = getPersistence().getAuthor(nick, md5(pass));
+			if (author == null) {
+				return "Username o password non corretti";
+			}
+		}
+		
+		// se non autenticato, richiedi captcha
+		if (author == null) {
+			String captcha = req.getParameter("captcha");
+			String correctAnswer = (String)req.getSession().getAttribute("captcha");
+			if (!correctAnswer.equals(captcha)) {
+				return "No no no ! Il captcha non e' corretto !";
+			}
+		}
+		
+		// qualcuno prova a creare un forum ;) ?
+		String forum = req.getParameter("forum");
+		if (!StringUtils.isEmpty(forum) && !getPersistence().getForums().contains(forum)) {
+			return "Ma che cacchio di forum e' '" + forum + "' ?!?";
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Inserisce un nuovo messaggio
 	 * @param req
 	 * @param res
@@ -198,44 +263,21 @@ public class Messages extends MainServlet {
 	 */
 	public String insertMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
-		
-		// check username and pass
-		String nick = req.getParameter("nick");
-		nick = StringUtils.isEmpty(nick) ? null : nick.trim();
-		String pass = req.getParameter("pass");
-		pass = StringUtils.isEmpty(pass) ? null : pass.trim();
-		AuthorDTO author = null;
-		if (nick != null && pass != null) {
-			author = getPersistence().getAuthor(nick, md5(pass));
-			if (author == null) {
-				res.setContentType("text/plain");
-				res.setStatus(500);
-				Writer w = res.getWriter();
-				w.write("Username o password non corretti");
-				w.flush();
-				w.close();
-				return null;
-			}
-			author.setMessages(author.getMessages() + 1);
+		// se c'e' un'errore, mostralo
+		String validationMessage = validateInsertMessage(req);
+		if (validationMessage != null) {
+			res.setContentType("text/plain");
+			res.setStatus(500);
+			Writer w = res.getWriter();
+			w.write(validationMessage);
+			w.flush();
+			w.close();
+			return null;
 		}
 		
-		// se non autenticato, richiedi captcha
-		if (author == null) {
-			String captcha = req.getParameter("captcha");
-			String correctAnswer = (String)req.getSession().getAttribute("captcha");
-			if (!correctAnswer.equals(captcha)) {
-				res.setContentType("text/plain");
-				res.setStatus(500);
-				Writer w = res.getWriter();
-				w.write("No no no ! Il captcha non e' corretto !");
-				w.flush();
-				w.close();
-				return null;
-			}
-		}
+		req.getSession().removeAttribute("captcha");
 		
 		String text = req.getParameter("text");
-		
 		// replace dei caratteri HTML
 		text = text.replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\n", "<BR>");
 		
@@ -254,74 +296,43 @@ public class Messages extends MainServlet {
 			 m = p.matcher(text);
 		}
 		
-		// testo di almeno di 10 caratteri ...
-		if (StringUtils.isEmpty(text) || text.length() < 10) {
-			res.setContentType("text/plain");
-			res.setStatus(500);
-			Writer w = res.getWriter();
-			w.write("Un po di fantasia, scrivi almeno 10 caratteri ...");
-			w.flush();
-			w.close();
-			return null;
-		}
-		
-		// testo al massimo di 5000 caratteri ...
-		if (text.length() > 5000) {
-			res.setContentType("text/plain");
-			res.setStatus(500);
-			Writer w = res.getWriter();
-			w.write("Sei piu' logorroico di una Wakka, stai sotto i 5000 caratteri !");
-			w.flush();
-			w.close();
-			return null;
-		}
+		// autore
+		String nick = req.getParameter("nick");
+		String pass = req.getParameter("pass");
+		AuthorDTO author = getPersistence().getAuthor(nick, md5(pass));
 		
 		// reply o messaggio nuovo ?
-		MessageDTO msgOut = getPersistence().getMessage(Long.parseLong(req.getParameter("parentId")));
-		String forum;
-		String subject;
-		if (msgOut.getId() == -1) {
-			forum = req.getParameter("forum");
-			subject = req.getParameter("subject");
-		} else {
-			forum = msgOut.getForum();
-			subject = msgOut.getSubject();
-		}
-		
-		// subject almeno di 5 caratteri, cribbio !
-		if (StringUtils.isEmpty(subject) || subject.trim().length() < 5) {
-			res.setContentType("text/plain");
-			res.setStatus(500);
-			Writer w = res.getWriter();
-			w.write("Subject almeno di 5 caratteri, cribbio !");
-			w.flush();
-			w.close();
-			return null;
-		}
-		
+		long parentId = Long.parseLong(req.getParameter("parentId"));
 		MessageDTO msg = new MessageDTO();
-		msg.setAuthor(author != null ? nick : null);
+		msg.setAuthor(author.getNick());
+		msg.setParentId(parentId);
 		msg.setDate(new Date());
-		msg.setForum(StringUtils.isEmpty(forum) ? null : forum);
-		msg.setParentId(msgOut.getId());
-		msg.setSubject(subject);
 		msg.setText(text);
-		msg.setThreadId(msgOut.getThreadId());
-
+		if (parentId > 0) {
+			// reply
+			MessageDTO replyMsg = getPersistence().getMessage(parentId);
+			msg.setForum(replyMsg.getForum());
+			msg.setSubject(replyMsg.getSubject());
+			msg.setThreadId(replyMsg.getThreadId());
+		} else {
+			// nuovo messaggio
+			msg.setForum(req.getParameter("forum").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
+			msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
+			msg.setThreadId(-1);
+		}
+		
 		// incrementa il numero di messaggi scritti
-		if (author != null) {
+		if (author.isValid()) {
+			author.setMessages(author.getMessages() + 1);
 			getPersistence().updateAuthor(author);
 		}
 		
-		long msgId = getPersistence().insertMessage(msg);
-		if (msgOut.getId() == -1) {
-			msg.setThreadId(msgId);
-		}
+		msg = getPersistence().insertMessage(msg);
 		
 		// redirect
 		res.setContentType("text/plain");
 		Writer out = res.getWriter();
-		out.write("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "&random=" + Math.random() + "#msg" + msgId);
+		out.write("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "&random=" + Math.random() + "#msg" + msg.getId());
 		out.flush();
 		out.close();
 

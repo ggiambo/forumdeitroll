@@ -47,16 +47,17 @@ function closeReplyDiv(parentId) {
 }
 
 function send(parentId) {
-	var text = $("#reply_" + parentId + " :input[name='text']").val();
-	var nick = $("#reply_" + parentId + " :input[name='nick']").val();
-	var pass = $("#reply_" + parentId + " :input[name='pass']").val();
-	var subject = $("#reply_" + parentId + " :input[name='subject']").val();
-	var forum = $("#reply_" + parentId + " :input[name='forum']").val();
-	var captcha = $("#reply_" + parentId + " :input[name='captcha']").val();
+	// post data
+	var data = { parentId: parentId };
+	$("#reply_" + parentId + " :input").each(function() {
+		var val = $(this);
+		data[val.attr("name")] = val.val();
+	});
+	// post messagge
 	jQuery.ajax({
 		type: "POST",
         url: "Messages?action=insertMessage",
-        data: { parentId: parentId, text:  text, nick: nick, pass: pass, subject: subject, forum: forum, captcha: captcha},
+        data: data,
         success: function(data) {
 			var wl = window.location;
 			var newUrl = wl.protocol + "//" + wl.host + wl.pathname.substr(0, wl.pathname.lastIndexOf("/"));
