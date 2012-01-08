@@ -56,8 +56,9 @@ public class MessageTag extends BodyTagSupport {
 			// img
 			m = PATTERN_IMG.matcher(line);
 			if (m.find()) {
-				if (m.group(1).toLowerCase().startsWith("http")) {
-					String replace = "<a class=\"preview\" href=\"" + m.group(1) + "\"><img width=\"150px\" src=\"" + m.group(1) + "\"/></a>";
+				String url = m.group(1).trim();
+				if (url.toLowerCase().startsWith("http")) {
+					String replace = "<a class=\"preview\" href=\"" + url + "\"><img width=\"150px\" src=\"" + url + "\"/></a>";
 					line = m.replaceFirst(replace);
 					m = PATTERN_IMG.matcher(line);
 				}
