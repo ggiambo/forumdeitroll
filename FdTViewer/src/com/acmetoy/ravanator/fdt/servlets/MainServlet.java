@@ -31,7 +31,7 @@ public abstract class MainServlet extends HttpServlet {
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
-		
+
 		super.init(config);
 
 		try {
@@ -83,7 +83,7 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		
+
 		// actual time
 		req.setAttribute("currentTimeMillis", System.currentTimeMillis());
 
@@ -111,6 +111,7 @@ public abstract class MainServlet extends HttpServlet {
 
 		} catch (Exception e) {
 			req.setAttribute("exceptionStackTrace", ExceptionUtils.getStackTrace(e));
+			e.printStackTrace(System.err);
 			try {
 				getServletContext().getRequestDispatcher("/pages/error.jsp").forward(req, res);
 			} catch (ServletException e1) {
@@ -150,7 +151,7 @@ public abstract class MainServlet extends HttpServlet {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Setta nella session lo stato della sidebar (Aperta/chiusa)
 	 * @param req
@@ -165,9 +166,11 @@ public abstract class MainServlet extends HttpServlet {
 			sidebarStatus = (String) req.getSession().getAttribute("sidebarStatus");
 			if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
 				// get from cookie
-				for (Cookie cookie : req.getCookies()) {
-					if ("sidebarStatus".equals(cookie.getName())) {
-						sidebarStatus = cookie.getValue();
+				if (req.getCookies() != null) {
+					for (Cookie cookie : req.getCookies()) {
+						if ("sidebarStatus".equals(cookie.getName())) {
+							sidebarStatus = cookie.getValue();
+						}
 					}
 				}
 				if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {

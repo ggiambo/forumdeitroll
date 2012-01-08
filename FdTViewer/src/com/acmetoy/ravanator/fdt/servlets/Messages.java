@@ -240,7 +240,7 @@ public class Messages extends MainServlet {
 		if (author == null) {
 			String captcha = req.getParameter("captcha");
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
-			if (!correctAnswer.equals(captcha)) {
+			if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
 				return "No no no ! Il captcha non e' corretto !";
 			}
 		}
