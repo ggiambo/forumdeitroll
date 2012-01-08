@@ -4,6 +4,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.io.Writer;
+import java.security.MessageDigest;
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -11,6 +15,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -23,6 +29,8 @@ public abstract class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected static final int PAGE_SIZE = 15;
+
+	protected static final String LOGGED_USER_SESSION_ATTR = "loggedUser";
 
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
@@ -153,6 +161,37 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	/**
+	Richiesta logout
+	*/
+	public String logoutAction(HttpServletRequest req, HttpServletResponse res) throws IOException, NoSuchAlgorithmException {
+		final String sesNick = (String)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+		final String nick = req.getParameter("nick");
+		final String pass = req.getParameter("pass");
+		if (!StringUtils.isEmpty(nick) && !StringUtils.isEmpty(pass) && !StringUtils.isEmpty(sesNick)) {
+			final AuthorDTO author = getPersistence().getAuthor(nick, md5(pass));
+
+			if (sesNick.equals(author.getNick())) {
+				res.setContentType("text/plain");
+				res.setStatus(200);
+				final Writer w = res.getWriter();
+				w.write("ok");
+				w.flush();
+				w.close();
+				return null;
+			}
+		}
+
+		res.setContentType("test/plain");
+		res.setStatus(500);
+		final Writer w = res.getWriter();
+		w.write("fail");
+		w.flush();
+		w.close();
+
+		return null;
+	}
+
+	/**
 	 * Setta nella session lo stato della sidebar (Aperta/chiusa)
 	 * @param req
 	 * @param res
@@ -221,4 +260,17 @@ public abstract class MainServlet extends HttpServlet {
 		req.setAttribute("navigationMessage", navigationMessage);
 	}
 
+	protected String md5(String input) throws NoSuchAlgorithmException {
+		String result = input;
+		if (input != null) {
+			MessageDigest md = MessageDigest.getInstance("MD5"); // or "SHA-1"
+			md.update(input.getBytes());
+			BigInteger hash = new BigInteger(1, md.digest());
+			result = hash.toString(16);
+			while (result.length() < 32) {
+				result = "0" + result;
+			}
+		}
+		return result;
+	}
 }
