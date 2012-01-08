@@ -2,13 +2,13 @@ package com.acmetoy.ravanator.fdt.persistence;
 
 public class AuthorDTO {
 
-	private int ranking;
+	private int ranking = -1;
 
-	private int messages;
+	private int messages = -1;
 
-	private String nick;
+	private String nick = null;
 
-	private byte[] avatar;
+	private byte[] avatar = null;
 
 	public String getNick() {
 		return nick;
@@ -56,6 +56,10 @@ public class AuthorDTO {
 		sb.append("bytes,");
 		sb.append("messages:").append(messages).append(",");
 		return sb.toString();
+	}
+	
+	public boolean isValid() {
+		return nick != null && ranking != -1 &&	messages != -1;
 	}
 
 }

@@ -140,7 +140,7 @@ public abstract class MainServlet extends HttpServlet {
 	public String getAvatar(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String nick = req.getParameter("nick");
 		AuthorDTO author = getPersistence().getAuthor(nick);
-		if (author != null) {
+		if (author.isValid()) {
 			if (author.getAvatar() != null) {
 				res.getOutputStream().write(author.getAvatar());
 			} else {

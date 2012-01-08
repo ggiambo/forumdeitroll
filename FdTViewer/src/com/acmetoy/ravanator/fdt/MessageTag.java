@@ -17,6 +17,7 @@ public class MessageTag extends BodyTagSupport {
 	private static final Pattern PATTERN_IMG = Pattern.compile("\\[img\\](.*?)\\[/img\\]");
 	private static final Pattern PATTERN_URL = Pattern.compile("([^\"]|^)(http[s]?://(.+?))( |$)");
 	private static final Pattern PATTERN_CODE = Pattern.compile("\\[code\\](.*?)\\[/code\\]");
+	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\](.*?)\\[/yt\\]");
 	private static final String[] QUOTE = new String[] { "#007BDF", "#00AF59", "#9A00EF", "#AF6F00" };
 
 	private static final long serialVersionUID = 1L;
@@ -55,11 +56,24 @@ public class MessageTag extends BodyTagSupport {
 			// img
 			m = PATTERN_IMG.matcher(line);
 			if (m.find()) {
-				String replace = "<a class=\"preview\" href=\"" + m.group(1) + "\"><img width=\"150px\" src=\"" + m.group(1) + "\"/></a>";
-				line = m.replaceFirst(replace);
-				m = PATTERN_IMG.matcher(line);
+				if (m.group(1).toLowerCase().startsWith("http")) {
+					String replace = "<a class=\"preview\" href=\"" + m.group(1) + "\"><img width=\"150px\" src=\"" + m.group(1) + "\"/></a>";
+					line = m.replaceFirst(replace);
+					m = PATTERN_IMG.matcher(line);
+				}
 			}
 			
+			// yt
+			m = PATTERN_YT.matcher(line);
+			if (m.find()) {
+				String replace = "<object height=\"329\" width=\"400\">" +
+					"<param value=\"http://www.youtube.com/v/" + m.group(1) + "\" name=\"movie\">" +
+					"<param value=\"transparent\" name=\"wmode\">" +
+					"<embed height=\"329\" width=\"400\" wmode=\"transparent\" type=\"application/x-shockwave-flash\" src=\"http://www.youtube.com/v/" +  m.group(1) + "\"></object>";
+				line = m.replaceFirst(replace);
+				m = PATTERN_YT.matcher(line);
+			}
+
 			// url
 			m = PATTERN_URL.matcher(line);
 			if (m.find()) {
