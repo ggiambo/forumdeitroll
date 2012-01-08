@@ -2,8 +2,6 @@ package com.acmetoy.ravanator.fdt.servlets;
 
 import java.awt.Color;
 import java.io.Writer;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,10 +27,10 @@ import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 public class Messages extends MainServlet {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
-	
-	private static final Map<String, String> EMO_MAP = new HashMap<String, String>();	
+
+	private static final Map<String, String> EMO_MAP = new HashMap<String, String>();
 	static {
 		EMO_MAP.put("1", " :)");
 		EMO_MAP.put("2", " :D");
@@ -306,7 +304,6 @@ public class Messages extends MainServlet {
 			return null;
 		}
 
-
 		req.getSession().removeAttribute("captcha");
 
 		String text = req.getParameter("text");
@@ -383,20 +380,6 @@ public class Messages extends MainServlet {
 
 	public static Map<String, String> getEmoMap() {
 		return new HashMap<String, String>(EMO_MAP);
-	}
-
-	private String md5(String input) throws NoSuchAlgorithmException {
-		String result = input;
-		if (input != null) {
-			MessageDigest md = MessageDigest.getInstance("MD5"); // or "SHA-1"
-			md.update(input.getBytes());
-			BigInteger hash = new BigInteger(1, md.digest());
-			result = hash.toString(16);
-			while (result.length() < 32) {
-				result = "0" + result;
-			}
-		}
-		return result;
 	}
 
 }
