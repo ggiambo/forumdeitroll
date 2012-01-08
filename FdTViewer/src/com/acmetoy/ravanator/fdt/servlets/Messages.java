@@ -72,7 +72,7 @@ public class Messages extends MainServlet {
 		EMO_MAP.put("troll4", "(troll4)");
 		EMO_MAP.put("troll", "(troll)");
 	}
-	
+
 	@Override
 	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return getByPage(req, res);
@@ -127,7 +127,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("messages", getPersistence().searchMessages(search, PAGE_SIZE, getPageNr(req)));
 		return "messages.jsp";
 	}
-	
+
 	/**
 	 * Popola il div per la risposta/quota messaggio
 	 * @param req
@@ -145,7 +145,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("emoMap", emoMap);
 		return "newMessage.jsp";
 	}
-	
+
 	/**
 	 * Popola il div per la risposta/quota messaggio
 	 * @param req
@@ -161,7 +161,7 @@ public class Messages extends MainServlet {
 		if ("quote".equals(type)) {
 			MessageDTO msgDTO = getPersistence().getMessage(Long.parseLong(parentId));
 			String text = msgDTO.getText().trim();
-			
+
 			// quote
 			Matcher m = PATTERN_QUOTE.matcher(text);
 			while (m.find()) {
@@ -175,7 +175,7 @@ public class Messages extends MainServlet {
 				text = m.replaceFirst(newBegin.toString());
 				m = PATTERN_QUOTE.matcher(text);
 			}
-			
+
 			String author = msgDTO.getAuthor();
 			text = "\r\nScritto da: " + (author != null ? author : "") + "\r\n>" + text;
 			msgDTO.setText(text);
@@ -185,10 +185,49 @@ public class Messages extends MainServlet {
 		// faccine - ordinate per key
 		TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
 		req.setAttribute("emoMap", emoMap);
-		
+
 		return "incReplyMessage.jsp";
 	}
-	
+
+	private AuthorDTO authenticate(final HttpServletRequest req) throws NoSuchAlgorithmException {
+		// check username and pass, se inseriti
+		String nick = req.getParameter("nick");
+		String pass = req.getParameter("pass");
+		if (!StringUtils.isEmpty(nick) && !StringUtils.isEmpty(pass)) {
+			final AuthorDTO author = getPersistence().getAuthor(nick, md5(pass));
+			if (!author.isValid()) {
+				return null;
+			}
+			// ok, ci siamo loggati con successo, salvare nella sessione
+			req.getSession().setAttribute(LOGGED_USER_SESSION_ATTR, nick);
+			return author;
+		}
+
+		// se non e` stato specificato nome utente e password tentiamo l'autenticazione tramite sessione
+		try {
+			final String sesNick = (String)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+			if (sesNick != null) {
+				final AuthorDTO author = getPersistence().getAuthor(sesNick);
+				if (!author.isValid()) {
+					return null;
+				}
+				return author;
+			}
+		} catch (ClassCastException e) {
+			return null;
+		}
+
+		// la coppia nome utente/password non e` stata inserita e l'utente non e` loggato, ergo deve inserire il captcha giusto
+		String captcha = req.getParameter("captcha");
+		String correctAnswer = (String)req.getSession().getAttribute("captcha");
+		if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
+			return null;
+		}
+
+		// captcha corretto, restituisce l'Author di default
+		return new AuthorDTO();
+	}
+
 	/**
 	 * Ritorna una stringa diversa da null da mostrare come messaggio d'errore all'utente
 	 * @param req
@@ -199,20 +238,20 @@ public class Messages extends MainServlet {
 	private String validateInsertMessage(HttpServletRequest req) throws Exception {
 
 		String text = req.getParameter("text");
-		
+
 		// testo di almeno di 5 caratteri ...
 		if (StringUtils.isEmpty(text) || text.length() < 5) {
 			return "Un po di fantasia, scrivi almeno 5 caratteri ...";
 		}
-		
+
 		// testo al massimo di 5000 caratteri ...
 		if (text.length() > 5000) {
 			return "Sei piu' logorroico di una Wakka, stai sotto i 5000 caratteri !";
 		}
-		
+
 		// subject almeno di 5 caratteri, cribbio !
 		long parentId;
-		try { 
+		try {
 			parentId = Long.parseLong(req.getParameter("parentId"));
 		} catch (NumberFormatException e) {
 			return "Il valore " + req.getParameter("parentId") + " assomiglia poco a un numero ...";
@@ -224,36 +263,16 @@ public class Messages extends MainServlet {
 				return "Oggetto di almeno di 5 caratteri, cribbio !";
 			}
 		}
-		
-		// check username and pass, se inseriti
-		String nick = req.getParameter("nick");
-		String pass = req.getParameter("pass");
-		AuthorDTO author = null;
-		if (!StringUtils.isEmpty(nick) && !StringUtils.isEmpty(pass)) {
-			author = getPersistence().getAuthor(nick, md5(pass));
-			if (author == null) {
-				return "Username o password non corretti";
-			}
-		}
-		
-		// se non autenticato, richiedi captcha
-		if (author == null) {
-			String captcha = req.getParameter("captcha");
-			String correctAnswer = (String)req.getSession().getAttribute("captcha");
-			if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
-				return "No no no ! Il captcha non e' corretto !";
-			}
-		}
-		
+
 		// qualcuno prova a creare un forum ;) ?
 		String forum = req.getParameter("forum");
 		if (!StringUtils.isEmpty(forum) && !getPersistence().getForums().contains(forum)) {
 			return "Ma che cacchio di forum e' '" + forum + "' ?!?";
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * Inserisce un nuovo messaggio
 	 * @param req
@@ -262,7 +281,7 @@ public class Messages extends MainServlet {
 	 * @throws Exception
 	 */
 	public String insertMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		
+
 		// se c'e' un'errore, mostralo
 		String validationMessage = validateInsertMessage(req);
 		if (validationMessage != null) {
@@ -274,19 +293,32 @@ public class Messages extends MainServlet {
 			w.close();
 			return null;
 		}
-		
+
+		final AuthorDTO author = authenticate(req);
+		if (author == null) {
+			//autenticazione fallita
+			res.setContentType("text/plain");
+			res.setStatus(500);
+			final Writer w = res.getWriter();
+			w.write("Autenticazione / verifica captcha fallita");
+			w.flush();
+			w.close();
+			return null;
+		}
+
+
 		req.getSession().removeAttribute("captcha");
-		
+
 		String text = req.getParameter("text");
 		// replace dei caratteri HTML
 		text = text.replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\n", "<BR>");
-		
+
 		// restore <i>, <b>, <u> e <s>
 		for (String t : new String[] {"i", "b", "u", "s"}) {
 			text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
 			text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
 		}
-		
+
 		// evita inject in yt
 		Pattern p = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
 		Matcher m = p.matcher(text);
@@ -295,12 +327,7 @@ public class Messages extends MainServlet {
 			text = m.replaceFirst(Matcher.quoteReplacement("[yt]" + replace + "[/yt]"));
 			 m = p.matcher(text);
 		}
-		
-		// autore
-		String nick = req.getParameter("nick");
-		String pass = req.getParameter("pass");
-		AuthorDTO author = getPersistence().getAuthor(nick, md5(pass));
-		
+
 		// reply o messaggio nuovo ?
 		long parentId = Long.parseLong(req.getParameter("parentId"));
 		MessageDTO msg = new MessageDTO();
@@ -320,15 +347,15 @@ public class Messages extends MainServlet {
 			msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 			msg.setThreadId(-1);
 		}
-		
+
 		// incrementa il numero di messaggi scritti
 		if (author.isValid()) {
 			author.setMessages(author.getMessages() + 1);
 			getPersistence().updateAuthor(author);
 		}
-		
+
 		msg = getPersistence().insertMessage(msg);
-		
+
 		// redirect
 		res.setContentType("text/plain");
 		Writer out = res.getWriter();
@@ -338,7 +365,7 @@ public class Messages extends MainServlet {
 
 		return null;
 	}
-	
+
 	public String getCaptcha(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		Captcha captcha = new Captcha.Builder(150, 50)
 				.addText(new NumbersAnswerProducer(6))
@@ -353,11 +380,11 @@ public class Messages extends MainServlet {
 		req.getSession().setAttribute("captcha", captcha.getAnswer());
 		return null;
 	}
-	
+
 	public static Map<String, String> getEmoMap() {
 		return new HashMap<String, String>(EMO_MAP);
 	}
-	
+
 	private String md5(String input) throws NoSuchAlgorithmException {
 		String result = input;
 		if (input != null) {
@@ -371,5 +398,5 @@ public class Messages extends MainServlet {
 		}
 		return result;
 	}
-	
+
 }

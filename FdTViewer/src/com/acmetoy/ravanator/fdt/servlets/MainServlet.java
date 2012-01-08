@@ -24,6 +24,8 @@ public abstract class MainServlet extends HttpServlet {
 
 	protected static final int PAGE_SIZE = 15;
 
+	protected static final String LOGGED_USER_SESSION_ATTR = "loggedUser";
+
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
 
