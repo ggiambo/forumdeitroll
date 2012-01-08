@@ -37,11 +37,19 @@
 			Forum <i>${param.forum}</i>
 		</c:if>
 		<textarea tabindex="1" name="text" tabindex="2" rows="20" style="font-size:13px; width:100%">${message.text}</textarea><br/>
-		Nome: <input tabindex="2" name="nick" size="10"/> Password: <input tabindex="3" type="password" name="pass" size="10"/>
-		<input type="hidden" name="forum" value="${forum }"/>
-		<div style="margin: 3px">
-			<img src="Messages?action=getCaptcha" style="vertical-align:middle"/>&nbsp;<input tabindex="4" name="captcha" size="5"/> (Solo per ANOnimi)
-			<input tabindex="5" type="button" value="Invia" onClick="send(${parentId})"/>
-		</div>
+		<%--Mostra username password captcha solo se non autenticato --%>
+		<c:choose>
+			<c:when test="${empty loggedUser}">
+				Nome: <input tabindex="2" name="nick" size="10"/> Password: <input tabindex="3" type="password" name="pass" size="10"/>
+				<input type="hidden" name="forum" value="${forum }"/>
+				<div style="margin: 3px">
+					<img src="Messages?action=getCaptcha" style="vertical-align:middle"/>&nbsp;<input tabindex="4" name="captcha" size="5"/> (Solo per ANOnimi)
+					<input tabindex="5" type="button" value="Invia" onClick="send(${parentId})"/>
+				</div>
+			</c:when>
+			<c:otherwise>
+				<input tabindex="5" type="button" value="Invia" onClick="send(${parentId})"/>
+			</c:otherwise>
+		</c:choose>
 	</div>
 </div>
