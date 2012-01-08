@@ -287,12 +287,12 @@ public class Messages extends MainServlet {
 			text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
 		}
 		
-		// evita inject in img
-		Pattern p = Pattern.compile("\\[img\\]((.*?)\"(.*?))\\[/img\\]");
+		// evita inject in yt
+		Pattern p = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
 		Matcher m = p.matcher(text);
 		while (m.find()) {
 			String replace =  m.group(1).replaceAll("\"", "");
-			text = m.replaceFirst(Matcher.quoteReplacement("[img]" + replace + "[/img]"));
+			text = m.replaceFirst(Matcher.quoteReplacement("[yt]" + replace + "[/yt]"));
 			 m = p.matcher(text);
 		}
 		
