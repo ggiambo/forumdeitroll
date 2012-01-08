@@ -38,6 +38,7 @@ function showReplyDiv(type, parentId) {
 		function(data) {
 			$("#msg" + parentId).append($(data));
 			$("#buttons_" + parentId).hide();
+			$("#reply_" + parentId + " :input[name='text']").focus();
 	});
 }
 

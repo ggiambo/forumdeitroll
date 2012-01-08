@@ -177,7 +177,7 @@ public class Messages extends MainServlet {
 			}
 			
 			String author = msgDTO.getAuthor();
-			text = "\r\nScritto da: " + (author != null ? author : "") + "\r\n>" + text;
+			text = "\r\nScritto da: " + (author != null ? author : "") + "\r\n>" + text + "\r\n";
 			msgDTO.setText(text);
 			req.setAttribute("message", msgDTO);
 		}

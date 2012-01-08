@@ -171,10 +171,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		AuthorDTO dto = new AuthorDTO();
 		try {
 			ps = conn.prepareStatement("SELECT * FROM authors WHERE UPPER(NICK) = ?");
-			ps.setString(1, nick);
+			ps.setString(1, nick.toUpperCase());
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				dto.setNick(rs.getString("nick").toUpperCase());
+				dto.setNick(rs.getString("nick"));
 				dto.setRanking(rs.getInt("ranking"));
 				dto.setAvatar(rs.getBytes("avatar"));
 				dto.setMessages(rs.getInt("messages"));
@@ -195,11 +195,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		AuthorDTO dto = new AuthorDTO();
 		try {
 			ps = conn.prepareStatement("SELECT * FROM authors WHERE UPPER(nick) = ? AND password = ?");
-			ps.setString(1, nick);
+			ps.setString(1, nick.toUpperCase());
 			ps.setString(2, MD5pass);
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				dto.setNick(rs.getString("nick").toUpperCase());
+				dto.setNick(rs.getString("nick"));
 				dto.setRanking(rs.getInt("ranking"));
 				dto.setAvatar(rs.getBytes("avatar"));
 				dto.setMessages(rs.getInt("messages"));
