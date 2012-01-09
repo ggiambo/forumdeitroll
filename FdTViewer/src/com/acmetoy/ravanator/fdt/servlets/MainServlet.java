@@ -8,6 +8,8 @@ import java.io.Writer;
 import java.security.MessageDigest;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -15,6 +17,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -107,6 +110,12 @@ public abstract class MainServlet extends HttpServlet {
 			action = "init";
 		}
 		req.setAttribute("action", action);
+
+		final HttpSession session = req.getSession();
+		if (session.isNew()) {
+			String id = session.getId();
+			res.setHeader("Set-Cookie", String.format("JSESSIONID=%s;Max-Age=%d;Path=/", id, 365*24*60*60));
+		}
 
 		try {
 			// call via reflection
