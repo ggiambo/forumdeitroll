@@ -13,11 +13,18 @@
 		<li>|</li>
 		<li><a href="Messages?action=newMessage&forum=${param.forum }">Nuovo messaggio</a>
 		<li>|</li>
-			<c:if test="${not empty loggedUser}">
-				Loggato come ${loggedUser} 
-				<li><a href="Messages?action=logout">Logout</a>
-				<li>|</li>
-			</c:if>
+			<c:choose>
+				<c:when test="${not empty loggedUser}">
+					Loggato come <a href="User">${loggedUser}</a>
+					[<li><a href="Messages?action=logoutAction">Logout</a>]
+				</c:when>
+				<c:otherwise>
+					<li><a href="User?action=loginAction">Login</a>
+					<li>|</li>
+					<li><a href="User?action=registerAction">Registrati</a>
+				</c:otherwise>
+			</c:choose>
+		<li>|</li>
 		<li><jsp:include page="incPrevNext.jsp"/></li>
 	</ul>
 </div>

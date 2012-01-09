@@ -1,9 +1,19 @@
-body,html {
+html {
 	font-family: 'Helvetica';
 	font-size: 15px;
 	margin: 0;
 	padding: 0;
 	color: #000;
+	background-color: #41636B;
+}
+
+body {
+	width: 80%;
+	margin: auto;
+	border: 1px solid;
+	box-shadow:5px 5px 25px black;
+	margin-top: 1em;
+	background-color: white;
 }
 
 #header {
@@ -126,4 +136,20 @@ h4 {
 	padding:1px 5px;
 	background-color: Gainsboro;
 	cursor: pointer;
+}
+
+label {
+	text-align: right;
+	width: 150px;
+	display: block;
+	float: left;
+	clear: left;
+	margin-right: 3px;
+	cursor: pointer
+}
+
+div.message {
+	font-family: Arial,Helvetica,Sans,"Nimbus Sans",sans-serif;
+	font-size: 16px;
+	line-height: 20px;
 }

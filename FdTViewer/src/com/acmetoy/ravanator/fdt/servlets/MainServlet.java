@@ -1,15 +1,13 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.io.Writer;
-import java.security.MessageDigest;
 import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -19,8 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.StringUtils;
+import nl.captcha.Captcha;
+import nl.captcha.backgrounds.GradiatedBackgroundProducer;
+import nl.captcha.gimpy.RippleGimpyRenderer;
+import nl.captcha.servlet.CaptchaServletUtil;
+import nl.captcha.text.producer.NumbersAnswerProducer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
@@ -170,34 +173,45 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	/**
-	Richiesta logout
-	*/
-	public String logoutAction(HttpServletRequest req, HttpServletResponse res) throws IOException, NoSuchAlgorithmException {
-		final String sesNick = (String)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
-		final String nick = req.getParameter("nick");
-		final String pass = req.getParameter("pass");
-		if (!StringUtils.isEmpty(nick) && !StringUtils.isEmpty(pass) && !StringUtils.isEmpty(sesNick)) {
+	 * Tenta un login: Ritorna AuthorDTO valido se OK, AuthorDTO invalido se e'
+	 * stato inserito un captcha giusto, null se autenticazione fallita.
+	 * @param req
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 */
+	protected AuthorDTO login(final HttpServletRequest req) throws NoSuchAlgorithmException {
+		// check username and pass, se inseriti
+		String nick = req.getParameter("nick");
+		String pass = req.getParameter("pass");
+		if (!StringUtils.isEmpty(nick) && !StringUtils.isEmpty(pass)) {
 			final AuthorDTO author = getPersistence().getAuthor(nick, md5(pass));
-
-			if (sesNick.equals(author.getNick())) {
-				res.setContentType("text/plain");
-				res.setStatus(200);
-				final Writer w = res.getWriter();
-				w.write("ok");
-				w.flush();
-				w.close();
-				return null;
+			if (author.isValid()) {
+				// ok, ci siamo loggati con successo, salvare nella sessione
+				req.getSession().setAttribute(LOGGED_USER_SESSION_ATTR, author.getNick());
 			}
+			return author;
 		}
 
-		res.setContentType("test/plain");
-		res.setStatus(500);
-		final Writer w = res.getWriter();
-		w.write("fail");
-		w.flush();
-		w.close();
+		// se non e` stato specificato nome utente e password tentiamo l'autenticazione tramite sessione
+		final String sesNick = (String)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+		if (sesNick != null) {
+			return getPersistence().getAuthor(sesNick);
+		}
 
-		return null;
+		// captcha corretto, restituisce l'Author di default
+		return new AuthorDTO();
+	}
+	
+	/**
+	 * Cancella l'utente loggato dalla sessione
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	public String logoutAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
+		return init(req, res);
 	}
 
 	/**
@@ -269,6 +283,12 @@ public abstract class MainServlet extends HttpServlet {
 		req.setAttribute("navigationMessage", navigationMessage);
 	}
 
+	/**
+	 * Calcola l'MD5 della password, stesso valore di MD5() di MySQL
+	 * @param input
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 */
 	protected String md5(String input) throws NoSuchAlgorithmException {
 		String result = input;
 		if (input != null) {
@@ -281,5 +301,27 @@ public abstract class MainServlet extends HttpServlet {
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * Genera un captcha
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	public String getCaptcha(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		Captcha captcha = new Captcha.Builder(150, 50)
+				.addText(new NumbersAnswerProducer(6))
+				.addBackground(new GradiatedBackgroundProducer(Color.MAGENTA, Color.CYAN))
+				.gimp(new RippleGimpyRenderer())
+				.build();
+		res.setHeader("Cache-Control", "no-store");
+		res.setHeader("Pragma", "no-cache");
+		res.setDateHeader("Expires", 0);
+		res.setContentType("image/jpeg");
+		CaptchaServletUtil.writeImage(res, captcha.getImage());
+		req.getSession().setAttribute("captcha", captcha.getAnswer());
+		return null;
 	}
 }

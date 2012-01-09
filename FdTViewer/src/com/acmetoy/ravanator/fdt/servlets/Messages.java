@@ -1,8 +1,7 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
-import java.awt.Color;
 import java.io.Writer;
-import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,12 +11,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import nl.captcha.Captcha;
-import nl.captcha.backgrounds.GradiatedBackgroundProducer;
-import nl.captcha.gimpy.RippleGimpyRenderer;
-import nl.captcha.servlet.CaptchaServletUtil;
-import nl.captcha.text.producer.NumbersAnswerProducer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -134,10 +127,9 @@ public class Messages extends MainServlet {
 	 * @throws Exception
 	 */
 	public String newMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String forum = req.getParameter("forum");
-		req.setAttribute("forum", forum);
-		req.setAttribute("parentId", -1);
-		setNavigationMessage(req, forum);
+		MessageDTO msg = new MessageDTO();
+		msg.setForum(req.getParameter("forum"));
+		req.setAttribute("message", msg);
 		// faccine - ordinate per key
 		TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
 		req.setAttribute("emoMap", emoMap);
@@ -154,10 +146,11 @@ public class Messages extends MainServlet {
 	public String showReplyDiv(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		res.setCharacterEncoding("UTF-8");
 		String type = req.getParameter("type");
-		String parentId = req.getParameter("parentId");
+		long parentId = Long.parseLong(req.getParameter("parentId"));
 		req.setAttribute("parentId", parentId);
+		MessageDTO newMsg = new MessageDTO();
 		if ("quote".equals(type)) {
-			MessageDTO msgDTO = getPersistence().getMessage(Long.parseLong(parentId));
+			MessageDTO msgDTO = getPersistence().getMessage(parentId);
 			String text = msgDTO.getText().trim();
 
 			// quote
@@ -175,55 +168,19 @@ public class Messages extends MainServlet {
 			}
 
 			String author = msgDTO.getAuthor();
-			text = "\r\nScritto da: " + (author != null ? author : "") + "\r\n>" + text + "\r\n";
-			msgDTO.setText(text);
-			req.setAttribute("message", msgDTO);
+			text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n>" + text + "\r\n";
+			newMsg.setText(text);
+			newMsg.setForum(msgDTO.getForum());
+			newMsg.setSubject(msgDTO.getSubject());
 		}
+		newMsg.setParentId(parentId);
+		req.setAttribute("message", newMsg);
 
 		// faccine - ordinate per key
 		TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
 		req.setAttribute("emoMap", emoMap);
 
 		return "incReplyMessage.jsp";
-	}
-
-	private AuthorDTO authenticate(final HttpServletRequest req) throws NoSuchAlgorithmException {
-		// check username and pass, se inseriti
-		String nick = req.getParameter("nick");
-		String pass = req.getParameter("pass");
-		if (!StringUtils.isEmpty(nick) && !StringUtils.isEmpty(pass)) {
-			final AuthorDTO author = getPersistence().getAuthor(nick, md5(pass));
-			if (!author.isValid()) {
-				return null;
-			}
-			// ok, ci siamo loggati con successo, salvare nella sessione
-			req.getSession().setAttribute(LOGGED_USER_SESSION_ATTR, nick);
-			return author;
-		}
-
-		// se non e` stato specificato nome utente e password tentiamo l'autenticazione tramite sessione
-		try {
-			final String sesNick = (String)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
-			if (sesNick != null) {
-				final AuthorDTO author = getPersistence().getAuthor(sesNick);
-				if (!author.isValid()) {
-					return null;
-				}
-				return author;
-			}
-		} catch (ClassCastException e) {
-			return null;
-		}
-
-		// la coppia nome utente/password non e` stata inserita e l'utente non e` loggato, ergo deve inserire il captcha giusto
-		String captcha = req.getParameter("captcha");
-		String correctAnswer = (String)req.getSession().getAttribute("captcha");
-		if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
-			return null;
-		}
-
-		// captcha corretto, restituisce l'Author di default
-		return new AuthorDTO();
 	}
 
 	/**
@@ -257,8 +214,11 @@ public class Messages extends MainServlet {
 		if (parentId == -1) {
 			// nuovo messaggio
 			String subject = req.getParameter("subject");
-			if (StringUtils.isEmpty(subject) || subject.trim().length() < 5) {
-				return "Oggetto di almeno di 5 caratteri, cribbio !";
+			if (StringUtils.isEmpty(subject) || subject.trim().length() < 3) {
+				return "Oggetto di almeno di 3 caratteri, cribbio !";
+			}
+			if (subject.length() > 25) {
+				return "LOL oggetto piu' lungo di 25 caratteri !";
 			}
 		}
 
@@ -278,6 +238,97 @@ public class Messages extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
+	public String editMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		// check se l'uente loggato corrisponde a chi ha scritto il messaggio
+		AuthorDTO user = login(req);
+		String msgId = req.getParameter("msgId");
+		MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
+		if (!user.isValid() || !user.getNick().equals(msg.getAuthor())) {
+			setNavigationMessage(req, "Non puoi editare un messaggio non tuo !");
+			return getByPage(req, res);
+		}
+		
+		// cleanup
+		msg.setText(msg.getText().replaceAll("<BR>", "\r\n"));
+		req.setAttribute("message", msg);
+		
+		// faccine - ordinate per key
+		TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
+		req.setAttribute("emoMap", emoMap);
+		
+		return "newMessage.jsp";
+	}
+	
+//	/**
+//	 * Salva il messaggio editato
+//	 * @param req
+//	 * @param res
+//	 * @return
+//	 * @throws Exception
+//	 */
+//	public String insertEditedMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
+//		
+//		// se c'e' un'errore, mostralo
+//		String validationMessage = validateInsertMessage(req);
+//		if (validationMessage != null) {
+//			res.setContentType("text/plain");
+//			res.setStatus(500);
+//			Writer w = res.getWriter();
+//			w.write(validationMessage);
+//			w.flush();
+//			w.close();
+//			return null;
+//		}
+//
+//		// check che chi modifica e' pure l'autore
+//		String msgId = req.getParameter("msgId");
+//		MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
+//		AuthorDTO user = login(req);
+//		if (!user.isValid() || !user.getNick().equals(msg.getAuthor())) {
+//			setNavigationMessage(req, "Non puoi editare un messaggio non tuo !");
+//			return getByPage(req, res);
+//		}
+//		
+//		String text = req.getParameter("text");
+//		// replace dei caratteri HTML
+//		text = text.replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\n", "<BR>");
+//
+//		// restore <i>, <b>, <u> e <s>
+//		for (String t : new String[] {"i", "b", "u", "s"}) {
+//			text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
+//			text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
+//		}
+//
+//		// evita inject in yt
+//		Pattern p = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
+//		Matcher m = p.matcher(text);
+//		while (m.find()) {
+//			String replace =  m.group(1).replaceAll("\"", "");
+//			text = m.replaceFirst(Matcher.quoteReplacement("[yt]" + replace + "[/yt]"));
+//			m = p.matcher(text);
+//		}
+//		
+//		text += "\r\n<b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
+//		msg.setText(text);
+//		//getPersistence().updateMessage(msg);
+//		
+//		// redirect
+//		res.setContentType("text/plain");
+//		Writer out = res.getWriter();
+//		out.write("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "&random=" + Math.random() + "#msg" + msg.getId());
+//		out.flush();
+//		out.close();
+//
+//		return null;
+//	}
+	
+	/**
+	 * Inserisce un messaggio nuovo o editato
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
 	public String insertMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
 		// se c'e' un'errore, mostralo
@@ -292,16 +343,21 @@ public class Messages extends MainServlet {
 			return null;
 		}
 
-		final AuthorDTO author = authenticate(req);
-		if (author == null) {
-			//autenticazione fallita
-			res.setContentType("text/plain");
-			res.setStatus(500);
-			final Writer w = res.getWriter();
-			w.write("Autenticazione / verifica captcha fallita");
-			w.flush();
-			w.close();
-			return null;
+		final AuthorDTO author = login(req);
+		if (!author.isValid()) {
+			// la coppia nome utente/password non e` stata inserita e l'utente non e` loggato, ergo deve inserire il captcha giusto
+			String captcha = req.getParameter("captcha");
+			String correctAnswer = (String)req.getSession().getAttribute("captcha");
+			if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
+				//autenticazione fallita
+				res.setContentType("text/plain");
+				res.setStatus(500);
+				final Writer w = res.getWriter();
+				w.write("Autenticazione / verifica captcha fallita");
+				w.flush();
+				w.close();
+				return null;
+			}
 		}
 
 		req.getSession().removeAttribute("captcha");
@@ -333,21 +389,42 @@ public class Messages extends MainServlet {
 		msg.setDate(new Date());
 		msg.setText(text);
 		if (parentId > 0) {
-			// reply
-			MessageDTO replyMsg = getPersistence().getMessage(parentId);
-			msg.setForum(replyMsg.getForum());
-			msg.setSubject(replyMsg.getSubject());
-			msg.setThreadId(replyMsg.getThreadId());
+			long id = Long.parseLong(req.getParameter("id"));
+			if (id > -1) {
+				// modify
+				msg = getPersistence().getMessage(id);
+				if (msg.getAuthor() == null || !msg.getAuthor().equals(author.getNick())) {
+					res.setContentType("text/plain");
+					res.setStatus(500);
+					final Writer w = res.getWriter();
+					w.write("Imbroglione, non puoi modificare questo messaggio !");
+					w.flush();
+					w.close();
+					return null;
+				}
+				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
+				msg.setText(text);
+			} else {
+				// reply
+				MessageDTO replyMsg = getPersistence().getMessage(parentId);
+				msg.setForum(replyMsg.getForum());
+				msg.setSubject(replyMsg.getSubject());
+				msg.setThreadId(replyMsg.getThreadId());
+			}
 		} else {
 			// nuovo messaggio
 			String forum = req.getParameter("forum");
-			if (forum == null) forum = "";
-			msg.setForum(req.getParameter("forum").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
+			if (StringUtils.isEmpty(forum)) {
+				forum = null;
+			} else {
+				forum = forum.replaceAll(">", "&gt;").replaceAll("<", "&lt;");
+			}
+			msg.setForum(forum);
 			msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 			msg.setThreadId(-1);
 		}
 
-		// incrementa il numero di messaggi scritti
+		// incrementa il numero di messaggi scritti (anche per i modificati, dai ;) !)
 		if (author.isValid()) {
 			author.setMessages(author.getMessages() + 1);
 			getPersistence().updateAuthor(author);
@@ -362,21 +439,6 @@ public class Messages extends MainServlet {
 		out.flush();
 		out.close();
 
-		return null;
-	}
-
-	public String getCaptcha(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		Captcha captcha = new Captcha.Builder(150, 50)
-				.addText(new NumbersAnswerProducer(6))
-				.addBackground(new GradiatedBackgroundProducer(Color.MAGENTA, Color.CYAN))
-				.gimp(new RippleGimpyRenderer())
-				.build();
-		res.setHeader("Cache-Control", "no-store");
-		res.setHeader("Pragma", "no-cache");
-		res.setDateHeader("Expires", 0);
-		res.setContentType("image/jpeg");
-		CaptchaServletUtil.writeImage(res, captcha.getImage());
-		req.getSession().setAttribute("captcha", captcha.getAnswer());
 		return null;
 	}
 

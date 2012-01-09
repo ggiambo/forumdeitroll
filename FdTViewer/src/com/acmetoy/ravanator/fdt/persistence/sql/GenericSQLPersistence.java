@@ -55,10 +55,33 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	@Override
 	public MessageDTO insertMessage(MessageDTO message) {
 		if (message.getParentId() != -1) {
-			return getMessage(insertReplyMessage(message));
+			if (message.getId() == -1) {
+				return getMessage(insertReplyMessage(message));
+			} else {
+				return getMessage(insertEditMessage(message));
+			}
 		} else {
 			return getMessage(insertNewMessage(message));
 		}
+	}
+	
+	private long insertEditMessage(MessageDTO message) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("UPDATE messages set text = ? where id = ?");
+			int i = 1;
+			ps.setString(i++, message.getText());
+			ps.setLong(i++, message.getId());
+			ps.execute();
+			return message.getId();
+		} catch (SQLException e) {
+			LOG.error("Cannot insert message " + message.toString(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return -1;
 	}
 
 	private long insertReplyMessage(MessageDTO message) {
@@ -188,7 +211,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public AuthorDTO getAuthor(String nick, String MD5pass) {
+	public AuthorDTO getAuthor(String nick, String MD5password) {
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -196,7 +219,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		try {
 			ps = conn.prepareStatement("SELECT * FROM authors WHERE UPPER(nick) = ? AND password = ?");
 			ps.setString(1, nick.toUpperCase());
-			ps.setString(2, MD5pass);
+			ps.setString(2, MD5password);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				dto.setNick(rs.getString("nick"));
@@ -204,6 +227,37 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				dto.setAvatar(rs.getBytes("avatar"));
 				dto.setMessages(rs.getInt("messages"));
 			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get Author " + nick, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return dto;
+	}
+	@Override
+	public AuthorDTO registerUser(String nick, String MD5pass) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		AuthorDTO dto = new AuthorDTO();
+		try {
+			// check se esiste gia'. Blah banf transazioni chissenefrega
+			ps = conn.prepareStatement("SELECT * FROM authors WHERE UPPER(nick) = ?");
+			int i = 1;
+			ps.setString(i++, nick);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return new AuthorDTO();
+			}
+			// inserisci
+			ps = conn.prepareStatement("INSERT INTO authors (nick, password, ranking, messages) VALUES (?, ?, ?, ?)");
+			i = 1;
+			ps.setString(i++, nick);
+			ps.setString(i++, MD5pass);
+			ps.setInt(i++, 0);
+			ps.setInt(i++, 0);
+			ps.execute();
+			dto = getAuthor(nick, MD5pass);
 		} catch (SQLException e) {
 			LOG.error("Cannot get Author " + nick, e);
 		} finally {
@@ -245,6 +299,24 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} finally {
 			close(rs, ps, conn);
 		}
+	}
+	
+	@Override
+	public boolean updateAuthorPassword(String nick, String MD5password) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("UPDATE authors SET password = ? where nick = ?");
+			ps.setString(1, MD5password);
+			ps.setString(2, nick);
+			return ps.executeUpdate() == 1;
+		} catch (SQLException e) {
+			LOG.error("Cannot update author '" + nick + "'", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return false;
 	}
 	
 	protected List<MessageDTO> getMessages(ResultSet rs) throws SQLException {

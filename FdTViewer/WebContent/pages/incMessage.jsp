@@ -36,14 +36,18 @@
 			</i>
 			alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy HH:mm"/>
 		</span>
-
+		<c:if test="${not empty loggedUser && msg.author == loggedUser}">
+			<span class="author">
+				- <a href="Messages?action=editMessage&msgId=${msg.id}&forum=${msg.forum}">Modifica</a>
+			</span>
+		</c:if>	
 	</div>
 
 	<span style="width:100%; margin:5px;">
 		<b><a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}"/>${msg.subject}</a></b>
 	</span>
 
-	<div style="padding: 10px;">
+	<div style="padding: 10px;" class="message">
 		<fdt:msg search="${param.search}">${msg.text}</fdt:msg>
 		<%-- close open tags --%>
 		<c:out escapeXml="false" value="</b></i></u>"/>

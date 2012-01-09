@@ -29,6 +29,10 @@ public interface IPersistence {
 
 	public void updateAuthor(AuthorDTO author);
 	
+	public boolean updateAuthorPassword(String nick, String MD5password);
+	
 	public List<MessageDTO> searchMessages(String search, int pageSize, int pageNr);
+	
+	public AuthorDTO registerUser(String nick, String MD5password);
 
 }

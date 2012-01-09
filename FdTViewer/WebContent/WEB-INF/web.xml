@@ -22,6 +22,15 @@
 		<servlet-name>Threads</servlet-name>
 		<url-pattern>/Threads</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>User</servlet-name>
+		<servlet-class>com.acmetoy.ravanator.fdt.servlets.User</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>User</servlet-name>
+		<url-pattern>/User</url-pattern>
+	</servlet-mapping>
 
 	<jsp-config>
 		<taglib>
