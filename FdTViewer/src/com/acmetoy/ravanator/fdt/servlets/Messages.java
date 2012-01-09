@@ -197,7 +197,7 @@ public class Messages extends MainServlet {
 				return null;
 			}
 			// ok, ci siamo loggati con successo, salvare nella sessione
-			req.getSession().setAttribute(LOGGED_USER_SESSION_ATTR, author.getNick());
+			req.getSession().setAttribute(LOGGED_USER_SESSION_ATTR, nick);
 			return author;
 		}
 
@@ -224,18 +224,6 @@ public class Messages extends MainServlet {
 
 		// captcha corretto, restituisce l'Author di default
 		return new AuthorDTO();
-	}
-	
-	/**
-	 * Cancella l'utente loggato dalla sessione
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
-	public String logout(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
-		return init(req, res);
 	}
 
 	/**
@@ -352,6 +340,8 @@ public class Messages extends MainServlet {
 			msg.setThreadId(replyMsg.getThreadId());
 		} else {
 			// nuovo messaggio
+			String forum = req.getParameter("forum");
+			if (forum == null) forum = "";
 			msg.setForum(req.getParameter("forum").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 			msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 			msg.setThreadId(-1);
