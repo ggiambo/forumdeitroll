@@ -1,5 +1,5 @@
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=latin1">
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<link href="css/fdt.css" type="text/css" rel="stylesheet"/>
 	<script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
 	<script type="text/javascript" src="js/fdt.js"></script>

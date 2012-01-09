@@ -2,6 +2,23 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 
+<script>
+	$(document).ready(function() {
+		$("#reply_${message.parentId} :input[name='pass']").keydown(function(e) {
+			if (e.which == 13) {
+				send(${message.parentId});
+			}
+		});
+		$("#reply_${message.parentId} :input[name='captcha']").keydown(function(e) {
+			if (e.which == 13) {
+				send(${message.parentId});
+			}
+		});
+	});
+
+	
+</script>
+
 <div id="reply_${message.parentId}">
 
 	<c:if test="${message.parentId != -1 || message.id != -1}">

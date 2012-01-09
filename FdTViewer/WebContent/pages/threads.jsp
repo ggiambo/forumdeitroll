@@ -7,7 +7,7 @@
 
 	<body>
 
-	<div id="header"><h1>FdT Due Zero !</h1></div>
+		<jsp:include page="incHeader.jsp"/>
 
 		<jsp:include page="incNav.jsp"/>
 
@@ -67,6 +67,8 @@
 		<c:if test="${currentTimeMillis != null}">
 			<!--time: <%=System.currentTimeMillis() - (Long)request.getAttribute("currentTimeMillis")%> -->
 		</c:if>
+		
+		<div style="clear: both;"></div>
 
 	</body>
 </html>
