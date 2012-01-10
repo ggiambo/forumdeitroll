@@ -17,13 +17,14 @@ body {
 }
 
 #header {
-	padding: 5px 10px;
-	background: #B9C1B1;
+	 padding: 5px 10px;
+	 background-image:url(../images/banner.png);
 }
 
 h1 {
+	margin: 20px;
 	font-variant: small-caps;
-	text-shadow: 3px 3px 3px gray;
+	text-shadow: 3px 3px 3px #BBBBBB;
 }
 
 #nav {
