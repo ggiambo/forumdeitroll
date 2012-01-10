@@ -1,1 +1,1 @@
-<div id="header"><h1><a style="text-decoration:none; color:#DDDDDD" href="Threads">FdT Due Zero !</a></h1></div>
+<div id="header"><h1><a style="text-decoration:none; color:#DDDDDD" href="Threads">Forum dei Troll</a></h1></div>
