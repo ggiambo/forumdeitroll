@@ -22,6 +22,8 @@ public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
+	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
+    private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?v=(.{11})");
 
 	private static final Map<String, String> EMO_MAP = new HashMap<String, String>();
 	static {
@@ -259,69 +261,6 @@ public class Messages extends MainServlet {
 		return "newMessage.jsp";
 	}
 	
-//	/**
-//	 * Salva il messaggio editato
-//	 * @param req
-//	 * @param res
-//	 * @return
-//	 * @throws Exception
-//	 */
-//	public String insertEditedMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-//		
-//		// se c'e' un'errore, mostralo
-//		String validationMessage = validateInsertMessage(req);
-//		if (validationMessage != null) {
-//			res.setContentType("text/plain");
-//			res.setStatus(500);
-//			Writer w = res.getWriter();
-//			w.write(validationMessage);
-//			w.flush();
-//			w.close();
-//			return null;
-//		}
-//
-//		// check che chi modifica e' pure l'autore
-//		String msgId = req.getParameter("msgId");
-//		MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
-//		AuthorDTO user = login(req);
-//		if (!user.isValid() || !user.getNick().equals(msg.getAuthor())) {
-//			setNavigationMessage(req, "Non puoi editare un messaggio non tuo !");
-//			return getByPage(req, res);
-//		}
-//		
-//		String text = req.getParameter("text");
-//		// replace dei caratteri HTML
-//		text = text.replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\n", "<BR>");
-//
-//		// restore <i>, <b>, <u> e <s>
-//		for (String t : new String[] {"i", "b", "u", "s"}) {
-//			text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
-//			text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
-//		}
-//
-//		// evita inject in yt
-//		Pattern p = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
-//		Matcher m = p.matcher(text);
-//		while (m.find()) {
-//			String replace =  m.group(1).replaceAll("\"", "");
-//			text = m.replaceFirst(Matcher.quoteReplacement("[yt]" + replace + "[/yt]"));
-//			m = p.matcher(text);
-//		}
-//		
-//		text += "\r\n<b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
-//		msg.setText(text);
-//		//getPersistence().updateMessage(msg);
-//		
-//		// redirect
-//		res.setContentType("text/plain");
-//		Writer out = res.getWriter();
-//		out.write("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "&random=" + Math.random() + "#msg" + msg.getId());
-//		out.flush();
-//		out.close();
-//
-//		return null;
-//	}
-	
 	/**
 	 * Inserisce un messaggio nuovo o editato
 	 * @param req
@@ -373,13 +312,19 @@ public class Messages extends MainServlet {
 		}
 
 		// evita inject in yt
-		Pattern p = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
-		Matcher m = p.matcher(text);
+		Matcher m = PATTERN_YT.matcher(text);
 		while (m.find()) {
 			String replace =  m.group(1).replaceAll("\"", "");
 			text = m.replaceFirst(Matcher.quoteReplacement("[yt]" + replace + "[/yt]"));
-			 m = p.matcher(text);
+			 m = PATTERN_YT.matcher(text);
 		}
+		
+	    // estrai id da URL youtube
+	    m = PATTERN_YOUTUBE.matcher(text);
+	    while (m.find()) {
+	            text = m.replaceFirst(Matcher.quoteReplacement(m.group(3)));
+	            m = PATTERN_YOUTUBE.matcher(text);
+	    }
 
 		// reply o messaggio nuovo ?
 		long parentId = Long.parseLong(req.getParameter("parentId"));
