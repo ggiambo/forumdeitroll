@@ -380,7 +380,11 @@ public class Messages extends MainServlet {
 				// reply
 				MessageDTO replyMsg = getPersistence().getMessage(parentId);
 				msg.setForum(replyMsg.getForum());
-				msg.setSubject(replyMsg.getSubject());
+				if (replyMsg.getId() == replyMsg.getParentId()) {
+					msg.setSubject("Re: " + replyMsg.getSubject());
+				} else {
+					msg.setSubject(replyMsg.getSubject());
+				}
 				msg.setThreadId(replyMsg.getThreadId());
 			}
 		} else {
