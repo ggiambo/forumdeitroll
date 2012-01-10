@@ -202,9 +202,9 @@ public class Messages extends MainServlet {
 			return "Un po di fantasia, scrivi almeno 5 caratteri ...";
 		}
 
-		// testo al massimo di 5000 caratteri ...
-		if (text.length() > 5000) {
-			return "Sei piu' logorroico di una Wakka, stai sotto i 5000 caratteri !";
+		// testo al massimo di 10000 caratteri ...
+		if (text.length() > 10000) {
+			return "Sei piu' logorroico di una Wakka, stai sotto i 10000 caratteri !";
 		}
 
 		// subject almeno di 5 caratteri, cribbio !
