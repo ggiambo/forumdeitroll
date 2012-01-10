@@ -1,6 +1,5 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
-import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,9 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
+import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
 
@@ -268,18 +269,42 @@ public class Messages extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
+	
 	public String insertMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		try {
+			return insertMessageAjax(req, res);
+		} catch (Exception e) {
+			StringBuilder body = new StringBuilder();
+			body.append("<body>");
+			body.append("<h1 style=\"color:#FFFFFF; background-color:#AA1111; padding: 5px 5px 5px 20px; margin-left: 20px;\">Errore !!!!1!</h1>");
+			body.append("Che cazzo e' successo <img src=\"images/emo/7.gif\"/> ?!? Contatta subito <del>la suora</del> Giambo e mandagli questo messaggio:<br/>");
+			body.append("<pre style=\"border:1px solid black; padding:10px;\">\"").append(ExceptionUtils.getStackTrace(e)).append("\"/></pre>");
+			body.append("<div style=\"clear: both;\"></div>");
+			body.append("</body>");
+            JsonWriter writer = new JsonWriter(res.getWriter());
+            writer.beginObject();
+            writer.name("resultCode").value("ERROR");
+            writer.name("content").value(body.toString());
+            writer.endObject();
+            writer.flush();
+            writer.close();
+		}
+		return null;
+	}
+	
+	private String insertMessageAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
 		// se c'e' un'errore, mostralo
 		String validationMessage = validateInsertMessage(req);
 		if (validationMessage != null) {
-			res.setContentType("text/plain");
-			res.setStatus(500);
-			Writer w = res.getWriter();
-			w.write(validationMessage);
-			w.flush();
-			w.close();
-			return null;
+            JsonWriter writer = new JsonWriter(res.getWriter());
+            writer.beginObject();
+            writer.name("resultCode").value("MSG");
+            writer.name("content").value(validationMessage);
+            writer.endObject();
+            writer.flush();
+            writer.close();
+            return null;
 		}
 
 		final AuthorDTO author = login(req);
@@ -289,13 +314,14 @@ public class Messages extends MainServlet {
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
 			if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
 				//autenticazione fallita
-				res.setContentType("text/plain");
-				res.setStatus(500);
-				final Writer w = res.getWriter();
-				w.write("Autenticazione / verifica captcha fallita");
-				w.flush();
-				w.close();
-				return null;
+	            JsonWriter writer = new JsonWriter(res.getWriter());
+	            writer.beginObject();
+	            writer.name("resultCode").value("MSG");
+	            writer.name("content").value("Autenticazione / verifica captcha fallita");
+	            writer.endObject();
+	            writer.flush();
+	            writer.close();
+	            return null;
 			}
 		}
 
@@ -339,13 +365,14 @@ public class Messages extends MainServlet {
 				// modify
 				msg = getPersistence().getMessage(id);
 				if (msg.getAuthor() == null || !msg.getAuthor().equals(author.getNick())) {
-					res.setContentType("text/plain");
-					res.setStatus(500);
-					final Writer w = res.getWriter();
-					w.write("Imbroglione, non puoi modificare questo messaggio !");
-					w.flush();
-					w.close();
-					return null;
+		            JsonWriter writer = new JsonWriter(res.getWriter());
+		            writer.beginObject();
+		            writer.name("resultCode").value("MSG");
+		            writer.name("content").value("Imbroglione, non puoi modificare questo messaggio !");
+		            writer.endObject();
+		            writer.flush();
+		            writer.close();
+		            return null;
 				}
 				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
 				msg.setText(text);
@@ -378,13 +405,14 @@ public class Messages extends MainServlet {
 		msg = getPersistence().insertMessage(msg);
 
 		// redirect
-		res.setContentType("text/plain");
-		Writer out = res.getWriter();
-		out.write("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "&random=" + Math.random() + "#msg" + msg.getId());
-		out.flush();
-		out.close();
-
-		return null;
+        JsonWriter writer = new JsonWriter(res.getWriter());
+        writer.beginObject();
+        writer.name("resultCode").value("OK");
+        writer.name("content").value("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "#msg" + msg.getId());
+        writer.endObject();
+        writer.flush();
+        writer.close();
+        return null;
 	}
 
 	public static Map<String, String> getEmoMap() {

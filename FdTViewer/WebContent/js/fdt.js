@@ -57,16 +57,23 @@ function send(parentId) {
 	// post messagge
 	jQuery.ajax({
 		type: "POST",
-        url: "Messages?action=insertMessage",
-        data: data,
-        success: function(data) {
-			var wl = window.location;
-			var newUrl = wl.protocol + "//" + wl.host + wl.pathname.substr(0, wl.pathname.lastIndexOf("/"));
-			window.location = newUrl + data;
-        	},
-        error: function(data) {
-        	alert(data.responseText);
-        }
+		url: "Messages?action=insertMessage",
+		data: data,
+		success: function(data) {
+			if (data.resultCode == "OK") {
+				var wl = window.location;
+				var newUrl = wl.protocol + "//" + wl.host + wl.pathname.substr(0, wl.pathname.lastIndexOf("/"));
+				window.location.assign(newUrl + data.content);
+				if (wl.pathname.match(/Threads$/)) {
+					window.location.reload(); // force reload, altrimenti non fa un piffero :\
+				}
+			} else if (data.resultCode == "MSG") {
+				alert(data.content);
+			} else if (data.resultCode == "ERROR") {
+				$("html").html(data.content);
+			}
+		},
+		dataType: "json"
 	});
 }
 
