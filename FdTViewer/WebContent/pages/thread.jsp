@@ -1,15 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<html>
-	
-	<jsp:include page="incHead.jsp"/>
-
-	<body>
-
-		<jsp:include page="incHeader.jsp"/>
-
-		<jsp:include page="incNav.jsp"/>
-
+<jsp:include page="incTop.jsp" />
 		<div id="main">
 			<c:forEach items="${messages}" var="msg" varStatus="index">
 				<c:set var="margin" value="${msg.indent * 15}"/>
@@ -20,13 +10,4 @@
 				</div>
 			</c:forEach>
 		</div>
-		
-		<c:if test="${currentTimeMillis != null}">
-			<!--time: <%=System.currentTimeMillis() - (Long)request.getAttribute("currentTimeMillis")%> -->
-		</c:if>
-		
-		<div style="clear: both;"></div>
-
-	</body>
-
-</html>
+<jsp:include page="incBottom.jsp" />

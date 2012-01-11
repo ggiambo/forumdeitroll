@@ -1,15 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<html>
-	
-	<jsp:include page="incHead.jsp"/>
-
-	<body>
-
-		<jsp:include page="incHeader.jsp"/>
-		
-		<jsp:include page="incNav.jsp"/>
-		
+<jsp:include page="incTop.jsp" />
 		<jsp:include page="incSidebar.jsp"/>
 
 		<div id="main">
@@ -19,12 +9,4 @@
 		<div id="footer">
 			<jsp:include page="incPrevNext.jsp" />
 		</div>
-		
-		<c:if test="${currentTimeMillis != null}">
-			<!--time: <%=System.currentTimeMillis() - (Long)request.getAttribute("currentTimeMillis")%> -->
-		</c:if>
-		
-		<div style="clear: both;"></div>
-
-	</body>
-</html>
+<jsp:include page="incBottom.jsp" />
