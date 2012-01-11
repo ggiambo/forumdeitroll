@@ -1,6 +1,7 @@
 package com.acmetoy.ravanator.fdt;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +20,47 @@ public class MessageTag extends BodyTagSupport {
 	private static final Pattern PATTERN_CODE = Pattern.compile("\\[code\\](.*?)\\[/code\\]");
 	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\](.*?)\\[/yt\\]");
 	private static final String[] QUOTE = new String[] { "#007BDF", "#00AF59", "#9A00EF", "#AF6F00" };
+	
+	private static final Map<String, String> EMO_ALT_MAP = new HashMap<String, String>();
+	static {
+		EMO_ALT_MAP.put("1", "Sorride");
+		EMO_ALT_MAP.put("2", "A bocca aperta");
+		EMO_ALT_MAP.put("5", "Con la lingua fuori");
+		EMO_ALT_MAP.put("12", "Deluso");
+		EMO_ALT_MAP.put("3", "Occhiolino");
+		EMO_ALT_MAP.put("4", "Sorpresa");
+		EMO_ALT_MAP.put("7", "Arrabbiato");
+		EMO_ALT_MAP.put("8", "Perplesso");
+		EMO_ALT_MAP.put("10", "Triste");
+		EMO_ALT_MAP.put("9", "Imbarazzato");
+		EMO_ALT_MAP.put("13", "Ficoso");
+		EMO_ALT_MAP.put("11", "In lacrime");
+		EMO_ALT_MAP.put("6", "A bocca storta");
+		EMO_ALT_MAP.put("angelo", "Angioletto");
+		EMO_ALT_MAP.put("anonimo", "Anonimo");
+		EMO_ALT_MAP.put("diavoletto", "Indiavolato");
+		EMO_ALT_MAP.put("fantasmino", "Fantasma");
+		EMO_ALT_MAP.put("geek", "Geek");
+		EMO_ALT_MAP.put("idea", "Idea!");
+		EMO_ALT_MAP.put("newbie", "Newbie, inesperto");
+		EMO_ALT_MAP.put("noia3", "Annoiato");
+		EMO_ALT_MAP.put("pirata", "Pirata");
+		EMO_ALT_MAP.put("robot", "Cylon");
+		EMO_ALT_MAP.put("rotfl", "Rotola dal ridere");
+		EMO_ALT_MAP.put("lovewin", "Fan Windows");
+		EMO_ALT_MAP.put("lovelinux", "Fan Linux");
+		EMO_ALT_MAP.put("loveapple", "Fan Apple");
+		EMO_ALT_MAP.put("love", "Innamorato");
+		EMO_ALT_MAP.put("loveamiga", "Fan Amiga");
+		EMO_ALT_MAP.put("loveatari", "Fan Atari");
+		EMO_ALT_MAP.put("lovec64", "Fan Commodore64");
+		EMO_ALT_MAP.put("nolove", "Disinnamorato");
+		EMO_ALT_MAP.put("troll", "Troll");
+		EMO_ALT_MAP.put("troll1", "Troll occhiolino");
+		EMO_ALT_MAP.put("troll2", "Troll chiacchierone");
+		EMO_ALT_MAP.put("troll3", "Troll occhi di fuori");
+		EMO_ALT_MAP.put("troll4", "Troll di tutti i colori");
+	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -49,8 +91,20 @@ public class MessageTag extends BodyTagSupport {
 			}
 			
 			// faccine
+			StringBuffer sb = new StringBuffer();
 			for (Map.Entry<String, String> entry : emoMap.entrySet()) {
-				line = line.replace(entry.getValue(), "<img border=\"0\" src=\"images/emo/" + entry.getKey() + ".gif\">");
+				sb.append("<img border=\"0\" ");
+				sb.append("alt=\"");
+				sb.append(EMO_ALT_MAP.get(entry.getKey()));
+				sb.append("\"" );
+				sb.append("title=\"");
+				sb.append(EMO_ALT_MAP.get(entry.getKey()));
+				sb.append("\"" );
+				sb.append("src=\"images/emo/");
+				sb.append(entry.getKey());
+				sb.append(".gif\">");
+				line = line.replace(entry.getValue(), sb.toString());
+				sb.setLength(0);
 			}
 			
 			// img
