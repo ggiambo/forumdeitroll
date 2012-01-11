@@ -16,6 +16,10 @@ body {
 	background-color: white;
 }
 
+#headerimg {
+	float: right;
+}
+
 #header {
 	 padding: 5px 10px;
 	 background-image:url(../images/banner.png);
@@ -24,7 +28,9 @@ body {
 h1 {
 	margin: 20px;
 	font-variant: small-caps;
-	text-shadow: 3px 3px 3px #BBBBBB;
+	text-shadow: 3px 3px 5px black;
+	font-weight: normal;
+	font-family: 'Frijole', cursive;
 }
 
 #nav {
@@ -70,6 +76,18 @@ h2 {
 	float: left; 
 	padding: 10px; 
 	width: 200px;
+}
+
+#sidebar ul {
+	list-style-image: url(../images/forum.gif);
+}
+
+#sidebar ul li a {
+	text-decoration: none;
+}
+
+#sidebar ul li a:hover {
+	color: red;
 }
 
 span.openCloseSidebar {
