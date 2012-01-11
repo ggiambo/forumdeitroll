@@ -28,19 +28,18 @@
 					<c:if test="${!empty thread.forum}">
 						<span style="color:#97A28A"><b>${thread.forum}</b></span>
 					</c:if>
-					${thread.numberOfMessages}
+					<b><a href="Threads?action=getByThread&threadId=${thread.id}"/>${thread.subject}</a></b>
+					 (${thread.numberOfMessages}
 					<c:choose>
 						<c:when test="${thread.numberOfMessages > 1}">
-							messaggi
+							messaggi)
 						</c:when>
 						<c:otherwise>
-							messaggio
+							messaggio)
 						</c:otherwise>
 					</c:choose>
 					<br/>
-					<b><a href="Threads?action=getByThread&threadId=${thread.id}"/>${thread.subject}</a></b>
-					<br/>
-					Iniziato da
+					- Iniziato da
 					<i>
 						<c:choose>
 							<c:when test="${empty thread.author}">
