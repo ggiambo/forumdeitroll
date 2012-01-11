@@ -39,17 +39,30 @@ CREATE TABLE IF NOT EXISTS `authors` (
 --
 
 CREATE TABLE IF NOT EXISTS `messages` (
-  `id` int(11) NOT NULL,
-  `text` longtext NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `text` mediumtext NOT NULL,
   `date` datetime NOT NULL,
-  `subject` tinytext NOT NULL,
+  `subject` text NOT NULL,
   `threadId` int(11) NOT NULL,
   `parentId` int(11) NOT NULL,
-  `author` tinytext,
-  `forum` tinytext,
+  `author` text,
+  `forum` text,
   PRIMARY KEY (`id`),
   KEY `parentId` (`parentId`),
   KEY `threadId` (`threadId`),
   FULLTEXT KEY `text` (`text`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quote`
+--
+
+CREATE TABLE IF NOT EXISTS `quotes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nick` text NOT NULL,
+  `content` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 

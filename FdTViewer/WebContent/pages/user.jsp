@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:include page="incTop.jsp" />
 		<div id="main">
+				
 			<div style="margin:5px; padding:5px; width:100%">
 				<table>
 					<tr>
@@ -14,7 +15,17 @@
 					</tr>
 				</table>
 				<br/>
+				<a href="?action=getQuotes">Gestisci frasi celebri</a>
+<%-- TODO
+				|
+				<a href="#">Manda messagio privato</a>
+--%>
+				<br/>
+				<br/>
 				<form action="User?action=updatePass" method="post">
+					<label for="actualPass">Password attuale:</label>
+					<input type="password" name="actualPass"/>
+					<br/>
 					<label for="pass1">Nuova password:</label>
 					<input type="password" name="pass1"/>
 					<br/>
@@ -28,6 +39,7 @@
 					<input type="submit" value="Upload">
 				</form>
 			</div>
+
 		</div>
 		
 		<div id="footer"></div>
