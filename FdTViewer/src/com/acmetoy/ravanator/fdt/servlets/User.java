@@ -3,6 +3,7 @@ package com.acmetoy.ravanator.fdt.servlets;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
+import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 
 public class User extends MainServlet {
 
@@ -58,6 +60,11 @@ public class User extends MainServlet {
 		}
 		req.setAttribute("author", author);
 		// user loggato, check pass
+		String actualPass = req.getParameter("actualPass");
+		if (StringUtils.isEmpty(actualPass)) {
+			setNavigationMessage(req, "Inserisci la password attuale");
+			return "user.jsp";
+		}
 		String pass1 = req.getParameter("pass1");
 		if (StringUtils.isEmpty(pass1)) {
 			setNavigationMessage(req, "Inserisci una password");
@@ -73,7 +80,7 @@ public class User extends MainServlet {
 			return "user.jsp";
 		}
 		// OK, modifica user
-		if (!getPersistence().updateAuthorPassword(author.getNick(), md5(pass1))) {
+		if (!getPersistence().updateAuthorPassword(author.getNick(), md5(actualPass), md5(pass1))) {
 			setNavigationMessage(req, "Qualcosa e' andato storto, HALP!");
 			return "user.jsp";
 		}
@@ -182,6 +189,88 @@ public class User extends MainServlet {
 		return "user.jsp";
 	}
 	
+	/**
+	 * Carica le frasi celebri dal database
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	public String getQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO author = login(req);
+		if (author == null || !author.isValid()) {
+			setNavigationMessage(req, "Passuord ezzere sbaliata !");
+			return loginAction(req,  res);
+		}
+		req.setAttribute("author", author);
+		List<QuoteDTO> list = getPersistence().getQuotes(author);
+		int size = list.size();
+		if (size < 5) {
+			for (int i = 0; i < 5 - size; i++) {
+				QuoteDTO dto = new QuoteDTO();
+				dto.setId(-i);
+				list.add(dto);
+			}
+		}
+		
+		req.setAttribute("quote", list);
+		return "quote.jsp";
+	}
+	
+	/**
+	 * Update di una frase celebre
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	public String updateQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO author = login(req);
+		if (author == null || !author.isValid()) {
+			setNavigationMessage(req, "Passuord ezzere sbaliata !");
+			return loginAction(req,  res);
+		}
+		req.setAttribute("author", author);
+		
+		Long quoteId = Long.parseLong(req.getParameter("quoteId"));
+		String content = req.getParameter("quote_" + quoteId);
+		if (StringUtils.isEmpty(content) || content.length() < 3 || content.length() > 100) {
+			setNavigationMessage(req, "Minimo 3 caratteri, massimo 100");
+			return getQuote(req, res);
+		}
+		
+		QuoteDTO quote = new QuoteDTO();
+		quote.setContent(content);
+		quote.setId(quoteId);
+		quote.setNick(author.getNick());
+		
+		getPersistence().insertUpdateQuote(quote);
+		return getQuote(req, res);
+	}
+	
+	/**
+	 * Cancella una quote
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	public String removeQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO author = login(req);
+		if (author == null || !author.isValid()) {
+			setNavigationMessage(req, "Passuord ezzere sbaliata !");
+			return loginAction(req,  res);
+		}
+		req.setAttribute("author", author);
+		
+		Long quoteId = Long.parseLong(req.getParameter("quoteId"));
+		QuoteDTO quote = new QuoteDTO();
+		quote.setNick(author.getNick());
+		quote.setId(quoteId);
+		
+		getPersistence().removeQuote(quote);
+		return getQuote(req, res);
+	}
 	
 	
 }

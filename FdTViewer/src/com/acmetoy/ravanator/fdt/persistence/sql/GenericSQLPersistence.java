@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
+import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 
@@ -302,14 +303,16 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 	
 	@Override
-	public boolean updateAuthorPassword(String nick, String MD5password) {
+	public boolean updateAuthorPassword(String nick, String oldMD5Pass, String newMD5password) {
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("UPDATE authors SET password = ? where nick = ?");
-			ps.setString(1, MD5password);
-			ps.setString(2, nick);
+			ps = conn.prepareStatement("UPDATE authors SET password = ? WHERE password = ? AND nick = ?");
+			int i = 1;
+			ps.setString(i++, newMD5password);
+			ps.setString(i++, oldMD5Pass);
+			ps.setString(i++, nick);
 			return ps.executeUpdate() == 1;
 		} catch (SQLException e) {
 			LOG.error("Cannot update author '" + nick + "'", e);
@@ -317,6 +320,101 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 		return false;
+	}
+	
+	@Override
+	public List<QuoteDTO> getQuotes(AuthorDTO author) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<QuoteDTO> out = new ArrayList<QuoteDTO>();
+		try {
+			ps = conn.prepareStatement("SELECT * FROM quotes WHERE nick = ? ORDER BY id ASC");
+			ps.setString(1, author.getNick());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				QuoteDTO dto = new QuoteDTO();
+				dto.setId(rs.getLong("id"));
+				dto.setContent(rs.getString("content"));
+				dto.setNick(rs.getString("nick"));
+				out.add(dto);
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get quotes for author '" + author + "'", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return out;
+	}
+	
+	@Override
+	public void insertUpdateQuote(QuoteDTO quote) {
+		if (quote.getId() > 0) {
+			updateQuote(quote);
+		} else {
+			insertQuote(quote);
+		}
+	}
+	
+	@Override
+	public void removeQuote(QuoteDTO quote) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("DELETE FROM quotes WHERE id = ? and nick = ?");
+			int i = 1;
+			ps.setLong(i++, quote.getId());
+			ps.setString(i++, quote.getNick());
+			ps.execute();
+		} catch (SQLException e) {
+			LOG.error("Cannot insert message " + quote.toString(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	private long insertQuote(QuoteDTO quote) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("INSERT INTO quotes (nick, content) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+			int i = 1;
+			ps.setString(i++, quote.getNick());
+			ps.setString(i++, quote.getContent());
+			ps.execute();
+			// get generated id
+			rs = ps.getGeneratedKeys();
+			rs.next();
+			return rs.getLong(1);
+		} catch (SQLException e) {
+			LOG.error("Cannot insert message " + quote.toString(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return -1;
+	}
+	
+	private long updateQuote(QuoteDTO quote) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("UPDATE quotes SET nick = ?, content = ? WHERE id = ? AND nick = ?");
+			int i = 1;
+			ps.setString(i++, quote.getNick());
+			ps.setString(i++, quote.getContent());
+			ps.setLong(i++, quote.getId());
+			ps.setString(i++, quote.getNick());
+			ps.execute();
+			return quote.getId();
+		} catch (SQLException e) {
+			LOG.error("Cannot insert message " + quote.toString(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return -1;
 	}
 	
 	protected List<MessageDTO> getMessages(ResultSet rs) throws SQLException {
