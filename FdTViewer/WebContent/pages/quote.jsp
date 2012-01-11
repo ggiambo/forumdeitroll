@@ -1,18 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
-
-<html>
-	
-	<jsp:include page="incHead.jsp"/>
-
-	<body>
-
-		<jsp:include page="incHeader.jsp"/>
-		
-		<jsp:include page="incNav.jsp"/>
-		
+<jsp:include page="incTop.jsp" />
 		<div id="main">
-				
 			<div style="margin:5px; padding:5px; width:100%">
 				<table>
 					<tr>
@@ -54,12 +43,4 @@
 		</div>
 		
 		<div id="footer"></div>
-		
-		<c:if test="${currentTimeMillis != null}">
-			<!--time: <%=System.currentTimeMillis() - (Long)request.getAttribute("currentTimeMillis")%> -->
-		</c:if>
-		
-		<div style="clear: both;"></div>
-
-	</body>
-</html>
+<jsp:include page="incBottom.jsp" />

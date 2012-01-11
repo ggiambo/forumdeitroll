@@ -1,7 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <jsp:include page="incTop.jsp"/>
-		<jsp:include page="incSidebar.jsp"/>
 		<div id="main">
 
 			<c:forEach items="${messages}" var="thread" varStatus="index">
