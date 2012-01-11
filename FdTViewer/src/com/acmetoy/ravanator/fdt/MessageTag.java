@@ -79,7 +79,7 @@ public class MessageTag extends BodyTagSupport {
 			m = PATTERN_URL.matcher(line);
 			if (m.find()) {
 				String url = m.group(2);
-				String replace = "<a href=\"" + url + "\">";
+				String replace = "<a href=\"" + url + "\" rel=\"nofollow noreferrer\" target=\"_blank\">";
 				if (url.length() > 50) {
 					url = url.substring(0, 50) + "...";
 				}
