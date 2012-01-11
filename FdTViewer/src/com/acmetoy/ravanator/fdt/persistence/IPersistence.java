@@ -41,4 +41,6 @@ public interface IPersistence {
 
 	public void removeQuote(QuoteDTO quote);
 
+	public String getRandomQuote();
+
 }

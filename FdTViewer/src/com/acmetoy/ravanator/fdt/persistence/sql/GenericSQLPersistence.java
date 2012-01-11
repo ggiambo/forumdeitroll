@@ -18,8 +18,8 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
-import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
+import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 
 public abstract class GenericSQLPersistence implements IPersistence {
@@ -372,6 +372,25 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} finally {
 			close(rs, ps, conn);
 		}
+	}
+	
+	@Override
+	public String getRandomQuote() {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT content FROM quotes ORDER BY RAND() LIMIT 1");
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get random quote", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return null;
 	}
 	
 	private long insertQuote(QuoteDTO quote) {

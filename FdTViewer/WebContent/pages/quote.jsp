@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 
 <html>
 	
@@ -25,9 +26,11 @@
 					</tr>
 				</table>
 				<br/>
-				<a href="?action=getQuote">Gestisci frasi celebri</a>
+				<a href="?action=getQuotes">Gestisci frasi celebri</a>
+<%-- TODO
 				|
 				<a href="#">Manda messagio privato</a>
+--%>
 				<br/>
 				<br/>
 				<form action="User?action=updateQuote" method="post">
@@ -43,7 +46,7 @@
 								<img src="images/close.jpeg"/>
 							</c:otherwise>
 						</c:choose>
-						<input name="quote_${item.id}" value="${item.content}" maxlength="100"/><input type="button" value="Salva" onClick="$('#quoteId').val(${item.id});submit();"><br/>
+						<input name="quote_${item.id}" value="${fn:escapeXml(item.content)}" maxlength="100"/><input type="button" value="Salva" onClick="$('#quoteId').val(${item.id});submit();"><br/>
 					</c:forEach>
 				</form>
 			</div>

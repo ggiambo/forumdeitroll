@@ -23,6 +23,7 @@ import nl.captcha.gimpy.RippleGimpyRenderer;
 import nl.captcha.servlet.CaptchaServletUtil;
 import nl.captcha.text.producer.NumbersAnswerProducer;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -119,6 +120,9 @@ public abstract class MainServlet extends HttpServlet {
 			String id = session.getId();
 			res.setHeader("Set-Cookie", String.format("JSESSIONID=%s;Max-Age=%d;Path=/", id, 365*24*60*60));
 		}
+		
+		// random quote
+		req.setAttribute("randomQuote", getRandomQuote(req, res));
 
 		try {
 			// call via reflection
@@ -324,4 +328,16 @@ public abstract class MainServlet extends HttpServlet {
 		req.getSession().setAttribute("captcha", captcha.getAnswer());
 		return null;
 	}
+	
+	/**
+	 * Ritorna una random quote tra quelle esistenti
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	public String getRandomQuote(HttpServletRequest req, HttpServletResponse res) {
+		return StringEscapeUtils.escapeHtml4(getPersistence().getRandomQuote());
+	}
+	
 }

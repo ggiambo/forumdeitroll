@@ -25,12 +25,12 @@
 					</tr>
 				</table>
 				<br/>
-<%-- Incompleto
-				<a href="?action=getQuote">Gestisci frasi celebri</a>
+				<a href="?action=getQuotes">Gestisci frasi celebri</a>
+<%-- TODO
 				|
 				<a href="#">Manda messagio privato</a>
-				<br/>
 --%>
+				<br/>
 				<br/>
 				<form action="User?action=updatePass" method="post">
 					<label for="actualPass">Password attuale:</label>

@@ -196,7 +196,7 @@ public class User extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public String getQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	public String getQuotes(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO author = login(req);
 		if (author == null || !author.isValid()) {
 			setNavigationMessage(req, "Passuord ezzere sbaliata !");
@@ -236,7 +236,7 @@ public class User extends MainServlet {
 		String content = req.getParameter("quote_" + quoteId);
 		if (StringUtils.isEmpty(content) || content.length() < 3 || content.length() > 100) {
 			setNavigationMessage(req, "Minimo 3 caratteri, massimo 100");
-			return getQuote(req, res);
+			return getQuotes(req, res);
 		}
 		
 		QuoteDTO quote = new QuoteDTO();
@@ -245,7 +245,7 @@ public class User extends MainServlet {
 		quote.setNick(author.getNick());
 		
 		getPersistence().insertUpdateQuote(quote);
-		return getQuote(req, res);
+		return getQuotes(req, res);
 	}
 	
 	/**
@@ -269,7 +269,7 @@ public class User extends MainServlet {
 		quote.setId(quoteId);
 		
 		getPersistence().removeQuote(quote);
-		return getQuote(req, res);
+		return getQuotes(req, res);
 	}
 	
 	
