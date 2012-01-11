@@ -28,7 +28,6 @@
 					<c:if test="${!empty thread.forum}">
 						<span style="color:#97A28A"><b>${thread.forum}</b></span>
 					</c:if>
-					<br/>
 					${thread.numberOfMessages}
 					<c:choose>
 						<c:when test="${thread.numberOfMessages > 1}">
@@ -53,7 +52,7 @@
 						</c:choose>
 					</i>
 					alle <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy HH:mm"/>
-					<br/><br/>
+					<br/>
 				</div>
 				<hr/>
 			</c:forEach>
