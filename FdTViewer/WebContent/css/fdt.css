@@ -105,7 +105,7 @@ h2 {
 
 #sidebar ul li a:hover {
 	text-shadow: 0px 0px 6px darkBlue;
-	color: Red;
+	color: MediumBlue;
 }
 
 span.openCloseSidebar {
@@ -212,7 +212,7 @@ div.message {
 	display: box;
 	vertical-align: middle; 
 	width: 100%;
-	padding: 0px 0px 2px 2px";
+	padding: 0px 0px 2px 2px;
 	text-align: right;
 }
 

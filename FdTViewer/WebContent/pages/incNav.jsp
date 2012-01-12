@@ -11,17 +11,17 @@
 		<li>|</li>
 		<li><a href="Messages">Cronologicamente</a></li>
 		<li>|</li>
-		<li><a href="Messages?action=newMessage&forum=${param.forum }">Nuovo messaggio</a>
+		<li><a href="Messages?action=newMessage&forum=${param.forum }">Nuovo messaggio</a></li>
 		<li>|</li>
 			<c:choose>
 				<c:when test="${not empty loggedUser}">
 					Loggato come <a href="User">${loggedUser}</a>
-					[<li><a href="Messages?action=logoutAction">Logout</a>]
+					[<li><a href="Messages?action=logoutAction">Logout</a></li>]
 				</c:when>
 				<c:otherwise>
-					<li><a href="User?action=loginAction">Login</a>
+					<li><a href="User?action=loginAction">Login</a></li>
 					<li>|</li>
-					<li><a href="User?action=registerAction">Registrati</a>
+					<li><a href="User?action=registerAction">Registrati</a></li>
 				</c:otherwise>
 			</c:choose>
 		<li>|</li>
