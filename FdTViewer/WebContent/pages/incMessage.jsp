@@ -19,7 +19,6 @@
 		<div>
 			<img src="?action=getAvatar&nick=${msg.author}"/>
 		</div>
-		<br />
 		<c:if test="${!empty msg.forum}">
 			<div class="msgForum">${msg.forum}</div>
 		</c:if>
