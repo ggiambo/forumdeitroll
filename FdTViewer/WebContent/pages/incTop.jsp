@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 	<jsp:include page="incHead.jsp"/>
 	<body>
