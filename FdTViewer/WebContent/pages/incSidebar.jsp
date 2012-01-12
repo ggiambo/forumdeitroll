@@ -10,6 +10,7 @@
 		<input name="search" size="8" value="${param.search}"/><input type="submit" value="Cerca"/>
 	</form>
 	<ul>
+		<li><a href="Threads">Forum dei Troll</a></li>
 		<c:forEach items="${forums}" var="forum">
 			<li><a href="Messages?action=getByForum&forum=${forum}">${forum}</a></li>
 		</c:forEach>

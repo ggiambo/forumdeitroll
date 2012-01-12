@@ -5,6 +5,10 @@
 @import url("reset.css");
 
 html {
+	background-color: #41636B;
+}
+
+body {
 	font-family: 'Helvetica';
 	font-size: 15px;
 	margin: 0;
@@ -13,7 +17,7 @@ html {
 	background-color: #41636B;
 }
 
-body {
+#body {
 	width: 80%;
 	margin: auto;
 	border: 1px solid;
@@ -33,7 +37,7 @@ body {
 
 #titoloForum {
 	text-decoration: none;
-	color: seaShell;
+	color: white;
 }
 
 h1 {
@@ -195,7 +199,7 @@ div.message {
 
 #quoteForum {
 	font-style: italic;
-	color: seaShell;
+	color: white;
 	margin: 0 3em;
 	background-image: url('../images/pB40.png');
 	display: inline;
@@ -246,4 +250,16 @@ div.message {
 
 #sidebarSearchForm input[type="submit"]:hover {
 	box-shadow: 0px 0px 4px darkRed;
+}
+
+#bottomLine {
+	text-align: center;
+	font-size: 80%;
+	color: lightGray;
+	margin: 1em;
+	font-style: italic;
+}
+
+#genTime {
+	font-size: 90%;
 }
