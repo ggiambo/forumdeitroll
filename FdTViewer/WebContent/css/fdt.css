@@ -143,10 +143,19 @@ div.msgOdd {
 	background-color: #F6F6F6;
 }
 
-div.msgHeader {
-	height: 100px;
-	width: 100%;
-	margin-bottom: 5px;
+div.msgInfo {
+	width: 150px;
+	margin: 5px;
+	float: right;
+	text-align: center;
+	display: table;
+	background-color: lightGray;
+	padding: 0.5em 0;
+	box-shadow: 0px 0px 4px gray;
+}
+
+div.msgInfo img {
+	box-shadow: 2px 2px 2px black;
 }
 
 span.forum {
@@ -154,10 +163,13 @@ span.forum {
 	color:#97A28A;
 }
 
-span.author {
-	margin-left:5px;
-	position: relative; 
-	top: 20%
+div.msgDetails {
+	padding: 0.2em;
+	font-size: 90%;
+}
+
+div.msgDate {
+	font-size: 70%;
 }
 
 #ordinamento {
@@ -218,6 +230,7 @@ div.message {
 	width: 100%;
 	padding: 0px 0px 2px 2px;
 	text-align: right;
+	clear: both;
 }
 
 #sidebarSearchForm {
@@ -268,11 +281,23 @@ div.threadDetail {
 	font-size: 90%;
 }
 
-span.threadAuthor {
+span.msgAuthor, div.msgAuthor {
 	font-style: italic;
+	font-weight: bold;
 }
 
+span.msgAuthor a, div.msgAuthor a {
+	text-decoration: none;
+}
+	
 textarea.replyMsg {
 	width: 100%;
 	font-size: 16px;
+}
+
+div.messagesBox {
+	border: 1px solid black; 
+	margin: 5px 5px;
+	width: 500px;
+	box-shadow: 2px 2px 3px gray;	 
 }

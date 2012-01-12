@@ -2,10 +2,11 @@
 <jsp:include page="incTop.jsp" />
 		<div id="main">
 			<c:forEach items="${messages}" var="msg" varStatus="index">
-				<c:set var="msg" value="${msg}" scope="request"/>
-				<c:set var="index" value="${index}" scope="request"/>
-				<jsp:include page="incMessage.jsp"/>
-				<hr/>
+				<div class="messagesBox">
+					<c:set var="msg" value="${msg}" scope="request"/>
+					<c:set var="index" value="${index}" scope="request"/>
+					<jsp:include page="incMessage.jsp"/>
+				</div>
 			</c:forEach>
 		</div>
 

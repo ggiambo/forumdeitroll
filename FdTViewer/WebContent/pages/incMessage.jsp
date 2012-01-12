@@ -15,27 +15,27 @@
 
 <div class="${class}" id="msg${msg.id}">
 
-	<div class="msgHeader">
-		<div style="float:left">
+	<div class="msgInfo">
+		<div>
 			<img src="?action=getAvatar&nick=${msg.author}"/>
 		</div>
 		<c:if test="${!empty msg.forum}">
 			<span class="forum"><b>${msg.forum}</b></span><br/>
 		</c:if>
-		<span class="author">
-			Scritto da
-			<i>
+		<div class="msgDetails">
+			<div class="msgWrittenby">Scritto da</div>
+			<div class="msgAuthor">
 				<c:choose>
 					<c:when test="${empty msg.author}">
-						Non autenticato
+						Non Autenticato
 					</c:when>
 					<c:otherwise>
-						<b><a href="Messages?action=getByAuthor&author=${msg.author}">${msg.author}</a></b>
+						<a href="Messages?action=getByAuthor&author=${msg.author}">${msg.author}</a>
 					</c:otherwise>
 				</c:choose>
-			</i>
-			alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy HH:mm"/>
-		</span>
+			</div>
+			<div class="msgDate">il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy HH:mm"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/></div>
+		</div>
 		<c:if test="${not empty loggedUser && msg.author == loggedUser}">
 			<span class="author">
 				- <a href="Messages?action=editMessage&msgId=${msg.id}&forum=${msg.forum}">Modifica</a>

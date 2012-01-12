@@ -28,7 +28,7 @@
 					</c:choose>
 					<div class="threadDetail">
 					- Iniziato da
-					<span class="threadAuthor">
+					<span class="msgAuthor">
 						<c:choose>
 							<c:when test="${empty thread.author}">
 								Non Autenticato
