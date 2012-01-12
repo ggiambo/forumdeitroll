@@ -19,14 +19,14 @@
 	
 </script>
 
-<div id="reply_${message.parentId}">
+<div id="reply_${message.parentId}" class="msgReply">
 
 	<c:if test="${message.parentId != -1 || message.id != -1}">
 		<c:set var="class" value="border:1px solid black; padding:2px; margin:2px;"/>
 		<a style="float: right; padding: 5px;" onClick="closeReplyDiv('${message.parentId}')"><img src="images/close.jpeg"></a>
 	</c:if>
 
-	<div style="${class} background: Whitesmoke">
+	<div style="${class}">
 		<c:forEach items="${emoMap}" var="emo" varStatus="index">
 			 <%-- caso speciale per la faccina :\  --%>
 			<c:set var="emoValue" value="${fn:replace(emo.value, '\\\\', '\\\\\\\\')}"/>
@@ -53,7 +53,7 @@
 		</c:if>
 		
 		<%-- input area --%>
-		<textarea tabindex="1" name="text" tabindex="2" rows="20" class="replyMsg">${message.text}</textarea><br/>
+		<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt">${message.text}</textarea><br/>
 		
 		<input type="hidden" name="forum" value="${message.forum }"/>
 		<input type="hidden" name="id" value="${message.id }"/>

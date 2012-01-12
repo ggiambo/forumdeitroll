@@ -19,8 +19,9 @@
 		<div>
 			<img src="?action=getAvatar&nick=${msg.author}"/>
 		</div>
+		<br />
 		<c:if test="${!empty msg.forum}">
-			<span class="forum"><b>${msg.forum}</b></span><br/>
+			<div class="msgForum">${msg.forum}</div>
 		</c:if>
 		<div class="msgDetails">
 			<div class="msgWrittenby">Scritto da</div>

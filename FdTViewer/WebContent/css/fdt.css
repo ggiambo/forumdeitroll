@@ -158,9 +158,9 @@ div.msgInfo img {
 	box-shadow: 2px 2px 2px black;
 }
 
-span.forum {
-	margin-left:5px;
-	color:#97A28A;
+div.msgForum {
+	color: DarkRed;
+	font-weight: bold;
 }
 
 div.msgDetails {
@@ -289,9 +289,13 @@ span.msgAuthor, div.msgAuthor {
 span.msgAuthor a, div.msgAuthor a {
 	text-decoration: none;
 }
+
+div.msgReply {
+	clear: both;
+}
 	
-textarea.replyMsg {
-	width: 100%;
+textarea.msgReplyTxt {
+	width: 99%;
 	font-size: 16px;
 }
 
