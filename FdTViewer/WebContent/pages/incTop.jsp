@@ -3,3 +3,4 @@
 	<body>
 		<jsp:include page="incHeader.jsp"/>
 		<jsp:include page="incNav.jsp"/>
+		<jsp:include page="incSidebar.jsp"/>
