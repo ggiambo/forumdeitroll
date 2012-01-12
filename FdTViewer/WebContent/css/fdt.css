@@ -1,3 +1,9 @@
+ /* RESET.CSS serve a rimuovere tutte le personalizzazioni CSS dei vari browser di modo che le pagine 
+    del sito appaiano allo stesso modo su tutti i client. Ogni browser, infatti, ha i suoi margini,
+    padding, ecc. per ogni elemento HTML che spesso sono diverso fra loro. Con reset.css tutto
+    questo viene azzerato. */
+@import url("reset.css");
+
 html {
 	font-family: 'Helvetica';
 	font-size: 15px;
@@ -11,7 +17,7 @@ body {
 	width: 80%;
 	margin: auto;
 	border: 1px solid;
-	box-shadow:5px 5px 25px black;
+	box-shadow: 5px 5px 25px black;
 	margin-top: 1em;
 	background-color: white;
 }
@@ -21,16 +27,22 @@ body {
 }
 
 #header {
-	 padding: 5px 10px;
+	 padding: 10px;
 	 background-image:url(../images/banner.png);
 }
 
+#titoloForum {
+	text-decoration: none;
+	color: seaShell;
+}
+
 h1 {
-	margin: 15px 15px 5px 15px;
+	margin: 0.1em 0.2em;
 	font-variant: small-caps;
 	text-shadow: 3px 3px 5px black;
 	font-weight: normal;
 	font-family: 'Frijole', cursive;
+	font-size: 240%;
 }
 
 #nav {
@@ -80,6 +92,11 @@ h2 {
 
 #sidebar ul {
 	list-style-image: url(../images/forum.gif);
+	list-style-position : inside;
+}
+
+#sidebar ul li {
+	list-style: inherit;
 }
 
 #sidebar ul li a {
@@ -87,7 +104,8 @@ h2 {
 }
 
 #sidebar ul li a:hover {
-	color: red;
+	text-shadow: 0px 0px 6px darkBlue;
+	color: Red;
 }
 
 span.openCloseSidebar {
@@ -138,9 +156,9 @@ span.author {
 	top: 20%
 }
 
-h4 {
-	margin-top: 5px;
-	margin-bottom: 5px;
+#ordinamento {
+	margin: 0.2em 0;
+	font-weight: bold;
 }
 
 #preview {
@@ -173,4 +191,59 @@ div.message {
 	font-family: Arial,Helvetica,Sans,"Nimbus Sans",sans-serif;
 	font-size: 16px;
 	line-height: 20px;
+}
+
+#quoteForum {
+	font-style: italic;
+	color: seaShell;
+	margin: 0 3em;
+	background-image: url('../images/pB40.png');
+	display: inline;
+	padding: 0 0.5em;
+	box-shadow: 0px 0px 5px black;
+	text-shadow: 1px 1px 2px black;
+	font-size: 85%;
+	font-weight: bold;
+}
+
+.messagesButtonBar {
+	background: #D6D6D6;
+	height: 21px;
+	display: box;
+	vertical-align: middle; 
+	width: 100%;
+	padding: 0px 0px 2px 2px";
+	text-align: right;
+}
+
+#sidebarSearchForm {
+	display: block;
+	width: 100%;
+	margin-bottom: 1em;
+}
+
+#sidebarSearchForm input {
+	width: 60%;
+	border: 1px solid gray;
+	margin-right: 3px;
+	box-shadow: 0px 0px 2px black;
+}
+
+#sidebarSearchForm input:hover, #sidebarSearchForm input:focus {
+	box-shadow: 0px 0px 4px darkRed;
+}
+
+#sidebarSearchForm input[type="submit"] {
+	width: 30%;
+	background-color: transparent;
+	font-variant: small-caps;
+	border: none;
+	cursor: pointer;
+	text-shadow: 1px 1px 2px black;
+	color: black;
+	font-size: 95%;
+}
+
+#sidebarSearchForm input[type="submit"]:hover {
+	box-shadow: 0px 0px 4px darkRed;
 }

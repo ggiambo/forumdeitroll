@@ -5,7 +5,7 @@
 </div>
 <div id="sidebar">
 	<span class="openCloseSidebar" onClick="hideSidebar();" onMouseOver="this.style.cursor='pointer'">&laquo;</span><br/>
-	<form action="Messages" method="get" style="display: inline;">
+	<form action="Messages" method="get" id="sidebarSearchForm">
 		<input type="hidden" name="action" value="search"/>
 		<input name="search" size="8" value="${param.search}"/><input type="submit" value="Cerca"/>
 	</form>

@@ -53,7 +53,7 @@
 		<c:out escapeXml="false" value="</b></i></u>"/>
 	</div>
 	
-	<div id="buttons_${msg.id}" style="background: #D6D6D6;height:20px;display:table-cell; vertical-align:middle; width:600px; padding:0px 0px 2px 2px">
+	<div id="buttons_${msg.id}" class="messagesButtonBar">
 		<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/rispondi.gif"></a>
 		<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/quota.gif"></a>
 	</div>
