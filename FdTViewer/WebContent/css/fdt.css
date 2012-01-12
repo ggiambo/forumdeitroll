@@ -263,3 +263,11 @@ div.message {
 #genTime {
 	font-size: 90%;
 }
+
+div.threadDetail {
+	font-size: 90%;
+}
+
+span.threadAuthor {
+	font-style: italic;
+}

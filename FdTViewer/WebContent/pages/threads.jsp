@@ -26,20 +26,20 @@
 							messaggio)
 						</c:otherwise>
 					</c:choose>
-					<br/>
+					<div class="threadDetail">
 					- Iniziato da
-					<i>
+					<span class="threadAuthor">
 						<c:choose>
 							<c:when test="${empty thread.author}">
-								Non autenticato
+								Non Autenticato
 							</c:when>
 							<c:otherwise>
 								<b><a href="Messages?action=getByAuthor&author=${thread.author}">${thread.author}</a></b>
 							</c:otherwise>
 						</c:choose>
-					</i>
+					</span>
 					alle <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy HH:mm"/>
-					<br/>
+					</div>
 				</div>
 				<hr/>
 			</c:forEach>
