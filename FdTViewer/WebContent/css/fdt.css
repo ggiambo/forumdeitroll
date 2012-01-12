@@ -271,3 +271,8 @@ div.threadDetail {
 span.threadAuthor {
 	font-style: italic;
 }
+
+textarea.replyMsg {
+	width: 100%;
+	font-size: 16px;
+}

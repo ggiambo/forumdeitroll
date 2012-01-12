@@ -53,7 +53,7 @@
 		</c:if>
 		
 		<%-- input area --%>
-		<textarea tabindex="1" name="text" tabindex="2" rows="20" style="font-size:13px; width:100%">${message.text}</textarea><br/>
+		<textarea tabindex="1" name="text" tabindex="2" rows="20" class="replyMsg">${message.text}</textarea><br/>
 		
 		<input type="hidden" name="forum" value="${message.forum }"/>
 		<input type="hidden" name="id" value="${message.id }"/>
