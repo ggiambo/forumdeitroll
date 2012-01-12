@@ -1,10 +1,8 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -156,7 +154,7 @@ public class Messages extends MainServlet {
 		MessageDTO newMsg = new MessageDTO();
 		if ("quote".equals(type)) {
 			MessageDTO msgDTO = getPersistence().getMessage(parentId);
-			String text = msgDTO.getText();
+			String text = msgDTO.getText().trim();
 
 			// quote
 			Matcher m = PATTERN_QUOTE.matcher(text);
@@ -171,26 +169,9 @@ public class Messages extends MainServlet {
 				text = m.replaceFirst(newBegin.toString());
 				m = PATTERN_QUOTE.matcher(text);
 			}
-			
-			// se c'e' una riga non quotata piu' lunga di 50 caratteri, proviamo a spezzarla
-			StringBuilder f = new StringBuilder();
-			for (String line : text.split("\r\n")) {
-				if (!line.startsWith(">") && line.length()  > 50) {
-					for (String s : splitString(line, 50)) {
-						f.append("> ").append(s).append("\r\n");
-					}
-				} else {
-					f.append("> ").append(line).append("\r\n");
-				}
-			}
 
 			String author = msgDTO.getAuthor();
-			f.insert(0, "\r\n");
-			f.insert(0, author != null ? author.trim() : "");
-			f.insert(0, "\r\nScritto da: ");
-			f.append("\r\n");
-			text = f.toString();
-
+			text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n> " + text + "\r\n";
 			newMsg.setText(text);
 			newMsg.setForum(msgDTO.getForum());
 			newMsg.setSubject(msgDTO.getSubject());
@@ -203,34 +184,6 @@ public class Messages extends MainServlet {
 		req.setAttribute("emoMap", emoMap);
 
 		return "incReplyMessage.jsp";
-	}
-	
-	private List<String> splitString(String s, int charLimit) {
-		
-		List<String> res = new ArrayList<String>();
-		
-		char[] chars = s.toCharArray();
-		boolean endOfString = false;
-		int start = 0;
-		int end = start;
-		while (start < chars.length - 1) {
-			int charCount = 0;
-			int lastSpace = 0;
-			while (charCount < charLimit) {
-				if (chars[charCount + start] == ' ') {
-					lastSpace = charCount;
-				}
-				charCount++;
-				if (charCount + start == s.length()) {
-					endOfString = true;
-					break;
-				}
-			}
-			end = endOfString ? s.length() : (lastSpace > 0) ? lastSpace + start : charCount + start;
-			res.add(s.substring(start, end));
-			start = end + 1;
-		}
-		return res;
 	}
 
 	/**
