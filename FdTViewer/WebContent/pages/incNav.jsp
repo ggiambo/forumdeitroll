@@ -4,7 +4,7 @@
 	<ul>
 		<c:if test="${navigationMessage != ''}">
 			<li>
-				<h4>${navigationMessage}</h4>
+				<div id="ordinamento">${navigationMessage}</div>
 			</li>
 		</c:if>
 		<li><a href="Threads">Data inizio discussione</a></li>
