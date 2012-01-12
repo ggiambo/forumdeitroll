@@ -8,8 +8,8 @@
 		</a>
 	</h1>
 	<c:if test="${not empty randomQuote }">
-		<p style="font-style:italic;color:white;margin: 0px 0px 10px 35px">
-			${randomQuote}
+		<p style="font-style:italic;color:white;margin: 0px 0px 10px 35px" title="${randomQuote.nick}">
+			${randomQuote.content}
 		</p>
 	</c:if>
 </div>

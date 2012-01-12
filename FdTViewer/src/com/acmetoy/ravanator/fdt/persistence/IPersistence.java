@@ -41,6 +41,8 @@ public interface IPersistence {
 
 	public void removeQuote(QuoteDTO quote);
 
-	public String getRandomQuote();
+	public QuoteDTO getRandomQuote();
+
+	public List<PrivateMsgDTO> getPrivateMessages(AuthorDTO author, int limit, int pageNr);
 
 }

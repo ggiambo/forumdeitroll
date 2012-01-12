@@ -374,25 +374,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 	}
 	
-	@Override
-	public String getRandomQuote() {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("SELECT content FROM quotes ORDER BY RAND() LIMIT 1");
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getString(1);
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot get random quote", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return null;
-	}
-	
 	private long insertQuote(QuoteDTO quote) {
 		Connection conn = getConnection();
 		PreparedStatement ps = null;

@@ -121,11 +121,14 @@ public class MessageTag extends BodyTagSupport {
 			// yt
 			m = PATTERN_YT.matcher(line);
 			if (m.find()) {
-				String replace = "<object height=\"329\" width=\"400\">" +
-					"<param value=\"http://www.youtube.com/v/" + m.group(1) + "\" name=\"movie\">" +
-					"<param value=\"transparent\" name=\"wmode\">" +
-					"<embed height=\"329\" width=\"400\" wmode=\"transparent\" type=\"application/x-shockwave-flash\" src=\"http://www.youtube.com/v/" +  m.group(1) + "\"></object>";
-				line = m.replaceFirst(replace);
+				sb.append("<object height=\"329\" width=\"400\">");
+				sb.append("<param value=\"http://www.youtube.com/v/").append(m.group(1)).append("\" name=\"movie\">");
+				sb.append("<param value=\"transparent\" name=\"wmode\">");
+				sb.append("<embed height=\"329\" width=\"400\" wmode=\"transparent\" ");
+				sb.append("type=\"application/x-shockwave-flash\" ");
+				sb.append("src=\"http://www.youtube.com/v/").append(m.group(1)).append("\"></object>");
+				line = m.replaceFirst(sb.toString());
+				sb.setLength(0);
 				m = PATTERN_YT.matcher(line);
 			}
 

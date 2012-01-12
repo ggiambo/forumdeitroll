@@ -272,5 +272,22 @@ public class User extends MainServlet {
 		return getQuotes(req, res);
 	}
 	
+	/**
+	 * Lista di tutti i PVT
+	 */
+	public String getPrivateMessages(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO author = login(req);
+		if (author == null || !author.isValid()) {
+			setNavigationMessage(req, "Passuord ezzere sbaliata !");
+			return loginAction(req,  res);
+		}
+		req.setAttribute("author", author);
+		
+		int pageNr = Integer.parseInt(req.getParameter("pageNr"));
+		
+		req.setAttribute("privateMessages", getPersistence().getPrivateMessages(author, 15, pageNr));
+		return "privateMessages.jsp";
+		
+	}
 	
 }
