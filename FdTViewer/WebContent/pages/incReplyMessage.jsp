@@ -46,7 +46,7 @@
 			<a href="javascript:void(0);" onmousedown="insert('[yt]', '[/yt]', '${message.parentId}')">[youtube]</a>
 		</div>
 		<c:if test="${message.parentId == -1 && message.id == -1}">
-			Oggetto: <input tabindex="1" name="subject" maxlength="25"/>
+			Oggetto: <input tabindex="1" name="subject" maxlength="40" size="40"/>
 		</c:if>
 		<c:if test="${not empty message.forum}">
 			Forum <i>${message.forum}</i>

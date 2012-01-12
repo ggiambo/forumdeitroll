@@ -30,6 +30,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
+import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 
 public abstract class MainServlet extends HttpServlet {
 
@@ -336,8 +337,10 @@ public abstract class MainServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public String getRandomQuote(HttpServletRequest req, HttpServletResponse res) {
-		return StringEscapeUtils.escapeHtml4(getPersistence().getRandomQuote());
+	public QuoteDTO getRandomQuote(HttpServletRequest req, HttpServletResponse res) {
+		QuoteDTO quote = getPersistence().getRandomQuote();
+		quote.setContent(StringEscapeUtils.escapeHtml4(quote.getContent()));
+		return quote;
 	}
 	
 }

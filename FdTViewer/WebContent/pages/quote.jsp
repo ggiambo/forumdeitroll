@@ -35,7 +35,7 @@
 								<img src="images/close.jpeg"/>
 							</c:otherwise>
 						</c:choose>
-						<input name="quote_${item.id}" value="${fn:escapeXml(item.content)}" maxlength="100"/><input type="button" value="Salva" onClick="$('#quoteId').val(${item.id});submit();"><br/>
+						<input name="quote_${item.id}" value="${fn:escapeXml(item.content)}" maxlength="100" size="50"/><input type="button" value="Salva" onClick="$('#quoteId').val(${item.id});submit();"><br/>
 					</c:forEach>
 				</form>
 			</div>
