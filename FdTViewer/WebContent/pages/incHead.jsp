@@ -12,5 +12,5 @@
 	</script>
 	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-	<link href='http://fonts.googleapis.com/css?family=Frijole' rel='stylesheet' type='text/css'> 
+	<link href='http://fonts.googleapis.com/css?family=Frijole' rel='stylesheet' type='text/css'>
 </head>
