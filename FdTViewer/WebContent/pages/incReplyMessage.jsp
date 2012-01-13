@@ -62,7 +62,7 @@
 			<c:when test="${empty loggedUser}">
 				Nome: <input tabindex="2" name="nick" size="10"/> Password: <input tabindex="3" type="password" name="pass" size="10"/>
 				<div style="margin: 3px">
-					<img src="Messages?action=getCaptcha" style="vertical-align:middle"/>&nbsp;<input tabindex="4" name="captcha" size="5"/> (Solo per ANOnimi)
+					<img src="Messages?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" style="vertical-align:middle"/>&nbsp;<input tabindex="4" name="captcha" size="5"/> (Solo per ANOnimi)
 					<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})"/>
 				</div>
 			</c:when>
