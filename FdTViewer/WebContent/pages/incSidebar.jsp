@@ -12,7 +12,13 @@
 	<ul>
 		<li><a href="Threads">Forum dei Troll</a></li>
 		<c:forEach items="${forums}" var="forum">
-			<li><a href="Messages?action=getByForum&amp;forum=${forum}">${forum}</a></li>
+			<li>
+				<c:url value="Messages" var="forumUrl">
+					<c:param name="action" value="getByForum"></c:param>
+					<c:param name="forum" value="${forum}"></c:param>
+				</c:url>
+				<a href="${forumUrl}">${forum}</a>
+			</li>
 		</c:forEach>
 	</ul>
 </div>
