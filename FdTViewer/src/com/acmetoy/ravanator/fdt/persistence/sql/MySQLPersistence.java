@@ -27,7 +27,7 @@ public class MySQLPersistence extends GenericSQLPersistence {
 		String username = databaseConfig.getProperty("username");
 		String password = databaseConfig.getProperty("password");
 		String dbname = databaseConfig.getProperty("dbname");
-		String url = "jdbc:mysql://" + host + ":" + port + "/" + dbname + "?characterEncoding=UTF-8";
+		String url = "jdbc:mysql://" + host + ":" + port + "/" + dbname + "?useUnicode=yes&characterEncoding=UTF-8";
 		super.setupDataSource(url, username, password);
 	}
 
