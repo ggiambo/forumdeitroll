@@ -36,7 +36,7 @@ public abstract class MainServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	protected static final int PAGE_SIZE = 15;
+	protected static final int PAGE_SIZE = 20;
 
 	protected static final String LOGGED_USER_SESSION_ATTR = "loggedUser";
 

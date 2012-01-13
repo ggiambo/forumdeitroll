@@ -286,6 +286,23 @@ div.message {
 	font-size: 90%;
 }
 
+div.threadBox {
+	border: none;
+	border-bottom: 1px dotted gray;
+}
+
+span.threadTitle {
+	font-weight: bold;
+}
+
+span.threadTitle a {
+	text-decoration: none;
+}
+
+span.threadTitle a:hover {
+	text-decoration: underline;
+}
+	
 div.threadDetail {
 	font-size: 90%;
 }

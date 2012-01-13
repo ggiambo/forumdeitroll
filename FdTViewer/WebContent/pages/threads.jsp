@@ -13,11 +13,11 @@
 						<c:set var="class" value="msgOdd"/>
 					</c:otherwise>
 				</c:choose>
-				<div class="${class}">
+				<div class="${class} threadBox">
 					<c:if test="${!empty thread.forum}">
 						<span style="color:#97A28A"><b>${thread.forum}</b></span>
 					</c:if>
-					<b><a href="Threads?action=getByThread&amp;threadId=${thread.id}">${thread.subject}</a></b>
+					<span class="threadTitle"><a href="Threads?action=getByThread&amp;threadId=${thread.id}">${thread.subject}</a></span>
 					 (${thread.numberOfMessages}
 					<c:choose>
 						<c:when test="${thread.numberOfMessages > 1}">
@@ -42,7 +42,6 @@
 					alle <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy HH:mm"/>
 					</div>
 				</div>
-				<hr/>
 			</c:forEach>
 
 		</div>
