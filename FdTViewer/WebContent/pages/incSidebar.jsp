@@ -17,7 +17,7 @@
 					<c:param name="action" value="getByForum"></c:param>
 					<c:param name="forum" value="${forum}"></c:param>
 				</c:url>
-				<a href="${forumUrl}">${forum}</a>
+				<a href="<c:out value="${forumUrl}" escapeXml="true"/>">${forum}</a>
 			</li>
 		</c:forEach>
 	</ul>
