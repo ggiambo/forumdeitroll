@@ -102,7 +102,7 @@ public class MessageTag extends BodyTagSupport {
 				sb.append("\"" );
 				sb.append("src=\"images/emo/");
 				sb.append(entry.getKey());
-				sb.append(".gif\">");
+				sb.append(".gif\" />");
 				line = line.replace(entry.getValue(), sb.toString());
 				sb.setLength(0);
 			}
@@ -112,7 +112,7 @@ public class MessageTag extends BodyTagSupport {
 			if (m.find()) {
 				String url = m.group(1).trim();
 				if (url.toLowerCase().startsWith("http")) {
-					String replace = "<a class=\"preview\" href=\"" + url + "\"><img width=\"150px\" src=\"" + url + "\"/></a>";
+					String replace = "<a class=\"preview\" href=\"" + url + "\"><img width=\"150px\" src=\"" + url + "\" /></a>";
 					line = m.replaceFirst(replace);
 					m = PATTERN_IMG.matcher(line);
 				}

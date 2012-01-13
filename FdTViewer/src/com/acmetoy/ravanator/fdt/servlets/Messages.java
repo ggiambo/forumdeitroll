@@ -277,7 +277,7 @@ public class Messages extends MainServlet {
 			StringBuilder body = new StringBuilder();
 			body.append("<body>");
 			body.append("<h1 style=\"color:#FFFFFF; background-color:#AA1111; padding: 5px 5px 5px 20px; margin-left: 20px;\">Errore !!!!1!</h1>");
-			body.append("Che cazzo e' successo <img src=\"images/emo/7.gif\"/> ?!? Contatta subito <del>la suora</del> Giambo e mandagli questo messaggio:<br/>");
+			body.append("Che cazzo e' successo <img src=\"images/emo/7.gif\" /> ?!? Contatta subito <del>la suora</del> Giambo e mandagli questo messaggio:<br/>");
 			body.append("<pre style=\"border:1px solid black; padding:10px;\">\"").append(ExceptionUtils.getStackTrace(e)).append("\"/></pre>");
 			body.append("<div style=\"clear: both;\"></div>");
 			body.append("</body>");

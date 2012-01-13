@@ -9,7 +9,7 @@ html {
 }
 
 body {
-	font-family: 'Helvetica';
+	font-family: Arial,Helvetica,Sans,"Nimbus Sans",sans-serif;
 	font-size: 15px;
 	margin: 0;
 	padding: 0;
@@ -204,7 +204,6 @@ label {
 }
 
 div.message {
-	font-family: Arial,Helvetica,Sans,"Nimbus Sans",sans-serif;
 	font-size: 16px;
 	line-height: 20px;
 }

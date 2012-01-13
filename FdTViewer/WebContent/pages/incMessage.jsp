@@ -17,7 +17,7 @@
 
 	<div class="msgInfo">
 		<div>
-			<img src="?action=getAvatar&nick=${msg.author}"/>
+			<img src="?action=getAvatar&amp;nick=${msg.author}"/>
 		</div>
 		<c:if test="${!empty msg.forum}">
 			<div class="msgForum">${msg.forum}</div>
@@ -30,7 +30,7 @@
 						Non Autenticato
 					</c:when>
 					<c:otherwise>
-						<a href="Messages?action=getByAuthor&author=${msg.author}">${msg.author}</a>
+						<a href="Messages?action=getByAuthor&amp;author=${msg.author}">${msg.author}</a>
 					</c:otherwise>
 				</c:choose>
 			</div>
@@ -44,7 +44,7 @@
 	</div>
 
 	<span style="width:100%; margin:5px;">
-		<b><a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}"/>${msg.subject}</a></b>
+		<b><a href="Threads?action=getByThread&amp;threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a></b>
 	</span>
 
 	<div style="padding: 10px;" class="message">
@@ -54,7 +54,7 @@
 	</div>
 	
 	<div id="buttons_${msg.id}" class="messagesButtonBar">
-		<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/rispondi.gif"></a>
-		<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/quota.gif"></a>
+		<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/rispondi.gif" /></a>
+		<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/quota.gif" /></a>
 	</div>
 </div>

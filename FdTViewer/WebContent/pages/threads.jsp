@@ -17,7 +17,7 @@
 					<c:if test="${!empty thread.forum}">
 						<span style="color:#97A28A"><b>${thread.forum}</b></span>
 					</c:if>
-					<b><a href="Threads?action=getByThread&threadId=${thread.id}"/>${thread.subject}</a></b>
+					<b><a href="Threads?action=getByThread&amp;threadId=${thread.id}">${thread.subject}</a></b>
 					 (${thread.numberOfMessages}
 					<c:choose>
 						<c:when test="${thread.numberOfMessages > 1}">
@@ -35,7 +35,7 @@
 								Non Autenticato
 							</c:when>
 							<c:otherwise>
-								<b><a href="Messages?action=getByAuthor&author=${thread.author}">${thread.author}</a></b>
+								<b><a href="Messages?action=getByAuthor&amp;author=${thread.author}">${thread.author}</a></b>
 							</c:otherwise>
 						</c:choose>
 					</span>
