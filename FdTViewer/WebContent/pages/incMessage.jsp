@@ -22,7 +22,7 @@
 		<c:if test="${!empty msg.forum}">
 			<div class="msgForum">${msg.forum}</div>
 		</c:if>
-		<div class="msgDetails">
+		<div class="msgDetails"> 
 			<div class="msgWrittenby">Scritto da</div>
 			<div class="msgAuthor">
 				<c:choose>
@@ -34,12 +34,12 @@
 					</c:otherwise>
 				</c:choose>
 			</div>
-			<div class="msgDate">il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy HH:mm"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/></div>
+			<div class="msgDate">il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/></div>
 		</div>
 		<c:if test="${not empty loggedUser && msg.author == loggedUser}">
-			<span class="author">
-				- <a href="Messages?action=editMessage&msgId=${msg.id}&forum=${msg.forum}">Modifica</a>
-			</span>
+			<div class="msgAction">
+				<a href="Messages?action=editMessage&msgId=${msg.id}&forum=${msg.forum}">Modifica</a>
+			</div>
 		</c:if>	
 	</div>
 

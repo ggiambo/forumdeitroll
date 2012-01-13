@@ -291,6 +291,11 @@ span.msgAuthor a, div.msgAuthor a {
 	text-decoration: none;
 }
 
+div.msgAction a {
+	text-decoration: none;
+	font-size: 95%;
+}
+
 div.msgReply {
 	clear: both;
 }
