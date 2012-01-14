@@ -16,7 +16,14 @@ public class MessageTag extends BodyTagSupport {
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("^(&gt;\\ ?)+");
 	private static final Pattern PATTERN_IMG = Pattern.compile("\\[img\\](.*?)\\[/img\\]");
-	private static final Pattern PATTERN_URL = Pattern.compile("([^\"]|^)(http[s]?://(.+?))( |$)");
+	private static final Pattern PATTERN_URL = Pattern.compile("(" +
+																	"(?:https?://|ftp://|news://|mailto:|file://|\\bwww\\.)" +
+																		"[a-zA-Z0-9\\-\\@;\\/?:&=%\\$_.+!*\\x27,~#]*" +
+																		"(" +
+																			"\\([a-zA-Z0-9\\-\\@;\\/?:&=%\\$_.+!*\\x27,~#]*\\)|" +
+																			"[a-zA-Z0-9\\-\\@;\\/?:&=%\\$_+*~]"+
+																		")+" +
+																	")");
 	private static final Pattern PATTERN_CODE = Pattern.compile("\\[code\\](.*?)\\[/code\\]");
 	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\](.*?)\\[/yt\\]");
 	private static final String[] QUOTE = new String[] { "#007BDF", "#00AF59", "#9A00EF", "#AF6F00" };
@@ -135,7 +142,7 @@ public class MessageTag extends BodyTagSupport {
 			// url
 			m = PATTERN_URL.matcher(line);
 			if (m.find()) {
-				String url = m.group(2);
+				String url = m.group(1);
 				String replace = "<a href=\"" + url + "\" rel=\"nofollow noreferrer\" target=\"_blank\">";
 				if (url.length() > 50) {
 					url = url.substring(0, 50) + "...";
