@@ -145,7 +145,8 @@ public class MessageTag extends BodyTagSupport {
 
 			// url
 			m = PATTERN_URL.matcher(line);
-			if (m.find()) {
+			StringBuffer hold = new StringBuffer();
+			while (m.find()) {
 				String url = m.group(1);
 				if (!yt && !img) {
 					String replace = "<a href=\"" + url + "\" rel=\"nofollow noreferrer\" target=\"_blank\">";
@@ -154,10 +155,10 @@ public class MessageTag extends BodyTagSupport {
 					}
 					replace += url;
 					replace += "</a>";
-					line = m.replaceAll(replace);
-					m = PATTERN_URL.matcher(line);
+					m.appendReplacement(hold, replace);
 				}
 			}
+			line = m.appendTail(hold).toString();
 
 			res.setLength(0);
 			res.append(line);
