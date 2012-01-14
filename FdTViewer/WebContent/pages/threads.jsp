@@ -14,9 +14,6 @@
 					</c:otherwise>
 				</c:choose>
 				<div class="${class} threadBox">
-					<c:if test="${!empty thread.forum}">
-						<span style="color:#97A28A"><b>${thread.forum}</b></span>
-					</c:if>
 					<span class="threadTitle"><a href="Threads?action=getByThread&amp;threadId=${thread.id}">${thread.subject}</a></span>
 					 (${thread.numberOfMessages}
 					<c:choose>
@@ -27,6 +24,9 @@
 							messaggio)
 						</c:otherwise>
 					</c:choose>
+					<c:if test="${!empty thread.forum}">
+						<span class="tagForum">${thread.forum}</span>
+					</c:if>
 					<div class="threadDetail">
 					- Iniziato da
 					<span class="msgAuthor">
@@ -35,7 +35,7 @@
 								Non Autenticato
 							</c:when>
 							<c:otherwise>
-								<b><a href="Messages?action=getByAuthor&amp;author=${thread.author}">${thread.author}</a></b>
+								<a href="Messages?action=getByAuthor&amp;author=${thread.author}">${thread.author}</a>
 							</c:otherwise>
 						</c:choose>
 					</span>

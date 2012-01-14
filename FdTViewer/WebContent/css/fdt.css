@@ -24,7 +24,7 @@ body {
 	box-shadow: 5px 5px 25px black;
 	margin-top: 1em;
 	background-color: white;
-	min-width: 800px;
+	min-width: 900px;
 }
 
 #headerimg {
@@ -69,7 +69,7 @@ h1 {
 
 #main {
 	float: left;
-	width: 500px;
+	width: 600px;
 	padding: 10px;
 	padding: 0px;
 	margin-left: 5px;
@@ -284,6 +284,15 @@ div.message {
 
 #genTime {
 	font-size: 90%;
+}
+
+span.tagForum {
+	background-color: darkRed;
+	border-radius: 5px;
+	color: white;
+	font-weight: bold;
+	font-size: 70%;
+	padding: 0.1em 0.5em;
 }
 
 div.threadBox {
