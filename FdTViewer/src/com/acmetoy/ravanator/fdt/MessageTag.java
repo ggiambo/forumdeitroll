@@ -149,7 +149,7 @@ public class MessageTag extends BodyTagSupport {
 				}
 				replace += url;
 				replace += "</a>";
-				line = m.replaceFirst(replace);
+				line = m.replaceAll(replace);
 				m = PATTERN_URL.matcher(line);
 			}
 
