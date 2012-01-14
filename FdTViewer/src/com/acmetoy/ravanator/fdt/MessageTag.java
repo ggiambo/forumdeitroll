@@ -116,9 +116,11 @@ public class MessageTag extends BodyTagSupport {
 			
 			// img
 			m = PATTERN_IMG.matcher(line);
+			boolean img = false;
 			if (m.find()) {
 				String url = m.group(1).trim();
 				if (url.toLowerCase().startsWith("http")) {
+					img = true;
 					String replace = "<a class=\"preview\" href=\"" + url + "\"><img width=\"150px\" src=\"" + url + "\" /></a>";
 					line = m.replaceFirst(replace);
 					m = PATTERN_IMG.matcher(line);
@@ -127,7 +129,9 @@ public class MessageTag extends BodyTagSupport {
 			
 			// yt
 			m = PATTERN_YT.matcher(line);
+			boolean yt = false;
 			if (m.find()) {
+				yt = true;
 				sb.append("<object height=\"329\" width=\"400\">");
 				sb.append("<param value=\"http://www.youtube.com/v/").append(m.group(1)).append("\" name=\"movie\">");
 				sb.append("<param value=\"transparent\" name=\"wmode\">");
@@ -143,14 +147,16 @@ public class MessageTag extends BodyTagSupport {
 			m = PATTERN_URL.matcher(line);
 			if (m.find()) {
 				String url = m.group(1);
-				String replace = "<a href=\"" + url + "\" rel=\"nofollow noreferrer\" target=\"_blank\">";
-				if (url.length() > 50) {
-					url = url.substring(0, 50) + "...";
+				if (!yt && !img) {
+					String replace = "<a href=\"" + url + "\" rel=\"nofollow noreferrer\" target=\"_blank\">";
+					if (url.length() > 50) {
+						url = url.substring(0, 50) + "...";
+					}
+					replace += url;
+					replace += "</a>";
+					line = m.replaceAll(replace);
+					m = PATTERN_URL.matcher(line);
 				}
-				replace += url;
-				replace += "</a>";
-				line = m.replaceAll(replace);
-				m = PATTERN_URL.matcher(line);
 			}
 
 			res.setLength(0);
