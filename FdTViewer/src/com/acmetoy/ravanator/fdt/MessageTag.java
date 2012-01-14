@@ -26,7 +26,8 @@ public class MessageTag extends BodyTagSupport {
 																			"[a-zA-Z0-9\\-\\@;\\/?:&=%\\$_+*~]"+
 																		")+" +
 																	")");
-	private static final Pattern PATTERN_CODE = Pattern.compile("\\[code\\](.*?)\\[/code\\]");
+	//private static final Pattern PATTERN_CODE = Pattern.compile("\\[code\\](.*?)\\[/code\\]");
+	private static final Pattern PATTERN_CODE = Pattern.compile("\\[code(\\s+(\\w+))?\\](.*?)\\[/code\\]");
 	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]([a-zA-Z0-9+\\/=\\-:!]*?)\\[/yt\\]");
 	private static final String[] QUOTE = new String[] { "#007BDF", "#00AF59", "#9A00EF", "#AF6F00" };
 	
@@ -82,7 +83,65 @@ public class MessageTag extends BodyTagSupport {
 		// code
 		Matcher m = PATTERN_CODE.matcher(body);
 		if (m.find()) {
-			String replace = "<pre class=\"code\">" + m.group(1).replaceAll("<BR>", "\n") + "</pre>";
+			String codeClassName = "code";
+			if (m.group(2) != null) {
+				if (m.group(2).equalsIgnoreCase("js")) {
+					codeClassName = "brush: js; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("scala")) {
+					codeClassName = "brush: scala; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("xml")) {
+					codeClassName = "brush: xml; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("html")) {
+					codeClassName = "brush: html; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("applescript")) {
+					codeClassName = "brush: applescript; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("actionscript3")) {
+					codeClassName = "brush: actionscript3; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("bash")) {
+					codeClassName = "brush: bash; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("coldfusion")) {
+					codeClassName = "brush: coldfusion; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("cpp")) {
+					codeClassName = "brush: cpp; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("c")) {
+					codeClassName = "brush: c; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("csharp")) {
+					codeClassName = "brush: csharp; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("css")) {
+					codeClassName = "brush: css; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("delphi")) {
+					codeClassName = "brush: delphi; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("pascal")) {
+					codeClassName = "brush: pascal; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("diff")) {
+					codeClassName = "brush: diff; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("erlang")) {
+					codeClassName = "brush: erlang; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("groovy")) {
+					codeClassName = "brush: groovy; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("java")) {
+					codeClassName = "brush: java; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("javafx")) {
+					codeClassName = "brush: javafx; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("perl")) {
+					codeClassName = "brush: perl; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("php")) {
+					codeClassName = "brush: php; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("text")) {
+					codeClassName = "brush: text; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("python")) {
+					codeClassName = "brush: python; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("ruby")) {
+					codeClassName = "brush: ruby; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("sass")) {
+					codeClassName = "brush: sass; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("sql")) {
+					codeClassName = "brush: sql; class-name: 'code';";
+				} else if (m.group(2).equalsIgnoreCase("vb")) {
+					codeClassName = "brush: vb; class-name: 'code';";
+				}
+			}
+			String replace = "<pre class=\"" + codeClassName + "\">" + m.group(3).replaceAll("<BR>", "\n") + "</pre>";
 			body = m.replaceFirst(replace);
 			m = PATTERN_CODE.matcher(body);
 		}

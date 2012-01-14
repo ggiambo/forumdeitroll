@@ -355,7 +355,10 @@ div.messagesBox {
 	box-shadow: 2px 2px 3px gray;	 
 }
 
-pre.code {
+pre.code, div.code {
+	padding: 0.4em 0;
+	clear: both;
 	border: 1px dotted black;
 	overflow: auto;
+	font-size: 80% !important;
 }
