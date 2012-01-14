@@ -104,6 +104,7 @@ public class Messages extends MainServlet {
 	public String getByForum(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String forum = req.getParameter("forum");
 		req.setAttribute("specificParams", "&forum=" + forum);
+		setWebsiteTitle(req, forum + " @ Forum dei Troll");
 		setNavigationMessage(req, "Forum <i>" + forum + "</i>");
 		req.setAttribute("messages", getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req)));
 		return "messages.jsp";
