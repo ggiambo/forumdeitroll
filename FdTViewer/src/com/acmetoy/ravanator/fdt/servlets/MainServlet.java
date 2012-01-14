@@ -285,7 +285,7 @@ public abstract class MainServlet extends HttpServlet {
 	 * @param navigationMessage
 	 */
 	protected void setNavigationMessage(HttpServletRequest req, String navigationMessage) {
-		req.setAttribute("navigationMessage", StringEscapeUtils.escapeHtml4(navigationMessage));
+		req.setAttribute("navigationMessage", navigationMessage);
 	}
 
 	/**
