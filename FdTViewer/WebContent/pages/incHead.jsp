@@ -1,8 +1,17 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <head>
 	<%! static final long bootTime = System.currentTimeMillis(); %>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<c:choose>
+		<c:when test="${websiteTitle != ''}">
+			<title>${websiteTitle}</title>
+		</c:when>
+		<c:otherwise>
+			<title>Forum dei Troll</title>
+		</c:otherwise>
+	</c:choose>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Pragma" content="no-cache">
-	<link href="css/fdt.css?v=<%=bootTime%>" type="text/css" rel="stylesheet"/>
+	<link href="css/fdt.css?v=<%=bootTime%>" type="text/css" rel="stylesheet" />
 	<script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
 	<script type="text/javascript" src="js/fdt.js?v=<%=bootTime%>"></script>
 	<script type="text/javascript" src="js/preview.js?v=<%=bootTime%>"></script>
@@ -11,7 +20,7 @@
 			initSidebarStatus();
 		});
 	</script>
-	<link rel="icon" href="favicon.ico" type="image/x-icon"/>
-	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-	<link href='http://fonts.googleapis.com/css?family=Frijole' rel='stylesheet' type='text/css'>
+	<link rel="icon" href="favicon.ico" type="image/x-icon" />
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+	<link href='http://fonts.googleapis.com/css?family=Frijole' rel='stylesheet' type='text/css' />
 </head>

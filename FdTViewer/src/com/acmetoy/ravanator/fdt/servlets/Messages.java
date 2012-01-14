@@ -69,6 +69,7 @@ public class Messages extends MainServlet {
 
 	@Override
 	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		setWebsiteTitle(req, "Forum dei troll");
 		return getByPage(req, res);
 	}
 

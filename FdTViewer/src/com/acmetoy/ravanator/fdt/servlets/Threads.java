@@ -30,6 +30,7 @@ public class Threads extends MainServlet {
 		}
 		req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
 		//req.setAttribute("messages", new ThreadTree2(indentMsg, threadId).asList());
+		setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
 		setNavigationMessage(req, "Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>");
 
 		return "thread.jsp";
@@ -41,6 +42,7 @@ public class Threads extends MainServlet {
 	@Override
 	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setAttribute("messages", getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
+		setWebsiteTitle(req, "Forum dei troll");
 		setNavigationMessage(req, "Ordinati per data inizio discussione");
 		return "threads.jsp";
 	}

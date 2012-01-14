@@ -39,7 +39,7 @@
 							</c:otherwise>
 						</c:choose>
 					</span>
-					alle <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy HH:mm"/>
+					il <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${thread.date}" pattern="HH:mm"/>
 					</div>
 				</div>
 			</c:forEach>

@@ -28,6 +28,7 @@ public class User extends MainServlet {
 	@Override
 	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO author = login(req);
+		setWebsiteTitle(req, "Forum dei troll");
 		if (author != null && author.isValid()) {
 			req.setAttribute("author", author);
 			return "user.jsp";

@@ -8,7 +8,7 @@
 					<c:set var="index" value="${index}" scope="request"/>
 					<jsp:include page="incMessage.jsp"/>
 				</div>
-			</c:forEach>
+			</c:forEach> 
 		</div>
 
 		<div id="footer">

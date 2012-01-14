@@ -285,7 +285,16 @@ public abstract class MainServlet extends HttpServlet {
 	 * @param navigationMessage
 	 */
 	protected void setNavigationMessage(HttpServletRequest req, String navigationMessage) {
-		req.setAttribute("navigationMessage", navigationMessage);
+		req.setAttribute("navigationMessage", StringEscapeUtils.escapeHtml4(navigationMessage));
+	}
+
+	/**
+	 * Imposta il titolo del sito
+	 * @param req
+	 * @param websiteTitle
+	 */
+	protected void setWebsiteTitle(HttpServletRequest req, String websiteTitle) {
+		req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(websiteTitle));
 	}
 
 	/**

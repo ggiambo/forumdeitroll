@@ -67,6 +67,14 @@ h1 {
 	padding: 0;
 }
 
+#nav li a {
+	color: Blue;
+}
+
+#nav li a:visited {
+	color: Blue;
+}
+
 #main {
 	float: left;
 	width: 600px;
