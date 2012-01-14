@@ -10,6 +10,8 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.acmetoy.ravanator.fdt.servlets.Messages;
 
 public class MessageTag extends BodyTagSupport {
@@ -25,7 +27,7 @@ public class MessageTag extends BodyTagSupport {
 																		")+" +
 																	")");
 	private static final Pattern PATTERN_CODE = Pattern.compile("\\[code\\](.*?)\\[/code\\]");
-	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\](.*?)\\[/yt\\]");
+	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]([a-zA-Z0-9+\\/=\\-:!]*?)\\[/yt\\]");
 	private static final String[] QUOTE = new String[] { "#007BDF", "#00AF59", "#9A00EF", "#AF6F00" };
 	
 	private static final Map<String, String> EMO_ALT_MAP = new HashMap<String, String>();
@@ -119,9 +121,9 @@ public class MessageTag extends BodyTagSupport {
 			boolean img = false;
 			if (m.find()) {
 				String url = m.group(1).trim();
-				if (url.toLowerCase().startsWith("http")) {
+				if (url.toLowerCase().startsWith("http") || url.toLowerCase().startsWith("https")) {
 					img = true;
-					String replace = "<a class=\"preview\" href=\"" + url + "\"><img width=\"150px\" src=\"" + url + "\" /></a>";
+					String replace = "<a class=\"preview\" href=\"" + StringEscapeUtils.escapeHtml4(url) + "\"><img width=\"150px\" src=\"" + StringEscapeUtils.escapeHtml4(url) + "\" /></a>";
 					line = m.replaceFirst(replace);
 					m = PATTERN_IMG.matcher(line);
 				}
