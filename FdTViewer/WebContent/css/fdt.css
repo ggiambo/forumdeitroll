@@ -354,3 +354,8 @@ div.messagesBox {
 	width: 500px;
 	box-shadow: 2px 2px 3px gray;	 
 }
+
+pre.code {
+	border: 1px dotted black;
+	overflow: auto;
+}

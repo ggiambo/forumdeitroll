@@ -80,7 +80,7 @@ public class MessageTag extends BodyTagSupport {
 		// code
 		Matcher m = PATTERN_CODE.matcher(body);
 		if (m.find()) {
-			String replace = "<pre style='border:1px dotted black'>" + m.group(1).replaceAll("<BR>", "\n") + "</pre>";
+			String replace = "<pre class=\"code\">" + m.group(1).replaceAll("<BR>", "\n") + "</pre>";
 			body = m.replaceFirst(replace);
 			m = PATTERN_CODE.matcher(body);
 		}
