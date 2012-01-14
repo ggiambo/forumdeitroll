@@ -188,6 +188,7 @@ div.msgDetails {
 
 div.msgDate {
 	font-size: 70%;
+	padding: inherit;
 }
 
 #ordinamento {
