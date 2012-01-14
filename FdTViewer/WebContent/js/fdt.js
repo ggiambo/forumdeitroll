@@ -73,6 +73,9 @@ function send(parentId) {
 				$("html").html(data.content);
 			}
 		},
+		beforeSend : function(jqXhr, settings) {
+			jqXhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+		},
 		dataType: "json"
 	});
 }
