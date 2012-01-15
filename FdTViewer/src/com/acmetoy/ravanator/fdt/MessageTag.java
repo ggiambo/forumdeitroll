@@ -142,6 +142,8 @@ public class MessageTag extends BodyTagSupport {
 				}
 			}
 			String replace = "<pre class=\"" + codeClassName + "\">" + m.group(3).replaceAll("<BR>", "\n") + "</pre>";
+			replace = replace.replace("\\", "\\\\");
+			replace = replace.replace("$", "\\$");
 			body = m.replaceFirst(replace);
 			m = PATTERN_CODE.matcher(body);
 		}
