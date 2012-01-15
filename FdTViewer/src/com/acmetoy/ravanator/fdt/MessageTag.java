@@ -184,7 +184,7 @@ public class MessageTag extends BodyTagSupport {
 				String url = m.group(1).trim();
 				if (url.toLowerCase().startsWith("http") || url.toLowerCase().startsWith("https")) {
 					img = true;
-					String replace = "<a class=\"preview\" href=\"" + StringEscapeUtils.escapeHtml4(url) + "\"><img width=\"150px\" src=\"" + StringEscapeUtils.escapeHtml4(url) + "\" /></a>";
+					String replace = "<a class=\"preview\" href=\"" + StringEscapeUtils.escapeHtml4(url) + "\"><img class=\"userPostedImage\" alt=\"Immagine postata dall'utente\" src=\"" + StringEscapeUtils.escapeHtml4(url) + "\" /></a>";
 					line = m.replaceFirst(replace);
 					m = PATTERN_IMG.matcher(line);
 				}

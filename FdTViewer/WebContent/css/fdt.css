@@ -363,3 +363,7 @@ pre.code, div.code {
 	overflow: auto;
 	font-size: 80% !important;
 }
+
+img.userPostedImage {
+	width: 150px;
+}
