@@ -11,6 +11,7 @@ define 'FdTViewer' do
 	compile.with transitive("org.apache.tomcat:jsp-api:jar:6.0.35")
 	compile.with transitive("log4j:log4j:jar:1.2.16")
 	compile.with transitive("commons-dbcp:commons-dbcp:jar:1.4")
+	compile.with transitive("com.google.code.gson:gson:jar:2.1");
 
 	compile.with "deps/simplecaptcha-1.2.1.jar"
 
