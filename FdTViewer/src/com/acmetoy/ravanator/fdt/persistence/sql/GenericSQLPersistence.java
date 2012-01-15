@@ -25,7 +25,7 @@ import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 public abstract class GenericSQLPersistence implements IPersistence {
 
 	private PoolingDataSource dataSource;
-	
+
 	private static final Logger LOG = Logger.getLogger(GenericSQLPersistence.class);
 
 	void setupDataSource(String connectURI, String user, String password) {
@@ -203,6 +203,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				dto.setAvatar(rs.getBytes("avatar"));
 				dto.setMessages(rs.getInt("messages"));
 				dto.setOldPassword(rs.getString("password"));
+				dto.setSalt(rs.getString("salt"));
+				dto.setHash(rs.getString("hash"));
 			}
 		} catch (SQLException e) {
 			LOG.error("Cannot get Author " + nick, e);
@@ -223,13 +225,18 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				return new AuthorDTO();
 			}
 
+			final AuthorDTO a = new AuthorDTO();
+			a.changePassword(password);
+
 			// inserisci
-			ps = conn.prepareStatement("INSERT INTO authors (nick, password, ranking, messages) VALUES (?, ?, ?, ?)");
+			ps = conn.prepareStatement("INSERT INTO authors (nick, password, ranking, messages, salt, hash) VALUES (?, ?, ?, ?, ?, ?)");
 			int i = 1;
 			ps.setString(i++, nick);
-			ps.setString(i++, AuthorDTO.makeOldPassword(password));
+			ps.setString(i++, ""); // <- campo "password", ospitava la vecchia "hash", non lo settiamo piu`
 			ps.setInt(i++, 0);
 			ps.setInt(i++, 0);
+			ps.setString(i++, a.getSalt());
+			ps.setString(i++, a.getHash());
 			ps.execute();
 			return getAuthor(nick);
 		} catch (SQLException e) {
@@ -281,9 +288,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("UPDATE authors SET password = ? WHERE nick = ?");
+			ps = conn.prepareStatement("UPDATE authors SET password = ?, salt = ?, hash = ? WHERE nick = ?");
 			int i = 1;
-			ps.setString(i++, AuthorDTO.makeOldPassword(newPassword));
+			author.changePassword(newPassword);
+			ps.setString(i++, "");
+			ps.setString(i++, author.getSalt());
+			ps.setString(i++, author.getHash());
 			ps.setString(i++, author.getNick());
 			return ps.executeUpdate() == 1;
 		} catch (SQLException e) {
