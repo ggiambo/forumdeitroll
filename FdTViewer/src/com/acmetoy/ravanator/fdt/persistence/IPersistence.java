@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Properties;
 
 public interface IPersistence {
-	
+
 	public void init(Properties databaseConfig) throws Exception;
 
 	public MessageDTO insertMessage(MessageDTO message);
@@ -25,15 +25,13 @@ public interface IPersistence {
 
 	public AuthorDTO getAuthor(String nick);
 
-	public AuthorDTO getAuthor(String nick, String MD5password);
-
 	public void updateAuthor(AuthorDTO author);
-	
-	public boolean updateAuthorPassword(String nick, String oldMD5Pass, String newMD5password);
-	
+
+	public boolean updateAuthorPassword(AuthorDTO author, String newPassword);
+
 	public List<MessageDTO> searchMessages(String search, int pageSize, int pageNr);
-	
-	public AuthorDTO registerUser(String nick, String MD5password);
+
+	public AuthorDTO registerUser(String nick, String password);
 
 	public List<QuoteDTO> getQuotes(AuthorDTO author);
 

@@ -20,7 +20,7 @@ import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 public class User extends MainServlet {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final int MAX_SIZE_AVATAR_BYTES = 512*1024;
 	private static final long MAX_SIZE_AVATAR_WIDTH = 100;
 	private static final long MAX_SIZE_AVATAR_HEIGHT = 100;
@@ -46,7 +46,7 @@ public class User extends MainServlet {
 	public String loginAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return "login.jsp";
 	}
-	
+
 	/**
 	 * Update della password
 	 * @param req
@@ -60,19 +60,23 @@ public class User extends MainServlet {
 			return loginAction(req,  res);
 		}
 		req.setAttribute("author", author);
+
 		// user loggato, check pass
 		String actualPass = req.getParameter("actualPass");
 		if (StringUtils.isEmpty(actualPass)) {
 			setNavigationMessage(req, "Inserisci la password attuale");
 			return "user.jsp";
 		}
-		String pass1 = req.getParameter("pass1");
-		if (StringUtils.isEmpty(pass1)) {
-			setNavigationMessage(req, "Inserisci una password");
+
+		if (!author.passwordIs(actualPass)) {
+			setNavigationMessage(req, "Password attuale sbagliata, non fare il furmiga");
 			return "user.jsp";
 		}
+
+		String pass1 = req.getParameter("pass1");
 		String pass2 = req.getParameter("pass2");
-		if (StringUtils.isEmpty(pass2)) {
+
+		if (StringUtils.isEmpty(pass1) || StringUtils.isEmpty(pass2)) {
 			setNavigationMessage(req, "Inserisci una password");
 			return "user.jsp";
 		}
@@ -80,15 +84,16 @@ public class User extends MainServlet {
 			setNavigationMessage(req, "Le due password non sono uguali");
 			return "user.jsp";
 		}
-		// OK, modifica user
-		if (!getPersistence().updateAuthorPassword(author.getNick(), md5(actualPass), md5(pass1))) {
-			setNavigationMessage(req, "Qualcosa e' andato storto, HALP!");
+
+		if (!getPersistence().updateAuthorPassword(author, pass1)) {
+			setNavigationMessage(req, "Errore in User.updatePass / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :(");
 			return "user.jsp";
 		}
+
 		setNavigationMessage(req, "Password modificata con successo !");
 		return "user.jsp";
 	}
-	
+
 	/**
 	 * Update avatar
 	 * @param req
@@ -106,7 +111,7 @@ public class User extends MainServlet {
 			setNavigationMessage(req, "Nessun avatar caricato");
 			return "user.jsp";
 		}
-		
+
 		// piglia l'immagine dal multipart request
 		DiskFileItemFactory  fileItemFactory = new DiskFileItemFactory ();
 		fileItemFactory.setSizeThreshold(MAX_SIZE_AVATAR_BYTES); // grandezza massima 512bytes
@@ -139,7 +144,7 @@ public class User extends MainServlet {
 		setNavigationMessage(req, "Avatar modificato con successo !");
 		return "user.jsp";
 	}
-	
+
 	/**
 	 * Pagina per registrare un nuovo user
 	 * @param req
@@ -151,7 +156,7 @@ public class User extends MainServlet {
 		req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
 		return "register.jsp";
 	}
-	
+
 	/**
 	 * Registra nuovo user
 	 * @param req
@@ -179,7 +184,7 @@ public class User extends MainServlet {
 			setNavigationMessage(req, "Scegli una password migliore, giovane jedi ...");
 			return "register.jsp";
 		}
-		AuthorDTO author = getPersistence().registerUser(nick, md5(pass));
+		AuthorDTO author = getPersistence().registerUser(nick, pass);
 		if (!author.isValid()) {
 			setNavigationMessage(req, "Impossibile registrare questo nick, probabilmente gia' esiste");
 			return "register.jsp";
@@ -189,7 +194,7 @@ public class User extends MainServlet {
 		req.setAttribute("author", author);
 		return "user.jsp";
 	}
-	
+
 	/**
 	 * Carica le frasi celebri dal database
 	 * @param req
@@ -213,11 +218,11 @@ public class User extends MainServlet {
 				list.add(dto);
 			}
 		}
-		
+
 		req.setAttribute("quote", list);
 		return "quote.jsp";
 	}
-	
+
 	/**
 	 * Update di una frase celebre
 	 * @param req
@@ -232,23 +237,23 @@ public class User extends MainServlet {
 			return loginAction(req,  res);
 		}
 		req.setAttribute("author", author);
-		
+
 		Long quoteId = Long.parseLong(req.getParameter("quoteId"));
 		String content = req.getParameter("quote_" + quoteId);
 		if (StringUtils.isEmpty(content) || content.length() < 3 || content.length() > 100) {
 			setNavigationMessage(req, "Minimo 3 caratteri, massimo 100");
 			return getQuotes(req, res);
 		}
-		
+
 		QuoteDTO quote = new QuoteDTO();
 		quote.setContent(content);
 		quote.setId(quoteId);
 		quote.setNick(author.getNick());
-		
+
 		getPersistence().insertUpdateQuote(quote);
 		return getQuotes(req, res);
 	}
-	
+
 	/**
 	 * Cancella una quote
 	 * @param req
@@ -263,16 +268,16 @@ public class User extends MainServlet {
 			return loginAction(req,  res);
 		}
 		req.setAttribute("author", author);
-		
+
 		Long quoteId = Long.parseLong(req.getParameter("quoteId"));
 		QuoteDTO quote = new QuoteDTO();
 		quote.setNick(author.getNick());
 		quote.setId(quoteId);
-		
+
 		getPersistence().removeQuote(quote);
 		return getQuotes(req, res);
 	}
-	
+
 	/**
 	 * Lista di tutti i PVT
 	 */
@@ -283,12 +288,12 @@ public class User extends MainServlet {
 			return loginAction(req,  res);
 		}
 		req.setAttribute("author", author);
-		
+
 		int pageNr = Integer.parseInt(req.getParameter("pageNr"));
-		
+
 		req.setAttribute("privateMessages", getPersistence().getPrivateMessages(author, 15, pageNr));
 		return "privateMessages.jsp";
-		
+
 	}
-	
+
 }

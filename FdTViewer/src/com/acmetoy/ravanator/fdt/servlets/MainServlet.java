@@ -1,13 +1,12 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
+import java.security.NoSuchAlgorithmException;
+
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -121,7 +120,7 @@ public abstract class MainServlet extends HttpServlet {
 			String id = session.getId();
 			res.setHeader("Set-Cookie", String.format("JSESSIONID=%s;Max-Age=%d;Path=/", id, 365*24*60*60));
 		}
-		
+
 		// random quote
 		req.setAttribute("randomQuote", getRandomQuote(req, res));
 
@@ -189,12 +188,14 @@ public abstract class MainServlet extends HttpServlet {
 		String nick = req.getParameter("nick");
 		String pass = req.getParameter("pass");
 		if (!StringUtils.isEmpty(nick) && !StringUtils.isEmpty(pass)) {
-			final AuthorDTO author = getPersistence().getAuthor(nick, md5(pass));
-			if (author.isValid()) {
+			final AuthorDTO author = getPersistence().getAuthor(nick);
+			if (author.passwordIs(pass)) {
 				// ok, ci siamo loggati con successo, salvare nella sessione
 				req.getSession().setAttribute(LOGGED_USER_SESSION_ATTR, author.getNick());
+				return author;
+			} else {
+				return new AuthorDTO();
 			}
-			return author;
 		}
 
 		// se non e` stato specificato nome utente e password tentiamo l'autenticazione tramite sessione
@@ -206,7 +207,7 @@ public abstract class MainServlet extends HttpServlet {
 		// captcha corretto, restituisce l'Author di default
 		return new AuthorDTO();
 	}
-	
+
 	/**
 	 * Cancella l'utente loggato dalla sessione
 	 * @param req
@@ -285,7 +286,7 @@ public abstract class MainServlet extends HttpServlet {
 	 * @param navigationMessage
 	 */
 	protected void setNavigationMessage(HttpServletRequest req, String navigationMessage) {
-		req.setAttribute("navigationMessage", navigationMessage); 
+		req.setAttribute("navigationMessage", navigationMessage);
 	}
 
 	/**
@@ -297,26 +298,6 @@ public abstract class MainServlet extends HttpServlet {
 		req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(websiteTitle));
 	}
 
-	/**
-	 * Calcola l'MD5 della password, stesso valore di MD5() di MySQL
-	 * @param input
-	 * @return
-	 * @throws NoSuchAlgorithmException
-	 */
-	protected String md5(String input) throws NoSuchAlgorithmException {
-		String result = input;
-		if (input != null) {
-			MessageDigest md = MessageDigest.getInstance("MD5"); // or "SHA-1"
-			md.update(input.getBytes());
-			BigInteger hash = new BigInteger(1, md.digest());
-			result = hash.toString(16);
-			while (result.length() < 32) {
-				result = "0" + result;
-			}
-		}
-		return result;
-	}
-	
 	/**
 	 * Genera un captcha
 	 * @param req
@@ -338,7 +319,7 @@ public abstract class MainServlet extends HttpServlet {
 		req.getSession().setAttribute("captcha", captcha.getAnswer());
 		return null;
 	}
-	
+
 	/**
 	 * Ritorna una random quote tra quelle esistenti
 	 * @param req
@@ -351,5 +332,5 @@ public abstract class MainServlet extends HttpServlet {
 		quote.setContent(StringEscapeUtils.escapeHtml4(quote.getContent()));
 		return quote;
 	}
-	
+
 }
