@@ -15,11 +15,6 @@
 	<script type="text/javascript" src="js/fdt.js?v=<%=bootTime%>"></script>
 	<script type="text/javascript" src="js/preview.js?v=<%=bootTime%>"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
-	<script type="text/javascript">
-		$(document).ready(function() {
-			initSidebarStatus();
-		});
-	</script>
 	<link rel="icon" href="favicon.ico" type="image/x-icon" />
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 	<link href='http://fonts.googleapis.com/css?family=Frijole' rel='stylesheet' type='text/css' />
