@@ -100,7 +100,7 @@ jQuery("document").ready(function(){
 	// Sidebar
 	initSidebarStatus();
 	// Eseguita quando il documento è pronto
-	jQuery(".messagesBox").resizable({handles: 'e' }); // Solo lato EST
+	jQuery(".messagesBox").resizable({handles: 'e, w'}); // Solo lato EST e OVEST
 	// Syntax Highlighter dei messaggi
 	SyntaxHighlighter.autoloader(
 			  'applescript            js/sh/shBrushAppleScript.js',
