@@ -14,8 +14,7 @@
 		<li>|</li>
 			<c:choose>
 				<c:when test="${not empty loggedUser}">
-					Loggato come <a href="User">${loggedUser}</a>
-					[<li><a href="Messages?action=logoutAction">Logout</a></li>]
+					<li>Loggato come <a href="User">${loggedUser}</a> [<a href="Messages?action=logoutAction">Logout</a>]</li>
 				</c:when>
 				<c:otherwise>
 					<li><a href="User?action=loginAction">Login</a></li>
