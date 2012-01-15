@@ -95,3 +95,8 @@ function insert(openTag, closeTag, parentId) {
 		element.value += openTag + closeTag;
 	}
 } 
+
+jQuery("document").ready(function(){
+	// Eseguita quando il documento è pronto
+	jQuery(".messagesBox").resizable({handles: 'e' }); // Solo lato EST
+});

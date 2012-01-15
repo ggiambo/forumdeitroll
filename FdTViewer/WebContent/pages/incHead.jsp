@@ -14,6 +14,7 @@
 	<script type="text/javascript" src="js/jquery-1.6.3.min.js"></script>
 	<script type="text/javascript" src="js/fdt.js?v=<%=bootTime%>"></script>
 	<script type="text/javascript" src="js/preview.js?v=<%=bootTime%>"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			initSidebarStatus();
@@ -26,5 +27,6 @@
 	<link href="css/sh/shThemeEclipse.css" rel="stylesheet" type="text/css" />
 	<script src="js/sh/shCore.js" type="text/javascript"></script>
 	<script src="js/sh/shAutoloader.js" type="text/javascript"></script>
+	<link href="css/jquery-ui-1.8.17.custom.css" type="text/css" rel="stylesheet" />
 	<link href="css/fdt.css?v=<%=bootTime%>" type="text/css" rel="stylesheet" />
 </head>
