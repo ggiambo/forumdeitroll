@@ -82,6 +82,7 @@ public class Messages extends MainServlet {
 	 */
 	public String getByPage(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.setAttribute("messages", getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req)));
+		setWebsiteTitle(req, "Forum dei troll");
 		setNavigationMessage(req, "Ordinati cronologicamente");
 		return "messages.jsp";
 	}
@@ -96,6 +97,7 @@ public class Messages extends MainServlet {
 	public String getByAuthor(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String author = req.getParameter("author");
 		req.setAttribute("specificParams", "&author=" + author);
+		setWebsiteTitle(req, "Messaggi di " + author + " @ Forum dei Troll");
 		setNavigationMessage(req, "Messaggi scritti da <i>" + author + "</i>");
 		req.setAttribute("messages", getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req)));
 		return "messages.jsp";
@@ -120,6 +122,7 @@ public class Messages extends MainServlet {
 	public String search(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String search = req.getParameter("search");
 		req.setAttribute("specificParams", "&search=" + search);
+		setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
 		req.setAttribute("messages", getPersistence().searchMessages(search, PAGE_SIZE, getPageNr(req)));
 		return "messages.jsp";
 	}
@@ -135,6 +138,7 @@ public class Messages extends MainServlet {
 		MessageDTO msg = new MessageDTO();
 		msg.setForum(req.getParameter("forum"));
 		req.setAttribute("message", msg);
+		setWebsiteTitle(req, "Nuovo messaggio @ Forum dei Troll");
 		// faccine - ordinate per key
 		TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
 		req.setAttribute("emoMap", emoMap);

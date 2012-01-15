@@ -44,6 +44,7 @@ public class User extends MainServlet {
 	 * @return
 	 */
 	public String loginAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		setWebsiteTitle(req, "Login @ Forum dei Troll");
 		return "login.jsp";
 	}
 
@@ -154,6 +155,7 @@ public class User extends MainServlet {
 	 */
 	public String registerAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
+		setWebsiteTitle(req, "Registrazione @ Forum dei Troll");
 		return "register.jsp";
 	}
 
