@@ -353,7 +353,8 @@ div.messagesBox {
 	margin: 5px 5px;
 	width: 600px;
 	box-shadow: 2px 2px 3px gray;
-	height: auto !important;	 
+	height: auto !important;
+	overflow: hidden;
 }
 
 pre.code, div.code {
