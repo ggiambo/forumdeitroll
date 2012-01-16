@@ -33,7 +33,7 @@ public class MessageTag2 extends BodyTagSupport {
 	}
 	
 	private static interface BodyTokenProcessor {
-		public void process(Matcher matcher, BodyState state);
+		public void process(Matcher matcher, BodyState state, MessageTag2 tag);
 	}
 	
 	private static final Map<String, String> EMO_ALT_MAP = new HashMap<String, String>();
@@ -77,22 +77,12 @@ public class MessageTag2 extends BodyTagSupport {
 		EMO_ALT_MAP.put("troll4", "Troll di tutti i colori");
 	}
 	
-	private static class SimpleBodyTokenProcessor implements BodyTokenProcessor {
-		private String replacement;
-		public SimpleBodyTokenProcessor(String replacement) {
-			this.replacement = replacement;
-		}
-		@Override
-		public void process(Matcher matcher, BodyState state) {
-			state.token = matcher.replaceFirst(replacement);
-		}
-	}
-	
 	private static final Map<Pattern, BodyTokenProcessor> patternProcessorMapping =
 		new HashMap<Pattern, BodyTokenProcessor>() {{
-			put(Pattern.compile("^(www.|https?://|ftp://|mailto:).*$"), new BodyTokenProcessor() {
+			put(Pattern.compile("^(www\\.|https?://|ftp://|mailto:).*$"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state) {
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+					if (state.inCode) return;
 					String url = escape(state.token);
 					if (url.startsWith("www.")) {
 						url = "http://" + url;
@@ -101,49 +91,53 @@ public class MessageTag2 extends BodyTagSupport {
 					if (state.token.length() > 50) {
 						desc = escape(state.token.substring(0,50)) + "...";
 					}
-					state.token = String.format("<a href='%s'>%s</a>",state.token, desc);
+					String search = tag.getSearch();
+					desc = simpleReplaceAll(desc, search, "<span style='background-color: yellow'>" + search + "</span>");
+					state.token = String.format("<a href='%s' target='_blank'>%s</a>",state.token, desc);
 				}
 			});
-			put(Pattern.compile("\\[img\\](.*)\\[/img\\]"), new BodyTokenProcessor() {
+			put(Pattern.compile("\\[img\\](https?://.*?)\\[/img\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state) {
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+					if (state.inCode) return;
 					String url = escape(matcher.group(1));
 					state.token = matcher.replaceFirst(
 						String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src='%s'></a>", url, url)
 					);
 				}
 			});
-			put(Pattern.compile("\\[yt\\](.*)\\[/yt\\]"), new BodyTokenProcessor() {
+			put(Pattern.compile("\\[yt\\](.*?)\\[/yt\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state) {
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+					if (state.inCode) return;
 					String youcode = escape(matcher.group(1));
 					StringBuffer sb = new StringBuffer()
-					.append("<object height=\"329\" width=\"400\">")
-					.append("<param value=\"http://www.youtube.com/v/").append(youcode).append("\" name=\"movie\">")
-					.append("<param value=\"transparent\" name=\"wmode\">")
-					.append("<embed height=\"329\" width=\"400\" wmode=\"transparent\" ")
-					.append("type=\"application/x-shockwave-flash\" ")
-					.append("src=\"http://www.youtube.com/v/").append(youcode).append("\"></object>");
+					.append("<object height='329' width='400'>")
+					.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>")
+					.append("<param value='transparent' name='wmode'>")
+					.append("<embed height='329' width='400' wmode='transparent' ")
+					.append("type='application/x-shockwave-flash' ")
+					.append("src='http://www.youtube.com/v/").append(youcode).append("'></object>");
 					state.token = matcher.replaceFirst(sb.toString());
 				}
 			});
 			put(Pattern.compile("\\[code\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state) {
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
 					state.token = matcher.replaceFirst("<pre class='code'>");
 					state.inCode = true;
 				}
 			});
 			put(Pattern.compile("\\[code$"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state) {
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
 					state.token = matcher.replaceFirst("");
 					state.openCode = true;
 				}
 			});
 			put(Pattern.compile("^([a-zA-Z0-9]+)\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state) {
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
 					if (state.openCode) {
 						state.openCode = false;
 						state.token = matcher.replaceFirst(String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)));
@@ -153,7 +147,7 @@ public class MessageTag2 extends BodyTagSupport {
 			});
 			put(Pattern.compile("\\[/code\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state) {
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
 					state.token = matcher.replaceFirst("</pre>");
 					state.inCode = false;
 				}
@@ -161,6 +155,7 @@ public class MessageTag2 extends BodyTagSupport {
 		}};
 	
 	private static String simpleReplaceAll(String src, String search, String replacement) {
+		if (search == null || search.length() == 0) return src;
 		int p = 0;
 		while ((p=src.indexOf(search, p)) != -1) {
 			src = src.substring(0, p) + replacement + src.substring(p + search.length());
@@ -197,12 +192,14 @@ public class MessageTag2 extends BodyTagSupport {
 		try {
 			JspWriter out = getBodyContent().getEnclosingWriter();
 			String body = getBodyContent().getString();
+			// questo elimina il caso di multipli [code] sulla stessa linea (casino da gestire, bisognava cambiare stile di parsing del body)
+			body = simpleReplaceAll(body, "[/code]", "[/code]<BR>");
+			
 //			System.out.println("------ body ------");
 //			System.out.println(body);
 //			System.out.println("------ body ------");
 			
 			BodyState state = new BodyState();
-			
 			String[] lines = body.split("<BR>");
 			for (int i=0;i<lines.length;++i) {
 				String line = lines[i];
@@ -212,23 +209,28 @@ public class MessageTag2 extends BodyTagSupport {
 				while (tokens.hasMoreTokens()) {
 					String token = tokens.nextToken();
 					state.token = token;
-					if (!token.equals(" ")) {
+					boolean noMatch = true;
+					if (token.length() > 3) { // non c'è niente da matchare di interessante sotto i 4 caratteri
 						for(Iterator<Pattern> it = patternProcessorMapping.keySet().iterator(); it.hasNext();) {
 							Pattern pattern = it.next();
 							Matcher matcher = pattern.matcher(state.token);
 							while (matcher.find()) {
+								noMatch = false;
 								BodyTokenProcessor processor = patternProcessorMapping.get(pattern);
 //								System.out.println("token: "+state.token);
 //								System.out.println("regex: "+pattern.pattern());
-								processor.process(matcher, state);
+								processor.process(matcher, state, this);
 //								System.out.println("---->: "+state.token);
 							}
 						}	
 					}
+					if (noMatch) {
+						state.token = simpleReplaceAll(state.token, search, "<span style='background-color: yellow'>" + search + "</span>");
+					}
 					lineBuf.append(state.token);
 				}
 				line = lineBuf.toString();
-				if (!state.inCode && !wasInCode) {
+				if ((!state.inCode) && (!wasInCode)) {
 					line = emoticons(line);
 					line = color_quote(line);
 				}

@@ -16,7 +16,7 @@
         Format the message to be displayed.
     </description>
     <name>msg</name>
-    <tag-class>com.acmetoy.ravanator.fdt.MessageTag</tag-class>
+    <tag-class>com.acmetoy.ravanator.fdt.MessageTag2</tag-class>
     <body-content>JSP</body-content>
 	<attribute>
 		<description>Searched word to highlight</description>
