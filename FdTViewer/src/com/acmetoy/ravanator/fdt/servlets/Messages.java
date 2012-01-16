@@ -96,7 +96,7 @@ public class Messages extends MainServlet {
 	 */
 	public String getByAuthor(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String author = req.getParameter("author");
-		req.setAttribute("specificParams", "&author=" + author);
+		req.setAttribute("specificParams", "&amp;author=" + author);
 		setWebsiteTitle(req, "Messaggi di " + author + " @ Forum dei Troll");
 		setNavigationMessage(req, "Messaggi scritti da <i>" + author + "</i>");
 		req.setAttribute("messages", getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req)));
@@ -105,7 +105,7 @@ public class Messages extends MainServlet {
 
 	public String getByForum(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String forum = req.getParameter("forum");
-		req.setAttribute("specificParams", "&forum=" + forum);
+		req.setAttribute("specificParams", "&amp;forum=" + forum);
 		setWebsiteTitle(req, forum + " @ Forum dei Troll");
 		setNavigationMessage(req, "Forum <i>" + forum + "</i>");
 		req.setAttribute("messages", getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req)));
@@ -121,7 +121,7 @@ public class Messages extends MainServlet {
 	 */
 	public String search(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String search = req.getParameter("search");
-		req.setAttribute("specificParams", "&search=" + search);
+		req.setAttribute("specificParams", "&amp;search=" + search);
 		setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
 		req.setAttribute("messages", getPersistence().searchMessages(search, PAGE_SIZE, getPageNr(req)));
 		return "messages.jsp";
@@ -418,7 +418,7 @@ public class Messages extends MainServlet {
         JsonWriter writer = new JsonWriter(res.getWriter());
         writer.beginObject();
         writer.name("resultCode").value("OK");
-        writer.name("content").value("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "#msg" + msg.getId());
+        writer.name("content").value("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "#msg" + msg.getId()); //Qui non cambiare & con &amp;
         writer.endObject();
         writer.flush();
         writer.close();

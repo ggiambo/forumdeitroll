@@ -109,7 +109,7 @@ public class MessageTag2 extends BodyTagSupport {
 				public void process(Matcher matcher, BodyState state) {
 					String url = escape(matcher.group(1));
 					state.token = matcher.replaceFirst(
-						String.format("<a class='preview' href='%s'><img width='150px' src='%s'></a>", url, url)
+						String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src='%s'></a>", url, url)
 					);
 				}
 			});
@@ -146,7 +146,7 @@ public class MessageTag2 extends BodyTagSupport {
 				public void process(Matcher matcher, BodyState state) {
 					if (state.openCode) {
 						state.openCode = false;
-						state.token = matcher.replaceFirst(String.format("<pre class='brush: %s; class-name:code'>", matcher.group(1)));
+						state.token = matcher.replaceFirst(String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)));
 						state.inCode = true;
 					}
 				}
@@ -174,7 +174,7 @@ public class MessageTag2 extends BodyTagSupport {
 		for (String key: emoMap.keySet()) {
 			String value = emoMap.get(key);
 			String alt = EMO_ALT_MAP.get(key);
-			line = simpleReplaceAll(line, value.trim(), String.format("<img border='0' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
+			line = simpleReplaceAll(line, value.trim(), String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
 		}
 		return line;
 	}
@@ -182,13 +182,13 @@ public class MessageTag2 extends BodyTagSupport {
 	private static String color_quote(String line) {
 		// "#007BDF", "#00AF59", "#9A00EF", "#AF6F00"
 		if (line.startsWith("&gt; &gt; &gt; &gt;")) {
-			line = "<span style='color: #AF6F00'>" + line + "</span>";
+			line = "<span class='quoteLvl4'>" + line + "</span>";
 		} else if (line.startsWith("&gt; &gt; &gt; ")) {
-			line = "<span style='color: #9A00EF'>" + line + "</span>";
+			line = "<span class='quoteLvl3'>" + line + "</span>";
 		} else if (line.startsWith("&gt; &gt; ")) {
-			line = "<span style='color: #00AF59'>" + line + "</span>";
+			line = "<span class='quoteLvl2'>" + line + "</span>";
 		} else if (line.startsWith("&gt; ")) {
-			line = "<span style='color: #007BDF'>" + line + "</span>";
+			line = "<span class='quoteLvl1'>" + line + "</span>";
 		}
 		return line;
 	}

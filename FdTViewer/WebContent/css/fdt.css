@@ -367,3 +367,24 @@ pre.code, div.code {
 img.userPostedImage {
 	width: 150px;
 }
+
+img.emoticon {
+	border: none;
+	vertical-align: top;
+}
+
+span.quoteLvl4 {
+	color: #AF6F00;
+}
+
+span.quoteLvl3 {
+	color: #9A00EF;
+}
+
+span.quoteLvl2 {
+	color: #00AF59;
+}
+
+span.quoteLvl1 {
+	color: #007BDF;
+}
