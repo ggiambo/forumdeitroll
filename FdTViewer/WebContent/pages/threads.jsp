@@ -35,7 +35,7 @@
 								Non Autenticato
 							</c:when>
 							<c:otherwise>
-								<a href="Messages?action=getByAuthor&amp;author=${thread.author}">${thread.author}</a>
+								<a href="Messages?action=getByAuthor&amp;author=${thread.escapedAuthor}">${thread.author}</a>
 							</c:otherwise>
 						</c:choose>
 					</span>

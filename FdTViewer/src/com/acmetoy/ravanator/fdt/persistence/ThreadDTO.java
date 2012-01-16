@@ -2,12 +2,15 @@ package com.acmetoy.ravanator.fdt.persistence;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 public class ThreadDTO {
 
 	private long id = -1;
 	private Date date = null;
 	private String subject = null;
 	private String author = null;
+	private String escapedAuthor = null;
 	private String forum = null;
 	private int setNumberOfMessages = -1;
 	
@@ -46,8 +49,19 @@ public class ThreadDTO {
 		return author;
 	}
 
+	public String getEscapedAuthor() {
+		return escapedAuthor;
+	}
+	
 	public void setAuthor(String author) {
 		this.author = author;
+		if (author != null) {
+			this.escapedAuthor = StringEscapeUtils.escapeHtml4(author);	
+			this.escapedAuthor = this.escapedAuthor.replace(" ", "%20");
+		} else {
+			this.escapedAuthor = null;
+		}
+		
 	}
 
 	public String getForum() {
@@ -73,6 +87,7 @@ public class ThreadDTO {
 		sb.append("date:").append(date).append(",");
 		sb.append("subject:").append(subject).append(",");
 		sb.append("author:").append(author).append(",");
+		sb.append("escapedAuthor:").append(escapedAuthor).append(",");
 		sb.append("forum:").append(forum).append(",");
 		sb.append("setNumberOfMessages:").append(setNumberOfMessages).append(",");
 		return sb.toString();

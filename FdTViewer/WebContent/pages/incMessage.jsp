@@ -17,7 +17,7 @@
 
 	<div class="msgInfo">
 		<div>
-			<img alt="Avatar" src="?action=getAvatar&amp;nick=${msg.author}"/>
+			<img alt="Avatar" src="?action=getAvatar&amp;nick=${msg.escapedAuthor}"/>
 		</div>
 		<c:if test="${!empty msg.forum}">
 			<div class="msgForum">${msg.forum}</div>
@@ -30,7 +30,7 @@
 						Non Autenticato
 					</c:when>
 					<c:otherwise>
-						<a href="Messages?action=getByAuthor&amp;author=${msg.author}">${msg.author}</a>
+						<a href="Messages?action=getByAuthor&amp;author=${msg.escapedAuthor}">${msg.author}</a>
 					</c:otherwise>
 				</c:choose>
 			</div>
