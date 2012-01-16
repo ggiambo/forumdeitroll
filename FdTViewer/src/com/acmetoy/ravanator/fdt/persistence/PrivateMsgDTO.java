@@ -1,17 +1,20 @@
 package com.acmetoy.ravanator.fdt.persistence;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PrivateMsgDTO {
 	
 	private long id;
 	private String fromNick;
-	private String toNick;
+	private List<String> toNick = new LinkedList<String>();
 	private String subject;
 	private Date date;
 	private String text;
 	private boolean read = false;
-
+	private long replyTo;
+	
 	public long getId() {
 		return id;
 	}
@@ -28,11 +31,11 @@ public class PrivateMsgDTO {
 		this.fromNick = fromNick;
 	}
 
-	public String getToNick() {
+	public List<String> getToNick() {
 		return toNick;
 	}
 
-	public void setToNick(String toNick) {
+	public void setToNick(List<String> toNick) {
 		this.toNick = toNick;
 	}
 
@@ -66,5 +69,13 @@ public class PrivateMsgDTO {
 
 	public void setRead(boolean read) {
 		this.read = read;
+	}
+
+	public long getReplyTo() {
+		return replyTo;
+	}
+
+	public void setReplyTo(long replyTo) {
+		this.replyTo = replyTo;
 	}
 }

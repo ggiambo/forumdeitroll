@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
+import com.acmetoy.ravanator.fdt.persistence.PrivateMsgDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 
@@ -474,4 +475,120 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 	}
 
+
+	@Override
+	public void sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("INSERT INTO pvt_content" +
+										"(sender, content, senddate, subject, replyTo) " +
+										"VALUES  (?,?,sysdate(),?,?)");
+			ps.setString(1, author.getNick());
+			ps.setString(2, privateMsg.getText());
+			ps.setString(3, privateMsg.getSubject());
+			ps.setLong(4, privateMsg.getReplyTo());
+			ps.execute();
+			close(null, ps, null);
+			
+			rs = ps.getGeneratedKeys();
+			rs.next();
+			long pvt_id = rs.getLong(1);
+			
+			for (String recipient: recipients) {
+				ps = conn.prepareStatement("INSERT INT pvt_recipient" +
+											"(pvt_id, recipient) "+
+											"VALUES (?,?)");
+				
+				ps.setLong(1, pvt_id);
+				ps.setString(2, recipient);
+				ps.execute();
+			}
+			
+		} catch (SQLException e) {
+			LOG.error("Cannot insert pvt content or pvt recipient", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	@Override
+	public boolean checkForNewPvts(AuthorDTO recipient) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT count(*) FROM pvt_recipient WHERE recipient = ? AND read = 0");
+			ps.setString(1, recipient.getNick());
+			return (rs = ps.executeQuery()).next();
+		} catch (SQLException e) {
+			LOG.error("Cannot check for new pvts for user "+recipient.getNick(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return false;
+	}
+	
+	@Override
+	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("UPDATE pvt_recipient SET read = 1 WHERE recipient = ? AND pvt_id = ?");
+			ps.setString(1, recipient.getNick());
+			ps.setLong(2, privateMsg.getId());
+			int result;
+			if ((result = ps.executeUpdate()) != 1) {
+				throw new SQLException("Le scimmie presto! ha aggiornato "+result+" records!");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot notify "+recipient.getNick()+" id "+privateMsg.getId(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	@Override
+	public void deletePvt(long pvt_id, AuthorDTO user) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("UPDATE pvt_recipient SET deleted = 1 WHERE pvt_id = ? AND recipient = ?");
+			ps.setLong(1, pvt_id);
+			ps.setString(2, user.getNick());
+			int res;
+			switch (res=ps.executeUpdate()) {
+			case 0:
+				close(null,ps,null);
+				ps = conn.prepareStatement("UPDATE pvt_content SET deleted = 1 WHERE id = ? AND sender = ?");
+				ps.setLong(1, pvt_id);
+				ps.setString(2, user.getNick());
+				if ((res=ps.executeUpdate()) != 1) {
+					throw new SQLException("whazzup (pvt_content)!?!? (0 - "+res);
+				}
+				break;
+			case 1:
+				break;
+			default:
+				throw new SQLException("whazzup (pvt_recipient)!?!? (0 - "+res);
+			}
+			close(null, ps, null);
+			//cleanup - eventualmente opzionale oppure lanciata da timertask
+			ps = conn.prepareStatement("DELETE FROM pvt_recipient WHERE pvt_id IN (SELECT id FROM pvt_content WHERE deleted = 1) AND deleted = 1");
+			ps.execute();
+			close(null, ps, null);
+			ps = conn.prepareStatement("DELETE FROM pvt_content WHERE id NOT IN (SELECT id FROM pvt_content) AND deleted = 1");
+			ps.execute();
+			close(null, ps, null);
+		} catch (SQLException e) {
+			LOG.error("Cannot delete "+pvt_id+" for user "+user.getNick(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	
 }

@@ -282,7 +282,7 @@ public class User extends MainServlet {
 
 	/**
 	 * Lista di tutti i PVT
-	 */
+	 
 	public String getPrivateMessages(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO author = login(req);
 		if (author == null || !author.isValid()) {
@@ -297,5 +297,5 @@ public class User extends MainServlet {
 		return "privateMessages.jsp";
 
 	}
-
+*/
 }

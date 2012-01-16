@@ -10,13 +10,11 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
-import com.acmetoy.ravanator.fdt.persistence.PrivateMsgDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 
-public class PostgreSQLPersistence extends GenericSQLPersistence {
+public abstract class PostgreSQLPersistence extends GenericSQLPersistence {
 
 	private static final Logger LOG = Logger.getLogger(PostgreSQLPersistence.class);
 
@@ -146,37 +144,4 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 		}
 		return null;
 	}
-	
-	@Override
-	public List<PrivateMsgDTO> getPrivateMessages(AuthorDTO author, int limit, int pageNr) {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		List<PrivateMsgDTO> result = new ArrayList<PrivateMsgDTO>();
-		try {
-			ps = conn.prepareStatement("SELECT * FROM privatemsgs WHERE fromNick = ? ORDER BY date DESC LIMIT ? OFFSET ?");
-			int i = 1;
-			ps.setString(i++, author.getNick());
-			ps.setInt(i++, limit);
-			ps.setInt(i++, limit*pageNr);
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				PrivateMsgDTO msg = new PrivateMsgDTO();
-				msg.setDate(rs.getDate("date"));
-				msg.setFromNick(rs.getString("fromnick"));
-				msg.setId(rs.getLong("id"));
-				msg.setRead(rs.getBoolean("read"));
-				msg.setSubject(rs.getString("subject"));
-				msg.setText(rs.getString("text"));
-				msg.setToNick(rs.getString("tonick"));
-				result.add(msg);
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot get threads", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return result;
-	}
-
 }
