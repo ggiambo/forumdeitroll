@@ -180,7 +180,6 @@ public class MessageTag2 extends BodyTagSupport {
 	}
 	
 	private static String color_quote(String line) {
-		// "#007BDF", "#00AF59", "#9A00EF", "#AF6F00"
 		if (line.startsWith("&gt; &gt; &gt; &gt;")) {
 			line = "<span class='quoteLvl4'>" + line + "</span>";
 		} else if (line.startsWith("&gt; &gt; &gt; ")) {
@@ -228,8 +227,10 @@ public class MessageTag2 extends BodyTagSupport {
 					lineBuf.append(state.token);
 				}
 				line = lineBuf.toString();
-				line = emoticons(line);
-				line = color_quote(line);
+				if (!state.inCode) {
+					line = emoticons(line);
+					line = color_quote(line);
+				}
 				out.write(line);
 				if (state.inCode)
 					out.write("\n");
