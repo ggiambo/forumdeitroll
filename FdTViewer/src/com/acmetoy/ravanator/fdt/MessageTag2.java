@@ -93,7 +93,7 @@ public class MessageTag2 extends BodyTagSupport {
 					}
 					String search = tag.getSearch();
 					desc = simpleReplaceAll(desc, search, "<span style='background-color: yellow'>" + search + "</span>");
-					state.token = String.format("<a href='%s' target='_blank'>%s</a>",state.token, desc);
+					state.token = String.format("<a href='%s' target='_blank'>%s</a>",url, desc);
 				}
 			});
 			put(Pattern.compile("\\[img\\](https?://.*?)\\[/img\\]"), new BodyTokenProcessor() {
