@@ -208,6 +208,7 @@ public class MessageTag2 extends BodyTagSupport {
 				String line = lines[i];
 				StringTokenizer tokens = new StringTokenizer(line, " ", true);
 				StringBuffer lineBuf = new StringBuffer();
+				boolean wasInCode = state.inCode;
 				while (tokens.hasMoreTokens()) {
 					String token = tokens.nextToken();
 					state.token = token;
@@ -227,7 +228,7 @@ public class MessageTag2 extends BodyTagSupport {
 					lineBuf.append(state.token);
 				}
 				line = lineBuf.toString();
-				if (!state.inCode) {
+				if (!state.inCode && !wasInCode) {
 					line = emoticons(line);
 					line = color_quote(line);
 				}
