@@ -33,7 +33,7 @@ body {
 
 #header {
 	 padding: 10px;
-	 background-image:url(../images/banner.png);
+	 background-image:url(../images/banner.jpg);
 }
 
 #titoloForum {
@@ -362,4 +362,8 @@ pre.code, div.code {
 	border: 1px dotted black;
 	overflow: auto;
 	font-size: 80% !important;
+}
+
+img.userPostedImage {
+	width: 150px;
 }
