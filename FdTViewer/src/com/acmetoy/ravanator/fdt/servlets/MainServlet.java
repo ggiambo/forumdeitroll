@@ -192,6 +192,12 @@ public abstract class MainServlet extends HttpServlet {
 			if (author.passwordIs(pass)) {
 				// ok, ci siamo loggati con successo, salvare nella sessione
 				req.getSession().setAttribute(LOGGED_USER_SESSION_ATTR, author.getNick());
+				if (!author.newAuth()) {
+					// CODICE DI MIGRAZIONE DELLA FUNZIONE DI HASHING DELLE PASSWORD
+					// autenticazione con username e password effettuata con successo ma
+					// nome utente e password sono salvati con la vecchia funzione di hashing
+					getPersistence().updateAuthorPassword(author, pass);
+				}
 				return author;
 			} else {
 				return new AuthorDTO();
@@ -201,7 +207,14 @@ public abstract class MainServlet extends HttpServlet {
 		// se non e` stato specificato nome utente e password tentiamo l'autenticazione tramite sessione
 		final String sesNick = (String)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
 		if (sesNick != null) {
-			return getPersistence().getAuthor(sesNick);
+			final AuthorDTO author = getPersistence().getAuthor(sesNick);
+			if (!author.newAuth()) {
+				// CODICE DI MIGRAZIONE DELLA FUNZIONE DI HASHING DELLE PASSWORD
+				// l'utente e` loggato con il cookie ma la password usa sempre l'hashing vecchio, piallare il
+				// cookie in modo che debba rifare il login e aggiornare l'hashing.
+				req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
+			}
+			return author;
 		}
 
 		// captcha corretto, restituisce l'Author di default

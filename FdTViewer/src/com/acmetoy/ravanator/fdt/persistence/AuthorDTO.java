@@ -127,6 +127,10 @@ public class AuthorDTO {
 		}
 	}
 
+	public boolean newAuth() {
+		return !(StringUtils.isEmpty(this.salt));
+	}
+
 	static protected String hex(final byte[] input, final boolean padding) {
 		BigInteger hash = new BigInteger(1, input);
 		String result = hash.toString(16);
