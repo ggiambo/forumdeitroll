@@ -70,7 +70,7 @@ public class Messages extends MainServlet {
 	@Override
 	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		setWebsiteTitle(req, "Forum dei troll");
-		return getByPage(req, res);
+		return getByPage.action(req, res);
 	}
 
 	/**
@@ -80,12 +80,14 @@ public class Messages extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public String getByPage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.setAttribute("messages", getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req)));
-		setWebsiteTitle(req, "Forum dei troll");
-		setNavigationMessage(req, "Ordinati cronologicamente");
-		return "messages.jsp";
-	}
+	protected GiamboAction getByPage = new GiamboAction("getByPage", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			req.setAttribute("messages", getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req)));
+			setWebsiteTitle(req, "Forum dei troll");
+			setNavigationMessage(req, "Ordinati cronologicamente");
+			return "messages.jsp";
+		}
+	};
 
 	/**
 	 * I messaggi di questo autore in ordine di data
@@ -94,23 +96,27 @@ public class Messages extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public String getByAuthor(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String author = req.getParameter("author");
-		req.setAttribute("specificParams", "&amp;author=" + author);
-		setWebsiteTitle(req, "Messaggi di " + author + " @ Forum dei Troll");
-		setNavigationMessage(req, "Messaggi scritti da <i>" + author + "</i>");
-		req.setAttribute("messages", getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req)));
-		return "messages.jsp";
-	}
+	protected GiamboAction getByAuthor = new GiamboAction("getByAuthor", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			String author = req.getParameter("author");
+			req.setAttribute("specificParams", "&amp;author=" + author);
+			setWebsiteTitle(req, "Messaggi di " + author + " @ Forum dei Troll");
+			setNavigationMessage(req, "Messaggi scritti da <i>" + author + "</i>");
+			req.setAttribute("messages", getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req)));
+			return "messages.jsp";
+		}
+	};
 
-	public String getByForum(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String forum = req.getParameter("forum");
-		req.setAttribute("specificParams", "&amp;forum=" + forum);
-		setWebsiteTitle(req, forum + " @ Forum dei Troll");
-		setNavigationMessage(req, "Forum <i>" + forum + "</i>");
-		req.setAttribute("messages", getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req)));
-		return "messages.jsp";
-	}
+	protected GiamboAction getByForum = new GiamboAction("getByForum", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			String forum = req.getParameter("forum");
+			req.setAttribute("specificParams", "&amp;forum=" + forum);
+			setWebsiteTitle(req, forum + " @ Forum dei Troll");
+			setNavigationMessage(req, "Forum <i>" + forum + "</i>");
+			req.setAttribute("messages", getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req)));
+			return "messages.jsp";
+		}
+	};
 
 	/**
 	 * Ricerca in tutti i messaggi
@@ -119,78 +125,84 @@ public class Messages extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public String search(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String search = req.getParameter("search");
-		req.setAttribute("specificParams", "&amp;search=" + search);
-		setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
-		req.setAttribute("messages", getPersistence().searchMessages(search, PAGE_SIZE, getPageNr(req)));
-		return "messages.jsp";
-	}
-
-	/**
-	 * Popola il div per la risposta/quota messaggio
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
-	public String newMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		MessageDTO msg = new MessageDTO();
-		msg.setForum(req.getParameter("forum"));
-		req.setAttribute("message", msg);
-		setWebsiteTitle(req, "Nuovo messaggio @ Forum dei Troll");
-		// faccine - ordinate per key
-		TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
-		req.setAttribute("emoMap", emoMap);
-		return "newMessage.jsp";
-	}
-
-	/**
-	 * Popola il div per la risposta/quota messaggio
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
-	public String showReplyDiv(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		res.setCharacterEncoding("UTF-8");
-		String type = req.getParameter("type");
-		long parentId = Long.parseLong(req.getParameter("parentId"));
-		req.setAttribute("parentId", parentId);
-		MessageDTO newMsg = new MessageDTO();
-		if ("quote".equals(type)) {
-			MessageDTO msgDTO = getPersistence().getMessage(parentId);
-			String text = msgDTO.getText().trim();
-
-			// quote
-			Matcher m = PATTERN_QUOTE.matcher(text);
-			while (m.find()) {
-				String group = m.group(0);
-				int nrQuotes = group.replace(" ", "").replace("<BR>", "").length() / 4; // 4 = "&gt;".length();
-				nrQuotes++;
-				StringBuilder newBegin = new StringBuilder("\r\n");
-				for (int j = 0; j < nrQuotes; j++) {
-					newBegin.append("> ");
-				}
-				text = m.replaceFirst(newBegin.toString());
-				m = PATTERN_QUOTE.matcher(text);
-			}
-
-			String author = msgDTO.getAuthor();
-			text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n> " + text + "\r\n";
-			newMsg.setText(text);
-			newMsg.setForum(msgDTO.getForum());
-			newMsg.setSubject(msgDTO.getSubject());
+	protected GiamboAction search = new GiamboAction("search", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			String search = req.getParameter("search");
+			req.setAttribute("specificParams", "&amp;search=" + search);
+			setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
+			req.setAttribute("messages", getPersistence().searchMessages(search, PAGE_SIZE, getPageNr(req)));
+			return "messages.jsp";
 		}
-		newMsg.setParentId(parentId);
-		req.setAttribute("message", newMsg);
+	};
 
-		// faccine - ordinate per key
-		TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
-		req.setAttribute("emoMap", emoMap);
+	/**
+	 * Popola il div per la risposta/quota messaggio
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	protected GiamboAction newMessage = new GiamboAction("newMessage", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			MessageDTO msg = new MessageDTO();
+			msg.setForum(req.getParameter("forum"));
+			req.setAttribute("message", msg);
+			setWebsiteTitle(req, "Nuovo messaggio @ Forum dei Troll");
+			// faccine - ordinate per key
+			TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
+			req.setAttribute("emoMap", emoMap);
+			return "newMessage.jsp";
+		}
+	};
 
-		return "incReplyMessage.jsp";
-	}
+	/**
+	 * Popola il div per la risposta/quota messaggio
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	protected GiamboAction showReplyDiv = new GiamboAction("showReplyDiv", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			res.setCharacterEncoding("UTF-8");
+			String type = req.getParameter("type");
+			long parentId = Long.parseLong(req.getParameter("parentId"));
+			req.setAttribute("parentId", parentId);
+			MessageDTO newMsg = new MessageDTO();
+			if ("quote".equals(type)) {
+				MessageDTO msgDTO = getPersistence().getMessage(parentId);
+				String text = msgDTO.getText().trim();
+
+				// quote
+				Matcher m = PATTERN_QUOTE.matcher(text);
+				while (m.find()) {
+					String group = m.group(0);
+					int nrQuotes = group.replace(" ", "").replace("<BR>", "").length() / 4; // 4 = "&gt;".length();
+					nrQuotes++;
+					StringBuilder newBegin = new StringBuilder("\r\n");
+					for (int j = 0; j < nrQuotes; j++) {
+						newBegin.append("> ");
+					}
+					text = m.replaceFirst(newBegin.toString());
+					m = PATTERN_QUOTE.matcher(text);
+				}
+
+				String author = msgDTO.getAuthor();
+				text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n> " + text + "\r\n";
+				newMsg.setText(text);
+				newMsg.setForum(msgDTO.getForum());
+				newMsg.setSubject(msgDTO.getSubject());
+			}
+			newMsg.setParentId(parentId);
+			req.setAttribute("message", newMsg);
+
+			// faccine - ordinate per key
+			TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
+			req.setAttribute("emoMap", emoMap);
+
+			return "incReplyMessage.jsp";
+		}
+	};
 
 	/**
 	 * Ritorna una stringa diversa da null da mostrare come messaggio d'errore all'utente
@@ -241,33 +253,35 @@ public class Messages extends MainServlet {
 	}
 
 	/**
-	 * Inserisce un nuovo messaggio
+	 * Modifica un messaggio esistente
 	 * @param req
 	 * @param res
 	 * @return
 	 * @throws Exception
 	 */
-	public String editMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		// check se l'uente loggato corrisponde a chi ha scritto il messaggio
-		AuthorDTO user = login(req);
-		String msgId = req.getParameter("msgId");
-		MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
-		if (!user.isValid() || !user.getNick().equals(msg.getAuthor())) {
-			setNavigationMessage(req, "Non puoi editare un messaggio non tuo !");
-			return getByPage(req, res);
+	protected GiamboAction editMessage = new GiamboAction("editMessage", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			// check se l'uente loggato corrisponde a chi ha scritto il messaggio
+			AuthorDTO user = login(req);
+			String msgId = req.getParameter("msgId");
+			MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
+			if (!user.isValid() || !user.getNick().equals(msg.getAuthor())) {
+				setNavigationMessage(req, "Non puoi editare un messaggio non tuo !");
+				return getByPage.action(req, res);
+			}
+
+			// cleanup
+			msg.setText(msg.getText().replaceAll("<BR>", "\r\n"));
+			req.setAttribute("message", msg);
+
+			// faccine - ordinate per key
+			TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
+			req.setAttribute("emoMap", emoMap);
+
+			return "newMessage.jsp";
 		}
-		
-		// cleanup
-		msg.setText(msg.getText().replaceAll("<BR>", "\r\n"));
-		req.setAttribute("message", msg);
-		
-		// faccine - ordinate per key
-		TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
-		req.setAttribute("emoMap", emoMap);
-		
-		return "newMessage.jsp";
-	}
-	
+	};
+
 	/**
 	 * Inserisce un messaggio nuovo o editato
 	 * @param req
@@ -275,29 +289,30 @@ public class Messages extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	
-	public String insertMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		try {
-			return insertMessageAjax(req, res);
-		} catch (Exception e) {
-			StringBuilder body = new StringBuilder();
-			body.append("<body>");
-			body.append("<h1 style=\"color:#FFFFFF; background-color:#AA1111; padding: 5px 5px 5px 20px; margin-left: 20px;\">Errore !!!!1!</h1>");
-			body.append("Che cazzo e' successo <img src=\"images/emo/7.gif\" /> ?!? Contatta subito <del>la suora</del> Giambo e mandagli questo messaggio:<br/>");
-			body.append("<pre style=\"border:1px solid black; padding:10px;\">\"").append(ExceptionUtils.getStackTrace(e)).append("\"/></pre>");
-			body.append("<div style=\"clear: both;\"></div>");
-			body.append("</body>");
-            JsonWriter writer = new JsonWriter(res.getWriter());
-            writer.beginObject();
-            writer.name("resultCode").value("ERROR");
-            writer.name("content").value(body.toString());
-            writer.endObject();
-            writer.flush();
-            writer.close();
+	protected GiamboAction insertMessage = new GiamboAction("insertMessage", ONPOST) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			try {
+				return insertMessageAjax(req, res);
+			} catch (Exception e) {
+				StringBuilder body = new StringBuilder();
+				body.append("<body>");
+				body.append("<h1 style=\"color:#FFFFFF; background-color:#AA1111; padding: 5px 5px 5px 20px; margin-left: 20px;\">Errore !!!!1!</h1>");
+				body.append("Che cazzo e' successo <img src=\"images/emo/7.gif\" /> ?!? Contatta subito <del>la suora</del> Giambo e mandagli questo messaggio:<br/>");
+				body.append("<pre style=\"border:1px solid black; padding:10px;\">\"").append(ExceptionUtils.getStackTrace(e)).append("\"/></pre>");
+				body.append("<div style=\"clear: both;\"></div>");
+				body.append("</body>");
+	            JsonWriter writer = new JsonWriter(res.getWriter());
+	            writer.beginObject();
+	            writer.name("resultCode").value("ERROR");
+	            writer.name("content").value(body.toString());
+	            writer.endObject();
+	            writer.flush();
+	            writer.close();
+			}
+			return null;
 		}
-		return null;
-	}
-	
+	};
+
 	private String insertMessageAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
 
 		// se c'e' un'errore, mostralo
@@ -350,7 +365,7 @@ public class Messages extends MainServlet {
 			text = m.replaceFirst(Matcher.quoteReplacement("[yt]" + replace + "[/yt]"));
 			 m = PATTERN_YT.matcher(text);
 		}
-		
+
 	    // estrai id da URL youtube
 	    m = PATTERN_YOUTUBE.matcher(text);
 	    while (m.find()) {
