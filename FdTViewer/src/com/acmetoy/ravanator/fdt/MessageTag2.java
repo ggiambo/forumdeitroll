@@ -101,12 +101,15 @@ public class MessageTag2 extends BodyTagSupport {
 				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
 					if (state.inCode) return;
 					String url = escape(matcher.group(1));
-					state.token = matcher.replaceFirst(
-						String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src='%s'></a>", url, url)
-					);
+//					state.token = matcher.replaceFirst(
+//						String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src='%s'></a>", url, url)
+//					);
+					state.token = state.token.substring(0, matcher.start()) + 
+							String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src='%s'></a>", url, url) +
+							state.token.substring(matcher.end());
 				}
 			});
-			put(Pattern.compile("\\[yt\\]([a-zA-Z0-9\\+\\/=\\-_]*?)\\[/yt\\]"), new BodyTokenProcessor() {
+			put(Pattern.compile("\\[yt\\]([a-zA-Z0-9\\+\\/=\\-_]{7,12})\\[/yt\\]"), new BodyTokenProcessor() {
 				@Override
 				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
 					if (state.inCode) return;
@@ -118,20 +121,14 @@ public class MessageTag2 extends BodyTagSupport {
 					.append("<embed height='329' width='400' wmode='transparent' ")
 					.append("type='application/x-shockwave-flash' ")
 					.append("src='http://www.youtube.com/v/").append(youcode).append("'></object>");
-					state.token = matcher.replaceFirst(sb.toString());
-				}
-			});
-			put(Pattern.compile("\\[code\\]"), new BodyTokenProcessor() {
-				@Override
-				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
-					state.token = matcher.replaceFirst("<pre class='code'>");
-					state.inCode = true;
+//					state.token = matcher.replaceFirst(sb.toString());
+					state.token = state.token.substring(0, matcher.start()) + sb.toString() + state.token.substring(matcher.end());
 				}
 			});
 			put(Pattern.compile("\\[code$"), new BodyTokenProcessor() {
 				@Override
 				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
-					state.token = matcher.replaceFirst("");
+					state.token = state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
 					state.openCode = true;
 				}
 			});
@@ -140,16 +137,12 @@ public class MessageTag2 extends BodyTagSupport {
 				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
 					if (state.openCode) {
 						state.openCode = false;
-						state.token = matcher.replaceFirst(String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)));
+//						state.token = matcher.replaceFirst(String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)));
+						state.token = state.token.substring(0, matcher.start()) +
+								String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)) +
+								state.token.substring(matcher.end());
 						state.inCode = true;
 					}
-				}
-			});
-			put(Pattern.compile("\\[/code\\]"), new BodyTokenProcessor() {
-				@Override
-				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
-					state.token = matcher.replaceFirst("</pre>");
-					state.inCode = false;
 				}
 			});
 		}};
@@ -162,6 +155,12 @@ public class MessageTag2 extends BodyTagSupport {
 			p += replacement.length();
 		}
 		return src;
+	}
+	
+	private static String simpleReplaceFirst(String src, String search, String replacement) {
+		if (search == null || search.length() == 0) return src;
+		int p = src.indexOf(search);
+		return src.substring(0, p) + replacement + src.substring(p + search.length());
 	}
 	
 	private static String emoticons(String line) {
@@ -209,6 +208,8 @@ public class MessageTag2 extends BodyTagSupport {
 				while (tokens.hasMoreTokens()) {
 					String token = tokens.nextToken();
 					state.token = token;
+					state.token = simpleReplaceAll(state.token, "[code]", "<pre class='code'>");
+					state.token = simpleReplaceAll(state.token, "[/code]", "</pre>");
 					boolean noMatch = true;
 					if (token.length() > 3) { // non c'è niente da matchare di interessante sotto i 4 caratteri
 						for(Iterator<Pattern> it = patternProcessorMapping.keySet().iterator(); it.hasNext();) {
