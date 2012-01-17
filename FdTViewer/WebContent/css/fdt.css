@@ -332,6 +332,11 @@ span.msgAuthor, div.msgAuthor {
 
 span.msgAuthor a, div.msgAuthor a {
 	text-decoration: none;
+	color: Blue;
+}
+
+span.msgAuthor a:visited, div.msgAuthor a:visited {
+	color: Blue;
 }
 
 div.msgAction a {
