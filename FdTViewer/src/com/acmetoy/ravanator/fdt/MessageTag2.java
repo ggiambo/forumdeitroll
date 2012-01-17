@@ -30,6 +30,7 @@ public class MessageTag2 extends BodyTagSupport {
 		public String token;
 		public boolean openCode;
 		public boolean inCode;
+		public boolean openColor;
 	}
 	
 	private static interface BodyTokenProcessor {
@@ -128,7 +129,7 @@ public class MessageTag2 extends BodyTagSupport {
 			put(Pattern.compile("\\[code$"), new BodyTokenProcessor() {
 				@Override
 				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
-					state.token = state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
+					state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
 					state.openCode = true;
 				}
 			});
@@ -142,6 +143,26 @@ public class MessageTag2 extends BodyTagSupport {
 								String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)) +
 								state.token.substring(matcher.end());
 						state.inCode = true;
+					}
+				}
+			});
+			put(Pattern.compile("\\[color$"), new BodyTokenProcessor() {
+				@Override
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+					state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
+					state.openColor = true;
+				}
+			});
+			//http://www.w3schools.com/cssref/css_colornames.asp
+			put(Pattern.compile("^([a-zA-Z]{3,15}|\\#[A-Za-z0-9]{6})\\]"), new BodyTokenProcessor() {
+				@Override
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+					if (state.openColor) {
+						String color = matcher.group(1);
+						state.token = state.token.substring(0, matcher.start()) +
+								String.format("<span style='color: %s'>", color) +
+								state.token.substring(matcher.end());
+						state.openColor = false;
 					}
 				}
 			});
@@ -210,6 +231,7 @@ public class MessageTag2 extends BodyTagSupport {
 					state.token = token;
 					state.token = simpleReplaceAll(state.token, "[code]", "<pre class='code'>");
 					state.token = simpleReplaceAll(state.token, "[/code]", "</pre>");
+					state.token = simpleReplaceAll(state.token, "[/color]", "</span>");
 					boolean noMatch = true;
 					if (token.length() > 3) { // non c'è niente da matchare di interessante sotto i 4 caratteri
 						for(Iterator<Pattern> it = patternProcessorMapping.keySet().iterator(); it.hasNext();) {

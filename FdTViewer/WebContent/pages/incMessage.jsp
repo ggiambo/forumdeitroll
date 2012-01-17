@@ -50,7 +50,7 @@
 	<div style="padding: 10px;" class="message">
 		<fdt:msg search="${param.search}">${msg.text}</fdt:msg>
 		<%-- close open tags --%>
-		<c:out escapeXml="false" value="</b></i></u>"/> <%-- TODO: DA RIMUOVERE AL PIÙ PRESTO, ROMPE LA VALIDAZIONE --%>
+		<c:out escapeXml="false" value="</b></i></u>"/> <%-- TODO: DA RIMUOVERE AL PIÙ PRESTO, ROMPE LA VALIDAZIONE ndachille: non ci muore nessuno --%>
 	</div>
 	
 	<div id="buttons_${msg.id}" class="messagesButtonBar">
