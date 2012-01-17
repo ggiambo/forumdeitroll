@@ -24,7 +24,7 @@ public class MessageTag2 extends BodyTagSupport {
 		return search;
 	}
 	
-	private static String escape(String in) {return StringEscapeUtils.escapeHtml4(in);}
+	private static String escape(String in) {return simpleReplaceAll(StringEscapeUtils.escapeHtml4(in), "'", "&apos;");}
 	
 	private static class BodyState {
 		public String token;
@@ -106,7 +106,7 @@ public class MessageTag2 extends BodyTagSupport {
 					);
 				}
 			});
-			put(Pattern.compile("\\[yt\\](.*?)\\[/yt\\]"), new BodyTokenProcessor() {
+			put(Pattern.compile("\\[yt\\]([a-zA-Z0-9\\+\\/=\\-_]*?)\\[/yt\\]"), new BodyTokenProcessor() {
 				@Override
 				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
 					if (state.inCode) return;
