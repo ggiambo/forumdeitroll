@@ -4,6 +4,7 @@
 <jsp:include page="incTop.jsp"/>
 		<div id="main">
 			<div class="loginForm">
+				<div class="loginFormCaption">Login Utente</div>
 				<form action="User" method="post">
 					<div>
 						<div class="lblLoginForm">

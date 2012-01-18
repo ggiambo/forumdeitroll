@@ -490,6 +490,7 @@ div.loginForm div.inputLoginForm {
 div.loginForm div.inputLoginForm input {
 	border: 1px solid #7BAAE7;
 	width: 15em;
+	padding: 0 5px;
 }
 
 div.loginForm input.sendLoginForm {
@@ -499,6 +500,15 @@ div.loginForm input.sendLoginForm {
 	font-weight: bold;
 	font-size: 90%;
 	margin-top: 5px;
+}
+
+div.loginFormCaption {
+	text-align: center;
+	font-weight: bold;
+	border-bottom: 1px solid #7BAAE7;
+	margin-bottom: 1em;
+	font-variant: small-caps;
+	text-shadow: 1px 1px 2px gray;
 }
 	
 img.emoticon {
