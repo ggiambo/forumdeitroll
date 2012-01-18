@@ -30,6 +30,8 @@ public class MessageTag2 extends BodyTagSupport {
 		public String token;
 		public boolean openCode;
 		public boolean inCode;
+		public boolean openColor;
+		public int open_b = 0, open_i = 0, open_u = 0, open_s = 0;
 	}
 	
 	private static interface BodyTokenProcessor {
@@ -128,7 +130,7 @@ public class MessageTag2 extends BodyTagSupport {
 			put(Pattern.compile("\\[code$"), new BodyTokenProcessor() {
 				@Override
 				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
-					state.token = state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
+					state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
 					state.openCode = true;
 				}
 			});
@@ -142,6 +144,26 @@ public class MessageTag2 extends BodyTagSupport {
 								String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)) +
 								state.token.substring(matcher.end());
 						state.inCode = true;
+					}
+				}
+			});
+			put(Pattern.compile("\\[color$"), new BodyTokenProcessor() {
+				@Override
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+					state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
+					state.openColor = true;
+				}
+			});
+			//http://www.w3schools.com/cssref/css_colornames.asp
+			put(Pattern.compile("^([a-zA-Z]{3,15}|\\#[A-Za-z0-9]{6})\\]"), new BodyTokenProcessor() {
+				@Override
+				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+					if (state.openColor) {
+						String color = matcher.group(1);
+						state.token = state.token.substring(0, matcher.start()) +
+								String.format("<span style='color: %s'>", color) +
+								state.token.substring(matcher.end());
+						state.openColor = false;
 					}
 				}
 			});
@@ -187,18 +209,34 @@ public class MessageTag2 extends BodyTagSupport {
 	}
 	
 	
+	
 	public int doAfterBody() throws JspTagException {
 		try {
 			JspWriter out = getBodyContent().getEnclosingWriter();
 			String body = getBodyContent().getString();
 			// questo elimina il caso di multipli [code] sulla stessa linea (casino da gestire, bisognava cambiare stile di parsing del body)
 			body = simpleReplaceAll(body, "[/code]", "[/code]<BR>");
-			
+
 //			System.out.println("------ body ------");
 //			System.out.println(body);
 //			System.out.println("------ body ------");
 			
+			
 			BodyState state = new BodyState();
+			// contiamo 'sti cazzo di tag
+			Matcher tagMatcher = Pattern.compile("(<b>|</b>|<i>|</i>|<s>|</s>|<u>|</u>)", Pattern.CASE_INSENSITIVE).matcher(body);
+			while (tagMatcher.find()) {
+				String tag = tagMatcher.group(1);
+				if (      tag.equalsIgnoreCase("<b>") ) state.open_b++;
+				else if (tag.equalsIgnoreCase("</b>")) state.open_b--;
+				else if (tag.equalsIgnoreCase("<i>") ) state.open_i++;
+				else if (tag.equalsIgnoreCase("</i>")) state.open_i--;
+				else if (tag.equalsIgnoreCase("<s>") ) state.open_s++;
+				else if (tag.equalsIgnoreCase("</s>")) state.open_s--;
+				else if (tag.equalsIgnoreCase("<u>") ) state.open_u++;
+				else if (tag.equalsIgnoreCase("</u>")) state.open_u--;
+			}
+			
 			String[] lines = body.split("<BR>");
 			for (int i=0;i<lines.length;++i) {
 				String line = lines[i];
@@ -210,6 +248,7 @@ public class MessageTag2 extends BodyTagSupport {
 					state.token = token;
 					state.token = simpleReplaceAll(state.token, "[code]", "<pre class='code'>");
 					state.token = simpleReplaceAll(state.token, "[/code]", "</pre>");
+					state.token = simpleReplaceAll(state.token, "[/color]", "</span>");
 					boolean noMatch = true;
 					if (token.length() > 3) { // non c'è niente da matchare di interessante sotto i 4 caratteri
 						for(Iterator<Pattern> it = patternProcessorMapping.keySet().iterator(); it.hasNext();) {
@@ -242,6 +281,11 @@ public class MessageTag2 extends BodyTagSupport {
 					out.write("<BR>");
 			}
 			
+			int i;
+			for (i=0;i<state.open_b;++i) out.write("</b>");
+			for (i=0;i<state.open_i;++i) out.write("</i>");
+			for (i=0;i<state.open_s;++i) out.write("</s>");
+			for (i=0;i<state.open_u;++i) out.write("</u>");
 		} catch (Exception e) {
 			throw new JspTagException(e);
 		}

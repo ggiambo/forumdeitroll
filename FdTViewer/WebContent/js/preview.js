@@ -22,7 +22,7 @@ this.imagePreview = function(){
 		this.t = this.title;
 		this.title = "";	
 		var c = (this.t != "") ? "<br/>" + this.t : "";
-		$("body").append("<p id='preview'><img src='"+ this.href +"' alt='Image preview' />"+ c +"</p>");								 
+		$("body").append("<p id='preview'><img src='"+ this.href.replace(/'/g,'\\\'') +"' alt='Image preview' />"+ c +"</p>");								 
 		$("#preview")
 			.css("top",(e.pageY - xOffset) + "px")
 			.css("left",(e.pageX + yOffset) + "px")

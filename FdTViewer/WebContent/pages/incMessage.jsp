@@ -49,8 +49,6 @@
 
 	<div style="padding: 10px;" class="message">
 		<fdt:msg search="${param.search}">${msg.text}</fdt:msg>
-		<%-- close open tags --%>
-		<%-- <c:out escapeXml="false" value="</b></i></u>"/> Ma siamo impazziti? :@ --%>
 	</div>
 	
 	<div id="buttons_${msg.id}" class="messagesButtonBar">

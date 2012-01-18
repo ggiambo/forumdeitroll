@@ -346,11 +346,119 @@ div.msgAction a {
 
 div.msgReply {
 	clear: both;
+	background-color: #D6D6D6;
+	padding: 5px;
+	margin: 5px;
 }
-	
+
+div.msgReply input {
+	border: 1px solid #7BAAE7;
+	padding: 0 5px;
+}
+
+div.msgReply div.emotibox {
+	background-color: white;
+	width: 98%;
+	border: 1px solid #7BAAE7;
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+div.msgReply .msgButton {
+	padding: 5px;
+	cursor: pointer;
+	font-size: 90%;
+	font-weight: bold;
+	text-shadow: 1px 1px 1px gray;
+}
+
+div.msgReply a.msgButton {
+	font-weight: normal;
+	text-decoration: none;
+	text-shadow: none;
+}
+
+div.msgReply .btnBold {
+	font-weight: bolder;
+}
+
+div.msgReply .btnUnderline {
+	text-decoration: underline;
+}
+
+div.msgReply .btnStrike {
+	text-decoration: line-through;
+}
+
+div.msgReply .btnItalic {
+	font-style: italic;
+}
+
+div.msgReply label {
+	font-weight: bold;
+	width: auto;
+	margin: auto;
+	clear: none;
+	float: none;
+	display: inline;
+}
+
+input.msgReplyObj {
+	width: 98%;
+  	font-size: 16px;
+  	border: 1px solid #7BAAE7;
+  	padding: 5px;
+	margin-bottom: 5px;
+}
+
 textarea.msgReplyTxt {
-	width: 99%;
-	font-size: 16px;
+	width: 98%;
+  	font-size: 16px;
+  	border: 1px solid #7BAAE7;
+  	padding: 5px;
+	margin-bottom: 5px;
+}
+
+input.msgSendButton {
+	float: right;
+	width: 8em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+}
+
+div.msgAnonBox {
+	margin: 5px 0;
+}
+
+div.msgCaptcha {
+	padding: 5px;
+	margin: 5px 0;
+	height: 50px;
+}
+
+div.msgCaptcha div {
+	float: left;
+	margin-right: 10px;
+	text-align: center;
+}
+
+div.msgCaptcha div img {
+	border: 1px solid #7BAAE7;
+}
+
+div.msgCaptcha div input {
+	width: 8em;
+	text-align: center;
+}
+
+div.msgCaptcha div div.msgCaptchaInput {
+	float: none;
+	margin: 0;
+	width: 10em;
+	font-size: 75%;
+	font-style: italic;
+	text-align: left;
 }
 
 div.messagesBox {

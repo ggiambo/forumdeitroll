@@ -26,7 +26,7 @@
 		<a style="float: right; padding: 5px;" onClick="closeReplyDiv('${message.parentId}')"><img src="images/close.jpeg"></a>
 	</c:if>
 
-	<div style="${class}">
+	<div class="emotibox">
 		<c:forEach items="${emoMap}" var="emo" varStatus="index">
 			 <%-- caso speciale per la faccina :\  --%>
 			<c:set var="emoValue" value="${fn:replace(emo.value, '\\\\', '\\\\\\\\')}"/>
@@ -37,40 +37,45 @@
 		</c:forEach>
 		<br/>
 		<div style="margin:3px 0px 3px 0px ">
-			<b onmousedown="insert('<b>', '</b>', '${message.parentId}')" class="fakeButton">B</b>&nbsp;
-			<i onmousedown="insert('<i>', '</i>', '${message.parentId}')" class="fakeButton">I</i>&nbsp;
-			<u onmousedown="insert('<u>', '</u>', '${message.parentId}')" class="fakeButton">U</u>&nbsp;
-			<s onmousedown="insert('<s>', '</s>', '${message.parentId}')" class="fakeButton">S</s>&nbsp;
-			<a href="javascript:void(0);" onmousedown="insert('[img]', '[/img]', '${message.parentId}')">[immagine]</a>
-			<a href="javascript:void(0);" onmousedown="insert('[code]', '[/code]', '${message.parentId}')">[codice]</a>
-			<a href="javascript:void(0);" onmousedown="insert('[yt]', '[/yt]', '${message.parentId}')">[youtube]</a>
+			<span onmousedown="insert('<b>', '</b>', '${message.parentId}')" class="msgButton btnBold" title="Grassetto (ma meno di Lich)">B</span>&nbsp;
+			<span onmousedown="insert('<i>', '</i>', '${message.parentId}')" class="msgButton btnItalic" title="Corsivo">I</span>&nbsp;
+			<span onmousedown="insert('<u>', '</u>', '${message.parentId}')" class="msgButton btnUnderline" title="Sottolineato">U</span>&nbsp;
+			<span onmousedown="insert('<s>', '</s>', '${message.parentId}')" class="msgButton btnStrike" title="Barrato">S</span>&nbsp;
+			<a href="javascript:void(0);" onmousedown="insert('[img]', '[/img]', '${message.parentId}')" class="msgButton">[immagine]</a>
+			<a href="javascript:void(0);" onmousedown="insert('[code]', '[/code]', '${message.parentId}')" class="msgButton">[codice]</a>
+			<a href="javascript:void(0);" onmousedown="insert('[yt]', '[/yt]', '${message.parentId}')" class="msgButton">[youtube]</a>
 		</div>
-		<c:if test="${message.parentId == -1 && message.id == -1}">
-			Oggetto: <input tabindex="1" name="subject" maxlength="40" size="40"/>
-		</c:if>
-		<c:if test="${not empty message.forum}">
-			Forum <i>${message.forum}</i>
-		</c:if>
-		
-		<%-- input area --%>
-		<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt">${message.text}</textarea><br/>
-		
-		<input type="hidden" name="forum" value="${message.forum }"/>
-		<input type="hidden" name="id" value="${message.id }"/>
-		<c:choose>
-			<%--Mostra username password captcha solo se non autenticato --%>
-			<c:when test="${empty loggedUser}">
-				Nome: <input tabindex="2" name="nick" size="10"/> Password: <input tabindex="3" type="password" name="pass" size="10"/>
-				<div style="margin: 3px">
-					<img src="Messages?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" style="vertical-align:middle"/>&nbsp;<input tabindex="4" name="captcha" size="5"/> (Solo per ANOnimi)
-					<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})"/>
-				</div>
-			</c:when>
-			<c:otherwise>
-				<div style="margin: 3px">
-					<input style="float:right" tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})"/>&nbsp;
-				</div>
-			</c:otherwise>
-		</c:choose>
 	</div>
+	<c:if test="${message.parentId == -1 && message.id == -1}">
+		<label for="subject">Oggetto:</label><br /> 
+		<input tabindex="1" name="subject" id="subject" maxlength="40" size="40" class="msgReplyObj" />
+	</c:if>
+	<c:if test="${not empty message.forum}">
+		Forum <i>${message.forum}</i>
+	</c:if>
+	
+	<%-- input area --%>
+	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt">${message.text}</textarea><br/>
+	
+	<input type="hidden" name="forum" value="${message.forum }"/>
+	<input type="hidden" name="id" value="${message.id }"/>
+	<c:choose>
+		<%--Mostra username password captcha solo se non autenticato --%>
+		<c:when test="${empty loggedUser}">
+			<div class="msgAnonBox">
+				<label for="nick">Nome:&nbsp;</label><input tabindex="2" name="nick" id="nick" size="10"/>&nbsp;&nbsp;<label for="password">Password:&nbsp;</label><input tabindex="3" type="password" id="password" name="pass" size="10"/>
+				<div class="msgCaptcha">
+					<div><img src="Messages?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" style="vertical-align:middle"/></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">Copia qui il testo dell'immagine</div></div>
+					<div style="clear: both;"></div>
+				</div>
+			</div>
+			<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />
+		</c:when>
+		<c:otherwise>
+			<div style="margin: 3px">
+				<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />&nbsp;
+			</div>
+		</c:otherwise>
+	</c:choose>
+	<div style="clear: both;"></div>
 </div>
