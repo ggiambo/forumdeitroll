@@ -7,6 +7,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.HashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -43,6 +45,27 @@ public abstract class MainServlet extends HttpServlet {
 	private byte[] noAvatar;
 
 	private IPersistence persistence;
+
+	protected final Map<String, GiamboAction> mapGet = new HashMap<String, GiamboAction>();
+	protected final Map<String, GiamboAction> mapPost = new HashMap<String, GiamboAction>();
+
+	protected static final int ONGET = 0x01;
+	protected static final int ONPOST = 0x02;
+
+	protected abstract class GiamboAction {
+		public GiamboAction(final String name, final int when) {
+			if ((when & ONGET) != 0) {
+				mapGet.put(name, this);
+			}
+
+			if ((when & ONPOST) != 0) {
+				mapPost.put(name, this);
+			}
+		}
+
+		public abstract String action(HttpServletRequest req, HttpServletResponse res) throws Exception;
+	}
+
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -84,21 +107,15 @@ public abstract class MainServlet extends HttpServlet {
 		}
 	}
 
-	/**
-	 * Metodo di default, quando nessuna "action" e' definita.
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
-	public abstract String init(HttpServletRequest req, HttpServletResponse res) throws Exception;
-
 	public final void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		doPost(req, res);
+		doDo(req, res, mapGet);
 	}
 
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		doDo(req, res, mapPost);
+	}
 
+	public final void doDo(HttpServletRequest req, HttpServletResponse res, final Map<String, GiamboAction> map) throws IOException {
 		// actual time
 		req.setAttribute("currentTimeMillis", System.currentTimeMillis());
 
@@ -115,6 +132,7 @@ public abstract class MainServlet extends HttpServlet {
 		}
 		req.setAttribute("action", action);
 
+		// hack per persistere la sessione -- sarrusofono
 		final HttpSession session = req.getSession();
 		if (session.isNew()) {
 			String id = session.getId();
@@ -126,13 +144,16 @@ public abstract class MainServlet extends HttpServlet {
 
 		try {
 			// call via reflection
-			Method method = this.getClass().getMethod(action, HttpServletRequest.class, HttpServletResponse.class);
-			String pageForward = (String)method.invoke(this, req, res);
-			// forward
-			if (pageForward != null) {
-				getServletContext().getRequestDispatcher("/pages/" + pageForward).forward(req, res);
+			GiamboAction giamboAction = map.get(action);
+			if (giamboAction == null) {
+				throw new IllegalArgumentException("Azione sconosciuta: " + action);
+			} else {
+				String pageForward = giamboAction.action(req, res);
+				// forward
+				if (pageForward != null) {
+					getServletContext().getRequestDispatcher("/pages/" + pageForward).forward(req, res);
+				}
 			}
-
 		} catch (Exception e) {
 			req.setAttribute("exceptionStackTrace", ExceptionUtils.getStackTrace(e));
 			e.printStackTrace(System.err);
@@ -161,20 +182,22 @@ public abstract class MainServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public String getAvatar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String nick = req.getParameter("nick");
-		AuthorDTO author = getPersistence().getAuthor(nick);
-		if (author.isValid()) {
-			if (author.getAvatar() != null) {
-				res.getOutputStream().write(author.getAvatar());
+	protected GiamboAction getAvatar = new GiamboAction("getAvatar", ONGET|ONPOST) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			String nick = req.getParameter("nick");
+			AuthorDTO author = getPersistence().getAuthor(nick);
+			if (author.isValid()) {
+				if (author.getAvatar() != null) {
+					res.getOutputStream().write(author.getAvatar());
+				} else {
+					res.getOutputStream().write(noAvatar);
+				}
 			} else {
-				res.getOutputStream().write(noAvatar);
+				res.getOutputStream().write(notAuthenticated);
 			}
-		} else {
-			res.getOutputStream().write(notAuthenticated);
+			return null;
 		}
-		return null;
-	}
+	};
 
 	/**
 	 * Tenta un login: Ritorna AuthorDTO valido se OK, AuthorDTO invalido se e'
@@ -228,10 +251,12 @@ public abstract class MainServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public String logoutAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
-		return init(req, res);
-	}
+	protected GiamboAction logoutAction = new GiamboAction("logoutAction", ONGET|ONPOST) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
+			return mapGet.get("init").action(req, res);
+		}
+	};
 
 	/**
 	 * Setta nella session lo stato della sidebar (Aperta/chiusa)
@@ -240,43 +265,45 @@ public abstract class MainServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public String sidebarStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String sidebarStatus = req.getParameter("sidebarStatus");
-		// get sidebar status
-		if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
-			sidebarStatus = (String) req.getSession().getAttribute("sidebarStatus");
+	protected GiamboAction sidebarStatus = new GiamboAction("sidebarStatus", ONGET|ONPOST) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			String sidebarStatus = req.getParameter("sidebarStatus");
+			// get sidebar status
 			if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
-				// get from cookie
-				if (req.getCookies() != null) {
-					for (Cookie cookie : req.getCookies()) {
-						if ("sidebarStatus".equals(cookie.getName())) {
-							sidebarStatus = cookie.getValue();
+				sidebarStatus = (String) req.getSession().getAttribute("sidebarStatus");
+				if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
+					// get from cookie
+					if (req.getCookies() != null) {
+						for (Cookie cookie : req.getCookies()) {
+							if ("sidebarStatus".equals(cookie.getName())) {
+								sidebarStatus = cookie.getValue();
+							}
 						}
 					}
-				}
-				if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
-    				// default: show
-    				sidebarStatus = "show";
+					if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
+	    				// default: show
+	    				sidebarStatus = "show";
+					}
 				}
 			}
-		}
-		req.getSession().setAttribute("sidebarStatus", sidebarStatus);
-		// set in cookie
-		boolean found = false;
-		for (Cookie c : req.getCookies()) {
-			if ("sidebarStatus".equals(c.getName())) {
-				c.setValue(sidebarStatus);
-				found = true;
+			req.getSession().setAttribute("sidebarStatus", sidebarStatus);
+			// set in cookie
+			boolean found = false;
+			for (Cookie c : req.getCookies()) {
+				if ("sidebarStatus".equals(c.getName())) {
+					c.setValue(sidebarStatus);
+					found = true;
+				}
 			}
+			if (!found) {
+				Cookie cookie = new Cookie("sidebarStatus", sidebarStatus);
+				res.addCookie(cookie);
+			}
+			res.getWriter().write(sidebarStatus);
+			res.flushBuffer();
+			return null;
 		}
-		if (!found) {
-			Cookie cookie = new Cookie("sidebarStatus", sidebarStatus);
-			res.addCookie(cookie);
-		}
-		res.getWriter().write(sidebarStatus);
-		res.flushBuffer();
-		return null;
-	}
+	};
 
 	/**
 	 * Ritorna la pagina attuale se definita come req param, altrimenti 0. Setta il valore come req attr.
@@ -318,20 +345,22 @@ public abstract class MainServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public String getCaptcha(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		Captcha captcha = new Captcha.Builder(150, 50)
-				.addText(new NumbersAnswerProducer(6))
-				.addBackground(new GradiatedBackgroundProducer(Color.MAGENTA, Color.CYAN))
-				.gimp(new RippleGimpyRenderer())
-				.build();
-		res.setHeader("Cache-Control", "no-store");
-		res.setHeader("Pragma", "no-cache");
-		res.setDateHeader("Expires", 0);
-		res.setContentType("image/jpeg");
-		CaptchaServletUtil.writeImage(res, captcha.getImage());
-		req.getSession().setAttribute("captcha", captcha.getAnswer());
-		return null;
-	}
+	protected GiamboAction getCaptcha = new GiamboAction("getCaptcha", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			Captcha captcha = new Captcha.Builder(150, 50)
+					.addText(new NumbersAnswerProducer(6))
+					.addBackground(new GradiatedBackgroundProducer(Color.MAGENTA, Color.CYAN))
+					.gimp(new RippleGimpyRenderer())
+					.build();
+			res.setHeader("Cache-Control", "no-store");
+			res.setHeader("Pragma", "no-cache");
+			res.setDateHeader("Expires", 0);
+			res.setContentType("image/jpeg");
+			CaptchaServletUtil.writeImage(res, captcha.getImage());
+			req.getSession().setAttribute("captcha", captcha.getAnswer());
+			return null;
+		}
+	};
 
 	/**
 	 * Ritorna una random quote tra quelle esistenti
@@ -345,5 +374,4 @@ public abstract class MainServlet extends HttpServlet {
 		quote.setContent(StringEscapeUtils.escapeHtml4(quote.getContent()));
 		return quote;
 	}
-
 }

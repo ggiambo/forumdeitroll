@@ -21,30 +21,33 @@ public class Threads extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public String getByThread(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		Long threadId = Long.parseLong(req.getParameter("threadId"));
-		List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
-		List<IndentMessageDTO> indentMsg = new ArrayList<IndentMessageDTO>(msgs.size());
-		for (MessageDTO dto : msgs) {
-			indentMsg.add(new IndentMessageDTO(dto));
-		}
-		req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
-		//req.setAttribute("messages", new ThreadTree2(indentMsg, threadId).asList());
-		setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
-		setNavigationMessage(req, "Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>");
+	protected GiamboAction getByThread = new GiamboAction("getByThread", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			Long threadId = Long.parseLong(req.getParameter("threadId"));
+			List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
+			List<IndentMessageDTO> indentMsg = new ArrayList<IndentMessageDTO>(msgs.size());
+			for (MessageDTO dto : msgs) {
+				indentMsg.add(new IndentMessageDTO(dto));
+			}
+			req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
+			//req.setAttribute("messages", new ThreadTree2(indentMsg, threadId).asList());
+			setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
+			setNavigationMessage(req, "Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>");
 
-		return "thread.jsp";
-	}
+			return "thread.jsp";
+		}
+	};
 
 	/**
 	 * Ordinati per thread
 	 */
-	@Override
-	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.setAttribute("messages", getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
-		setWebsiteTitle(req, "Forum dei troll");
-		setNavigationMessage(req, "Ordinati per data inizio discussione");
-		return "threads.jsp";
-	}
+	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			req.setAttribute("messages", getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
+			setWebsiteTitle(req, "Forum dei troll");
+			setNavigationMessage(req, "Ordinati per data inizio discussione");
+			return "threads.jsp";
+		}
+	};
 
 }
