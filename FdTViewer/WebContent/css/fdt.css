@@ -349,6 +349,7 @@ div.msgReply {
 	background-color: #D6D6D6;
 	padding: 5px;
 	margin: 5px;
+	box-shadow: 0px 0px 4px gray;
 }
 
 div.msgReply input {
