@@ -41,12 +41,13 @@ public class Threads extends MainServlet {
 	/**
 	 * Ordinati per thread
 	 */
-	@Override
-	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.setAttribute("messages", getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
-		setWebsiteTitle(req, "Forum dei troll");
-		setNavigationMessage(req, "Ordinati per data inizio discussione");
-		return "threads.jsp";
-	}
+	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			req.setAttribute("messages", getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
+			setWebsiteTitle(req, "Forum dei troll");
+			setNavigationMessage(req, "Ordinati per data inizio discussione");
+			return "threads.jsp";
+		}
+	};
 
 }

@@ -107,15 +107,6 @@ public abstract class MainServlet extends HttpServlet {
 		}
 	}
 
-	/**
-	 * Metodo di default, quando nessuna "action" e' definita.
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
-	public abstract String init(HttpServletRequest req, HttpServletResponse res) throws Exception;
-
 	public final void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		doDo(req, res, mapGet);
 	}
@@ -154,12 +145,15 @@ public abstract class MainServlet extends HttpServlet {
 		try {
 			// call via reflection
 			GiamboAction giamboAction = map.get(action);
-			String pageForward = giamboAction.action(req, res);
-			// forward
-			if (pageForward != null) {
-				getServletContext().getRequestDispatcher("/pages/" + pageForward).forward(req, res);
+			if (giamboAction == null) {
+				throw new IllegalArgumentException("Azione sconosciuta: " + action);
+			} else {
+				String pageForward = giamboAction.action(req, res);
+				// forward
+				if (pageForward != null) {
+					getServletContext().getRequestDispatcher("/pages/" + pageForward).forward(req, res);
+				}
 			}
-
 		} catch (Exception e) {
 			req.setAttribute("exceptionStackTrace", ExceptionUtils.getStackTrace(e));
 			e.printStackTrace(System.err);
@@ -260,7 +254,7 @@ public abstract class MainServlet extends HttpServlet {
 	protected GiamboAction logoutAction = new GiamboAction("logoutAction", ONGET|ONPOST) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
-			return init(req, res);
+			return mapGet.get("init").action(req, res);
 		}
 	};
 

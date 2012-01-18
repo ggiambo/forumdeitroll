@@ -25,17 +25,18 @@ public class User extends MainServlet {
 	private static final long MAX_SIZE_AVATAR_WIDTH = 100;
 	private static final long MAX_SIZE_AVATAR_HEIGHT = 100;
 
-	@Override
-	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO author = login(req);
-		setWebsiteTitle(req, "Forum dei troll");
-		if (author != null && author.isValid()) {
-			req.setAttribute("author", author);
-			return "user.jsp";
+	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			AuthorDTO author = login(req);
+			setWebsiteTitle(req, "Forum dei troll");
+			if (author != null && author.isValid()) {
+				req.setAttribute("author", author);
+				return "user.jsp";
+			}
+			setNavigationMessage(req, "Passuord ezzere sbaliata !");
+			return loginAction.action(req,  res);
 		}
-		setNavigationMessage(req, "Passuord ezzere sbaliata !");
-		return loginAction.action(req,  res);
-	}
+	};
 
 	/**
 	 * Mostra la pagina di login

@@ -67,11 +67,12 @@ public class Messages extends MainServlet {
 		EMO_MAP.put("troll", "(troll)");
 	}
 
-	@Override
-	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		setWebsiteTitle(req, "Forum dei troll");
-		return getByPage.action(req, res);
-	}
+	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			setWebsiteTitle(req, "Forum dei troll");
+			return getByPage.action(req, res);
+		}
+	};
 
 	/**
 	 * I messaggi di questa pagina (Dimensione PAGE_SIZE) in ordine di data
