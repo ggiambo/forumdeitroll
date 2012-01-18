@@ -370,7 +370,7 @@ public class Messages extends MainServlet {
 	    // estrai id da URL youtube
 	    m = PATTERN_YOUTUBE.matcher(text);
 	    while (m.find()) {
-	            text = m.replaceFirst(Matcher.quoteReplacement(m.group(3)));
+	            text = m.replaceFirst("[yt]"+Matcher.quoteReplacement(m.group(3))+"[/yt]");
 	            m = PATTERN_YOUTUBE.matcher(text);
 	    }
 

@@ -86,10 +86,10 @@ public class MessageTag2 extends BodyTagSupport {
 				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
 					if (state.inCode) return;
 					String url = escape(state.token);
+					String desc = url;
 					if (url.startsWith("www.")) {
 						url = "http://" + url;
 					}
-					String desc = url;
 					if (state.token.length() > 50) {
 						desc = escape(state.token.substring(0,50)) + "...";
 					}
@@ -196,7 +196,7 @@ public class MessageTag2 extends BodyTagSupport {
 	}
 	
 	private static String color_quote(String line) {
-		if (line.startsWith("&gt; &gt; &gt; &gt;")) {
+		if (line.startsWith("&gt; &gt; &gt; &gt; ")) {
 			line = "<span class='quoteLvl4'>" + line + "</span>";
 		} else if (line.startsWith("&gt; &gt; &gt; ")) {
 			line = "<span class='quoteLvl3'>" + line + "</span>";
@@ -246,11 +246,11 @@ public class MessageTag2 extends BodyTagSupport {
 				while (tokens.hasMoreTokens()) {
 					String token = tokens.nextToken();
 					state.token = token;
-					state.token = simpleReplaceAll(state.token, "[code]", "<pre class='code'>");
-					state.token = simpleReplaceAll(state.token, "[/code]", "</pre>");
-					state.token = simpleReplaceAll(state.token, "[/color]", "</span>");
 					boolean noMatch = true;
 					if (token.length() > 3) { // non c'è niente da matchare di interessante sotto i 4 caratteri
+						state.token = simpleReplaceAll(state.token, "[code]", "<pre class='code'>");
+						state.token = simpleReplaceAll(state.token, "[/code]", "</pre>");
+						state.token = simpleReplaceAll(state.token, "[/color]", "</span>");
 						for(Iterator<Pattern> it = patternProcessorMapping.keySet().iterator(); it.hasNext();) {
 							Pattern pattern = it.next();
 							Matcher matcher = pattern.matcher(state.token);
