@@ -510,6 +510,87 @@ div.loginFormCaption {
 	font-variant: small-caps;
 	text-shadow: 1px 1px 2px gray;
 }
+
+div.registrationForm {
+	clear: both;
+	background-color: #D6D6D6;
+	padding: 5px;
+	margin: 5px;
+	box-shadow: 0px 0px 4px gray;
+	width: 25em;
+}
+
+div.registrationForm > form > div {
+	margin-top: 5px;
+}
+
+div.registrationForm label {
+	font-weight: bold;
+}
+
+div.registrationForm div.lblRegistrationForm {
+	width: 9em;
+	float: left;
+}
+
+div.registrationForm div.inputRegistrationForm {
+	float: right;
+}
+
+div.registrationForm div.inputRegistrationForm input {
+	border: 1px solid #7BAAE7;
+	width: 15em;
+	padding: 0 5px;
+}
+
+div.registrationForm input.sendRegistrationForm {
+	float: right;
+	width: 8em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	margin-top: 5px;
+}
+
+div.registrationFormCaption {
+	text-align: center;
+	font-weight: bold;
+	border-bottom: 1px solid #7BAAE7;
+	margin-bottom: 1em;
+	font-variant: small-caps;
+	text-shadow: 1px 1px 2px gray;
+}
+
+div.registrationCaptcha {
+	padding: 5px;
+	margin: 5px 0;
+	height: 50px;
+}
+
+div.registrationCaptcha div {
+	float: left;
+	margin-right: 10px;
+	text-align: center;
+}
+
+div.registrationCaptcha div img {
+	border: 1px solid #7BAAE7;
+}
+
+div.registrationCaptcha div input {
+	width: 8em;
+	text-align: center;
+	border: 1px solid #7BAAE7;
+}
+
+div.registrationCaptcha div div.registrationCaptchaInput {
+	float: none;
+	margin: 0;
+	width: 10em;
+	font-size: 75%;
+	font-style: italic;
+	text-align: left;
+}
 	
 img.emoticon {
 	border: none;

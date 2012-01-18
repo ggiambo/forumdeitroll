@@ -65,7 +65,7 @@
 			<div class="msgAnonBox">
 				<label for="nick">Nome:&nbsp;</label><input tabindex="2" name="nick" id="nick" size="10"/>&nbsp;&nbsp;<label for="password">Password:&nbsp;</label><input tabindex="3" type="password" id="password" name="pass" size="10"/>
 				<div class="msgCaptcha">
-					<div><img src="Messages?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" style="vertical-align:middle"/></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">Copia qui il testo dell'immagine</div></div>
+					<div><img src="Messages?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" /></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">Copia qui il testo dell'immagine</div></div>
 					<div style="clear: both;"></div>
 				</div>
 			</div>
