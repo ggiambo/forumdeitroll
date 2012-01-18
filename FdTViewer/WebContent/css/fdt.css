@@ -147,7 +147,7 @@ span.openCloseSidebar {
 	margin: 0;
 }
 
-* html #footer {
+#footer {
 	height: 1px;
 }
 
@@ -203,23 +203,6 @@ div.msgDate {
 	padding: 5px;
 	display: none;
 	color: #fff;
-}
-
-.fakeButton {
-	border:1px outset;
-	padding:1px 5px;
-	background-color: Gainsboro;
-	cursor: pointer;
-}
-
-label {
-	text-align: right;
-	width: 150px;
-	display: block;
-	float: left;
-	clear: left;
-	margin-right: 3px;
-	cursor: pointer
 }
 
 div.message {
@@ -397,11 +380,6 @@ div.msgReply .btnItalic {
 
 div.msgReply label {
 	font-weight: bold;
-	width: auto;
-	margin: auto;
-	clear: none;
-	float: none;
-	display: inline;
 }
 
 input.msgReplyObj {
@@ -483,6 +461,41 @@ img.userPostedImage {
 	width: 150px;
 }
 
+div.loginForm {
+	clear: both;
+	background-color: #D6D6D6;
+	padding: 5px;
+	margin: 5px;
+	box-shadow: 0px 0px 4px gray;
+	width: 25em;
+}
+
+div.loginForm label {
+	font-weight: bold;
+}
+
+div.loginForm div.lblLoginForm {
+	width: 9em;
+	float: left;
+}
+
+div.loginForm div.inputLoginForm {
+	float: right;
+}
+
+div.loginForm div.inputLoginForm input {
+	width: 15em;
+}
+
+div.loginForm input.sendLoginForm {
+	float: right;
+	width: 8em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	margin-top: 5px;
+}
+	
 img.emoticon {
 	border: none;
 	vertical-align: top;
