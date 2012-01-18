@@ -470,6 +470,10 @@ div.loginForm {
 	width: 25em;
 }
 
+div.loginForm > form > div {
+	margin-top: 5px;
+}
+
 div.loginForm label {
 	font-weight: bold;
 }
@@ -484,6 +488,7 @@ div.loginForm div.inputLoginForm {
 }
 
 div.loginForm div.inputLoginForm input {
+	border: 1px solid #7BAAE7;
 	width: 15em;
 }
 
