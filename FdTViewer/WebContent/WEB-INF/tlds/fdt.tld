@@ -27,5 +27,13 @@
     </attribute>
   </tag>
 
+	<tag>
+    <description>
+        Check for unread pvts
+    </description>
+    <name>pvt</name>
+    <tag-class>com.acmetoy.ravanator.fdt.PvtTag</tag-class>
+    <body-content>JSP</body-content>
+  </tag>
 
 </taglib>

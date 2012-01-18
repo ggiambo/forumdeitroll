@@ -141,7 +141,7 @@ public abstract class MainServlet extends HttpServlet {
 
 		// random quote
 		req.setAttribute("randomQuote", getRandomQuote(req, res));
-
+				
 		try {
 			// call via reflection
 			GiamboAction giamboAction = map.get(action);

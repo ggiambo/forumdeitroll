@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <div id="nav">
 	<ul>
 		<c:if test="${navigationMessage != ''}">
@@ -14,7 +15,7 @@
 		<li>|</li>
 			<c:choose>
 				<c:when test="${not empty loggedUser}">
-					<li>Loggato come <a href="User">${loggedUser}</a> [<a href="Messages?action=logoutAction">Logout</a>]</li>
+					<li>Loggato come <a href="User">${loggedUser}</a><%-- | <fdt:pvt/> | scommentare per provare i pvt --%> [<a href="Messages?action=logoutAction">Logout</a>]</li>
 				</c:when>
 				<c:otherwise>
 					<li><a href="User?action=loginAction">Login</a></li>

@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	id="WebApp_ID" version="2.5">
-	<display-name>FdTDueZero</display-name>
-
-	<servlet>
-		<servlet-name>Messages</servlet-name>
-		<servlet-class>com.acmetoy.ravanator.fdt.servlets.Messages</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Messages</servlet-name>
-		<url-pattern>/Messages</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>Threads</servlet-name>
-		<servlet-class>com.acmetoy.ravanator.fdt.servlets.Threads</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Threads</servlet-name>
-		<url-pattern>/Threads</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>User</servlet-name>
-		<servlet-class>com.acmetoy.ravanator.fdt.servlets.User</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>User</servlet-name>
-		<url-pattern>/User</url-pattern>
-	</servlet-mapping>
-
-	<jsp-config>
-		<taglib>
-			<taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
-			<taglib-location>/WEB-INF/tlds/c.tld</taglib-location>
-		</taglib>
-		<taglib>
-			<taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
-			<taglib-location>/WEB-INF/tlds/fmt.tld</taglib-location>
-		</taglib>
-		<taglib>
-			<taglib-uri>http://java.sun.com/jsp/jstl/fn</taglib-uri>
-			<taglib-location>/WEB-INF/tlds/fn.tld</taglib-location>
-		</taglib>
-		<taglib>
-			<taglib-uri>http://ravanator.acmetoy.com/jsp/jstl/fdt</taglib-uri>
-			<taglib-location>/WEB-INF/tlds/fdt.tld</taglib-location>
-		</taglib>
-	</jsp-config>
-
-	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-		<welcome-file>index.htm</welcome-file>
-		<welcome-file>index.jsp</welcome-file>
-		<welcome-file>default.html</welcome-file>
-		<welcome-file>default.htm</welcome-file>
-		<welcome-file>default.jsp</welcome-file>
-	</welcome-file-list>
-
-
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:jsp="http://java.sun.com/xml/ns/javaee/jsp" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>FdTDueZero</display-name>
+  <servlet>
+    <servlet-name>Messages</servlet-name>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Messages</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Messages</servlet-name>
+    <url-pattern>/Messages</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>Threads</servlet-name>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Threads</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Threads</servlet-name>
+    <url-pattern>/Threads</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>User</servlet-name>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.User</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>User</servlet-name>
+    <url-pattern>/User</url-pattern>
+  </servlet-mapping>
+  <jsp-config>
+    <taglib>
+      <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/c.tld</taglib-location>
+    </taglib>
+    <taglib>
+      <taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/fmt.tld</taglib-location>
+    </taglib>
+    <taglib>
+      <taglib-uri>http://java.sun.com/jsp/jstl/fn</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/fn.tld</taglib-location>
+    </taglib>
+    <taglib>
+      <taglib-uri>http://ravanator.acmetoy.com/jsp/jstl/fdt</taglib-uri>
+      <taglib-location>/WEB-INF/tlds/fdt.tld</taglib-location>
+    </taglib>
+  </jsp-config>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <description></description>
+    <display-name>Pvt</display-name>
+    <servlet-name>Pvt</servlet-name>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Pvt</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Pvt</servlet-name>
+    <url-pattern>/Pvt</url-pattern>
+  </servlet-mapping>
 </web-app>

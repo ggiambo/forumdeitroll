@@ -484,20 +484,21 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		try {
 			ps = conn.prepareStatement("INSERT INTO pvt_content" +
 										"(sender, content, senddate, subject, replyTo) " +
-										"VALUES  (?,?,sysdate(),?,?)");
+										"VALUES  (?,?,sysdate(),?,?)", Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, author.getNick());
 			ps.setString(2, privateMsg.getText());
 			ps.setString(3, privateMsg.getSubject());
 			ps.setLong(4, privateMsg.getReplyTo());
 			ps.execute();
-			close(null, ps, null);
 			
 			rs = ps.getGeneratedKeys();
 			rs.next();
 			long pvt_id = rs.getLong(1);
+			close(rs, ps, null);
 			
 			for (String recipient: recipients) {
-				ps = conn.prepareStatement("INSERT INT pvt_recipient" +
+				if (recipient.equals("")) continue;
+				ps = conn.prepareStatement("INSERT INTO pvt_recipient" +
 											"(pvt_id, recipient) "+
 											"VALUES (?,?)");
 				
@@ -519,9 +520,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT count(*) FROM pvt_recipient WHERE recipient = ? AND read = 0");
+			ps = conn.prepareStatement("SELECT count(*) FROM pvt_recipient WHERE recipient = ? AND `read` = 0");
 			ps.setString(1, recipient.getNick());
-			return (rs = ps.executeQuery()).next();
+			rs = ps.executeQuery();
+			rs.next();
+			return rs.getInt(1) > 0;
 		} catch (SQLException e) {
 			LOG.error("Cannot check for new pvts for user "+recipient.getNick(), e);
 		} finally {
@@ -536,7 +539,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("UPDATE pvt_recipient SET read = 1 WHERE recipient = ? AND pvt_id = ?");
+			ps = conn.prepareStatement("UPDATE pvt_recipient SET `read` = 1 WHERE recipient = ? AND pvt_id = ?");
 			ps.setString(1, recipient.getNick());
 			ps.setLong(2, privateMsg.getId());
 			int result;
@@ -559,28 +562,18 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement("UPDATE pvt_recipient SET deleted = 1 WHERE pvt_id = ? AND recipient = ?");
 			ps.setLong(1, pvt_id);
 			ps.setString(2, user.getNick());
-			int res;
-			switch (res=ps.executeUpdate()) {
-			case 0:
-				close(null,ps,null);
-				ps = conn.prepareStatement("UPDATE pvt_content SET deleted = 1 WHERE id = ? AND sender = ?");
-				ps.setLong(1, pvt_id);
-				ps.setString(2, user.getNick());
-				if ((res=ps.executeUpdate()) != 1) {
-					throw new SQLException("whazzup (pvt_content)!?!? (0 - "+res);
-				}
-				break;
-			case 1:
-				break;
-			default:
-				throw new SQLException("whazzup (pvt_recipient)!?!? (0 - "+res);
-			}
+			ps.execute();
+			close(null,ps,null);
+			ps = conn.prepareStatement("UPDATE pvt_content SET deleted = 1 WHERE id = ? AND sender = ?");
+			ps.setLong(1, pvt_id);
+			ps.setString(2, user.getNick());
+			ps.execute();
 			close(null, ps, null);
 			//cleanup - eventualmente opzionale oppure lanciata da timertask
 			ps = conn.prepareStatement("DELETE FROM pvt_recipient WHERE pvt_id IN (SELECT id FROM pvt_content WHERE deleted = 1) AND deleted = 1");
 			ps.execute();
 			close(null, ps, null);
-			ps = conn.prepareStatement("DELETE FROM pvt_content WHERE id NOT IN (SELECT id FROM pvt_content) AND deleted = 1");
+			ps = conn.prepareStatement("DELETE FROM pvt_content WHERE id NOT IN (SELECT id FROM pvt_recipient WHERE deleted = 0) AND deleted = 1");
 			ps.execute();
 			close(null, ps, null);
 		} catch (SQLException e) {

@@ -6,6 +6,8 @@ import java.util.List;
 
 public class PrivateMsgDTO {
 	
+	public PrivateMsgDTO() {}
+	
 	private long id;
 	private String fromNick;
 	private List<String> toNick = new LinkedList<String>();

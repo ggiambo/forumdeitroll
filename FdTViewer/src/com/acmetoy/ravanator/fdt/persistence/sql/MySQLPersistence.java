@@ -155,7 +155,7 @@ public class MySQLPersistence extends GenericSQLPersistence {
 		ResultSet rs = null, rs2 = null;
 		List<PrivateMsgDTO> result = new LinkedList<PrivateMsgDTO>();
 		try {
-			ps = conn.prepareStatement("SELECT pvt_id, read FROM pvt_recipient WHERE recipient = ? AND deleted = 0 LIMIT ?,?");
+			ps = conn.prepareStatement("SELECT pvt_id, `read` FROM pvt_recipient WHERE recipient = ? AND deleted = 0 LIMIT ?,?");
 			ps.setString(1, user.getNick());
 			ps.setInt(2, limit*pageNr);
 			ps.setInt(3, limit);
@@ -169,9 +169,9 @@ public class MySQLPersistence extends GenericSQLPersistence {
 				ps2.setLong(1, id);
 				rs2 = ps2.executeQuery();
 				rs2.next();
-				msg.setDate(rs.getDate("senddate"));
-				msg.setSubject(rs.getString("subject"));
-				msg.setFromNick(rs.getString("sender"));
+				msg.setDate(rs2.getDate("senddate"));
+				msg.setSubject(rs2.getString("subject"));
+				msg.setFromNick(rs2.getString("sender"));
 				close(rs2, ps2, null);
 				ps2 = conn.prepareStatement("SELECT recipient FROM pvt_recipient WHERE pvt_id = ?");
 				ps2.setLong(1, id);
