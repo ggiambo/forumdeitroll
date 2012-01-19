@@ -41,6 +41,10 @@ body {
 	color: white;
 }
 
+input:hover, input:focus, textarea:hover, textarea:focus {
+	box-shadow: 0 0 8px #0A78FF;
+}
+
 h1 {
 	margin: 0.1em 0.2em;
 	font-variant: small-caps;
@@ -441,7 +445,7 @@ div.msgCaptcha div div.msgCaptchaInput {
 }
 
 div.messagesBox {
-	border: 1px solid black; 
+	border: 1px solid lightGray; 
 	margin: 5px 5px;
 	width: 600px;
 	box-shadow: 2px 2px 3px gray;
