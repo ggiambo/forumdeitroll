@@ -152,6 +152,13 @@ public class MessageTag2 extends BodyTagSupport {
 					}
 				}
 			});
+			put(Pattern.compile("\\[/code\\]"), new BodyTokenProcessor() {
+				@Override
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
+					state.token = matcher.replaceFirst("</pre>");
+					state.inCode = false;
+				}
+			});
 			put(Pattern.compile("\\[color$"), new BodyTokenProcessor() {
 				@Override
 				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
@@ -234,43 +241,43 @@ public class MessageTag2 extends BodyTagSupport {
 //			System.out.println("------ body ------");
 //			System.out.println(body);
 //			System.out.println("------ body ------");
-		
-		
-		BodyState state = new BodyState();
-		// contiamo 'sti cazzo di tag
-		Matcher tagMatcher = Pattern.compile("(<b>|</b>|<i>|</i>|<s>|</s>|<u>|</u>)", Pattern.CASE_INSENSITIVE).matcher(body);
-		while (tagMatcher.find()) {
-			String tag = tagMatcher.group(1);
-			if (      tag.equalsIgnoreCase("<b>") ) state.open_b++;
-			else if (tag.equalsIgnoreCase("</b>")) state.open_b--;
-			else if (tag.equalsIgnoreCase("<i>") ) state.open_i++;
-			else if (tag.equalsIgnoreCase("</i>")) state.open_i--;
-			else if (tag.equalsIgnoreCase("<s>") ) state.open_s++;
-			else if (tag.equalsIgnoreCase("</s>")) state.open_s--;
-			else if (tag.equalsIgnoreCase("<u>") ) state.open_u++;
-			else if (tag.equalsIgnoreCase("</u>")) state.open_u--;
-		}
-		
-		String[] lines = body.split("<BR>");
-		for (int i=0;i<lines.length;++i) {
-			String line = lines[i];
-			StringTokenizer tokens = new StringTokenizer(line, " ", true);
-			StringBuffer lineBuf = new StringBuffer();
-			boolean wasInCode = state.inCode;
-			while (tokens.hasMoreTokens()) {
-				String token = tokens.nextToken();
-				state.token = token;
-				boolean noMatch = true;
-				if (token.length() > 3) { // non c'è niente da matchare di interessante sotto i 4 caratteri
-					state.token = simpleReplaceAll(state.token, "[code]", "<pre class='code'>");
-					state.token = simpleReplaceAll(state.token, "[/code]", "</pre>");
-					state.token = simpleReplaceAll(state.token, "[/color]", "</span>");
-					for(Iterator<Pattern> it = patternProcessorMapping.keySet().iterator(); it.hasNext();) {
-						Pattern pattern = it.next();
-						Matcher matcher = pattern.matcher(state.token);
-						while (matcher.find()) {
-							noMatch = false;
-							BodyTokenProcessor processor = patternProcessorMapping.get(pattern);
+
+			BodyState state = new BodyState();
+			// contiamo 'sti cazzo di tag
+			Matcher tagMatcher = Pattern.compile("(<b>|</b>|<i>|</i>|<s>|</s>|<u>|</u>)", Pattern.CASE_INSENSITIVE).matcher(body);
+			while (tagMatcher.find()) {
+				String tag = tagMatcher.group(1);
+				if (      tag.equalsIgnoreCase("<b>") ) state.open_b++;
+				else if (tag.equalsIgnoreCase("</b>")) state.open_b--;
+				else if (tag.equalsIgnoreCase("<i>") ) state.open_i++;
+				else if (tag.equalsIgnoreCase("</i>")) state.open_i--;
+				else if (tag.equalsIgnoreCase("<s>") ) state.open_s++;
+				else if (tag.equalsIgnoreCase("</s>")) state.open_s--;
+				else if (tag.equalsIgnoreCase("<u>") ) state.open_u++;
+				else if (tag.equalsIgnoreCase("</u>")) state.open_u--;
+			}
+			
+			String[] lines = body.split("<BR>");
+			for (int i=0;i<lines.length;++i) {
+				String line = lines[i];
+				StringTokenizer tokens = new StringTokenizer(line, " ", true);
+				StringBuffer lineBuf = new StringBuffer();
+				boolean wasInCode = state.inCode;
+				while (tokens.hasMoreTokens()) {
+					String token = tokens.nextToken();
+					state.token = token;
+					boolean noMatch = true;
+					if (token.length() > 3) { // non c'è niente da matchare di interessante sotto i 4 caratteri
+						state.token = simpleReplaceAll(state.token, "[code]", "<pre class='code'>");
+						//state.token = simpleReplaceAll(state.token, "[/code]", "</pre>");
+						state.token = simpleReplaceAll(state.token, "[/color]", "</span>");
+						for(Iterator<Pattern> it = patternProcessorMapping.keySet().iterator(); it.hasNext();) {
+							Pattern pattern = it.next();
+							Matcher matcher = pattern.matcher(state.token);
+							while (matcher.find()) {
+								noMatch = false;
+								BodyTokenProcessor processor = patternProcessorMapping.get(pattern);
+>>>>>>> [/code] ripristina lo stato di inCode
 //								System.out.println("token: "+state.token);
 //								System.out.println("regex: "+pattern.pattern());
 							processor.process(matcher, state, search, author);
