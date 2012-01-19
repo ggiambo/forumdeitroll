@@ -53,7 +53,7 @@
 						<h3>Cambio Avatar</h3>
 						<form action="User?action=updateAvatar" method="post" enctype="multipart/form-data">
 							<div>
-								<label for="avatar" class="lbl">Avatar:</label>
+								<label for="avatar" class="lbl">File:</label>
 								<input type="file" name="avatar" id="avatar" />
 								<div style="clear: both;"></div>
 							</div>
