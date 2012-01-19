@@ -277,7 +277,7 @@ public class MessageTag2 extends BodyTagSupport {
 							while (matcher.find()) {
 								noMatch = false;
 								BodyTokenProcessor processor = patternProcessorMapping.get(pattern);
->>>>>>> [/code] ripristina lo stato di inCode
+
 //								System.out.println("token: "+state.token);
 //								System.out.println("regex: "+pattern.pattern());
 							processor.process(matcher, state, search, author);
