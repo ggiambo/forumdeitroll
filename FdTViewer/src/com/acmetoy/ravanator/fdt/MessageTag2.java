@@ -8,21 +8,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.servlets.Messages;
 
 public class MessageTag2 extends BodyTagSupport {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private String search;
-	public void setSearch(String search) {
-		this.search = search;
-	}
-	public String getSearch() {
-		return search;
-	}
+	
+	private AuthorDTO author;
 	
 	private static String escape(String in) {return simpleReplaceAll(StringEscapeUtils.escapeHtml4(in), "'", "&apos;");}
 	
@@ -35,7 +35,7 @@ public class MessageTag2 extends BodyTagSupport {
 	}
 	
 	private static interface BodyTokenProcessor {
-		public void process(Matcher matcher, BodyState state, MessageTag2 tag);
+		public void process(Matcher matcher, BodyState state, String search, AuthorDTO author);
 	}
 	
 	private static final Map<String, String> EMO_ALT_MAP = new HashMap<String, String>();
@@ -83,7 +83,7 @@ public class MessageTag2 extends BodyTagSupport {
 		new HashMap<Pattern, BodyTokenProcessor>() {{
 			put(Pattern.compile("^(www\\.|https?://|ftp://|mailto:).*$"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
 					if (state.inCode) return;
 					String url = escape(state.token);
 					String desc = url;
@@ -93,27 +93,32 @@ public class MessageTag2 extends BodyTagSupport {
 					if (state.token.length() > 50) {
 						desc = escape(state.token.substring(0,50)) + "...";
 					}
-					String search = tag.getSearch();
 					desc = simpleReplaceAll(desc, search, "<span style='background-color: yellow'>" + search + "</span>");
 					state.token = String.format("<a href='%s' target='_blank'>%s</a>",url, desc);
 				}
 			});
 			put(Pattern.compile("\\[img\\](https?://.*?)\\[/img\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
 					if (state.inCode) return;
 					String url = escape(matcher.group(1));
 //					state.token = matcher.replaceFirst(
 //						String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src='%s'></a>", url, url)
 //					);
-					state.token = state.token.substring(0, matcher.start()) + 
+					if (StringUtils.isEmpty(author.getNick())) {
+						state.token = state.token.substring(0, matcher.start()) + 
+							String.format("<a class='preview' href='%s'>Immagine postata da ANOnimo</a>", url) +
+							state.token.substring(matcher.end());
+					} else {
+						state.token = state.token.substring(0, matcher.start()) + 
 							String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src='%s'></a>", url, url) +
 							state.token.substring(matcher.end());
+					}
 				}
 			});
 			put(Pattern.compile("\\[yt\\]([a-zA-Z0-9\\+\\/=\\-_]{7,12})\\[/yt\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
 					if (state.inCode) return;
 					String youcode = escape(matcher.group(1));
 					StringBuffer sb = new StringBuffer()
@@ -129,14 +134,14 @@ public class MessageTag2 extends BodyTagSupport {
 			});
 			put(Pattern.compile("\\[code$"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
 					state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
 					state.openCode = true;
 				}
 			});
 			put(Pattern.compile("^([a-zA-Z0-9]+)\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
 					if (state.openCode) {
 						state.openCode = false;
 //						state.token = matcher.replaceFirst(String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)));
@@ -149,7 +154,7 @@ public class MessageTag2 extends BodyTagSupport {
 			});
 			put(Pattern.compile("\\[color$"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
 					state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
 					state.openColor = true;
 				}
@@ -157,7 +162,7 @@ public class MessageTag2 extends BodyTagSupport {
 			//http://www.w3schools.com/cssref/css_colornames.asp
 			put(Pattern.compile("^([a-zA-Z]{3,15}|\\#[A-Za-z0-9]{6})\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, MessageTag2 tag) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
 					if (state.openColor) {
 						String color = matcher.group(1);
 						state.token = state.token.substring(0, matcher.start()) +
@@ -212,83 +217,106 @@ public class MessageTag2 extends BodyTagSupport {
 	
 	public int doAfterBody() throws JspTagException {
 		try {
-			JspWriter out = getBodyContent().getEnclosingWriter();
 			String body = getBodyContent().getString();
-			// questo elimina il caso di multipli [code] sulla stessa linea (casino da gestire, bisognava cambiare stile di parsing del body)
-			body = simpleReplaceAll(body, "[/code]", "[/code]<BR>");
-
-//			System.out.println("------ body ------");
-//			System.out.println(body);
-//			System.out.println("------ body ------");
-			
-			
-			BodyState state = new BodyState();
-			// contiamo 'sti cazzo di tag
-			Matcher tagMatcher = Pattern.compile("(<b>|</b>|<i>|</i>|<s>|</s>|<u>|</u>)", Pattern.CASE_INSENSITIVE).matcher(body);
-			while (tagMatcher.find()) {
-				String tag = tagMatcher.group(1);
-				if (      tag.equalsIgnoreCase("<b>") ) state.open_b++;
-				else if (tag.equalsIgnoreCase("</b>")) state.open_b--;
-				else if (tag.equalsIgnoreCase("<i>") ) state.open_i++;
-				else if (tag.equalsIgnoreCase("</i>")) state.open_i--;
-				else if (tag.equalsIgnoreCase("<s>") ) state.open_s++;
-				else if (tag.equalsIgnoreCase("</s>")) state.open_s--;
-				else if (tag.equalsIgnoreCase("<u>") ) state.open_u++;
-				else if (tag.equalsIgnoreCase("</u>")) state.open_u--;
-			}
-			
-			String[] lines = body.split("<BR>");
-			for (int i=0;i<lines.length;++i) {
-				String line = lines[i];
-				StringTokenizer tokens = new StringTokenizer(line, " ", true);
-				StringBuffer lineBuf = new StringBuffer();
-				boolean wasInCode = state.inCode;
-				while (tokens.hasMoreTokens()) {
-					String token = tokens.nextToken();
-					state.token = token;
-					boolean noMatch = true;
-					if (token.length() > 3) { // non c'è niente da matchare di interessante sotto i 4 caratteri
-						state.token = simpleReplaceAll(state.token, "[code]", "<pre class='code'>");
-						state.token = simpleReplaceAll(state.token, "[/code]", "</pre>");
-						state.token = simpleReplaceAll(state.token, "[/color]", "</span>");
-						for(Iterator<Pattern> it = patternProcessorMapping.keySet().iterator(); it.hasNext();) {
-							Pattern pattern = it.next();
-							Matcher matcher = pattern.matcher(state.token);
-							while (matcher.find()) {
-								noMatch = false;
-								BodyTokenProcessor processor = patternProcessorMapping.get(pattern);
-//								System.out.println("token: "+state.token);
-//								System.out.println("regex: "+pattern.pattern());
-								processor.process(matcher, state, this);
-//								System.out.println("---->: "+state.token);
-							}
-						}	
-					}
-					if (noMatch) {
-						state.token = simpleReplaceAll(state.token, search, "<span style='background-color: yellow'>" + search + "</span>");
-					}
-					lineBuf.append(state.token);
-				}
-				line = lineBuf.toString();
-				if ((!state.inCode) && (!wasInCode)) {
-					line = emoticons(line);
-					line = color_quote(line);
-				}
-				out.write(line);
-				if (state.inCode)
-					out.write("\n");
-				else
-					out.write("<BR>");
-			}
-			
-			int i;
-			for (i=0;i<state.open_b;++i) out.write("</b>");
-			for (i=0;i<state.open_i;++i) out.write("</i>");
-			for (i=0;i<state.open_s;++i) out.write("</s>");
-			for (i=0;i<state.open_u;++i) out.write("</u>");
+			getBodyContent().getEnclosingWriter().write(getMessage(body, search, author));
 		} catch (Exception e) {
 			throw new JspTagException(e);
 		}
 		return SKIP_BODY;
+	}
+	
+	public static String getMessage(String body, String search, AuthorDTO author) throws Exception {
+		StringBuilder out = new StringBuilder();
+			
+		// questo elimina il caso di multipli [code] sulla stessa linea (casino da gestire, bisognava cambiare stile di parsing del body)
+		body = simpleReplaceAll(body, "[/code]", "[/code]<BR>");
+
+//			System.out.println("------ body ------");
+//			System.out.println(body);
+//			System.out.println("------ body ------");
+		
+		
+		BodyState state = new BodyState();
+		// contiamo 'sti cazzo di tag
+		Matcher tagMatcher = Pattern.compile("(<b>|</b>|<i>|</i>|<s>|</s>|<u>|</u>)", Pattern.CASE_INSENSITIVE).matcher(body);
+		while (tagMatcher.find()) {
+			String tag = tagMatcher.group(1);
+			if (      tag.equalsIgnoreCase("<b>") ) state.open_b++;
+			else if (tag.equalsIgnoreCase("</b>")) state.open_b--;
+			else if (tag.equalsIgnoreCase("<i>") ) state.open_i++;
+			else if (tag.equalsIgnoreCase("</i>")) state.open_i--;
+			else if (tag.equalsIgnoreCase("<s>") ) state.open_s++;
+			else if (tag.equalsIgnoreCase("</s>")) state.open_s--;
+			else if (tag.equalsIgnoreCase("<u>") ) state.open_u++;
+			else if (tag.equalsIgnoreCase("</u>")) state.open_u--;
+		}
+		
+		String[] lines = body.split("<BR>");
+		for (int i=0;i<lines.length;++i) {
+			String line = lines[i];
+			StringTokenizer tokens = new StringTokenizer(line, " ", true);
+			StringBuffer lineBuf = new StringBuffer();
+			boolean wasInCode = state.inCode;
+			while (tokens.hasMoreTokens()) {
+				String token = tokens.nextToken();
+				state.token = token;
+				boolean noMatch = true;
+				if (token.length() > 3) { // non c'è niente da matchare di interessante sotto i 4 caratteri
+					state.token = simpleReplaceAll(state.token, "[code]", "<pre class='code'>");
+					state.token = simpleReplaceAll(state.token, "[/code]", "</pre>");
+					state.token = simpleReplaceAll(state.token, "[/color]", "</span>");
+					for(Iterator<Pattern> it = patternProcessorMapping.keySet().iterator(); it.hasNext();) {
+						Pattern pattern = it.next();
+						Matcher matcher = pattern.matcher(state.token);
+						while (matcher.find()) {
+							noMatch = false;
+							BodyTokenProcessor processor = patternProcessorMapping.get(pattern);
+//								System.out.println("token: "+state.token);
+//								System.out.println("regex: "+pattern.pattern());
+							processor.process(matcher, state, search, author);
+//								System.out.println("---->: "+state.token);
+						}
+					}	
+				}
+				if (noMatch) {
+					state.token = simpleReplaceAll(state.token, search, "<span style='background-color: yellow'>" + search + "</span>");
+				}
+				lineBuf.append(state.token);
+			}
+			line = lineBuf.toString();
+			if ((!state.inCode) && (!wasInCode)) {
+				line = emoticons(line);
+				line = color_quote(line);
+			}
+			out.append(line);
+			if (state.inCode)
+				out.append("\n");
+			else
+				out.append("<BR>");
+		}
+		
+		int i;
+		for (i=0;i<state.open_b;++i) out.append("</b>");
+		for (i=0;i<state.open_i;++i) out.append("</i>");
+		for (i=0;i<state.open_s;++i) out.append("</s>");
+		for (i=0;i<state.open_u;++i) out.append("</u>");
+		
+		return out.toString();
+	}
+	
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	
+	public String getSearch() {
+		return search;
+	}
+	
+	public void setAuthor(AuthorDTO author) {
+		this.author = author;
+	}
+	
+	public AuthorDTO getAuthor() {
+		return author;
 	}
 }

@@ -3,7 +3,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <jsp:include page="incTop.jsp"/>
-		<div id="main">
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".avatarImg").hover(function() {
+			$(this).removeClass("avatarImg").addClass("avatarImgOver");
+		}, function() {
+			$(this).removeClass("avatarImgOver").addClass("avatarImg");
+		});
+	});
+</script>
+
+<div id="main">
 
 			<c:forEach items="${messages}" var="thread" varStatus="index">
 				<c:choose>
@@ -32,11 +43,11 @@
 					- Iniziato da
 					<span class="msgAuthor">
 						<c:choose>
-							<c:when test="${empty thread.author}">
+					<c:when test="${empty thread.author.nick}">
 								Non Autenticato
 							</c:when>
 							<c:otherwise>
-								<a href="Messages?action=getByAuthor&amp;author=${thread.escapedAuthor}">${thread.author}</a>
+						<a href="Messages?action=getByAuthor&amp;author=${thread.author.nick}">${thread.author.nick}</a>
 							</c:otherwise>
 						</c:choose>
 					</span>

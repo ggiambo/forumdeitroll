@@ -25,6 +25,13 @@
         <rtexprvalue>true</rtexprvalue>
 		<type>java.lang.String</type>
     </attribute>
+	<attribute>
+		<description>Message author</description>
+        <name>author</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+		<type>com.acmetoy.ravanator.fdt.persistence.AuthorDTO</type>
+    </attribute>
   </tag>
 
 	<tag>

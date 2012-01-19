@@ -47,6 +47,53 @@ function closeReplyDiv(parentId) {
 	$("#buttons_" + parentId).show();
 }
 
+function preview(parentId) {
+	// post data
+	var data = { parentId: parentId };
+	$("#reply_" + parentId + " :input").each(function() {
+		var val = $(this);
+		data[val.attr("name")] = val.val();
+	});
+	// preview message
+	jQuery.ajax({
+		type: "POST",
+		url: "Messages?action=getMessagePreview",
+		data: data,
+		success: function(data) {
+			if (data.resultCode == "OK") {
+				// nascondi textArea
+				var textArea = $("#reply_" + parentId + " :input[name='text']");
+				textArea.hide();
+				// mostra previewDiv
+				var previewDiv = $("#preview_" + parentId);
+				previewDiv.height(textArea.height());
+				previewDiv.html(data.content);
+				previewDiv.show();
+				// swap bottoni
+				$("#reply_" + parentId + " :input[name='preview']").hide();
+				$("#reply_" + parentId + " :input[name='edit']").show();
+			} else if (data.resultCode == "MSG") {
+				alert(data.content);
+			} else if (data.resultCode == "ERROR") {
+				$("html").html(data.content);
+			}
+		},
+		beforeSend : function(jqXhr, settings) {
+			jqXhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+		},
+		dataType: "json"
+	});
+	
+}
+
+function edit(parentId) {
+	// nascondi preview, mostra textArea, swap bottoni
+	$("#preview_" + parentId).hide();
+	$("#reply_" + parentId + " :input[name='text']").show();
+	$("#reply_" + parentId + " :input[name='preview']").show();
+	$("#reply_" + parentId + " :input[name='edit']").hide();
+}
+
 function send(parentId) {
 	// post data
 	var data = { parentId: parentId };

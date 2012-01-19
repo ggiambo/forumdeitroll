@@ -14,6 +14,8 @@ import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 
 public class PvtTag extends TagSupport {
 	
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * @see com.acmetoy.ravanator.fdt.servlets.MainServlet#LOGGED_USER_SESSION_ATTR
 	 */

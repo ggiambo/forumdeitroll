@@ -11,6 +11,7 @@ import javax.crypto.spec.PBEKeySpec;
 import java.security.MessageDigest;
 import java.math.BigInteger;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -42,6 +43,8 @@ public class AuthorDTO {
 
 	private String nick = null;
 
+	private String escapedNick = null;
+
 	private byte[] avatar = null;
 
 	protected String oldPassword = null;
@@ -52,8 +55,18 @@ public class AuthorDTO {
 		return nick;
 	}
 
+	public String getEscapedNick() {
+		return escapedNick;
+	}
+
 	public void setNick(String nick) {
 		this.nick = nick;
+		if (nick != null) {
+			this.escapedNick = StringEscapeUtils.escapeHtml4(nick);	
+			this.escapedNick = this.escapedNick.replace(" ", "%20");
+		} else {
+			this.escapedNick = null;
+		}
 	}
 
 	public byte[] getAvatar() {
@@ -177,6 +190,7 @@ public class AuthorDTO {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("nick:").append(nick).append(",");
+		sb.append("escapedNick:").append(escapedNick).append(",");
 		sb.append("ranking:").append(ranking).append(",");
 		sb.append("avatar:");
 		if (avatar != null) {

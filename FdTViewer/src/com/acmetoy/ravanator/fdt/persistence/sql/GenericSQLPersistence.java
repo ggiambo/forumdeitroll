@@ -12,6 +12,7 @@ import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
@@ -98,7 +99,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setLong(i++, message.getThreadId());
 			ps.setString(i++, message.getText());
 			ps.setString(i++, message.getSubject());
-			ps.setString(i++, message.getAuthor());
+			ps.setString(i++, message.getAuthor().getNick());
 			ps.setString(i++, message.getForum());
 			ps.setTimestamp(i++, new java.sql.Timestamp(message.getDate().getTime()));
 			ps.execute();
@@ -124,7 +125,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			int i = 1;
 			ps.setString(i++, message.getText());
 			ps.setString(i++, message.getSubject());
-			ps.setString(i++, message.getAuthor());
+			ps.setString(i++, message.getAuthor().getNick());
 			ps.setString(i++, message.getForum());
 			ps.setTimestamp(i++, new java.sql.Timestamp(message.getDate().getTime()));
 			ps.execute();
@@ -190,10 +191,13 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public AuthorDTO getAuthor(String nick) {
+		AuthorDTO dto = new AuthorDTO();
+		if (StringUtils.isEmpty(nick)) {
+			return dto;
+		}
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		AuthorDTO dto = new AuthorDTO();
 		try {
 			ps = conn.prepareStatement("SELECT * FROM authors WHERE UPPER(NICK) = ?");
 			ps.setString(1, nick.toUpperCase());
@@ -409,7 +413,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			message.setThreadId(rs.getLong("threadId"));
 			message.setText(rs.getString("text"));
 			message.setSubject(rs.getString("subject"));
-			message.setAuthor(rs.getString("author"));
+			message.setAuthor(getAuthor(rs.getString("author")));
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
 			messages.add(message);
@@ -423,7 +427,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ThreadDTO message = new ThreadDTO();
 			message.setId(rs.getLong("id"));
 			message.setSubject(rs.getString("subject"));
-			message.setAuthor(rs.getString("author"));
+			message.setAuthor(getAuthor(rs.getString("author")));
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
 			message.setNumberOfMessages(getNumberOfMessages(message.getId()));

@@ -2,7 +2,18 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:include page="incTop.jsp" />
-		<div id="main">
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$(".avatarImg").hover(function() {
+			$(this).removeClass("avatarImg").addClass("avatarImgOver");
+		}, function() {
+			$(this).removeClass("avatarImgOver").addClass("avatarImg");
+		});
+	});
+</script>
+
+<div id="main">
 			<c:forEach items="${messages}" var="msg" varStatus="index">
 				<c:set var="margin" value="${msg.indent * 15}"/>
 				<div style="margin-left:${margin}px;" class="messagesBox">
@@ -11,5 +22,5 @@
 					<jsp:include page="incMessage.jsp"/>
 				</div>
 			</c:forEach>
-		</div>
+</div>
 <jsp:include page="incBottom.jsp" />

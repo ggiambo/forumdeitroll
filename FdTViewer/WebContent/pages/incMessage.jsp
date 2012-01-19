@@ -17,7 +17,16 @@
 
 	<div class="msgInfo">
 		<div>
-			<img alt="Avatar" src="?action=getAvatar&amp;nick=${msg.escapedAuthor}"/>
+			<c:choose>
+				<c:when test="${!empty msg.author.nick}">
+					<a href="User?action=getUserInfo&amp;nick=${msg.author.escapedNick}">
+						<img class="avatarImg" alt="Avatar" src="?action=getAvatar&amp;nick=${msg.author.escapedNick}"/>
+					</a>
+				</c:when>
+				<c:otherwise>
+					<img alt="Avatar" src="?action=getAvatar&amp;nick=${msg.author.escapedNick}"/>
+				</c:otherwise>
+			</c:choose>
 		</div>
 		<c:if test="${!empty msg.forum}">
 			<div class="msgForum">${msg.forum}</div>
@@ -26,17 +35,22 @@
 			<div class="msgWrittenby">Scritto da</div>
 			<div class="msgAuthor">
 				<c:choose>
-					<c:when test="${empty msg.author}">
+					<c:when test="${empty msg.author.nick}">
 						Non Autenticato
 					</c:when>
 					<c:otherwise>
-						<a href="Messages?action=getByAuthor&amp;author=${msg.escapedAuthor}">${msg.author}</a>
+						<a href="Messages?action=getByAuthor&amp;author=${msg.author.escapedNick}">${msg.author.nick}</a>
 					</c:otherwise>
 				</c:choose>
 			</div>
 			<div class="msgDate">il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/></div>
+			<c:if test="${not empty msg.author.nick}">
+				<div class="msgTotalMsg">
+					Trollate totali: ${msg.author.messages}
 		</div>
-		<c:if test="${not empty loggedUser && msg.author == loggedUser}">
+			</c:if>
+		</div>
+		<c:if test="${not empty loggedUser && msg.author.nick == loggedUser}">
 			<div class="msgAction">
 				<a href="Messages?action=editMessage&amp;msgId=${msg.id}&amp;forum=${msg.forum}">Modifica</a>
 			</div>
@@ -48,7 +62,9 @@
 	</span>
 
 	<div style="padding: 10px;" class="message">
-		<fdt:msg search="${param.search}">${msg.text}</fdt:msg>
+		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
+		<%-- close open tags --%>
+		<c:out escapeXml="false" value="</b></i></u>"/> <%-- TODO: DA RIMUOVERE AL PIÙ PRESTO, ROMPE LA VALIDAZIONE ndachille: non ci muore nessuno --%>
 	</div>
 	
 	<div id="buttons_${msg.id}" class="messagesButtonBar">

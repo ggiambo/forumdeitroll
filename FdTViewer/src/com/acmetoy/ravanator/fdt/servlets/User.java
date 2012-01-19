@@ -298,6 +298,23 @@ public class User extends MainServlet {
 	};
 
 	/**
+	 * Tutte le informazioni dell'utente
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	protected GiamboAction getUserInfo =  new GiamboAction("getUserInfo", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			String nick = req.getParameter("nick");
+			AuthorDTO author = getPersistence().getAuthor(nick);
+			req.setAttribute("author", author);
+			req.setAttribute("quotes", getPersistence().getQuotes(author));
+			return "userInfo.jsp";
+		}
+	};
+
+	/**
 	 * Lista di tutti i PVT
 
 	public String getPrivateMessages(HttpServletRequest req, HttpServletResponse res) throws Exception {

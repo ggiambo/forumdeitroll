@@ -44,6 +44,8 @@
 			<a href="javascript:void(0);" onmousedown="insert('[img]', '[/img]', '${message.parentId}')" class="msgButton">[immagine]</a>
 			<a href="javascript:void(0);" onmousedown="insert('[code]', '[/code]', '${message.parentId}')" class="msgButton">[codice]</a>
 			<a href="javascript:void(0);" onmousedown="insert('[yt]', '[/yt]', '${message.parentId}')" class="msgButton">[youtube]</a>
+			<input style="float:right" tabindex="5" type="button" name="preview" value="Preview" onClick="preview(${message.parentId})"/>&nbsp;
+			<input style="display:none;float:right" tabindex="5" type="button" name="edit" value="Edit" onClick="edit(${message.parentId})"/>&nbsp;
 		</div>
 	</div>
 	<c:if test="${message.parentId == -1 && message.id == -1}">
@@ -55,7 +57,10 @@
 	</c:if>
 	
 	<%-- input area --%>
-	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt">${message.text}</textarea><br/>
+	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt">${message.text}</textarea>
+
+	<%-- preview area --%>
+	<div id="preview_${message.parentId}" class="msgReplyTxt"></div>
 	
 	<input type="hidden" name="forum" value="${message.forum }"/>
 	<input type="hidden" name="id" value="${message.id }"/>

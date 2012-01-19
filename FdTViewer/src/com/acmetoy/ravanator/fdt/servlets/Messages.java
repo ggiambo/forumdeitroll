@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import com.acmetoy.ravanator.fdt.MessageTag2;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.google.gson.stream.JsonWriter;
@@ -24,7 +25,7 @@ public class Messages extends MainServlet {
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
 	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
-    private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?v=(.{11})");
+	private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?v=(.{11})");
 
 	private static final Map<String, String> EMO_MAP = new HashMap<String, String>();
 	static {
@@ -188,7 +189,7 @@ public class Messages extends MainServlet {
 					m = PATTERN_QUOTE.matcher(text);
 				}
 
-				String author = msgDTO.getAuthor();
+			String author = msgDTO.getAuthor().getNick();
 				text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n> " + text + "\r\n";
 				newMsg.setText(text);
 				newMsg.setForum(msgDTO.getForum());
@@ -266,7 +267,7 @@ public class Messages extends MainServlet {
 			AuthorDTO user = login(req);
 			String msgId = req.getParameter("msgId");
 			MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
-			if (!user.isValid() || !user.getNick().equals(msg.getAuthor())) {
+		if (!user.isValid() || !user.getNick().equals(msg.getAuthor().getNick())) {
 				setNavigationMessage(req, "Non puoi editare un messaggio non tuo !");
 				return getByPage.action(req, res);
 			}
@@ -280,6 +281,31 @@ public class Messages extends MainServlet {
 			req.setAttribute("emoMap", emoMap);
 
 			return "newMessage.jsp";
+		}
+	};
+	
+	/**
+	 * Crea la preview del messaggio
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	
+	protected GiamboAction getMessagePreview = new GiamboAction("getMessagePreview", ONPOST) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			res.setCharacterEncoding("UTF-8");
+			String text = req.getParameter("text");
+			AuthorDTO author = login(req);
+			// crea la preview del messaggio
+			JsonWriter writer = new JsonWriter(res.getWriter());
+			writer.beginObject();
+			writer.name("resultCode").value("OK");
+			writer.name("content").value(MessageTag2.getMessage(text, null, author).replaceAll("\n", "<BR/>"));
+			writer.endObject();
+			writer.flush();
+			writer.close();
+			return null;
 		}
 	};
 
@@ -302,13 +328,13 @@ public class Messages extends MainServlet {
 				body.append("<pre style=\"border:1px solid black; padding:10px;\">\"").append(ExceptionUtils.getStackTrace(e)).append("\"/></pre>");
 				body.append("<div style=\"clear: both;\"></div>");
 				body.append("</body>");
-	            JsonWriter writer = new JsonWriter(res.getWriter());
-	            writer.beginObject();
-	            writer.name("resultCode").value("ERROR");
-	            writer.name("content").value(body.toString());
-	            writer.endObject();
-	            writer.flush();
-	            writer.close();
+				JsonWriter writer = new JsonWriter(res.getWriter());
+				writer.beginObject();
+				writer.name("resultCode").value("ERROR");
+				writer.name("content").value(body.toString());
+				writer.endObject();
+				writer.flush();
+				writer.close();
 			}
 			return null;
 		}
@@ -319,14 +345,14 @@ public class Messages extends MainServlet {
 		// se c'e' un'errore, mostralo
 		String validationMessage = validateInsertMessage(req);
 		if (validationMessage != null) {
-            JsonWriter writer = new JsonWriter(res.getWriter());
-            writer.beginObject();
-            writer.name("resultCode").value("MSG");
-            writer.name("content").value(validationMessage);
-            writer.endObject();
-            writer.flush();
-            writer.close();
-            return null;
+			JsonWriter writer = new JsonWriter(res.getWriter());
+			writer.beginObject();
+			writer.name("resultCode").value("MSG");
+			writer.name("content").value(validationMessage);
+			writer.endObject();
+			writer.flush();
+			writer.close();
+			return null;
 		}
 
 		final AuthorDTO author = login(req);
@@ -336,14 +362,14 @@ public class Messages extends MainServlet {
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
 			if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
 				//autenticazione fallita
-	            JsonWriter writer = new JsonWriter(res.getWriter());
-	            writer.beginObject();
-	            writer.name("resultCode").value("MSG");
-	            writer.name("content").value("Autenticazione / verifica captcha fallita");
-	            writer.endObject();
-	            writer.flush();
-	            writer.close();
-	            return null;
+				JsonWriter writer = new JsonWriter(res.getWriter());
+				writer.beginObject();
+				writer.name("resultCode").value("MSG");
+				writer.name("content").value("Autenticazione / verifica captcha fallita");
+				writer.endObject();
+				writer.flush();
+				writer.close();
+				return null;
 			}
 		}
 
@@ -367,17 +393,17 @@ public class Messages extends MainServlet {
 			 m = PATTERN_YT.matcher(text);
 		}
 
-	    // estrai id da URL youtube
-	    m = PATTERN_YOUTUBE.matcher(text);
-	    while (m.find()) {
-	            text = m.replaceFirst("[yt]"+Matcher.quoteReplacement(m.group(3))+"[/yt]");
-	            m = PATTERN_YOUTUBE.matcher(text);
-	    }
+		// estrai id da URL youtube
+		m = PATTERN_YOUTUBE.matcher(text);
+		while (m.find()) {
+				text = m.replaceFirst("[yt]"+Matcher.quoteReplacement(m.group(3))+"[/yt]");
+				m = PATTERN_YOUTUBE.matcher(text);
+		}
 
 		// reply o messaggio nuovo ?
 		long parentId = Long.parseLong(req.getParameter("parentId"));
 		MessageDTO msg = new MessageDTO();
-		msg.setAuthor(author.getNick());
+		msg.setAuthor(author);
 		msg.setParentId(parentId);
 		msg.setDate(new Date());
 		msg.setText(text);
@@ -386,15 +412,15 @@ public class Messages extends MainServlet {
 			if (id > -1) {
 				// modify
 				msg = getPersistence().getMessage(id);
-				if (msg.getAuthor() == null || !msg.getAuthor().equals(author.getNick())) {
-		            JsonWriter writer = new JsonWriter(res.getWriter());
-		            writer.beginObject();
-		            writer.name("resultCode").value("MSG");
-		            writer.name("content").value("Imbroglione, non puoi modificare questo messaggio !");
-		            writer.endObject();
-		            writer.flush();
-		            writer.close();
-		            return null;
+				if (msg.getAuthor() == null || !msg.getAuthor().getNick().equals(author.getNick())) {
+					JsonWriter writer = new JsonWriter(res.getWriter());
+					writer.beginObject();
+					writer.name("resultCode").value("MSG");
+					writer.name("content").value("Imbroglione, non puoi modificare questo messaggio !");
+					writer.endObject();
+					writer.flush();
+					writer.close();
+					return null;
 				}
 				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
 				msg.setText(text);
@@ -431,14 +457,14 @@ public class Messages extends MainServlet {
 		msg = getPersistence().insertMessage(msg);
 
 		// redirect
-        JsonWriter writer = new JsonWriter(res.getWriter());
-        writer.beginObject();
-        writer.name("resultCode").value("OK");
-        writer.name("content").value("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "#msg" + msg.getId()); //Qui non cambiare & con &amp;
-        writer.endObject();
-        writer.flush();
-        writer.close();
-        return null;
+		JsonWriter writer = new JsonWriter(res.getWriter());
+		writer.beginObject();
+		writer.name("resultCode").value("OK");
+		writer.name("content").value("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "#msg" + msg.getId()); //Qui non cambiare & con &amp;
+		writer.endObject();
+		writer.flush();
+		writer.close();
+		return null;
 	}
 
 	public static Map<String, String> getEmoMap() {
