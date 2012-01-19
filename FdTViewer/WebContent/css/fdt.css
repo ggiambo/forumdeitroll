@@ -634,3 +634,105 @@ span.quoteLvl2 {
 span.quoteLvl1 {
 	color: #007BDF;
 }
+
+div.userPanelCaption {
+	text-align: center;
+	font-weight: bold;
+	border-bottom: 1px solid #7BAAE7;
+	margin-bottom: 0.5em;
+	font-variant: small-caps;
+	text-shadow: 1px 1px 2px gray;
+}
+
+div.userPanel {
+	clear: both;
+	background-color: #D6D6D6;
+	padding: 5px;
+	margin: 5px;
+	box-shadow: 0px 0px 4px gray;
+	width: 30em;
+}
+
+div.userPanelContent {
+	padding: 0.5em;
+}
+
+div.userPanelSection {
+	background-color: white; 
+	padding: 10px; 
+	box-shadow: 2px 2px 4px gray;
+	border: 1px solid lightGray;
+	margin-bottom: 8px;
+}
+
+div.userPanelSection .lbl {
+	font-weight: bold;
+}
+
+div.userPanelContent img.avatar {
+	border: 1px solid black;
+	height: 100px;
+	width: 100px;
+	margin-right: 8px;
+	box-shadow: 2px 2px 2px black;
+	float: left;
+}
+
+div.userPanelContent h3 {
+	font-weight: bold;
+	font-variant: small-caps;
+	border-bottom: 1px dotted #7BAAE7;
+	margin-bottom: 0.3em;
+	font-size: 110%;
+}
+
+div.userPanelContent h3:before {
+	content: "‣ ";
+}
+
+div.userPanelSection > form > div {
+	margin-bottom: 5px;
+}
+
+div.userPanelSection div.lblUserPanel {
+	width: 11em;
+	float: left;
+}
+
+div.userPanelSection div.inputUserPanel {
+	float: right;
+}
+
+div.userPanelSection input {
+	border: 1px solid #7BAAE7;
+	width: 15em;
+	padding: 0 5px;
+}
+
+div.userPanelSection input.sendUserPanel {
+	float: right;
+	width: 8em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	margin-top: 5px;
+}
+
+div.userPanelSection a.userPanelButton {
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	padding: 0.2em;
+	text-decoration: none;
+	color: black;
+	width: 8em;
+	display: block;
+	float: left;
+	background-color: white;
+	text-align: center;
+	margin-right: 0.5em;
+}
+
+div.userPanelSection a.userPanelButton:hover {
+	box-shadow: 0 0 8px #0A78FF;
+}
