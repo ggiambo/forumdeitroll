@@ -30,7 +30,6 @@ public class Threads extends MainServlet {
 				indentMsg.add(new IndentMessageDTO(dto));
 			}
 			req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
-			//req.setAttribute("messages", new ThreadTree2(indentMsg, threadId).asList());
 			setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
 			setNavigationMessage(req, "Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>");
 
@@ -39,7 +38,7 @@ public class Threads extends MainServlet {
 	};
 
 	/**
-	 * Ordinati per thread
+	 * Ordinati per thread / data iniziale
 	 */
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -47,6 +46,18 @@ public class Threads extends MainServlet {
 			setWebsiteTitle(req, "Forum dei troll");
 			setNavigationMessage(req, "Ordinati per data inizio discussione");
 			return "threads.jsp";
+		}
+	};
+	
+	/**
+	 * Ordinati per thread / ultimo post
+	 */
+	protected GiamboAction getThreadsByLastPost = new GiamboAction("getThreadsByLastPost", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			req.setAttribute("messages", getPersistence().getThreadsByLastPost(PAGE_SIZE, getPageNr(req)));
+			setWebsiteTitle(req, "Forum dei troll");
+			setNavigationMessage(req, "Ordinati per ultimo post");
+			return "threadsByLastPost.jsp";
 		}
 	};
 

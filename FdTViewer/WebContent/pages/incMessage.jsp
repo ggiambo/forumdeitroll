@@ -17,16 +17,21 @@
 
 	<div class="msgInfo">
 		<div>
-			<c:choose>
-				<c:when test="${!empty msg.author.nick}">
-					<a href="User?action=getUserInfo&amp;nick=${msg.author.escapedNick}">
-						<img class="avatarImg" alt="Avatar" src="?action=getAvatar&amp;nick=${msg.author.escapedNick}"/>
-					</a>
-				</c:when>
-				<c:otherwise>
-					<img alt="Avatar" src="?action=getAvatar&amp;nick=${msg.author.escapedNick}"/>
-				</c:otherwise>
-			</c:choose>
+			<c:url value="" var="avatarUrl">
+				<c:param name="action" value="getAvatar"/>
+				<c:param name="nick" value="${msg.author.nick}"/>
+			</c:url>
+			<c:if test="${!empty msg.author.nick}">
+				<c:url value="User" var="userInfoUrl">
+					<c:param name="action" value="getUserInfo"/>
+					<c:param name="nick" value="${msg.author.nick}"/>
+				</c:url>
+				<a href="${userInfoUrl}">
+			</c:if>
+			<img class="avatarImg" alt="Avatar" src="${avatarUrl}"/>
+			<c:if test="${!empty msg.author.nick}">
+				</a>
+			</c:if>
 		</div>
 		<c:if test="${!empty msg.forum}">
 			<div class="msgForum">${msg.forum}</div>
@@ -39,7 +44,11 @@
 						Non Autenticato
 					</c:when>
 					<c:otherwise>
-						<a href="Messages?action=getByAuthor&amp;author=${msg.author.escapedNick}">${msg.author.nick}</a>
+						<c:url value="Messages" var="messagesUrl">
+							<c:param name="action" value="getByAuthor"/>
+							<c:param name="author" value="${msg.author.nick}"/>
+						</c:url>
+						<a href="${messagesUrl}">${msg.author.nick}</a>
 					</c:otherwise>
 				</c:choose>
 			</div>

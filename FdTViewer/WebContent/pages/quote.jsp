@@ -8,7 +8,11 @@
 				<table>
 					<tr>
 						<td>
-							<img src="?action=getAvatar&nick=${author.nick}"/>
+							<c:url value="" var="avatarURL">
+								<c:param name="action" value="getAvatar"/>
+								<c:param name="nick" value="${author.nick}"/>
+							</c:url>
+							<img src="${avatarURL}"/>
 						</td>
 						<td valign="top">
 							Nick: ${author.nick}<br/>

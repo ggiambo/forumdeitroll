@@ -19,9 +19,14 @@
 	
 </script>
 
+<c:set var="isReply" value="${!isEdit && message.parentId > 0}"/>
+<c:set var="isNewThread" value="${!isEdit && message.id == -1 && message.parentId == -1}"/>
+<c:set var="isNewMessage" value="${!isEdit && message.id == -1}"/>
+<c:set var="isEdit" value="${!empty isEdit && isEdit}"/>
+
 <div id="reply_${message.parentId}" class="msgReply">
 
-	<c:if test="${message.parentId != -1 || message.id != -1}">
+	<c:if test="${isReply}">
 		<c:set var="class" value="border:1px solid black; padding:2px; margin:2px;"/>
 		<a style="float: right; padding: 5px;" onClick="closeReplyDiv('${message.parentId}')"><img src="images/close.jpeg"></a>
 	</c:if>
@@ -48,9 +53,9 @@
 			<input style="display:none;float:right" tabindex="5" type="button" name="edit" value="Edit" onClick="edit(${message.parentId})"/>&nbsp;
 		</div>
 	</div>
-	<c:if test="${message.parentId == -1 && message.id == -1}">
+	<c:if test="${isNewThread || isEdit}">
 		<label for="subject">Oggetto:</label><br /> 
-		<input tabindex="1" name="subject" id="subject" maxlength="40" size="40" class="msgReplyObj" />
+		<input tabindex="1" name="subject" id="subject" maxlength="40" size="40" class="msgReplyObj" value="${message.subject}"/>
 	</c:if>
 	<c:if test="${not empty message.forum}">
 		Forum <i>${message.forum}</i>

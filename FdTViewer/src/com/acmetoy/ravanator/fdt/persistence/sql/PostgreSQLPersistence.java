@@ -12,9 +12,8 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
-import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 
-public abstract class PostgreSQLPersistence extends GenericSQLPersistence {
+public class PostgreSQLPersistence extends GenericSQLPersistence {
 
 	private static final Logger LOG = Logger.getLogger(PostgreSQLPersistence.class);
 
@@ -26,81 +25,6 @@ public abstract class PostgreSQLPersistence extends GenericSQLPersistence {
 		String dbname = databaseConfig.getProperty("dbname");
 		String url = "jdbc:postgresql://" + host  + "/" + dbname;
 		super.setupDataSource(url, username, password);
-	}
-
-	@Override
-	public List<MessageDTO> getMessagesByDate(int limit, int page) {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ? OFFSET ?");
-			ps.setInt(1, limit);
-			ps.setInt(2, limit*page);
-			return getMessages(ps.executeQuery());
-		} catch (SQLException e) {
-			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return new ArrayList<MessageDTO>();
-	}
-
-	@Override
-	public List<MessageDTO> getMessagesByAuthor(String author, int limit, int page) {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("SELECT * FROM messages where author = ? ORDER BY id DESC LIMIT ? OFFSET ?");
-			ps.setString(1, author);
-			ps.setInt(2, limit);
-			ps.setInt(3, limit*page);
-			return getMessages(ps.executeQuery());
-		} catch (SQLException e) {
-			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return new ArrayList<MessageDTO>();
-	}
-
-	@Override
-	public List<MessageDTO> getMessagesByForum(String forum, int limit, int page) {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY id DESC LIMIT ? OFFSET ?");
-			ps.setString(1, forum);
-			ps.setInt(2, limit);
-			ps.setInt(3, limit*page);
-			return getMessages(ps.executeQuery());
-		} catch (SQLException e) {
-			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return new ArrayList<MessageDTO>();
-	}
-
-	@Override
-	public List<ThreadDTO> getThreads(int limit, int page) {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
-		try {
-			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
-			ps.setInt(1, limit);
-			ps.setInt(2, limit*page);
-			return getThreads(ps.executeQuery());
-		} catch (SQLException e) {
-			LOG.error("Cannot get threads", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return result;
 	}
 
 	@Override
@@ -131,7 +55,7 @@ public abstract class PostgreSQLPersistence extends GenericSQLPersistence {
 		ResultSet rs = null;
 		QuoteDTO out = new QuoteDTO();
 		try {
-			ps = conn.prepareStatement("SELECT content FROM quotes ORDER BY RANDOM() LIMIT 1");
+			ps = conn.prepareStatement("SELECT * FROM quotes ORDER BY RANDOM() LIMIT 1");
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				out.setContent(rs.getString("content"));
@@ -144,4 +68,5 @@ public abstract class PostgreSQLPersistence extends GenericSQLPersistence {
 		}
 		return null;
 	}
+	
 }

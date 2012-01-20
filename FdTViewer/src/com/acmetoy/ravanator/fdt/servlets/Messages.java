@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.acmetoy.ravanator.fdt.MessageTag2;
+import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.google.gson.stream.JsonWriter;
@@ -280,6 +280,8 @@ public class Messages extends MainServlet {
 			TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
 			req.setAttribute("emoMap", emoMap);
 
+			req.setAttribute("isEdit", true);
+
 			return "newMessage.jsp";
 		}
 	};
@@ -301,7 +303,7 @@ public class Messages extends MainServlet {
 			JsonWriter writer = new JsonWriter(res.getWriter());
 			writer.beginObject();
 			writer.name("resultCode").value("OK");
-			writer.name("content").value(MessageTag2.getMessage(text, null, author).replaceAll("\n", "<BR/>"));
+			writer.name("content").value(MessageTag.getMessage(text, null, author).replaceAll("\n", "<BR/>"));
 			writer.endObject();
 			writer.flush();
 			writer.close();
@@ -422,6 +424,7 @@ public class Messages extends MainServlet {
 					writer.close();
 					return null;
 				}
+				msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
 				msg.setText(text);
 			} else {
@@ -460,7 +463,11 @@ public class Messages extends MainServlet {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
+		if (req.getServletPath().endsWith("/Threads")) {
 		writer.name("content").value("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "#msg" + msg.getId()); //Qui non cambiare & con &amp;
+		} else {
+			writer.name("content").value("/Messages?action=init#msg" + msg.getId());
+		}
 		writer.endObject();
 		writer.flush();
 		writer.close();
