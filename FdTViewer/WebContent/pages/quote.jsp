@@ -33,6 +33,7 @@
 								</div>
 							</c:forEach>
 						</form>
+						<div style="clear: both;"></div>
 					</div>	
 					<div class="userPanelSection">
 						<h3>Altre Azioni</h3>

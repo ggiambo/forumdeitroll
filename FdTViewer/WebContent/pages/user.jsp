@@ -10,7 +10,7 @@
 						<img src="?action=getAvatar&nick=${author.nick}" alt="Avatar" class="avatar" />
 						<h3>Informazioni</h3>
 						<span class="lbl">Nome utente:</span> ${author.nick}<br/>
-						<span class="lbl">Messaggi:</span> ${author.messages }
+						<span class="lbl">Messaggi:</span> ${author.messages}
 						<div style="clear: both;"></div>
 					</div>
 					<div class="userPanelSection">

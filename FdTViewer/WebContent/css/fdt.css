@@ -765,3 +765,13 @@ div.userPanelSection div.fraseCelebreUserPanel input.sendFraseCelebreUserPanel {
 	font-size: 90%;
 	margin-left: 0.1em;
 }
+
+div.userPanelSection ul.fraseCelebreUserPanel {
+	list-style: square inside;
+	padding-left: 1em;
+}
+
+div.userPanelSection li.fraseCelebreUserPanel {
+	list-style: inherit;
+	font-style: italic;
+}
