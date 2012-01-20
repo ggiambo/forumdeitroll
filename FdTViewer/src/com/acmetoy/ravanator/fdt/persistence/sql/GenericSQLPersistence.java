@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.dbcp.ConnectionFactory;
@@ -56,6 +57,103 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
+	public List<MessageDTO> getMessagesByDate(int limit, int page) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ? OFFSET ?");
+			ps.setInt(1, limit);
+			ps.setInt(2, limit*page);
+			return getMessages(ps.executeQuery());
+		} catch (SQLException e) {
+			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return new ArrayList<MessageDTO>();
+	}
+
+	@Override
+	public List<MessageDTO> getMessagesByAuthor(String author, int limit, int page) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT * FROM messages where author = ? ORDER BY id DESC LIMIT ? OFFSET ?");
+			ps.setString(1, author);
+			ps.setInt(2, limit);
+			ps.setInt(3, limit*page);
+			return getMessages(ps.executeQuery());
+		} catch (SQLException e) {
+			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return new ArrayList<MessageDTO>();
+	}
+
+	@Override
+	public List<MessageDTO> getMessagesByForum(String forum, int limit, int page) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY id DESC LIMIT ? OFFSET ?");
+			ps.setString(1, forum);
+			ps.setInt(2, limit);
+			ps.setInt(3, limit*page);
+			return getMessages(ps.executeQuery());
+		} catch (SQLException e) {
+			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return new ArrayList<MessageDTO>();
+	}
+
+	@Override
+	public List<ThreadDTO> getThreads(int limit, int page) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
+		try {
+			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
+			ps.setInt(1, limit);
+			ps.setInt(2, limit*page);
+			return getThreads(ps.executeQuery());
+		} catch (SQLException e) {
+			LOG.error("Cannot get threads", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return result;
+	}
+
+	@Override
+	public List<ThreadDTO> getThreadsByLastPost(int limit, int page) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
+		try {
+			ps = conn.prepareStatement("SELECT MAX(id) AS mid FROM messages GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
+			ps.setInt(1, limit);
+			ps.setInt(2, limit*page);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				result.add(getMessage(rs.getLong(1)));
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get threads by last post", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return result;
+	}
+
+	@Override
 	public MessageDTO insertMessage(MessageDTO message) {
 		if (message.getParentId() != -1) {
 			if (message.getId() == -1) {
@@ -73,9 +171,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("UPDATE messages set text = ? where id = ?");
+			ps = conn.prepareStatement("UPDATE messages set text = ?, subject = ? where id = ?");
 			int i = 1;
 			ps.setString(i++, message.getText());
+			ps.setString(i++, message.getSubject());
 			ps.setLong(i++, message.getId());
 			ps.execute();
 			return message.getId();
@@ -361,6 +460,234 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 	}
 
+	@Override
+	public PrivateMsgDTO getPvtDetails(long pvt_id, AuthorDTO user) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement(
+				"SELECT content, replyTo, subject, senddate, recipient " +
+				"FROM pvt_content, pvt_recipient " +
+				"WHERE id = pvt_id " +
+				"AND id = ? " +
+				"AND (sender = ? OR " +
+					"? IN ( SELECT recipient " +
+					"  FROM pvt_recipient" +
+					"  WHERE pvt_id = ?" +
+					")" +
+				")");
+			ps.setLong(1, pvt_id);
+			ps.setString(2, user.getNick());
+			ps.setString(3, user.getNick());
+			ps.setLong(4, pvt_id);
+			rs = ps.executeQuery();
+			//one row per recipient
+			PrivateMsgDTO msg = null;
+			while (rs.next()) {
+				if (msg == null) {
+					msg = new PrivateMsgDTO();
+					msg.setId(pvt_id);
+					msg.setFromNick(user.getNick());
+					msg.setDate(rs.getDate("senddate"));
+					msg.setReplyTo(rs.getLong("replyTo"));
+					msg.setText(rs.getString("content"));
+					msg.setSubject(rs.getString("subject"));
+				}
+				msg.getToNick().add(rs.getString("recipient"));
+			}
+			return msg;
+		} catch (SQLException e) {
+			LOG.error("Cannot get pvt details for user "+user.getNick()+" pvt_id "+pvt_id, e);
+			return null;
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+
+	@Override
+	public List<PrivateMsgDTO> getInbox(AuthorDTO user, int limit, int pageNr) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null, ps2 = null;
+		ResultSet rs = null, rs2 = null;
+		List<PrivateMsgDTO> result = new LinkedList<PrivateMsgDTO>();
+		try {
+			ps = conn.prepareStatement("SELECT pvt_id, `read` FROM pvt_recipient WHERE recipient = ? AND deleted = 0 LIMIT ? OFFSET ?");
+			ps.setString(1, user.getNick());
+			ps.setInt(2, limit);
+			ps.setInt(3, limit*pageNr);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				long id = rs.getLong("pvt_id");
+				PrivateMsgDTO msg = new PrivateMsgDTO();
+				msg.setId(id);
+				msg.setRead(rs.getBoolean("read"));
+				ps2 = conn.prepareStatement("SELECT sender, subject, senddate FROM pvt_content WHERE id = ?");
+				ps2.setLong(1, id);
+				rs2 = ps2.executeQuery();
+				rs2.next();
+				msg.setDate(rs2.getDate("senddate"));
+				msg.setSubject(rs2.getString("subject"));
+				msg.setFromNick(rs2.getString("sender"));
+				close(rs2, ps2, null);
+				ps2 = conn.prepareStatement("SELECT recipient FROM pvt_recipient WHERE pvt_id = ?");
+				ps2.setLong(1, id);
+				rs2 = ps2.executeQuery();
+				while (rs2.next()) {
+					msg.getToNick().add(rs2.getString(1));
+				}
+				close(rs2, ps2, null);
+				result.add(msg);
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get getInbox for user "+user.getNick()+" limit "+limit+", pageNr "+pageNr, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return result;
+	}
+
+	@Override
+	public void sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("INSERT INTO pvt_content" +
+										"(sender, content, senddate, subject, replyTo) " +
+										"VALUES  (?,?,sysdate(),?,?)", Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, author.getNick());
+			ps.setString(2, privateMsg.getText());
+			ps.setString(3, privateMsg.getSubject());
+			ps.setLong(4, privateMsg.getReplyTo());
+			ps.execute();
+			
+			rs = ps.getGeneratedKeys();
+			rs.next();
+			long pvt_id = rs.getLong(1);
+			close(rs, ps, null);
+			
+			for (String recipient: recipients) {
+				if (recipient.equals("")) continue;
+				ps = conn.prepareStatement("INSERT INTO pvt_recipient" +
+											"(pvt_id, recipient) "+
+											"VALUES (?,?)");
+				
+				ps.setLong(1, pvt_id);
+				ps.setString(2, recipient);
+				ps.execute();
+			}
+			
+		} catch (SQLException e) {
+			LOG.error("Cannot insert pvt content or pvt recipient", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	@Override
+	public boolean checkForNewPvts(AuthorDTO recipient) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT count(*) FROM pvt_recipient WHERE recipient = ? AND `read` = 0");
+			ps.setString(1, recipient.getNick());
+			rs = ps.executeQuery();
+			rs.next();
+			return rs.getInt(1) > 0;
+		} catch (SQLException e) {
+			LOG.error("Cannot check for new pvts for user "+recipient.getNick(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return false;
+	}
+	
+	@Override
+	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("UPDATE pvt_recipient SET `read` = 1 WHERE recipient = ? AND pvt_id = ?");
+			ps.setString(1, recipient.getNick());
+			ps.setLong(2, privateMsg.getId());
+			int result;
+			if ((result = ps.executeUpdate()) != 1) {
+				throw new SQLException("Le scimmie presto! ha aggiornato "+result+" records!");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot notify "+recipient.getNick()+" id "+privateMsg.getId(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	@Override
+	public void deletePvt(long pvt_id, AuthorDTO user) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("UPDATE pvt_recipient SET deleted = 1 WHERE pvt_id = ? AND recipient = ?");
+			ps.setLong(1, pvt_id);
+			ps.setString(2, user.getNick());
+			ps.execute();
+			close(null,ps,null);
+			ps = conn.prepareStatement("UPDATE pvt_content SET deleted = 1 WHERE id = ? AND sender = ?");
+			ps.setLong(1, pvt_id);
+			ps.setString(2, user.getNick());
+			ps.execute();
+			close(null, ps, null);
+			//cleanup - eventualmente opzionale oppure lanciata da timertask
+			ps = conn.prepareStatement("DELETE FROM pvt_recipient WHERE pvt_id IN (SELECT id FROM pvt_content WHERE deleted = 1) AND deleted = 1");
+			ps.execute();
+			close(null, ps, null);
+			ps = conn.prepareStatement("DELETE FROM pvt_content WHERE id NOT IN (SELECT id FROM pvt_recipient WHERE deleted = 0) AND deleted = 1");
+			ps.execute();
+			close(null, ps, null);
+		} catch (SQLException e) {
+			LOG.error("Cannot delete "+pvt_id+" for user "+user.getNick(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	@Override
+	public List<PrivateMsgDTO> getSentPvts(AuthorDTO user, int limit, int pageNr) {
+		Connection conn = getConnection();
+		PreparedStatement ps = null, ps2 = null;
+		ResultSet rs = null, rs2 = null;
+		List<PrivateMsgDTO> result = new LinkedList<PrivateMsgDTO>();
+		try {
+			ps = conn.prepareStatement("SELECT id, subject, senddate FROM pvt_content WHERE sender = ? AND deleted = 0 LIMIT ? OFFSET ?");
+			ps.setString(1, user.getNick());
+			ps.setInt(2, limit);
+			ps.setInt(3, limit*pageNr);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				PrivateMsgDTO msg = new PrivateMsgDTO();
+				msg.setId(rs.getLong("id"));
+				msg.setSubject(rs.getString("subject"));
+				msg.setDate(rs.getDate("senddate"));
+				ps2 = conn.prepareStatement("SELECT recipient FROM pvt_recipient WHERE pvt_id = ?");
+				ps2.setLong(1, msg.getId());
+				rs2 = ps2.executeQuery();
+				while (rs2.next()) {
+					msg.getToNick().add(rs2.getString(1));
+				}
+				close(rs2, ps2, null);
+				result.add(msg);
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get getSentPvts for user "+user.getNick()+" limit "+limit+", pageNr "+pageNr, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return result;
+	}
+
 	private long insertQuote(QuoteDTO quote) {
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
@@ -478,114 +805,5 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			// ignore
 		}
 	}
-
-
-	@Override
-	public void sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients) {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("INSERT INTO pvt_content" +
-										"(sender, content, senddate, subject, replyTo) " +
-										"VALUES  (?,?,sysdate(),?,?)", Statement.RETURN_GENERATED_KEYS);
-			ps.setString(1, author.getNick());
-			ps.setString(2, privateMsg.getText());
-			ps.setString(3, privateMsg.getSubject());
-			ps.setLong(4, privateMsg.getReplyTo());
-			ps.execute();
-			
-			rs = ps.getGeneratedKeys();
-			rs.next();
-			long pvt_id = rs.getLong(1);
-			close(rs, ps, null);
-			
-			for (String recipient: recipients) {
-				if (recipient.equals("")) continue;
-				ps = conn.prepareStatement("INSERT INTO pvt_recipient" +
-											"(pvt_id, recipient) "+
-											"VALUES (?,?)");
-				
-				ps.setLong(1, pvt_id);
-				ps.setString(2, recipient);
-				ps.execute();
-			}
-			
-		} catch (SQLException e) {
-			LOG.error("Cannot insert pvt content or pvt recipient", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-	}
-	
-	@Override
-	public boolean checkForNewPvts(AuthorDTO recipient) {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("SELECT count(*) FROM pvt_recipient WHERE recipient = ? AND `read` = 0");
-			ps.setString(1, recipient.getNick());
-			rs = ps.executeQuery();
-			rs.next();
-			return rs.getInt(1) > 0;
-		} catch (SQLException e) {
-			LOG.error("Cannot check for new pvts for user "+recipient.getNick(), e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return false;
-	}
-	
-	@Override
-	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("UPDATE pvt_recipient SET `read` = 1 WHERE recipient = ? AND pvt_id = ?");
-			ps.setString(1, recipient.getNick());
-			ps.setLong(2, privateMsg.getId());
-			int result;
-			if ((result = ps.executeUpdate()) != 1) {
-				throw new SQLException("Le scimmie presto! ha aggiornato "+result+" records!");
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot notify "+recipient.getNick()+" id "+privateMsg.getId(), e);
-		} finally {
-			close(rs, ps, conn);
-		}
-	}
-	
-	@Override
-	public void deletePvt(long pvt_id, AuthorDTO user) {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("UPDATE pvt_recipient SET deleted = 1 WHERE pvt_id = ? AND recipient = ?");
-			ps.setLong(1, pvt_id);
-			ps.setString(2, user.getNick());
-			ps.execute();
-			close(null,ps,null);
-			ps = conn.prepareStatement("UPDATE pvt_content SET deleted = 1 WHERE id = ? AND sender = ?");
-			ps.setLong(1, pvt_id);
-			ps.setString(2, user.getNick());
-			ps.execute();
-			close(null, ps, null);
-			//cleanup - eventualmente opzionale oppure lanciata da timertask
-			ps = conn.prepareStatement("DELETE FROM pvt_recipient WHERE pvt_id IN (SELECT id FROM pvt_content WHERE deleted = 1) AND deleted = 1");
-			ps.execute();
-			close(null, ps, null);
-			ps = conn.prepareStatement("DELETE FROM pvt_content WHERE id NOT IN (SELECT id FROM pvt_recipient WHERE deleted = 0) AND deleted = 1");
-			ps.execute();
-			close(null, ps, null);
-		} catch (SQLException e) {
-			LOG.error("Cannot delete "+pvt_id+" for user "+user.getNick(), e);
-		} finally {
-			close(rs, ps, conn);
-		}
-	}
-	
 	
 }

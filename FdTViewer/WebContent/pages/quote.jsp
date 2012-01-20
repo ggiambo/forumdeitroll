@@ -4,44 +4,46 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 <jsp:include page="incTop.jsp" />
 		<div id="main">
-			<div class="userPanel">
-				<div class="userPanelCaption">Pannello Utente - Frasi Celebri</div>
-				<div class="userPanelContent">
-					<div class="userPanelSection">
-						<img src="?action=getAvatar&nick=${author.nick}" alt="Avatar" class="avatar" />
-						<h3>Informazioni</h3>
-						<span class="lbl">Nome utente:</span> ${author.nick}<br/>
-						<span class="lbl">Messaggi:</span> ${author.messages}
-						<div style="clear: both;"></div>
-					</div>
-					<div class="userPanelSection">
-						<h3>Frasi Celebri</h3>
-						<form action="User?action=updateQuote" method="post">
-							<input type="hidden" id="quoteId" name="quoteId" />
-							<c:forEach items="${quote}" var="item" varStatus="i">
-								<div class="fraseCelebreUserPanel">
-									<c:choose>
-										<c:when test="${item.id > 0}">
-											<a href="User?action=removeQuote&quoteId=${item.id}" class="deleteFraseCelebreUserPanel"><img src="images/close.jpeg" /></a>
-										</c:when>
-										<c:otherwise>
-											<img src="images/close.jpeg" />
-										</c:otherwise>
-									</c:choose>
-									<input name="quote_${item.id}" value="${fn:escapeXml(item.content)}" maxlength="100" class="fraseCelebreUserPanel" />
-									<input type="button" value="Salva" onClick="$('#quoteId').val(${item.id});submit();" class="sendFraseCelebreUserPanel" />
-								</div>
-							</c:forEach>
-						</form>
-						<div style="clear: both;"></div>
-					</div>	
-					<div class="userPanelSection">
-						<h3>Altre Azioni</h3>
-						<a href="./User" class="userPanelButton">User Panel</a>
-						<div style="clear: both;"></div>
-					</div>
-					
-				</div>
+			<div style="margin:5px; padding:5px; width:100%">
+				<table>
+					<tr>
+						<td>
+							<c:url value="" var="avatarURL">
+								<c:param name="action" value="getAvatar"/>
+								<c:param name="nick" value="${author.nick}"/>
+							</c:url>
+							<img src="${avatarURL}"/>
+						</td>
+						<td valign="top">
+							Nick: ${author.nick}<br/>
+							Messaggi: ${author.messages }
+						</td>
+					</tr>
+				</table>
+				<br/>
+				<a href="?action=getQuotes">Gestisci frasi celebri</a>
+<%-- TODO
+				|
+				<a href="#">Manda messagio privato</a>
+--%>
+				<br/>
+				<br/>
+				<form action="User?action=updateQuote" method="post">
+					<input type="hidden" id="quoteId" name="quoteId"/>
+					<c:forEach items="${quote}" var="item" varStatus="i">
+						<c:choose>
+						<c:when test="${item.id > 0}">
+							<a href="User?action=removeQuote&quoteId=${item.id}" style="text-decoration:none;">
+								<img src="images/close.jpeg"/>
+							</a>
+							</c:when>
+							<c:otherwise>
+								<img src="images/close.jpeg"/>
+							</c:otherwise>
+						</c:choose>
+						<input name="quote_${item.id}" value="${fn:escapeXml(item.content)}" maxlength="100" size="50"/><input type="button" value="Salva" onClick="$('#quoteId').val(${item.id});submit();"><br/>
+					</c:forEach>
+				</form>
 			</div>
 		</div>
 		<div id="footer"></div>

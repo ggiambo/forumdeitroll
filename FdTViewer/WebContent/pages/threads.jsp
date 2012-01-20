@@ -43,11 +43,15 @@
 					- Iniziato da
 					<span class="msgAuthor">
 						<c:choose>
-					<c:when test="${empty thread.author.nick}">
+							<c:when test="${empty thread.author.nick}">
 								Non Autenticato
 							</c:when>
 							<c:otherwise>
-						<a href="Messages?action=getByAuthor&amp;author=${thread.author.nick}">${thread.author.nick}</a>
+								<c:url value="Messages" var="authorURL">
+									<c:param name="action" value="getByAuthor"/>
+									<c:param name="author" value="${thread.author.nick}"/>
+								</c:url>
+								<a href="${authorURL}">${thread.author.nick}</a>
 							</c:otherwise>
 						</c:choose>
 					</span>
