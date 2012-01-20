@@ -743,3 +743,25 @@ div.userPanelSection a.userPanelButton {
 div.userPanelSection a.userPanelButton:hover {
 	box-shadow: 0 0 8px #0A78FF;
 }
+
+div.userPanelSection a.deleteFraseCelebreUserPanel {
+	text-decoration: none;
+}
+
+div.userPanelSection div.fraseCelebreUserPanel img {
+	vertical-align: sub;
+}
+
+div.userPanelSection div.fraseCelebreUserPanel input.fraseCelebreUserPanel {
+	border: 1px solid #7BAAE7;
+	width: 20em;
+	padding: 0 5px;
+}
+
+div.userPanelSection div.fraseCelebreUserPanel input.sendFraseCelebreUserPanel {
+	width: 5em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	margin-left: 0.1em;
+}
