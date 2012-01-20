@@ -127,6 +127,12 @@ function send(parentId) {
 	});
 }
 
+function initPB() {
+	if (document.title.indexOf("Proc di Catania") >= 0) {
+		jQuery("#bodyContent").addClass("pb");
+	}
+}
+
 function insert(openTag, closeTag, parentId) {
 	var element = $("#reply_" + parentId + " :input[name='text']").get(0);
 	if (document.selection) {
@@ -177,4 +183,5 @@ jQuery("document").ready(function(){
 			);
 	SyntaxHighlighter.defaults['toolbar'] = false;
 	SyntaxHighlighter.all();
+	initPB();
 });

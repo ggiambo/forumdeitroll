@@ -27,6 +27,17 @@ body {
 	min-width: 900px;
 }
 
+#bodyContent {
+	margin: 0;
+	padding: 0;
+}
+
+.pb {
+	background-image: url("../images/pb.png");
+	background-repeat: no-repeat;
+	background-position: top right;
+}
+
 #headerimg {
 	float: right;
 }
@@ -149,10 +160,6 @@ span.openCloseSidebar {
 
 #footer p {
 	margin: 0;
-}
-
-#footer {
-	height: 1px;
 }
 
 div.msgEven {
