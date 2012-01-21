@@ -7,7 +7,11 @@
 				<div class="userPanelCaption">Pannello Utente</div>
 				<div class="userPanelContent">
 					<div class="userPanelSection">
-						<img src="?action=getAvatar&nick=${author.nick}" alt="Avatar" class="avatar" />
+						<c:url value="" var="avatarURL">
+							<c:param name="action" value="getAvatar"/>
+							<c:param name="nick" value="${author.nick}"/>
+						</c:url>
+						<img src="${avatarURL}" alt="Avatar" class="avatar" />
 						<h3>Informazioni</h3>
 						<span class="lbl">Nome utente:</span> ${author.nick}<br/>
 						<span class="lbl">Messaggi:</span> ${author.messages}
