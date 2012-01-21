@@ -200,7 +200,7 @@ public class MessageTag extends BodyTagSupport {
 	private static String emoticons(String line) {
 		Map<String,String> emoMap = Messages.getEmoMap();
 		for (String key: emoMap.keySet()) {
-			String value = emoMap.get(key).trim(); // trim() e' male ?
+			String value = emoMap.get(key);
 			String alt = EMO_ALT_MAP.get(key);
 			line = simpleReplaceAll(line, value, String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
 			line = simpleReplaceAll(line, value.toUpperCase(), String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
