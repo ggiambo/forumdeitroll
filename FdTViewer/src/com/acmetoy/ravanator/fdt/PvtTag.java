@@ -45,9 +45,9 @@ public class PvtTag extends TagSupport {
 			 try {
 				 JspWriter out = pageContext.getOut();
 				if (hasPvts) {
-					out.write("<a href='Pvt?action=inbox'><img src='images/icona_pibox_a.gif'></a>");
+					out.write("<a href='Pvt?action=inbox' class='pvt' title='Nuovi messaggi!'><img src='images/icona_pibox_a.gif' alt='Nuovi Messaggi Privati' /></a>");
 				} else {
-					out.write("<a href='Pvt?action=inbox'><img src='images/icona_pibox.png'></a>");
+					out.write("<a href='Pvt?action=inbox' class='pvt' title='Nessun nuovo messaggio'><img src='images/icona_pibox.png' alt='Messaggi Privati' /></a>");
 				}
 				out.flush();
 			} catch (IOException e) {

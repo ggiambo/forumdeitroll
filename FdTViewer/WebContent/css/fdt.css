@@ -775,3 +775,15 @@ div.userPanelSection li.fraseCelebreUserPanel {
 	list-style: inherit;
 	font-style: italic;
 }
+
+a.pvt img {
+	vertical-align: text-bottom;
+}
+
+div.userPanelSection input.sendPvt {
+	width: 5em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	margin-left: 0.1em;
+}
