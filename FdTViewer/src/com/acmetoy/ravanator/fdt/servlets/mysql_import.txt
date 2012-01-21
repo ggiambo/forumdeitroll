@@ -1,0 +1,12 @@
+Prima dell'import
+-----------------
+1) Disabilitare fulltext:
+
+Dopo l'import
+-------------
+1) Settare id come auto-increment:
+	ALTER TABLE `messages` CHANGE `id` `id` INT( 11 ) NOT NULL AUTO_INCREMENT;
+2) Riabilitare fulltext:
+	ALTER TABLE `messages` ADD FULLTEXT (`text`);
+3) Creare la colonna password in autori:
+	ALTER TABLE `authors` ADD `password` TINYTEXT NOT NULL; 

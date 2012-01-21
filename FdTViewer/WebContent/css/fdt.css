@@ -1,21 +1,72 @@
-body,html {
-	font-family: 'Helvetica';
+ /* RESET.CSS serve a rimuovere tutte le personalizzazioni CSS dei vari browser di modo che le pagine 
+    del sito appaiano allo stesso modo su tutti i client. Ogni browser, infatti, ha i suoi margini,
+    padding, ecc. per ogni elemento HTML che spesso sono diverso fra loro. Con reset.css tutto
+    questo viene azzerato. */
+@import url("reset.css");
+
+html {
+	background-color: #41636B;
+}
+
+body {
+	font-family: Arial,Helvetica,Sans,"Nimbus Sans",sans-serif;
 	font-size: 15px;
 	margin: 0;
 	padding: 0;
 	color: #000;
+	background-color: #41636B;
+}
+
+#body {
+	width: 80%;
+	margin: auto;
+	border: 1px solid;
+	box-shadow: 5px 5px 25px black;
+	margin-top: 1em;
+	background-color: white;
+	min-width: 900px;
+}
+
+#bodyContent {
+	margin: 0;
+	padding: 0;
+}
+
+.pb {
+	background-image: url("../images/pb.png");
+	background-repeat: no-repeat;
+	background-position: top right;
+}
+
+#headerimg {
+	float: right;
 }
 
 #header {
-	padding: 5px 10px;
-	background: #B9C1B1;
+	 padding: 10px;
+	 background-image:url(../images/banner.jpg);
+}
+
+#titoloForum {
+	text-decoration: none;
+	color: white;
+}
+
+input:hover, input:focus, textarea:hover, textarea:focus {
+	box-shadow: 0 0 8px #0A78FF;
 }
 
 h1 {
-	margin: 0;
+	margin: 0.1em 0.2em;
+	font-variant: small-caps;
+	text-shadow: 3px 3px 5px black;
+	font-weight: normal;
+	font-family: 'Frijole', cursive;
+	font-size: 240%;
 }
 
 #nav {
+	border-top: 4px solid #93998E; 
 	padding: 5px 10px;
 }
 
@@ -31,9 +82,17 @@ h1 {
 	padding: 0;
 }
 
+#nav li a {
+	color: Blue;
+}
+
+#nav li a:visited {
+	color: Blue;
+}
+
 #main {
 	float: left;
-	width: 500px;
+	width: 600px;
 	padding: 10px;
 	padding: 0px;
 	margin-left: 5px;
@@ -52,11 +111,38 @@ h2 {
 	padding: 5px;
 }
 
-#sidebar {
-	float: left;
-	width: 200px;
-	padding: 10px;
-	background: #D6D6D6;
+#sidebar { 
+	background: none repeat scroll 0 0 #D6D6D6; 
+	float: left; 
+	padding: 10px; 
+	width: 220px;
+	font-size: 95%;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+#sidebar ul {
+	list-style-image: url(../images/forum.gif);
+	list-style-position : inside;
+}
+
+#sidebar ul li {
+	list-style: inherit;
+}
+
+#sidebar ul li a {
+	text-decoration: none;
+	color: Blue;
+}
+
+#sidebar ul li a:hover {
+	color: MediumBlue;
+	text-transform: uppercase;
+	margin-left: 0.5em;
+}
+
+#sidebar ul li a:visited {
+	color: Blue;
 }
 
 span.openCloseSidebar {
@@ -76,10 +162,6 @@ span.openCloseSidebar {
 	margin: 0;
 }
 
-* html #footer {
-	height: 1px;
-}
-
 div.msgEven {
 	padding: 5px; 
 	background-color: #FFFFFF;
@@ -90,24 +172,618 @@ div.msgOdd {
 	background-color: #F6F6F6;
 }
 
-div.msgHeader {
-	height: 100px;
+div.msgInfo {
+	width: 150px;
+	margin: 5px;
+	float: right;
+	text-align: center;
+	display: table;
+	background-color: lightGray;
+	padding: 0.5em 0;
+	box-shadow: 0px 0px 4px gray;
+}
+
+img.avatarImg {
+	box-shadow: 2px 2px 2px black;
+}
+
+img.avatarImgOver {
+	box-shadow: -2px -2px 2px black;
+}
+
+div.msgForum {
+	color: DarkRed;
+	font-weight: bold;
+}
+
+div.msgDetails {
+	padding: 0.2em;
+	font-size: 90%;
+}
+
+div.msgDate {
+	font-size: 70%;
+	padding: inherit;
+}
+
+div.msgTotalMsg {
+    font-size: 70%;
+}
+
+#ordinamento {
+	margin: 0.2em 0;
+	font-weight: bold;
+}
+
+#preview {
+	position: absolute;
+	border: 1px solid #ccc;
+	background: #333;
+	padding: 5px;
+	display: none;
+	color: #fff;
+}
+
+div.message {
+	font-size: 16px;
+	line-height: 20px;
+}
+
+#quoteForum {
+	font-style: italic;
+	color: white;
+	margin: 0 3em;
+	background-image: url('../images/pB40.png');
+	display: inline;
+	padding: 0 0.5em;
+	box-shadow: 0px 0px 5px black;
+	text-shadow: 1px 1px 2px black;
+	font-size: 85%;
+	font-weight: bold;
+}
+
+.messagesButtonBar {
+	background: #D6D6D6;
+	height: 21px;
+	display: box;
+	vertical-align: middle; 
 	width: 100%;
+	padding: 0px 0px 2px 2px;
+	text-align: right;
+	clear: both;
+}
+
+#sidebarSearchForm {
+	display: block;
+	width: 100%;
+	margin-bottom: 1em;
+}
+
+#sidebarSearchForm input {
+	width: 55%;
+	border: 1px solid gray;
+	margin-right: 3px;
+	box-shadow: 0px 0px 2px black;
+}
+
+#sidebarSearchForm input:hover, #sidebarSearchForm input:focus {
+	box-shadow: 0px 0px 4px darkRed;
+}
+
+#sidebarSearchForm input[type="submit"] {
+	width: 30%;
+	background-color: transparent;
+	font-variant: small-caps;
+	border: none;
+	cursor: pointer;
+	text-shadow: 1px 1px 2px black;
+	color: black;
+	font-size: 95%;
+}
+
+#sidebarSearchForm input[type="submit"]:hover {
+	box-shadow: 0px 0px 4px darkRed;
+}
+
+#bottomLine {
+	text-align: center;
+	font-size: 80%;
+	color: lightGray;
+	margin: 1em;
+	font-style: italic;
+}
+
+#genTime {
+	font-size: 90%;
+}
+
+span.tagForum {
+	background-color: darkRed;
+	border-radius: 5px;
+	color: white;
+	font-weight: bold;
+	font-size: 70%;
+	padding: 0.1em 0.5em;
+}
+
+div.threadBox {
+	border: none;
+	border-bottom: 1px dotted gray;
+}
+
+span.threadTitle {
+	font-weight: bold;
+}
+
+span.threadTitle a {
+	text-decoration: none;
+}
+
+span.threadTitle a:hover {
+	text-decoration: underline;
+}
+	
+div.threadDetail {
+	font-size: 90%;
+}
+
+span.msgAuthor, div.msgAuthor {
+	font-style: italic;
+	font-weight: bold;
+}
+
+span.msgAuthor a, div.msgAuthor a {
+	text-decoration: none;
+	color: Blue;
+}
+
+span.msgAuthor a:visited, div.msgAuthor a:visited {
+	color: Blue;
+}
+
+div.msgAction a {
+	text-decoration: none;
+	font-size: 95%;
+}
+
+div.msgReply {
+	clear: both;
+	background-color: #D6D6D6;
+	padding: 5px;
+	margin: 5px;
+	box-shadow: 0px 0px 4px gray;
+}
+
+div.msgReply input {
+	border: 1px solid #7BAAE7;
+	padding: 0 5px;
+}
+
+div.msgReply div.emotibox {
+	background-color: white;
+	width: 98%;
+	border: 1px solid #7BAAE7;
+	padding: 5px;
 	margin-bottom: 5px;
 }
 
-span.forum {
-	margin-left:5px;
-	color:#97A28A;
+div.msgReply .msgButton {
+	padding: 5px;
+	cursor: pointer;
+	font-size: 90%;
+	font-weight: bold;
+	text-shadow: 1px 1px 1px gray;
 }
 
-span.author {
-	margin-left:5px;
-	position: relative; 
-	top: 20%
+div.msgReply a.msgButton {
+	font-weight: normal;
+	text-decoration: none;
+	text-shadow: none;
 }
 
-h4 {
+div.msgReply .btnBold {
+	font-weight: bolder;
+}
+
+div.msgReply .btnUnderline {
+	text-decoration: underline;
+}
+
+div.msgReply .btnStrike {
+	text-decoration: line-through;
+}
+
+div.msgReply .btnItalic {
+	font-style: italic;
+}
+
+div.msgReply label {
+	font-weight: bold;
+}
+
+input.msgReplyObj {
+	width: 98%;
+  	font-size: 16px;
+  	border: 1px solid #7BAAE7;
+  	padding: 5px;
+	margin-bottom: 5px;
+}
+
+textarea.msgReplyTxt {
+	width: 98%;
+  	font-size: 16px;
+  	border: 1px solid #7BAAE7;
+  	padding: 5px;
+	margin-bottom: 5px;
+}
+
+div.msgReplyTxt {
+	background-color: white;
+	display: none;
+	overflow: auto;
+	font-size: 16px;
+	border: 1px solid #7BAAE7;
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+input.msgSendButton {
+	float: right;
+	width: 8em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+}
+
+div.msgAnonBox {
+	margin: 5px 0;
+}
+
+div.msgCaptcha {
+	padding: 5px;
+	margin: 5px 0;
+	height: 50px;
+}
+
+div.msgCaptcha div {
+	float: left;
+	margin-right: 10px;
+	text-align: center;
+}
+
+div.msgCaptcha div img {
+	border: 1px solid #7BAAE7;
+}
+
+div.msgCaptcha div input {
+	width: 8em;
+	text-align: center;
+}
+
+div.msgCaptcha div div.msgCaptchaInput {
+	float: none;
+	margin: 0;
+	width: 10em;
+	font-size: 75%;
+	font-style: italic;
+	text-align: left;
+}
+
+div.messagesBox {
+	border: 1px solid lightGray; 
+	margin: 5px 5px;
+	width: 600px;
+	box-shadow: 2px 2px 3px gray;
+	height: auto !important;
+	overflow: hidden;
+}
+
+pre.code, div.code {
+	padding: 0.4em 0;
+	clear: both;
+	border: 1px dotted black;
+	overflow: auto;
+	font-size: 80% !important;
+}
+
+img.userPostedImage {
+	width: 150px;
+}
+
+div.loginForm {
+	clear: both;
+	background-color: #D6D6D6;
+	padding: 5px;
+	margin: 5px;
+	box-shadow: 0px 0px 4px gray;
+	width: 25em;
+}
+
+div.loginForm > form > div {
 	margin-top: 5px;
+}
+
+div.loginForm label {
+	font-weight: bold;
+}
+
+div.loginForm div.lblLoginForm {
+	width: 9em;
+	float: left;
+}
+
+div.loginForm div.inputLoginForm {
+	float: right;
+}
+
+div.loginForm div.inputLoginForm input {
+	border: 1px solid #7BAAE7;
+	width: 15em;
+	padding: 0 5px;
+}
+
+div.loginForm input.sendLoginForm {
+	float: right;
+	width: 8em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	margin-top: 5px;
+}
+
+div.loginFormCaption {
+	text-align: center;
+	font-weight: bold;
+	border-bottom: 1px solid #7BAAE7;
+	margin-bottom: 1em;
+	font-variant: small-caps;
+	text-shadow: 1px 1px 2px gray;
+}
+
+div.registrationForm {
+	clear: both;
+	background-color: #D6D6D6;
+	padding: 5px;
+	margin: 5px;
+	box-shadow: 0px 0px 4px gray;
+	width: 25em;
+}
+
+div.registrationForm > form > div {
+	margin-top: 5px;
+}
+
+div.registrationForm label {
+	font-weight: bold;
+}
+
+div.registrationForm div.lblRegistrationForm {
+	width: 9em;
+	float: left;
+}
+
+div.registrationForm div.inputRegistrationForm {
+	float: right;
+}
+
+div.registrationForm div.inputRegistrationForm input {
+	border: 1px solid #7BAAE7;
+	width: 15em;
+	padding: 0 5px;
+}
+
+div.registrationForm input.sendRegistrationForm {
+	float: right;
+	width: 8em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	margin-top: 5px;
+}
+
+div.registrationFormCaption {
+	text-align: center;
+	font-weight: bold;
+	border-bottom: 1px solid #7BAAE7;
+	margin-bottom: 1em;
+	font-variant: small-caps;
+	text-shadow: 1px 1px 2px gray;
+}
+
+div.registrationCaptcha {
+	padding: 5px;
+	margin: 5px 0;
+	height: 50px;
+}
+
+div.registrationCaptcha div {
+	float: left;
+	margin-right: 10px;
+	text-align: center;
+}
+
+div.registrationCaptcha div img {
+	border: 1px solid #7BAAE7;
+}
+
+div.registrationCaptcha div input {
+	width: 8em;
+	text-align: center;
+	border: 1px solid #7BAAE7;
+}
+
+div.registrationCaptcha div div.registrationCaptchaInput {
+	float: none;
+	margin: 0;
+	width: 10em;
+	font-size: 75%;
+	font-style: italic;
+	text-align: left;
+}
+	
+img.emoticon {
+	border: none;
+	vertical-align: top;
+}
+
+span.quoteLvl4 {
+	color: #AF6F00;
+}
+
+span.quoteLvl3 {
+	color: #9A00EF;
+}
+
+span.quoteLvl2 {
+	color: #00AF59;
+}
+
+span.quoteLvl1 {
+	color: #007BDF;
+}
+
+div.userPanelCaption {
+	text-align: center;
+	font-weight: bold;
+	border-bottom: 1px solid #7BAAE7;
+	margin-bottom: 0.5em;
+	font-variant: small-caps;
+	text-shadow: 1px 1px 2px gray;
+}
+
+div.userPanel {
+	clear: both;
+	background-color: #D6D6D6;
+	padding: 5px;
+	margin: 5px;
+	box-shadow: 0px 0px 4px gray;
+	width: 30em;
+}
+
+div.userPanelContent {
+	padding: 0.5em;
+}
+
+div.userPanelSection {
+	background-color: white; 
+	padding: 10px; 
+	box-shadow: 2px 2px 4px gray;
+	border: 1px solid lightGray;
+	margin-bottom: 8px;
+}
+
+div.userPanelSection .lbl {
+	font-weight: bold;
+}
+
+div.userPanelContent img.avatar {
+	border: 1px solid black;
+	max-height: 100px;
+	max-width: 100px;
+	margin-right: 8px;
+	box-shadow: 2px 2px 2px black;
+	float: left;
+}
+
+div.userPanelContent h3 {
+	font-weight: bold;
+	font-variant: small-caps;
+	border-bottom: 1px dotted #7BAAE7;
+	margin-bottom: 0.3em;
+	font-size: 110%;
+}
+
+div.userPanelContent h3:before {
+	content: "‣ ";
+}
+
+div.userPanelSection > form > div {
 	margin-bottom: 5px;
+}
+
+div.userPanelSection div.lblUserPanel {
+	width: 11em;
+	float: left;
+}
+
+div.userPanelSection div.inputUserPanel {
+	float: right;
+}
+
+div.userPanelSection input {
+	border: 1px solid #7BAAE7;
+	width: 15em;
+	padding: 0 5px;
+}
+
+div.userPanelSection input.sendUserPanel {
+	float: right;
+	width: 8em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	margin-top: 5px;
+}
+
+div.userPanelSection a.userPanelButton {
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	padding: 0.2em;
+	text-decoration: none;
+	color: black;
+	width: 8em;
+	display: block;
+	float: left;
+	background-color: white;
+	text-align: center;
+	margin-right: 0.5em;
+}
+
+div.userPanelSection a.userPanelButton:hover {
+	box-shadow: 0 0 8px #0A78FF;
+}
+
+div.userPanelSection a.deleteFraseCelebreUserPanel {
+	text-decoration: none;
+}
+
+div.userPanelSection div.fraseCelebreUserPanel img {
+	vertical-align: sub;
+}
+
+div.userPanelSection div.fraseCelebreUserPanel input.fraseCelebreUserPanel {
+	border: 1px solid #7BAAE7;
+	width: 20em;
+	padding: 0 5px;
+}
+
+div.userPanelSection div.fraseCelebreUserPanel input.sendFraseCelebreUserPanel {
+	width: 5em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	margin-left: 0.1em;
+}
+
+div.userPanelSection ul.fraseCelebreUserPanel {
+	list-style: square inside;
+	padding-left: 1em;
+}
+
+div.userPanelSection li.fraseCelebreUserPanel {
+	list-style: inherit;
+	font-style: italic;
+}
+
+a.pvt img {
+	vertical-align: text-bottom;
+}
+
+div.userPanelSection input.sendPvt {
+	width: 5em;
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	margin-left: 0.1em;
 }

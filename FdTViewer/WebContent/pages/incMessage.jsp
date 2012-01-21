@@ -11,44 +11,73 @@
 	</c:otherwise>
 </c:choose>
 
+<a href="#msg${msg.id}"></a>
+
 <div class="${class}" id="msg${msg.id}">
 
-	<div class="msgHeader">
-		<div style="float:left">
-			<img src="?action=getAvatar&nick=${msg.author}"/>
+	<div class="msgInfo">
+		<div>
+			<c:url value="" var="avatarUrl">
+				<c:param name="action" value="getAvatar"/>
+				<c:param name="nick" value="${msg.author.nick}"/>
+			</c:url>
+			<c:if test="${!empty msg.author.nick}">
+				<c:url value="User" var="userInfoUrl">
+					<c:param name="action" value="getUserInfo"/>
+					<c:param name="nick" value="${msg.author.nick}"/>
+				</c:url>
+				<a href="${userInfoUrl}">
+			</c:if>
+			<img class="avatarImg" alt="Avatar" src="${avatarUrl}"/>
+			<c:if test="${!empty msg.author.nick}">
+				</a>
+			</c:if>
 		</div>
 		<c:if test="${!empty msg.forum}">
-			<span class="forum"><b>${msg.forum}</b></span><br/>
+			<div class="msgForum">${msg.forum}</div>
 		</c:if>
-		<span class="author">
-			Scritto da
-			<i>
+		<div class="msgDetails"> 
+			<div class="msgWrittenby">Scritto da</div>
+			<div class="msgAuthor">
 				<c:choose>
-					<c:when test="${empty msg.author}">
-						Non autenticato
+					<c:when test="${empty msg.author.nick}">
+						Non Autenticato
 					</c:when>
 					<c:otherwise>
-						<b><a href="Messages?action=getByAuthor&author=${msg.author}">${msg.author}</a></b>
+						<c:url value="Messages" var="messagesUrl">
+							<c:param name="action" value="getByAuthor"/>
+							<c:param name="author" value="${msg.author.nick}"/>
+						</c:url>
+						<a href="${messagesUrl}">${msg.author.nick}</a>
 					</c:otherwise>
 				</c:choose>
-			</i>
-			alle <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy HH:mm"/>
-		</span>
-
+			</div>
+			<div class="msgDate">il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/></div>
+			<c:if test="${not empty msg.author.nick}">
+				<div class="msgTotalMsg">
+					Trollate totali: ${msg.author.messages}
+		</div>
+			</c:if>
+		</div>
+		<c:if test="${not empty loggedUser && msg.author.nick == loggedUser}">
+			<div class="msgAction">
+				<a href="Messages?action=editMessage&amp;msgId=${msg.id}&amp;forum=${msg.forum}">Modifica</a>
+			</div>
+		</c:if>	
 	</div>
 
 	<span style="width:100%; margin:5px;">
-		<b><a href="Threads?action=getByThread&threadId=${msg.threadId}"/>${msg.subject}</a></b>
+		<b><a href="Threads?action=getByThread&amp;threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a></b>
 	</span>
 
-	<div style="padding: 10px;">
-		<fdt:quote search="${param.search}">${msg.text}</fdt:quote>
+	<div style="padding: 10px;" class="message">
+		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
 		<%-- close open tags --%>
-		<c:out escapeXml="false" value="</b></i></u>"/>
+		<c:out escapeXml="false" value="</b></i></u>"/> <%-- TODO: DA RIMUOVERE AL PIÙ PRESTO, ROMPE LA VALIDAZIONE ndachille: non ci muore nessuno --%>
 	</div>
 	
-	<div style="background: #D6D6D6;height:20px;display:table-cell; vertical-align:middle; width:600px; padding:0px 0px 2px 2px">
-		<a href="#" onClick="showIframe('', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/rispondi.gif"></a>
-		<a href="#" onClick="showIframe('quote', '${msg.id}');return false;"><img style="vertical-align: middle;" src="images/quota.gif"></a>
+	<div id="buttons_${msg.id}" class="messagesButtonBar">
+		<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img alt="Rispondi" style="vertical-align: middle;" src="images/rispondi.gif" /></a>
+		<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img alt="Quota" style="vertical-align: middle;" src="images/quota.gif" /></a>
 	</div>
 </div>
