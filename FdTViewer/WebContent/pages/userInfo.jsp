@@ -15,7 +15,11 @@
 						<img src="<c:out value="${avatarURL}" escapeXml="true" />" alt="Avatar" class="avatar" />
 						<h3>Informazioni</h3>
 						<span class="lbl">Nome utente:</span> ${author.nick}<br/>
-						<span class="lbl">Messaggi:</span> ${author.messages}
+						<c:url value="Messages" var="userMsgsURL">
+							<c:param name="action" value="getByAuthor"/>
+							<c:param name="author" value="${author.nick}"/>
+						</c:url>
+						<span class="lbl">Messaggi:</span><a href="<c:out value="${userMsgsURL}" escapeXml="true" />">${author.messages}</a>
 						<div style="clear: both;"></div>
 					</div>
 					<div class="userPanelSection">

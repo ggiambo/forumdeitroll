@@ -78,6 +78,8 @@ public class MessageTag extends BodyTagSupport {
 		EMO_ALT_MAP.put("troll3", "Troll occhi di fuori");
 		EMO_ALT_MAP.put("troll4", "Troll di tutti i colori");
 	}
+	
+	private static final Pattern QUOTE = Pattern.compile("^(&gt; ?)+");
 
 	private static final Map<Pattern, BodyTokenProcessor> patternProcessorMapping =
 		new HashMap<Pattern, BodyTokenProcessor>() {{
@@ -200,7 +202,7 @@ public class MessageTag extends BodyTagSupport {
 	private static String emoticons(String line) {
 		Map<String,String> emoMap = Messages.getEmoMap();
 		for (String key: emoMap.keySet()) {
-			String value = emoMap.get(key).trim(); // trim() e' male ?
+			String value = emoMap.get(key);
 			String alt = EMO_ALT_MAP.get(key);
 			line = simpleReplaceAll(line, value, String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
 			line = simpleReplaceAll(line, value.toUpperCase(), String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
@@ -210,14 +212,12 @@ public class MessageTag extends BodyTagSupport {
 	}
 	
 	private static String color_quote(String line) {
-		if (line.startsWith("&gt; &gt; &gt; &gt; ")) {
-			line = "<span class='quoteLvl4'>" + line + "</span>";
-		} else if (line.startsWith("&gt; &gt; &gt; ")) {
-			line = "<span class='quoteLvl3'>" + line + "</span>";
-		} else if (line.startsWith("&gt; &gt; ")) {
-			line = "<span class='quoteLvl2'>" + line + "</span>";
-		} else if (line.startsWith("&gt; ")) {
-			line = "<span class='quoteLvl1'>" + line + "</span>";
+		Matcher m = QUOTE.matcher(line);
+		if (m.find()) {
+			int quoteLvl = m.group(0).replaceAll(" ", "").replaceAll("&gt;", " ").length();
+			quoteLvl--;
+			String cssClass = "quoteLvl" + ((quoteLvl % 4) + 1);
+			line =  "<span class='" + cssClass + "'>" + line + "</span>";
 		}
 		return line;
 	}
