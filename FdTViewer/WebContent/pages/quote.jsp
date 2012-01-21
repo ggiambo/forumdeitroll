@@ -12,7 +12,7 @@
 							<c:param name="action" value="getAvatar"/>
 							<c:param name="nick" value="${author.nick}"/>
 						</c:url>
-						<img src="${avatarURL}" alt="Avatar" class="avatar" />
+						<img src="<c:out value="${avatarURL}" escapeXml="true" />" alt="Avatar" class="avatar" />
 						<h3>Informazioni</h3>
 						<span class="lbl">Nome utente:</span> ${author.nick}<br/>
 						<span class="lbl">Messaggi:</span> ${author.messages}
@@ -26,10 +26,10 @@
 								<div class="fraseCelebreUserPanel">
 									<c:choose>
 										<c:when test="${item.id > 0}">
-											<a href="User?action=removeQuote&quoteId=${item.id}" class="deleteFraseCelebreUserPanel"><img src="images/close.jpeg" /></a>
+											<a href="User?action=removeQuote&amp;quoteId=${item.id}" class="deleteFraseCelebreUserPanel"><img src="images/close.jpeg"  alt="Chiudi" /></a>
 										</c:when>
 										<c:otherwise>
-											<img src="images/close.jpeg" />
+											<img src="images/close.jpeg" alt="Chiudi" />
 										</c:otherwise>
 									</c:choose>
 									<input name="quote_${item.id}" value="${fn:escapeXml(item.content)}" maxlength="100" class="fraseCelebreUserPanel" />

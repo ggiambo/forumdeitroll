@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
+<%@ page trimDirectiveWhitespaces="true" %>
 <div id="nav">
 	<ul>
 		<c:if test="${navigationMessage != ''}">

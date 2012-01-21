@@ -11,7 +11,7 @@
 							<c:param name="action" value="getAvatar"/>
 							<c:param name="nick" value="${author.nick}"/>
 						</c:url>
-						<img src="${avatarURL}" alt="Avatar" class="avatar" />
+						<img src="<c:out value="${avatarURL}" escapeXml="true" />" alt="Avatar" class="avatar" />
 						<h3>Informazioni</h3>
 						<span class="lbl">Nome utente:</span> ${author.nick}<br/>
 						<span class="lbl">Messaggi:</span> ${author.messages}
