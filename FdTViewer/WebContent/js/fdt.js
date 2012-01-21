@@ -111,7 +111,7 @@ function send(parentId) {
 				var wl = window.location;
 				var newUrl = wl.protocol + "//" + wl.host + wl.pathname.substr(0, wl.pathname.lastIndexOf("/"));
 				window.location.assign(newUrl + data.content);
-				if (wl.pathname.match(/Threads$/)) {
+				if (wl.pathname.match(/Threads$/) || wl.pathname.match(/Messages$/)) {
 					window.location.reload(); // force reload, altrimenti non fa un piffero :\
 				}
 			} else if (data.resultCode == "MSG") {
