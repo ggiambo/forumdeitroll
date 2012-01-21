@@ -187,7 +187,11 @@ img.avatarImg {
 	box-shadow: 2px 2px 2px black;
 }
 
-img.avatarImg:hover {
+img.avatarImgLinkable {
+	box-shadow: 2px 2px 2px black;
+}
+
+img.avatarImgLinkable:hover {
 	box-shadow: -2px -2px 2px black;
 }
 

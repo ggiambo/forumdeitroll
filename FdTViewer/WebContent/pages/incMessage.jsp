@@ -21,17 +21,20 @@
 				<c:param name="action" value="getAvatar"/>
 				<c:param name="nick" value="${msg.author.nick}"/>
 			</c:url>
-			<c:if test="${!empty msg.author.nick}">
-				<c:url value="User" var="userInfoUrl">
-					<c:param name="action" value="getUserInfo"/>
-					<c:param name="nick" value="${msg.author.nick}"/>
-				</c:url>
-				<a href="<c:out value="${userInfoUrl}" escapeXml="true" />">
-			</c:if>
-			<img class="avatarImg" alt="Avatar" src="<c:out value="${avatarUrl}" escapeXml="true" />" />
-			<c:if test="${!empty msg.author.nick}">
-				</a>
-			</c:if>
+			<c:choose>
+				<c:when test="${!empty msg.author.nick}">
+					<c:url value="User" var="userInfoUrl">
+						<c:param name="action" value="getUserInfo"/>
+						<c:param name="nick" value="${msg.author.nick}"/>
+					</c:url>
+					<a href="<c:out value="${userInfoUrl}" escapeXml="true"/>">
+						<img class="avatarImgLinkable" alt="Avatar" src="<c:out value="${avatarUrl}" escapeXml="true" />" />
+					</a>
+				</c:when>
+				<c:otherwise>
+					<img class="avatarImg" alt="Avatar" src="<c:out value="${avatarUrl}" escapeXml="true" />" />
+				</c:otherwise>
+			</c:choose>
 		</div>
 		<c:if test="${!empty msg.forum}">
 			<div class="msgForum">${msg.forum}</div>
