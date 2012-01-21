@@ -141,7 +141,25 @@ function insert(openTag, closeTag, parentId) {
 	} else {
 		element.value += openTag + closeTag;
 	}
-} 
+}
+
+function openThreadTree(threadId) {
+	jQuery.ajax({
+		type: "GET",
+		url: "Threads?action=openThreadTree&threadId=" + threadId,
+		success: function(data) {
+			$("#threadTree_" + threadId + " .threadTreeEntries").html(data);
+			$("#plus_" + threadId).hide();
+			$("#minus_" + threadId).show();
+		},
+	});
+}
+
+function closeThreadTree(threadId) {
+	$("#threadTree_" + threadId + " .threadTreeEntries").html("");
+	$("#plus_" + threadId).show();
+	$("#minus_" + threadId).hide();
+}
 
 jQuery("document").ready(function(){
 	// Sidebar

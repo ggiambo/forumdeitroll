@@ -787,3 +787,8 @@ div.userPanelSection input.sendPvt {
 	font-size: 90%;
 	margin-left: 0.1em;
 }
+
+div.threadTreeEntries {
+	font-size: 90%;
+	margin-left: 1em;
+}

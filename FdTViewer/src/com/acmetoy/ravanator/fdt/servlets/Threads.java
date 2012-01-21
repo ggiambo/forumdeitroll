@@ -36,7 +36,21 @@ public class Threads extends MainServlet {
 			return "thread.jsp";
 		}
 	};
-
+	
+	protected GiamboAction openThreadTree = new GiamboAction("openThreadTree", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			Long threadId = Long.parseLong(req.getParameter("threadId"));
+			List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
+			List<IndentMessageDTO> indentMsg = new ArrayList<IndentMessageDTO>(msgs.size());
+			for (MessageDTO dto : msgs) {
+				indentMsg.add(new IndentMessageDTO(dto));
+			}
+			req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
+			
+			return "threadTree.jsp";
+		}
+	};
+	
 	/**
 	 * Ordinati per thread / data iniziale
 	 */
