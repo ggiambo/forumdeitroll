@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page trimDirectiveWhitespaces="true" %>
 <img id="headerimg" alt="" src="./images/2.0.png" />
 <div id="header">
 	<h1>

@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page trimDirectiveWhitespaces="true" %>
 <head>
 	<%! static final long bootTime = System.currentTimeMillis(); %>
 	<c:choose>

@@ -26,9 +26,9 @@
 					<c:param name="action" value="getUserInfo"/>
 					<c:param name="nick" value="${msg.author.nick}"/>
 				</c:url>
-				<a href="${userInfoUrl}">
+				<a href="<c:out value="${userInfoUrl}" escapeXml="true" />">
 			</c:if>
-			<img class="avatarImg" alt="Avatar" src="${avatarUrl}"/>
+			<img class="avatarImg" alt="Avatar" src="<c:out value="${avatarUrl}" escapeXml="true" />" />
 			<c:if test="${!empty msg.author.nick}">
 				</a>
 			</c:if>
@@ -48,7 +48,7 @@
 							<c:param name="action" value="getByAuthor"/>
 							<c:param name="author" value="${msg.author.nick}"/>
 						</c:url>
-						<a href="${messagesUrl}">${msg.author.nick}</a>
+						<a href="<c:out value="${messagesUrl}" escapeXml="true" />">${msg.author.nick}</a>
 					</c:otherwise>
 				</c:choose>
 			</div>
@@ -72,8 +72,6 @@
 
 	<div style="padding: 10px;" class="message">
 		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
-		<%-- close open tags --%>
-		<c:out escapeXml="false" value="</b></i></u>"/> <%-- TODO: DA RIMUOVERE AL PIÙ PRESTO, ROMPE LA VALIDAZIONE ndachille: non ci muore nessuno --%>
 	</div>
 	
 	<div id="buttons_${msg.id}" class="messagesButtonBar">

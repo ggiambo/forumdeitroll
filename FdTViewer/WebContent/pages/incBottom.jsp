@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page trimDirectiveWhitespaces="true" %>
 			<div style="clear: both;"></div>
 		</div> <!-- Chiusura div #bodyContent -->
 		</div> <!-- Chiusura div #body -->

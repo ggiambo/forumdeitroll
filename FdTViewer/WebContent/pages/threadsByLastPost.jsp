@@ -32,7 +32,7 @@
 								<c:param name="action" value="getByAuthor"/>
 								<c:param name="author" value="${msg.author.nick}"/>
 							</c:url>
-							<a href="${authorURL}">${msg.author.nick}</a>
+							<a href="<c:out value="${authorURL}" escapeXml="true" />">${msg.author.nick}</a>
 						</c:otherwise>
 				</c:choose>
 			</span>
