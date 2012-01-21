@@ -3,9 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <jsp:include page="incTop.jsp"/>
-
 <div id="main">
-
 	<c:forEach items="${messages}" var="msg" varStatus="index">
 		<c:choose>
 			<c:when test="${index.count % 2 == 0}">
