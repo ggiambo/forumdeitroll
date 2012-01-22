@@ -633,7 +633,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setLong(2, privateMsg.getId());
 			int result;
 			if ((result = ps.executeUpdate()) != 1) {
-				throw new SQLException("Le scimmie presto! ha aggiornato "+result+" records!");
+				throw new SQLException("Le scimmie presto! "+recipient.getNick()+"ha aggiornato "+result+" records!");
 			}
 		} catch (SQLException e) {
 			LOG.error("Cannot notify "+recipient.getNick()+" id "+privateMsg.getId(), e);
@@ -686,6 +686,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				PrivateMsgDTO msg = new PrivateMsgDTO();
+				msg.setRead(true); // se l'ho mandato io...
 				msg.setId(rs.getLong("id"));
 				msg.setSubject(rs.getString("subject"));
 				msg.setDate(rs.getDate("senddate"));
