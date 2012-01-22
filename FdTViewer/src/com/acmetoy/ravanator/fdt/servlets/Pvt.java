@@ -129,6 +129,7 @@ public class Pvt extends MainServlet implements Servlet {
 			getPersistence().notifyRead(login(req), pvt);
 			pvt = getPersistence().getPvtDetails(id, login(req));
 			req.setAttribute("pvtdetail", pvt);
+			req.setAttribute("from", "show");
 			return "pvts.jsp";
 		}
 	};

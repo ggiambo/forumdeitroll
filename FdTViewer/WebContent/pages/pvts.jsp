@@ -68,7 +68,7 @@
 					</c:if>
 					<c:if test="${from == 'sendNew' }">
 						<div class="userPanelSection">
-						<h3>Invia Messaggio Privato</h3>
+							<h3>Invia Messaggio Privato</h3>
 							<form action="Pvt" method="POST">
 								<input type="hidden" name="action" value="sendPvt">
 								<div><label for="subject">Oggetto:</label><br />
@@ -87,6 +87,20 @@
 								<input type="submit" value="Invia" class="sendPvt" />
 							</form>
 						</div> <%-- /Section --%>
+					</c:if>
+					<c:if test="${from == 'show' }">
+						<div class="userPanelSection">
+							<p>Scritto da <a href="User?action=getUserInfo&nick=${pvtdetail.fromNick }">${pvtdetail.fromNick }</a></p>
+							<p>Inviato a
+								<c:forEach items="${pvtdetail.toNick}" var="destNick" varStatus="index">
+									<a href="User?action=getUserInfo&nick=${destNick }">
+										<c:out value="${destNick }"/>
+									</a>
+								</c:forEach>
+							<div style="padding: 10px;" class="message">
+								<fdt:msg>${pvtdetail.text }</fdt:msg>
+							</div>
+						</div>
 					</c:if>
 				</div> <%-- /Content --%>
 			</div> <%-- /Panel --%>
