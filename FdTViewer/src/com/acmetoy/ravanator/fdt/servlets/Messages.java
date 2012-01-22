@@ -463,11 +463,15 @@ public class Messages extends MainServlet {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
+		StringBuilder content = new StringBuilder();
 		if (req.getServletPath().endsWith("/Threads")) {
-		writer.name("content").value("/Threads?action=getByThread&threadId=" + msg.getThreadId() + "#msg" + msg.getId()); //Qui non cambiare & con &amp;
+			content.append("/Threads?action=getByThread&threadId=").append(msg.getThreadId());
 		} else {
-			writer.name("content").value("/Messages?action=init#msg" + msg.getId());
+			content.append("/Messages?action=init");
 		}
+		content.append("&rnd=").append(System.currentTimeMillis());
+		content.append("#msg").append(msg.getId());
+		writer.name("content").value(content.toString());
 		writer.endObject();
 		writer.flush();
 		writer.close();
