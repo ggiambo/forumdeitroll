@@ -2,6 +2,7 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <jsp:include page="incTop.jsp" />
 		<div id="main">
 			<div class="userPanel">
@@ -23,45 +24,54 @@
 								<h3>Inviati</h3>
 							</c:if>
 							<c:if test="${empty pvts}">
-								<p>Non c'è nessun messaggio qui <img src="images/emo/10.gif">
+								<p>Non c'è nessun messaggio qui <img src="images/emo/10.gif" alt="" class="emoticon" /></p>
 							</c:if>
 							<c:if test="${not empty pvts}">
-								<table width="100%">
-									<c:forEach items="${pvts}" var="pvt" varStatus="index">
-										<tr>
-											<td>
-												<c:if test="${from == 'inbox' }">
-													<a href="Pvt?action=show&amp;id=${pvt.id}">${pvt.fromNick}</a>
-												</c:if>
-												<c:if test="${from == 'outbox' }">
-													<c:forEach items="${pvt.toNick}" var="destNick" varStatus="index">
-														<a href="User?action=getUserInfo&nick=${destNick }">
-															<c:out value="${destNick }"/>
-														</a>
-													</c:forEach>
-												</c:if>
-											</td>
-											<td>
-												<a href="Pvt?action=show&amp;id=${pvt.id}">${pvt.subject}</a>
-											</td>
-											<td>
-												<a href="Pvt?action=show&amp;id=${pvt.id}">${pvt.date}</a>
-											</td>
-											<td>
-												<c:choose>
-													<c:when test="${pvt.read}">
-														letto
-													</c:when>
-													<c:otherwise>
-														da leggere
-													</c:otherwise>
-												</c:choose>
-											</td>
-											<td>
-												<a href="Pvt?action=delete&amp;id=${pvt.id}">cancella</a>
-											</td>
-										</tr>
-									</c:forEach>
+								<table class="pvtMessages">
+									<tbody>
+										<c:forEach items="${pvts}" var="pvt" varStatus="index">
+											<c:choose>
+												<c:when test="${pvt.read}">
+													<tr class="pvtRead">
+												</c:when>
+												<c:otherwise>
+													<tr>
+												</c:otherwise>
+											</c:choose>
+												<td class="pvtStatus">
+													<c:choose>
+														<c:when test="${pvt.read}">
+															<img src="images/email_open.png" alt="Messaggio già letto" title="Old :(" />
+														</c:when>
+														<c:otherwise>
+															<img src="images/email.png" alt="Messaggio da leggere" title="Leggimi!" />
+														</c:otherwise>
+													</c:choose>
+												</td>
+												<td class="pvtNickname">												
+													<c:if test="${from == 'inbox' }">
+														<a href="Pvt?action=show&amp;id=${pvt.id}">${pvt.fromNick}</a>
+													</c:if>
+													<c:if test="${from == 'outbox' }">
+														<c:forEach items="${pvt.toNick}" var="destNick" varStatus="index">
+															<a href="User?action=getUserInfo&amp;nick=${destNick}">
+																<c:out value="${destNick }"/>
+															</a>
+														</c:forEach>
+													</c:if>
+												</td>
+												<td class="pvtSubject">
+													<a href="Pvt?action=show&amp;id=${pvt.id}">${pvt.subject}</a>
+												</td>
+												<td class="pvtDate">
+													<a href="Pvt?action=show&amp;id=${pvt.id}"><fmt:formatDate value="${pvt.date}" pattern="dd/MM/yyyy"/></a>
+												</td>
+												<td class="pvtAction">
+													<a href="Pvt?action=delete&amp;id=${pvt.id}" title="Cancella messaggio"><img src="images/delete.png" alt="Cancella" /></a>
+												</td>
+											</tr>
+										</c:forEach>
+									</tbody>
 								</table>
 							</c:if>
 						</div>
@@ -69,7 +79,7 @@
 					<c:if test="${from == 'sendNew' }">
 						<div class="userPanelSection">
 							<h3>Invia Messaggio Privato</h3>
-							<form action="Pvt" method="POST">
+							<form action="Pvt" method="POST" class="pvtSendMessage">
 								<input type="hidden" name="action" value="sendPvt">
 								<div><label for="subject">Oggetto:</label><br />
 								<input type="text" name="subject" id="subject" value="${subject }"/></div>
@@ -86,18 +96,20 @@
 								<input type="text" name="recipient" id="recipient5" value="${recipient[4] }"/></div>
 								<input type="submit" value="Invia" class="sendPvt" />
 							</form>
+							<div style="clear: both;"></div>
 						</div> <%-- /Section --%>
 					</c:if>
 					<c:if test="${from == 'show' }">
 						<div class="userPanelSection">
-							<p>Scritto da <a href="User?action=getUserInfo&nick=${pvtdetail.fromNick }">${pvtdetail.fromNick }</a></p>
-							<p>Inviato a
+							<p>Scritto da: <a href="User?action=getUserInfo&amp;nick=${pvtdetail.fromNick }" class="pvtNickname">${pvtdetail.fromNick }</a></p>
+							<p>Inviato a:
 								<c:forEach items="${pvtdetail.toNick}" var="destNick" varStatus="index">
-									<a href="User?action=getUserInfo&nick=${destNick }">
+									<a href="User?action=getUserInfo&amp;nick=${destNick }" class="pvtNickname">
 										<c:out value="${destNick }"/>
 									</a>
 								</c:forEach>
-							<div style="padding: 10px;" class="message">
+							</p>
+							<div class="pvtTextMessage">
 								<fdt:msg>${pvtdetail.text }</fdt:msg>
 							</div>
 						</div>

@@ -796,14 +796,96 @@ a.pvt img {
 	vertical-align: text-bottom;
 }
 
-div.userPanelSection input.sendPvt {
+div.userPanelSection form.pvtSendMessage label {
+	font-weight: bold;
+}
+
+div.userPanelSection form.pvtSendMessage input {
+	width: 97%;
+	border: 1px solid #7BAAE7;
+	padding: 0 5px;
+}
+
+div.userPanelSection form.pvtSendMessage textarea {
+	width: 97%;
+	border: 1px solid #7BAAE7;
+	padding: 0 5px;
+}
+
+div.userPanelSection form.pvtSendMessage input.sendPvt {
 	width: 5em;
 	border: 1px solid #7BAAE7;
 	font-weight: bold;
 	font-size: 90%;
 	margin-left: 0.1em;
+	float: right;
 }
 
+div.userPanelSection table.pvtMessages {
+	width: 100%;
+}
+
+div.userPanelSection table.pvtMessages tr {
+	font-weight: bold;
+}
+
+div.userPanelSection table.pvtMessages tr:hover {
+	background-color: #FFE5E5;
+}
+
+div.userPanelSection table.pvtMessages tr.pvtRead {
+	font-weight: normal;
+}
+
+div.userPanelSection table.pvtMessages tr td {
+	vertical-align: middle;
+}
+
+div.userPanelSection table.pvtMessages tr td a {
+	text-decoration: none;
+	color: black;
+}
+
+div.userPanelSection table.pvtMessages tr td.pvtAction, div.userPanelSection table.pvtMessages tr td.pvtStatus {
+	width: 30px;
+	text-align: center;
+}
+
+div.userPanelSection table.pvtMessages tr td.pvtNickname, div.userPanelSection table.pvtMessages tr td.pvtSubject {
+	text-align: left;
+}
+
+div.userPanelSection table.pvtMessages tr td.pvtNickname a {
+	width: 8em;
+	color: blue;
+	font-style: italic;
+}
+
+div.userPanelSection table.pvtMessages tr td.pvtDate {
+	text-align: center;
+	width: 6em;
+	font-size: 90%;
+}
+
+div.userPanelSection table.pvtMessages tr td img {
+	vertical-align: middle;
+}
+	
+div.userPanelSection div.pvtTextMessage {
+	padding: 0.2em 1em;
+	font-size: 16px;
+	border: 1px dashed gray;
+	background-color: cornsilk;
+	margin: 0.2em;
+}
+
+div.userPanelSection a.pvtNickname {
+	color: blue;
+	font-style: italic;
+	font-weight: bold;
+	text-decoration: none;
+}
+	
 div.threadTreeEntries {
 	font-size: 90%;
 	margin-left: 1em;
