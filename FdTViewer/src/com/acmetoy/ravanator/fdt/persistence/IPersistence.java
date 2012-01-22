@@ -47,7 +47,7 @@ public interface IPersistence {
 	
 	public List<PrivateMsgDTO> getInbox(AuthorDTO author, int limit, int pageNr);
 
-	public void sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients);
+	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients);
 	
 	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg);
 	

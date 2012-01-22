@@ -548,10 +548,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public void sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients) {
+	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients) {
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		long pvt_id = -1;
 		try {
 			ps = conn.prepareStatement("INSERT INTO pvt_content" +
 										"(sender, content, senddate, subject, replyTo) " +
@@ -564,25 +565,42 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			
 			rs = ps.getGeneratedKeys();
 			rs.next();
-			long pvt_id = rs.getLong(1);
+			pvt_id = rs.getLong(1);
 			close(rs, ps, null);
-			
+		} catch (SQLException e) {
+			LOG.error("Cannot insert into pvt_content", e);
+			return false;
+		}
+		try {
 			for (String recipient: recipients) {
 				if (recipient.equals("")) continue;
 				ps = conn.prepareStatement("INSERT INTO pvt_recipient" +
 											"(pvt_id, recipient) "+
-											"VALUES (?,?)");
+											"VALUES (?,(SELECT nick FROM authors WHERE nick = ?))"); // mi assicuro che il nick esista
 				
 				ps.setLong(1, pvt_id);
 				ps.setString(2, recipient);
-				ps.execute();
+				try {
+					ps.execute();
+				} catch (SQLException e) {
+					LOG.error("Probabilmente il recipient "+recipient+" non esiste.");
+					throw e;
+				}
 			}
-			
 		} catch (SQLException e) {
-			LOG.error("Cannot insert pvt content or pvt recipient", e);
+			LOG.error("Cannot insert into pvt_recipient", e);
+			// prova ad annullare l'insert del messaggio ed eventuali collegati
+			for (int i=0;i<recipients.length;++i) {
+				AuthorDTO rec = new AuthorDTO();
+				rec.setNick(recipients[i]);
+				deletePvt(pvt_id, rec);
+			}
+			deletePvt(pvt_id, author);
+			return false;
 		} finally {
 			close(rs, ps, conn);
 		}
+		return true;
 	}
 	
 	@Override

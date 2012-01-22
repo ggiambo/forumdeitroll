@@ -21,6 +21,14 @@ public class Pvt extends MainServlet implements Servlet {
 	
 	private static int PVT_PER_PAGE = 10;
 	
+	/**
+	 * inbox
+	 * outbox
+	 * sendNew
+	 * sendPvt
+	 * delete
+	 */
+	
 	protected GiamboAction inbox = new GiamboAction("inbox", ONGET) {
 		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -31,11 +39,25 @@ public class Pvt extends MainServlet implements Servlet {
 				npage = Integer.parseInt(page);
 			} catch (Exception e) {}
 			req.setAttribute("pvts", getPersistence().getInbox(author, PVT_PER_PAGE, npage));
+			req.setAttribute("from", "inbox");
 			return "pvts.jsp";
 		}
 	};
 
+	protected GiamboAction sendNew = new GiamboAction("sendNew", ONGET) {
+		@Override
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			req.setAttribute("from", "sendNew");
+			return "pvts.jsp";
+		}
+	};
+	
 	protected GiamboAction sendPvt = new GiamboAction("sendPvt", ONPOST) {
+		private void ripopola(HttpServletRequest req) {
+			req.setAttribute("text", req.getParameter("text"));
+			req.setAttribute("subject", req.getParameter("subject"));
+			req.setAttribute("recipient", req.getParameterValues("recipient"));
+		}
 		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO author = login(req);
@@ -43,26 +65,52 @@ public class Pvt extends MainServlet implements Servlet {
 			String subject = req.getParameter("subject");
 			String[] recipients = req.getParameterValues("recipient");
 			if (author.isValid()) {
-				if (text == null) {
-					setNavigationMessage(req, NavigationMessage.warn("Non hai scritto niente, te ne rendi conto ?"));
+				if (subject == null || subject.length() == 0) {
+					setNavigationMessage(req, NavigationMessage.warn("Oggetto un po cortino, non trovi ?"));
+					ripopola(req);
+					req.setAttribute("from", "sendNew");
 					return "pvts.jsp";
 				}
-				if (recipients == null || recipients.length == 0 || recipients.length > 5) return "403";
+				if (text == null || text.length() == 0) {
+					setNavigationMessage(req, NavigationMessage.warn("Non hai scritto niente, te ne rendi conto ?"));
+					ripopola(req);
+					req.setAttribute("from", "sendNew");
+					return "pvts.jsp";
+				}
+				if (recipients == null || recipients.length != 5) {
+					setNavigationMessage(req, NavigationMessage.warn("Furmigamento detected!"));
+					req.setAttribute("from", "sendNew");
+					return "pvts.jsp";
+				}
+				boolean recOk = false;
+				for (int i=0;i<recipients.length;++i) {
+					if (recipients[i] != null && recipients[i].length() > 0) {
+						recOk = true;
+						break;
+					}
+				}
+				if (!recOk) {
+					setNavigationMessage(req, NavigationMessage.warn("Specifica almeno un destinatario!"));
+					ripopola(req);
+					req.setAttribute("from", "sendNew");
+					return "pvts.jsp";
+				}
 				
 				text = text.replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\n", "<BR>");
 				for (String t : new String[] {"i", "b", "u", "s"}) {
 					text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
 					text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
 				}
-				if (subject == null) {
-					setNavigationMessage(req, NavigationMessage.warn("Oggetto un po cortino, non trovi ?"));
-					return "pvts.jsp";
-				}
+				
 				PrivateMsgDTO message = new PrivateMsgDTO();
 				message.setText(text);
 				message.setSubject(subject);
-				
-				getPersistence().sendAPvtForGreatGoods(author, message, recipients);
+				if (!getPersistence().sendAPvtForGreatGoods(author, message, recipients)) {
+					setNavigationMessage(req, NavigationMessage.error("Il messaggio non è stato inviato<img src='images/emo/10.gif'>"));
+					ripopola(req);
+					req.setAttribute("from", "sendNew");
+					return "pvts.jsp";	
+				}
 				return inbox.action(req, res);
 			} else {
 				setNavigationMessage(req, NavigationMessage.error("Fai il login o registrati (cit)"));
@@ -107,9 +155,10 @@ public class Pvt extends MainServlet implements Servlet {
 				} catch (Exception e) {}
 				List<PrivateMsgDTO> pvts = getPersistence().getSentPvts(login(req), PVT_PER_PAGE, npage);
 				req.setAttribute("pvts", pvts);
+				req.setAttribute("from","outbox");
 				return "pvts.jsp";
 			}
-			return "pvts.jsp";
+			return null; //TODO pagina user non auth
 		}
 	};
 }
