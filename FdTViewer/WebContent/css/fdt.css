@@ -214,9 +214,21 @@ div.msgTotalMsg {
     font-size: 70%;
 }
 
-#ordinamento {
+.navigationMessageINFO {
 	margin: 0.2em 0;
 	font-weight: bold;
+}
+
+.navigationMessageWARN {
+	margin: 0.2em 0;
+	font-weight: bold;
+	color: #DAA520
+}
+
+.navigationMessageERROR {
+	margin: 0.2em 0;
+	font-weight: bold;
+	color: #B22222
 }
 
 #preview {

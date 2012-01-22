@@ -31,7 +31,7 @@ public class Threads extends MainServlet {
 			}
 			req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
 			setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
-			setNavigationMessage(req, "Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>");
+			setNavigationMessage(req, NavigationMessage.info("Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>"));
 
 			return "thread.jsp";
 		}
@@ -58,7 +58,7 @@ public class Threads extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			req.setAttribute("messages", getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
 			setWebsiteTitle(req, "Forum dei troll");
-			setNavigationMessage(req, "Ordinati per data inizio discussione");
+			setNavigationMessage(req, NavigationMessage.info("Ordinati per data inizio discussione"));
 			return "threads.jsp";
 		}
 	};
@@ -70,7 +70,7 @@ public class Threads extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			req.setAttribute("messages", getPersistence().getThreadsByLastPost(PAGE_SIZE, getPageNr(req)));
 			setWebsiteTitle(req, "Forum dei troll");
-			setNavigationMessage(req, "Ordinati per ultimo post");
+			setNavigationMessage(req, NavigationMessage.info("Ordinati per ultimo post"));
 			return "threadsByLastPost.jsp";
 		}
 	};

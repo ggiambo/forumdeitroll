@@ -5,7 +5,7 @@
 	<ul>
 		<c:if test="${navigationMessage != ''}">
 			<li>
-				<div id="ordinamento">${navigationMessage}</div>
+				<div class="navigationMessage${navigationMessage.type}">${navigationMessage.content}</div>
 			</li>
 		</c:if>
 		<li>

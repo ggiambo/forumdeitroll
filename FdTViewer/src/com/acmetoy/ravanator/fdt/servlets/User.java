@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
+import com.acmetoy.ravanator.fdt.servlets.MainServlet.NavigationMessage;
 
 public class User extends MainServlet {
 
@@ -33,7 +34,7 @@ public class User extends MainServlet {
 				req.setAttribute("author", author);
 				return "user.jsp";
 			}
-			setNavigationMessage(req, "Passuord ezzere sbaliata !");
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction.action(req,  res);
 		}
 	};
@@ -61,7 +62,7 @@ public class User extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO author = login(req);
 			if (author == null || !author.isValid()) {
-				setNavigationMessage(req, "Passuord ezzere sbaliata !");
+				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
 			req.setAttribute("author", author);
@@ -69,12 +70,12 @@ public class User extends MainServlet {
 			// user loggato, check pass
 			String actualPass = req.getParameter("actualPass");
 			if (StringUtils.isEmpty(actualPass)) {
-				setNavigationMessage(req, "Inserisci la password attuale");
+				setNavigationMessage(req, NavigationMessage.warn("Inserisci la password attuale"));
 				return "user.jsp";
 			}
 
 			if (!author.passwordIs(actualPass)) {
-				setNavigationMessage(req, "Password attuale sbagliata, non fare il furmiga");
+				setNavigationMessage(req, NavigationMessage.warn("Password attuale sbagliata, non fare il furmiga"));
 				return "user.jsp";
 			}
 
@@ -82,20 +83,20 @@ public class User extends MainServlet {
 			String pass2 = req.getParameter("pass2");
 
 			if (StringUtils.isEmpty(pass1) || StringUtils.isEmpty(pass2)) {
-				setNavigationMessage(req, "Inserisci una password");
+				setNavigationMessage(req, NavigationMessage.warn("Inserisci una password"));
 				return "user.jsp";
 			}
 			if (!pass1.equals(pass2)) {
-				setNavigationMessage(req, "Le due password non sono uguali");
+				setNavigationMessage(req, NavigationMessage.warn("Le due password non sono uguali"));
 				return "user.jsp";
 			}
 
 			if (!getPersistence().updateAuthorPassword(author, pass1)) {
-				setNavigationMessage(req, "Errore in User.updatePass / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :(");
+				setNavigationMessage(req, NavigationMessage.error("Errore in User.updatePass / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :("));
 				return "user.jsp";
 			}
 
-			setNavigationMessage(req, "Password modificata con successo !");
+			setNavigationMessage(req, NavigationMessage.info("Password modificata con successo !"));
 			return "user.jsp";
 		}
 	};
@@ -110,25 +111,25 @@ public class User extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO author = login(req);
 			if (author == null || !author.isValid()) {
-				setNavigationMessage(req, "Passuord ezzere sbaliata !");
+				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
 			req.setAttribute("author", author);
 			if (!ServletFileUpload.isMultipartContent(req)) {
-				setNavigationMessage(req, "Nessun avatar caricato");
+				setNavigationMessage(req, NavigationMessage.warn("Nessun avatar caricato"));
 				return "user.jsp";
 			}
 
 			// piglia l'immagine dal multipart request
 			DiskFileItemFactory  fileItemFactory = new DiskFileItemFactory ();
-			fileItemFactory.setSizeThreshold(MAX_SIZE_AVATAR_BYTES); // grandezza massima 512bytes
+			fileItemFactory.setSizeThreshold(MAX_SIZE_AVATAR_BYTES); // grandezza massima 512Kbytes
 			fileItemFactory.setRepository(new File(System.getProperty("java.io.tmpdir")));
 			ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
 			Iterator<FileItem> it = uploadHandler.parseRequest(req).iterator();
 			if (it.hasNext()) {
 				FileItem avatar = it.next();
 				if (avatar.getSize() > MAX_SIZE_AVATAR_BYTES) {
-					setNavigationMessage(req, "Megalomane, avatar troppo grande, al massimo 512K !");
+					setNavigationMessage(req, NavigationMessage.warn("Megalomane, avatar troppo grande, al massimo 512K !"));
 					return "user.jsp";
 				}
 				// carica l'immagine
@@ -136,19 +137,19 @@ public class User extends MainServlet {
 				int w = image.getWidth();
 				int h = image.getHeight();
 				if (w > MAX_SIZE_AVATAR_WIDTH || h > MAX_SIZE_AVATAR_HEIGHT) {
-					setNavigationMessage(req, "Dimensione massima consentita: 100x100px");
+					setNavigationMessage(req, NavigationMessage.warn("Dimensione massima consentita: 100x100px"));
 					return "user.jsp";
 				}
 				// modifica author
 				author.setAvatar(avatar.get());
 				getPersistence().updateAuthor(author);
 			} else {
-				setNavigationMessage(req, "Nessun Avatar ?");
+				setNavigationMessage(req, NavigationMessage.warn("Nessun Avatar ?"));
 				return "user.jsp";
 			}
 
 			// fuck yeah 8) !
-			setNavigationMessage(req, "Avatar modificato con successo !");
+			setNavigationMessage(req, NavigationMessage.info("Avatar modificato con successo !"));
 			return "user.jsp";
 		}
 	};
@@ -183,22 +184,22 @@ public class User extends MainServlet {
 			String captcha = req.getParameter("captcha");
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
 			if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
-				setNavigationMessage(req, "Captcha non corretto");
+				setNavigationMessage(req, NavigationMessage.warn("Captcha non corretto"));
 				return "register.jsp";
 			}
 			// registra il nick
 			if (StringUtils.isEmpty(nick) || nick.length() > 20) {
-				setNavigationMessage(req, "Impossibile registrare questo nick: Troppo lungo o troppo corto");
+				setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick: Troppo lungo o troppo corto"));
 				return "register.jsp";
 			}
 			String pass = req.getParameter("pass");
 			if (StringUtils.isEmpty(pass) || pass.length() > 20) {
-				setNavigationMessage(req, "Scegli una password migliore, giovane jedi ...");
+				setNavigationMessage(req, NavigationMessage.warn("Scegli una password migliore, giovane jedi ..."));
 				return "register.jsp";
 			}
 			AuthorDTO author = getPersistence().registerUser(nick, pass);
 			if (!author.isValid()) {
-				setNavigationMessage(req, "Impossibile registrare questo nick, probabilmente gia' esiste");
+				setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick, probabilmente gia' esiste"));
 				return "register.jsp";
 			}
 			// login
@@ -219,7 +220,7 @@ public class User extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO author = login(req);
 			if (author == null || !author.isValid()) {
-				setNavigationMessage(req, "Passuord ezzere sbaliata !");
+				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
 			req.setAttribute("author", author);
@@ -249,7 +250,7 @@ public class User extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO author = login(req);
 			if (author == null || !author.isValid()) {
-				setNavigationMessage(req, "Passuord ezzere sbaliata !");
+				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
 			req.setAttribute("author", author);
@@ -257,7 +258,7 @@ public class User extends MainServlet {
 			Long quoteId = Long.parseLong(req.getParameter("quoteId"));
 			String content = req.getParameter("quote_" + quoteId);
 			if (StringUtils.isEmpty(content) || content.length() < 3 || content.length() > 100) {
-				setNavigationMessage(req, "Minimo 3 caratteri, massimo 100");
+				setNavigationMessage(req, NavigationMessage.warn("Minimo 3 caratteri, massimo 100"));
 				return getQuotes.action(req, res);
 			}
 
@@ -282,7 +283,7 @@ public class User extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO author = login(req);
 			if (author == null || !author.isValid()) {
-				setNavigationMessage(req, "Passuord ezzere sbaliata !");
+				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
 			req.setAttribute("author", author);

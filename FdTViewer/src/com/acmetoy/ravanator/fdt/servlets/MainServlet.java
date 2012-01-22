@@ -323,7 +323,7 @@ public abstract class MainServlet extends HttpServlet {
 	 * @param req
 	 * @param navigationMessage
 	 */
-	protected void setNavigationMessage(HttpServletRequest req, String navigationMessage) {
+	protected void setNavigationMessage(HttpServletRequest req, NavigationMessage navigationMessage) {
 		req.setAttribute("navigationMessage", navigationMessage);
 	}
 
@@ -359,6 +359,43 @@ public abstract class MainServlet extends HttpServlet {
 			return null;
 		}
 	};
+	
+	public static class NavigationMessage {
+		
+		static enum TYPE {
+			INFO, WARN, ERROR;
+		}
+		
+		private String content;
+		
+		private TYPE type;
+		
+		private NavigationMessage(TYPE type, String content) {
+			this.type = type;
+			this.content = content;
+		}
+		
+		public static NavigationMessage info(String content) {
+			return new NavigationMessage(TYPE.INFO, content);
+		}
+		
+		public static NavigationMessage warn(String content) {
+			return new NavigationMessage(TYPE.WARN, content);
+		}
+		
+		public static NavigationMessage error(String content) {
+			return new NavigationMessage(TYPE.ERROR, content);
+		}
+		
+		public String getContent() {
+			return content;
+		}
+		
+		public String getType() {
+			return type.name();
+		}
+		
+	}
 
 	/**
 	 * Ritorna una random quote tra quelle esistenti

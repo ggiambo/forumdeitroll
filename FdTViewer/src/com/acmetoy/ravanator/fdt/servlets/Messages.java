@@ -86,7 +86,7 @@ public class Messages extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			req.setAttribute("messages", getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req)));
 			setWebsiteTitle(req, "Forum dei troll");
-			setNavigationMessage(req, "Ordinati cronologicamente");
+			setNavigationMessage(req, NavigationMessage.info("Ordinati cronologicamente"));
 			return "messages.jsp";
 		}
 	};
@@ -103,7 +103,7 @@ public class Messages extends MainServlet {
 			String author = req.getParameter("author");
 			req.setAttribute("specificParams", "&amp;author=" + author);
 			setWebsiteTitle(req, "Messaggi di " + author + " @ Forum dei Troll");
-			setNavigationMessage(req, "Messaggi scritti da <i>" + author + "</i>");
+			setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + author + "</i>"));
 			req.setAttribute("messages", getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req)));
 			return "messages.jsp";
 		}
@@ -114,7 +114,7 @@ public class Messages extends MainServlet {
 			String forum = req.getParameter("forum");
 			req.setAttribute("specificParams", "&amp;forum=" + forum);
 			setWebsiteTitle(req, forum + " @ Forum dei Troll");
-			setNavigationMessage(req, "Forum <i>" + forum + "</i>");
+			setNavigationMessage(req, NavigationMessage.info("Forum <i>" + forum + "</i>"));
 			req.setAttribute("messages", getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req)));
 			return "messages.jsp";
 		}
@@ -268,7 +268,7 @@ public class Messages extends MainServlet {
 			String msgId = req.getParameter("msgId");
 			MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
 		if (!user.isValid() || !user.getNick().equals(msg.getAuthor().getNick())) {
-				setNavigationMessage(req, "Non puoi editare un messaggio non tuo !");
+				setNavigationMessage(req, NavigationMessage.error("Non puoi editare un messaggio non tuo !"));
 				return getByPage.action(req, res);
 			}
 

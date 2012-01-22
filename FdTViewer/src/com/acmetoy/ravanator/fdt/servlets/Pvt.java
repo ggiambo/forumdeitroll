@@ -44,7 +44,8 @@ public class Pvt extends MainServlet implements Servlet {
 			String[] recipients = req.getParameterValues("recipient");
 			if (author.isValid()) {
 				if (text == null) {
-					return "403";
+					setNavigationMessage(req, NavigationMessage.warn("Non hai scritto niente, te ne rendi conto ?"));
+					return "pvts.jsp";
 				}
 				if (recipients == null || recipients.length == 0 || recipients.length > 5) return "403";
 				
@@ -54,7 +55,8 @@ public class Pvt extends MainServlet implements Servlet {
 					text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
 				}
 				if (subject == null) {
-					return "403";
+					setNavigationMessage(req, NavigationMessage.warn("Oggetto un po cortino, non trovi ?"));
+					return "pvts.jsp";
 				}
 				PrivateMsgDTO message = new PrivateMsgDTO();
 				message.setText(text);
@@ -63,7 +65,8 @@ public class Pvt extends MainServlet implements Servlet {
 				getPersistence().sendAPvtForGreatGoods(author, message, recipients);
 				return inbox.action(req, res);
 			} else {
-				return "403";
+				setNavigationMessage(req, NavigationMessage.error("Fai il login o registrati (cit)"));
+				return "pvts.jsp";
 			}
 		}
 	};
