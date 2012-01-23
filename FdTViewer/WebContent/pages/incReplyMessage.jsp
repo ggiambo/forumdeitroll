@@ -24,6 +24,7 @@
 <c:set var="isNewMessage" value="${!isEdit && message.id == -1}"/>
 <c:set var="isEdit" value="${!empty isEdit && isEdit}"/>
 
+<div style="clear: both"></div>
 <div id="reply_${message.parentId}" class="msgReply">
 
 	<c:if test="${isReply}">
