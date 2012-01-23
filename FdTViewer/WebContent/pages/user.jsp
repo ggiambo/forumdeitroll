@@ -67,9 +67,7 @@
 					<div class="userPanelSection">
 						<h3>Altre Azioni</h3>
 						<a href="?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
-						<%-- TODO
-						<a href="#" class="userPanelButton">Messaggi</a>  GESTIONE MESSAGGI PRIVATI QUI
-						--%>
+						<a href="./Pvt?action=inbox" class="userPanelButton">Posta</a>
 						<div style="clear: both;"></div>
 					</div>
 				</div>
