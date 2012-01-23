@@ -54,7 +54,11 @@
 													</c:if>
 													<c:if test="${from == 'outbox' }">
 														<c:forEach items="${pvt.toNick}" var="destNick" varStatus="index">
-															<a href="User?action=getUserInfo&amp;nick=${destNick}">
+															<c:url value="User" var="destNickURL">
+																<c:param name="action" value="getUserInfo"/>
+																<c:param name="nick" value="${destNick}"/>
+															</c:url>
+															<a href="<c:out value="${destNickURL}" escapeXml="true" />">
 																<c:out value="${destNick }"/>
 															</a>
 														</c:forEach>
@@ -101,11 +105,21 @@
 					</c:if>
 					<c:if test="${from == 'show' }">
 						<div class="userPanelSection">
-							<p>Scritto da: <a href="User?action=getUserInfo&amp;nick=${pvtdetail.fromNick }" class="pvtNickname">${pvtdetail.fromNick }</a></p>
+							<p>Scritto da: 
+								<c:url value="User" var="fromNickURL">
+									<c:param name="action" value="getUserInfo"/>
+									<c:param name="nick" value="${pvtdetail.fromNick}"/>
+								</c:url>
+								<a href="<c:out value="${fromNickURL}" escapeXml="true" />" class="pvtNickname">${pvtdetail.fromNick}</a>
+							</p>
 							<p>Inviato a:
 								<c:forEach items="${pvtdetail.toNick}" var="destNick" varStatus="index">
-									<a href="User?action=getUserInfo&amp;nick=${destNick }" class="pvtNickname">
-										<c:out value="${destNick }"/>
+									<c:url value="User" var="destNickURL">
+										<c:param name="action" value="getUserInfo"/>
+										<c:param name="nick" value="${destNick}"/>
+									</c:url>
+									<a href="<c:out value="${destNickURL}" escapeXml="true" />" class="pvtNickname">
+										<c:out value="${destNick}"/>
 									</a>
 								</c:forEach>
 							</p>

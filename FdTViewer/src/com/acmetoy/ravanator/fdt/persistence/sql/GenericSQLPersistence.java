@@ -467,7 +467,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		ResultSet rs = null;
 		try {
 			ps = conn.prepareStatement(
-				"SELECT content, replyTo, subject, senddate, recipient " +
+				"SELECT content, replyTo, subject, senddate, recipient, sender " +
 				"FROM pvt_content, pvt_recipient " +
 				"WHERE id = pvt_id " +
 				"AND id = ? " +
@@ -488,7 +488,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				if (msg == null) {
 					msg = new PrivateMsgDTO();
 					msg.setId(pvt_id);
-					msg.setFromNick(user.getNick());
+					//msg.setFromNick(user.getNick());
+					msg.setFromNick(rs.getString("sender"));
 					msg.setDate(rs.getDate("senddate"));
 					msg.setReplyTo(rs.getLong("replyTo"));
 					msg.setText(rs.getString("content"));
