@@ -192,7 +192,7 @@ img.avatarImgLinkable {
 }
 
 img.avatarImgLinkable:hover {
-	box-shadow: -2px -2px 2px black;
+	box-shadow: 0 0 8px #0A78FF;
 }
 
 div.msgForum {
@@ -503,7 +503,7 @@ pre.code, div.code {
 }
 
 img.userPostedImage {
-	width: 150px;
+	max-width: 150px;
 }
 
 div.loginForm {
