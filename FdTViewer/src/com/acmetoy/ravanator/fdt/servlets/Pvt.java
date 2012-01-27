@@ -7,10 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
-import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 import com.acmetoy.ravanator.fdt.persistence.PrivateMsgDTO;
 
 /**
@@ -18,7 +16,6 @@ import com.acmetoy.ravanator.fdt.persistence.PrivateMsgDTO;
  */
 public class Pvt extends MainServlet implements Servlet {
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = Logger.getLogger(PersistenceFactory.class);
 	
 	private static int PVT_PER_PAGE = 10;
 	

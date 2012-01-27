@@ -1,26 +1,10 @@
 
-function initSidebarStatus() {
-	jQuery.ajax({
-		  url: "?action=sidebarStatus",
-		  dataType: "html",
-		  success: function(data) {
-			if (data == "show") {
-				$("#sidebarSmall").hide();
-				$("#sidebar").show();
-			} else {
-				$("#sidebar").hide();
-				$("#sidebarSmall").show();
-			}
-		  }
-		});
-}
-
 function hideSidebar() {
 	var sidebar = $("#sidebar");
 	sidebar.hide("slow", function() {
 		var sidebarSmall = $("#sidebarSmall");
 		sidebarSmall.show("slow");
-		jQuery.ajax("?action=sidebarStatus&sidebarStatus=hide");
+		jQuery.ajax("?action=updateSidebarStatus&sidebarStatus=hide");
 	});
 }
 
@@ -29,7 +13,7 @@ function showSidebar() {
 	sidebarSmall.hide("slow", function() {
 		var sidebar = $("#sidebar");
 		sidebar.show("slow");
-		jQuery.ajax("?action=sidebarStatus&sidebarStatus=show");
+		jQuery.ajax("?action=updateSidebarStatus&sidebarStatus=show");
 	});
 }
 
@@ -159,8 +143,6 @@ function closeThreadTree(threadId) {
 }
 
 jQuery("document").ready(function(){
-	// Sidebar
-	initSidebarStatus();
 	// Eseguita quando il documento è pronto
 	jQuery(".messagesBox").resizable({handles: 'e, w'}); // Solo lato EST e OVEST
 	// Syntax Highlighter dei messaggi

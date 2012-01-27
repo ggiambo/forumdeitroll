@@ -20,16 +20,16 @@
 					</div>
 					<div class="userPanelSection">
 						<h3>Frasi Celebri</h3>
-						<form action="User?action=updateQuote" method="post">
+						<form action="User?action=updateQuote" method="post" accept-charset="UTF-8">
 							<input type="hidden" id="quoteId" name="quoteId" />
 							<c:forEach items="${quote}" var="item" varStatus="i">
 								<div class="fraseCelebreUserPanel">
 									<c:choose>
 										<c:when test="${item.id > 0}">
-											<a href="User?action=removeQuote&amp;quoteId=${item.id}" class="deleteFraseCelebreUserPanel"><img src="images/close.jpeg"  alt="Chiudi" /></a>
+											<a href="User?action=removeQuote&amp;quoteId=${item.id}" class="deleteFraseCelebreUserPanel"><img src="images/delete.png"  alt="Chiudi" /></a>
 										</c:when>
 										<c:otherwise>
-											<img src="images/close.jpeg" alt="Chiudi" />
+											<img src="images/delete.png" alt="Chiudi" />
 										</c:otherwise>
 									</c:choose>
 									<input name="quote_${item.id}" value="${fn:escapeXml(item.content)}" maxlength="100" class="fraseCelebreUserPanel" />

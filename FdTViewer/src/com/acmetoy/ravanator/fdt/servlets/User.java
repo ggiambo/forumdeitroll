@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
-import com.acmetoy.ravanator.fdt.servlets.MainServlet.NavigationMessage;
 
 public class User extends MainServlet {
 
@@ -25,13 +24,15 @@ public class User extends MainServlet {
 	private static final int MAX_SIZE_AVATAR_BYTES = 512*1024;
 	private static final long MAX_SIZE_AVATAR_WIDTH = 100;
 	private static final long MAX_SIZE_AVATAR_HEIGHT = 100;
+	
+	public static final String PREF_SHOWANONIMG = "showAnonImg";
+	public static final String PREF_EMBEDDYT = "embeddYt";
 
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO author = login(req);
+			AuthorDTO loggedUser = login(req);
 			setWebsiteTitle(req, "Forum dei troll");
-			if (author != null && author.isValid()) {
-				req.setAttribute("author", author);
+			if (loggedUser != null && loggedUser.isValid()) {
 				return "user.jsp";
 			}
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
@@ -60,12 +61,11 @@ public class User extends MainServlet {
 	 */
 	protected GiamboAction updatePass = new GiamboAction("updatePass", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO author = login(req);
-			if (author == null || !author.isValid()) {
+			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			if (loggedUser == null || !loggedUser.isValid()) {
 				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
-			req.setAttribute("author", author);
 
 			// user loggato, check pass
 			String actualPass = req.getParameter("actualPass");
@@ -74,7 +74,7 @@ public class User extends MainServlet {
 				return "user.jsp";
 			}
 
-			if (!author.passwordIs(actualPass)) {
+			if (!loggedUser.passwordIs(actualPass)) {
 				setNavigationMessage(req, NavigationMessage.warn("Password attuale sbagliata, non fare il furmiga"));
 				return "user.jsp";
 			}
@@ -91,7 +91,7 @@ public class User extends MainServlet {
 				return "user.jsp";
 			}
 
-			if (!getPersistence().updateAuthorPassword(author, pass1)) {
+			if (!getPersistence().updateAuthorPassword(loggedUser, pass1)) {
 				setNavigationMessage(req, NavigationMessage.error("Errore in User.updatePass / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :("));
 				return "user.jsp";
 			}
@@ -109,12 +109,12 @@ public class User extends MainServlet {
 	 */
 	protected GiamboAction updateAvatar = new GiamboAction("updateAvatar", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO author = login(req);
-			if (author == null || !author.isValid()) {
+			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			if (loggedUser == null || !loggedUser.isValid()) {
 				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
-			req.setAttribute("author", author);
+			
 			if (!ServletFileUpload.isMultipartContent(req)) {
 				setNavigationMessage(req, NavigationMessage.warn("Nessun avatar caricato"));
 				return "user.jsp";
@@ -140,9 +140,9 @@ public class User extends MainServlet {
 					setNavigationMessage(req, NavigationMessage.warn("Dimensione massima consentita: 100x100px"));
 					return "user.jsp";
 				}
-				// modifica author
-				author.setAvatar(avatar.get());
-				getPersistence().updateAuthor(author);
+				// modifica loggedUser
+				loggedUser.setAvatar(avatar.get());
+				getPersistence().updateAuthor(loggedUser);
 			} else {
 				setNavigationMessage(req, NavigationMessage.warn("Nessun Avatar ?"));
 				return "user.jsp";
@@ -197,14 +197,14 @@ public class User extends MainServlet {
 				setNavigationMessage(req, NavigationMessage.warn("Scegli una password migliore, giovane jedi ..."));
 				return "register.jsp";
 			}
-			AuthorDTO author = getPersistence().registerUser(nick, pass);
-			if (!author.isValid()) {
+			AuthorDTO loggedUser = getPersistence().registerUser(nick, pass);
+			if (!loggedUser.isValid()) {
 				setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick, probabilmente gia' esiste"));
 				return "register.jsp";
 			}
 			// login
 			login(req);
-			req.setAttribute("author", author);
+			req.setAttribute("loggedUser", loggedUser);
 			return "user.jsp";
 		}
 	};
@@ -218,13 +218,13 @@ public class User extends MainServlet {
 	 */
 	protected GiamboAction getQuotes = new GiamboAction("getQuotes", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO author = login(req);
-			if (author == null || !author.isValid()) {
+			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			if (loggedUser == null || !loggedUser.isValid()) {
 				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
-			req.setAttribute("author", author);
-			List<QuoteDTO> list = getPersistence().getQuotes(author);
+			
+			List<QuoteDTO> list = getPersistence().getQuotes(loggedUser);
 			int size = list.size();
 			if (size < 5) {
 				for (int i = 0; i < 5 - size; i++) {
@@ -248,15 +248,15 @@ public class User extends MainServlet {
 	 */
 	protected GiamboAction updateQuote = new GiamboAction("updateQuote", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO author = login(req);
-			if (author == null || !author.isValid()) {
+			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			if (loggedUser == null || !loggedUser.isValid()) {
 				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
-			req.setAttribute("author", author);
 
 			Long quoteId = Long.parseLong(req.getParameter("quoteId"));
 			String content = req.getParameter("quote_" + quoteId);
+			content = new String(content.getBytes(), "UTF-8"); // VOGLIO.TUTTO.UTF-8 :@ !!!
 			if (StringUtils.isEmpty(content) || content.length() < 3 || content.length() > 100) {
 				setNavigationMessage(req, NavigationMessage.warn("Minimo 3 caratteri, massimo 100"));
 				return getQuotes.action(req, res);
@@ -265,7 +265,7 @@ public class User extends MainServlet {
 			QuoteDTO quote = new QuoteDTO();
 			quote.setContent(content);
 			quote.setId(quoteId);
-			quote.setNick(author.getNick());
+			quote.setNick(loggedUser.getNick());
 
 			getPersistence().insertUpdateQuote(quote);
 			return getQuotes.action(req, res);
@@ -281,16 +281,15 @@ public class User extends MainServlet {
 	 */
 	protected GiamboAction removeQuote = new GiamboAction("removeQuote", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO author = login(req);
-			if (author == null || !author.isValid()) {
+			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			if (loggedUser == null || !loggedUser.isValid()) {
 				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
-			req.setAttribute("author", author);
-
+			
 			Long quoteId = Long.parseLong(req.getParameter("quoteId"));
 			QuoteDTO quote = new QuoteDTO();
-			quote.setNick(author.getNick());
+			quote.setNick(loggedUser.getNick());
 			quote.setId(quoteId);
 
 			getPersistence().removeQuote(quote);
@@ -314,23 +313,31 @@ public class User extends MainServlet {
 			return "userInfo.jsp";
 		}
 	};
-
+	
 	/**
-	 * Lista di tutti i PVT
-
-	public String getPrivateMessages(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO author = login(req);
-		if (author == null || !author.isValid()) {
-			setNavigationMessage(req, "Passuord ezzere sbaliata !");
-			return loginAction(req,  res);
+	 * Cambia le preference per mostrare/nascondere le immagini di ANOninmo
+	 */
+	protected GiamboAction updatePreferences =  new GiamboAction("updatePreferences", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			if (loggedUser == null || !loggedUser.isValid()) {
+				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+				return loginAction.action(req,  res);
+			}
+			
+			// setta le preferences
+			for (String key : new String[] {PREF_SHOWANONIMG, PREF_EMBEDDYT}) {
+				String value = req.getParameter(key);
+				if (StringUtils.isNotEmpty(value)) {
+					loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, "checked"));
+				} else {
+					loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, ""));
+				}
+				
+			}
+			
+			return "user.jsp";
 		}
-		req.setAttribute("author", author);
+	};
 
-		int pageNr = Integer.parseInt(req.getParameter("pageNr"));
-
-		req.setAttribute("privateMessages", getPersistence().getPrivateMessages(author, 15, pageNr));
-		return "privateMessages.jsp";
-
-	}
-*/
 }

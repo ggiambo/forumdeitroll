@@ -11,15 +11,12 @@ import org.apache.log4j.Logger;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
+import com.acmetoy.ravanator.fdt.servlets.MainServlet;
 
 public class PvtTag extends TagSupport {
 	
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * @see com.acmetoy.ravanator.fdt.servlets.MainServlet#LOGGED_USER_SESSION_ATTR
-	 */
-	private String LOGGED_USER_SESSION_ATTR = "loggedUser";
 	private static final Logger LOG = Logger.getLogger(PersistenceFactory.class);
 	private IPersistence persistence;
 	
@@ -37,23 +34,21 @@ public class PvtTag extends TagSupport {
 	
 	@Override
 	public int doEndTag() throws JspException {
-		 String nick = (String) pageContext.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
-		 if (getPersistence() != null) {
-			 AuthorDTO author = new AuthorDTO();
-			 author.setNick(nick);
-			 boolean hasPvts = getPersistence().checkForNewPvts(author);
-			 try {
-				 JspWriter out = pageContext.getOut();
-				if (hasPvts) {
-					out.write("<a href='Pvt?action=inbox' class='pvt' title='Nuovi messaggi!'><img src='images/icona_pibox_a.gif' alt='Nuovi Messaggi Privati' /></a>");
-				} else {
-					out.write("<a href='Pvt?action=inbox' class='pvt' title='Nessun nuovo messaggio'><img src='images/icona_pibox.png' alt='Messaggi Privati' /></a>");
-				}
-				out.flush();
-			} catch (IOException e) {
-				throw new JspException(e);
-			}
-		 }
+		AuthorDTO author = (AuthorDTO) pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		if (author != null) {
+    		boolean hasPvts = getPersistence().checkForNewPvts(author);
+    		try {
+    			JspWriter out = pageContext.getOut();
+    			if (hasPvts) {
+    				out.write("<a href='Pvt?action=inbox' class='pvt' title='Nuovi messaggi!'><img src='images/icona_pibox_a.gif' alt='Nuovi Messaggi Privati' /></a>");
+    			} else {
+    				out.write("<a href='Pvt?action=inbox' class='pvt' title='Nessun nuovo messaggio'><img src='images/icona_pibox.png' alt='Messaggi Privati' /></a>");
+    			}
+    			out.flush();
+    		} catch (IOException e) {
+    			throw new JspException(e);
+    		}
+		}
 		return SKIP_BODY;
 	}
 }

@@ -30,15 +30,17 @@
 						</c:forEach>
 						</ul>
 					</div>
-					<div class="userPanelSection">
-						<h3>Altre Azioni</h3>
-						<c:url value="Pvt" var="sendPvt">
-							<c:param name="action" value="sendNew"/>
-							<c:param name="singleRecipient" value="${author.nick}"/>
-						</c:url>
-						<a href="<c:out value="${sendPvt}" escapeXml="true" />" class="userPanelButton">Manda PVT</a>
-						<div style="clear: both;"></div>
-					</div>
+					<c:if test="${not empty loggedUser}">
+						<div class="userPanelSection">
+							<h3>Altre Azioni</h3>
+							<c:url value="Pvt" var="sendPvt">
+								<c:param name="action" value="sendNew"/>
+								<c:param name="singleRecipient" value="${author.nick}"/>
+							</c:url>
+							<a href="<c:out value="${sendPvt}" escapeXml="true" />" class="userPanelButton">Manda PVT</a>
+							<div style="clear: both;"></div>
+						</div>
+					</c:if>
 				</div>	
 			</div>
 		</div>

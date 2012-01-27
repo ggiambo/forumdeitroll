@@ -26,7 +26,7 @@ public abstract class DatabaseMigration {
 	private static final Pattern PATTERN_IMG = Pattern.compile("<a.+?><img.*?src=\"(.+?)\".*?></a>");
 	private static final Pattern PATTERN_BLOCKQUOTE = Pattern.compile("<blockquote><pre width='34px' style='border: 1px dashed gray'><b>(.+?)</b></pre></blockquote>");
 
-	private static final Map<String, String> EMO_MAP = Messages.getEmoMap();
+	private static final Map<String, String[]> EMO_MAP = Messages.getEmoMap();
 	
 	public static void main(String[] args) {
 
@@ -108,7 +108,7 @@ public abstract class DatabaseMigration {
 		// faccine
 		m = PATTERN_EMO.matcher(text);
 		while (m.find()) {
-			String replace = EMO_MAP.get(m.group(1));
+			String replace = EMO_MAP.get(m.group(1))[0];
 			text = m.replaceFirst(Matcher.quoteReplacement(replace));
 			m = PATTERN_EMO.matcher(text);
 		}

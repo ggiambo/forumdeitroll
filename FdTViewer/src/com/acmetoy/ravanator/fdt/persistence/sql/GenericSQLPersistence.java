@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
@@ -58,10 +59,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public List<MessageDTO> getMessagesByDate(int limit, int page) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
@@ -76,10 +78,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public List<MessageDTO> getMessagesByAuthor(String author, int limit, int page) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM messages where author = ? ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps.setString(1, author);
 			ps.setInt(2, limit);
@@ -95,10 +98,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public List<MessageDTO> getMessagesByForum(String forum, int limit, int page) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps.setString(1, forum);
 			ps.setInt(2, limit);
@@ -114,11 +118,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public List<ThreadDTO> getThreads(int limit, int page) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
@@ -133,11 +138,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public List<ThreadDTO> getThreadsByLastPost(int limit, int page) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT MAX(id) AS mid FROM messages GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
@@ -167,10 +173,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	private long insertEditMessage(MessageDTO message) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE messages set text = ?, subject = ? where id = ?");
 			int i = 1;
 			ps.setString(i++, message.getText());
@@ -187,10 +194,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	private long insertReplyMessage(MessageDTO message) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();;
 			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
@@ -215,10 +223,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	private long insertNewMessage(MessageDTO message) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date) " +
 					"VALUES (-1, -1, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
@@ -250,10 +259,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public MessageDTO getMessage(long id) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = ?");
 			ps.setLong(1, id);
 			List<MessageDTO> res = getMessages(ps.executeQuery());
@@ -270,11 +280,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public List<String> getForums() {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<String> result = new ArrayList<String>();
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT DISTINCT forum FROM messages WHERE forum IS NOT NULL ORDER BY forum ASC");
 			rs = ps.executeQuery();
 			while (rs.next()) {
@@ -294,10 +305,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		if (StringUtils.isEmpty(nick)) {
 			return dto;
 		}
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM authors WHERE UPPER(NICK) = ?");
 			ps.setString(1, nick.toUpperCase());
 			rs = ps.executeQuery();
@@ -310,6 +322,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				dto.setSalt(rs.getString("salt"));
 				dto.setHash(rs.getString("hash"));
 			}
+			dto.setPreferences(getPreferences(dto));
 		} catch (SQLException e) {
 			LOG.error("Cannot get Author " + nick, e);
 		} finally {
@@ -320,10 +333,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public AuthorDTO registerUser(String nick, String password) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			// check se esiste gia'. Blah banf transazioni chissenefrega <-- (complimenti a chi ha scritto questo - sarrusofono)
 			if (getAuthor(nick).isValid()) {
 				return new AuthorDTO();
@@ -353,10 +367,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public List<MessageDTO> getMessagesByThread(long threadId) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM messages WHERE threadId = ? ORDER BY id ASC");
 			ps.setLong(1, threadId);
 			return getMessages(ps.executeQuery());
@@ -370,10 +385,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public void updateAuthor(AuthorDTO author) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE authors SET messages = ?, avatar = ? where nick = ?");
 			ps.setInt(1, author.getMessages());
 			ps.setBytes(2, author.getAvatar());
@@ -388,10 +404,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public boolean updateAuthorPassword(AuthorDTO author, String newPassword) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE authors SET password = ?, salt = ?, hash = ? WHERE nick = ?");
 			int i = 1;
 			author.changePassword(newPassword);
@@ -410,11 +427,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public List<QuoteDTO> getQuotes(AuthorDTO author) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<QuoteDTO> out = new ArrayList<QuoteDTO>();
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM quotes WHERE nick = ? ORDER BY id ASC");
 			ps.setString(1, author.getNick());
 			rs = ps.executeQuery();
@@ -444,10 +462,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public void removeQuote(QuoteDTO quote) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("DELETE FROM quotes WHERE id = ? and nick = ?");
 			int i = 1;
 			ps.setLong(i++, quote.getId());
@@ -462,10 +481,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public PrivateMsgDTO getPvtDetails(long pvt_id, AuthorDTO user) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement(
 				"SELECT content, replyTo, subject, senddate, recipient, sender " +
 				"FROM pvt_content, pvt_recipient " +
@@ -508,11 +528,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public List<PrivateMsgDTO> getInbox(AuthorDTO user, int limit, int pageNr) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null, ps2 = null;
 		ResultSet rs = null, rs2 = null;
 		List<PrivateMsgDTO> result = new LinkedList<PrivateMsgDTO>();
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT pvt_id, `read` FROM pvt_recipient WHERE recipient = ? AND deleted = 0 LIMIT ? OFFSET ?");
 			ps.setString(1, user.getNick());
 			ps.setInt(2, limit);
@@ -550,11 +571,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		long pvt_id = -1;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("INSERT INTO pvt_content" +
 										"(sender, content, senddate, subject, replyTo) " +
 										"VALUES  (?,?,sysdate(),?,?)", Statement.RETURN_GENERATED_KEYS);
@@ -606,10 +628,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	
 	@Override
 	public boolean checkForNewPvts(AuthorDTO recipient) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT count(*) FROM pvt_recipient WHERE recipient = ? AND `read` = 0");
 			ps.setString(1, recipient.getNick());
 			rs = ps.executeQuery();
@@ -625,10 +648,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	
 	@Override
 	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE pvt_recipient SET `read` = 1 WHERE recipient = ? AND pvt_id = ?");
 			ps.setString(1, recipient.getNick());
 			ps.setLong(2, privateMsg.getId());
@@ -645,10 +669,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	
 	@Override
 	public void deletePvt(long pvt_id, AuthorDTO user) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE pvt_recipient SET deleted = 1 WHERE pvt_id = ? AND recipient = ?");
 			ps.setLong(1, pvt_id);
 			ps.setString(2, user.getNick());
@@ -675,11 +700,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	
 	@Override
 	public List<PrivateMsgDTO> getSentPvts(AuthorDTO user, int limit, int pageNr) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null, ps2 = null;
 		ResultSet rs = null, rs2 = null;
 		List<PrivateMsgDTO> result = new LinkedList<PrivateMsgDTO>();
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT id, subject, senddate FROM pvt_content WHERE sender = ? AND deleted = 0 LIMIT ? OFFSET ?");
 			ps.setString(1, user.getNick());
 			ps.setInt(2, limit);
@@ -707,12 +733,82 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return result;
 	}
-
-	private long insertQuote(QuoteDTO quote) {
-		Connection conn = getConnection();
+	
+	@Override
+	public Properties getPreferences(AuthorDTO user) {
+		Properties res = new Properties();
+		if (user == null || !user.isValid()) {
+			return res;
+		}
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT `key`, value FROM preferences WHERE nick = ?");
+			ps.setString(1, user.getNick());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				res.setProperty(rs.getString("key"), rs.getString("value"));
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot read properties for user " + user.getNick(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return res;
+	}
+	
+	@Override
+	public Properties setPreference(AuthorDTO user, String key, String value) {
+		if (getPreferences(user).getProperty(key) == null) {
+			insertPreference(user, key, value);
+		} else {
+			updatePreference(user, key, value);
+		}
+		return getPreferences(user);
+	}
+	
+	private void insertPreference(AuthorDTO user, String key, String value) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("INSERT INTO preferences (nick, `key`, value) VALUES (?, ?, ?)");
+			ps.setString(1, user.getNick());
+			ps.setString(2, key);
+			ps.setString(3, value);
+			ps.execute();
+		} catch (SQLException e) {
+			LOG.error("Cannot set preference key=" + key + " value=" + value + " for user " + user.getNick(), e);
+		} finally {
+			close(null, ps, conn);
+		}
+	}
+	
+	private void updatePreference(AuthorDTO user, String key, String value) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("UPDATE preferences SET value = ? WHERE nick = ? and `key` = ?");
+			ps.setString(1, value);
+			ps.setString(2, user.getNick());
+			ps.setString(3, key);
+			ps.execute();
+		} catch (SQLException e) {
+			LOG.error("Cannot update preference key=" + key + " value=" + value + " for user " + user.getNick(), e);
+		} finally {
+			close(null, ps, conn);
+		}
+	}
+
+	private long insertQuote(QuoteDTO quote) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("INSERT INTO quotes (nick, content) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
 			ps.setString(i++, quote.getNick());
@@ -731,10 +827,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	private long updateQuote(QuoteDTO quote) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE quotes SET nick = ?, content = ? WHERE id = ? AND nick = ?");
 			int i = 1;
 			ps.setString(i++, quote.getNick());
@@ -784,10 +881,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	protected int getNumberOfMessages(long threadId) {
-		Connection conn = getConnection();
+		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
+			conn = getConnection();
 			ps = conn.prepareStatement("SELECT count(id) FROM messages WHERE threadId = ?");
 			ps.setLong(1, threadId);
 			rs = ps.executeQuery();

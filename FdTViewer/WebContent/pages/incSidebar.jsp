@@ -1,9 +1,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page trimDirectiveWhitespaces="true" %>
-<div id="sidebarSmall">
+<c:choose>
+	<c:when test="${sidebarStatus == 'show'}">
+		<c:set var="sidebarSmallStyle" value="display:none"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="sidebarStyle" value="display:none"/>
+	</c:otherwise>
+</c:choose>
+	
+<div id="sidebarSmall" style="${sidebarSmallStyle}">
 	<span class="openCloseSidebar" onClick="showSidebar();" onMouseOver="this.style.cursor='pointer'">&raquo;</span>
 </div>
-<div id="sidebar">
+<div id="sidebar" style="${sidebarStyle}">
 	<span class="openCloseSidebar" onClick="hideSidebar();" onMouseOver="this.style.cursor='pointer'">&laquo;</span><br/>
 	<form action="Messages" method="get" id="sidebarSearchForm">
 		<input type="hidden" name="action" value="search"/>

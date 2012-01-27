@@ -35,7 +35,7 @@
 	<div class="emotibox">
 		<c:forEach items="${emoMap}" var="emo" varStatus="index">
 			 <%-- caso speciale per la faccina :\  --%>
-			<c:set var="emoValue" value="${fn:replace(emo.value, '\\\\', '\\\\\\\\')}"/>
+			<c:set var="emoValue" value="${fn:replace(emo.value[0], '\\\\', '\\\\\\\\')}"/>
 			 <%-- caso speciale per la faccina :'(  --%>
 			<c:set var="emoValue" value="${fn:replace(emoValue, '\\'', '\\\\\\'')}"/>
 			<img onmousedown="insert('${emoValue}', '', '${message.parentId}')" title="${emoValue}" src="images/emo/${emo.key}.gif" style="cursor: pointer;"/>

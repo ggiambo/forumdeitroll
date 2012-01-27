@@ -1,19 +1,18 @@
 package com.acmetoy.ravanator.fdt.persistence;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import javax.crypto.SecretKeyFactory;
 import java.security.SecureRandom;
-import java.security.spec.KeySpec;
-import java.security.spec.InvalidKeySpecException;
 import java.security.Security;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.Properties;
+
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import java.security.MessageDigest;
-import java.math.BigInteger;
-
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class AuthorDTO {
@@ -48,6 +47,8 @@ public class AuthorDTO {
 	protected String oldPassword = null;
 
 	protected String salt = null, hash = null;
+	
+	private Properties preferences = new Properties();
 
 	public String getNick() {
 		return nick;
@@ -99,6 +100,14 @@ public class AuthorDTO {
 
 	public String getHash() {
 		return this.hash;
+	}
+
+	public Properties getPreferences() {
+		return preferences;
+	}
+
+	public void setPreferences(Properties preferences) {
+		this.preferences = preferences;
 	}
 
 	public void changePassword(final String password) {

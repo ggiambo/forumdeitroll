@@ -3,6 +3,7 @@ package com.acmetoy.ravanator.fdt;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +15,9 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
+import com.acmetoy.ravanator.fdt.servlets.MainServlet;
 import com.acmetoy.ravanator.fdt.servlets.Messages;
+import com.acmetoy.ravanator.fdt.servlets.User;
 
 public class MessageTag extends BodyTagSupport {
 
@@ -35,48 +38,7 @@ public class MessageTag extends BodyTagSupport {
 	}
 	
 	private static interface BodyTokenProcessor {
-		public void process(Matcher matcher, BodyState state, String search, AuthorDTO author);
-	}
-	
-	private static final Map<String, String> EMO_ALT_MAP = new HashMap<String, String>();
-	static {
-		EMO_ALT_MAP.put("1", "Sorride");
-		EMO_ALT_MAP.put("2", "A bocca aperta");
-		EMO_ALT_MAP.put("5", "Con la lingua fuori");
-		EMO_ALT_MAP.put("12", "Deluso");
-		EMO_ALT_MAP.put("3", "Occhiolino");
-		EMO_ALT_MAP.put("4", "Sorpresa");
-		EMO_ALT_MAP.put("7", "Arrabbiato");
-		EMO_ALT_MAP.put("8", "Perplesso");
-		EMO_ALT_MAP.put("10", "Triste");
-		EMO_ALT_MAP.put("9", "Imbarazzato");
-		EMO_ALT_MAP.put("13", "Ficoso");
-		EMO_ALT_MAP.put("11", "In lacrime");
-		EMO_ALT_MAP.put("6", "A bocca storta");
-		EMO_ALT_MAP.put("angelo", "Angioletto");
-		EMO_ALT_MAP.put("anonimo", "Anonimo");
-		EMO_ALT_MAP.put("diavoletto", "Indiavolato");
-		EMO_ALT_MAP.put("fantasmino", "Fantasma");
-		EMO_ALT_MAP.put("geek", "Geek");
-		EMO_ALT_MAP.put("idea", "Idea!");
-		EMO_ALT_MAP.put("newbie", "Newbie, inesperto");
-		EMO_ALT_MAP.put("noia3", "Annoiato");
-		EMO_ALT_MAP.put("pirata", "Pirata");
-		EMO_ALT_MAP.put("robot", "Cylon");
-		EMO_ALT_MAP.put("rotfl", "Rotola dal ridere");
-		EMO_ALT_MAP.put("lovewin", "Fan Windows");
-		EMO_ALT_MAP.put("lovelinux", "Fan Linux");
-		EMO_ALT_MAP.put("loveapple", "Fan Apple");
-		EMO_ALT_MAP.put("love", "Innamorato");
-		EMO_ALT_MAP.put("loveamiga", "Fan Amiga");
-		EMO_ALT_MAP.put("loveatari", "Fan Atari");
-		EMO_ALT_MAP.put("lovec64", "Fan Commodore64");
-		EMO_ALT_MAP.put("nolove", "Disinnamorato");
-		EMO_ALT_MAP.put("troll", "Troll");
-		EMO_ALT_MAP.put("troll1", "Troll occhiolino");
-		EMO_ALT_MAP.put("troll2", "Troll chiacchierone");
-		EMO_ALT_MAP.put("troll3", "Troll occhi di fuori");
-		EMO_ALT_MAP.put("troll4", "Troll di tutti i colori");
+		public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser);
 	}
 	
 	private static final Pattern QUOTE = Pattern.compile("^(&gt; ?)+");
@@ -85,7 +47,7 @@ public class MessageTag extends BodyTagSupport {
 		new HashMap<Pattern, BodyTokenProcessor>() {{
 			put(Pattern.compile("^(www\\.|https?://|ftp://|mailto:).*$"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
 					if (state.inCode) return;
 					String url = escape(state.token);
 					String desc = url;
@@ -101,13 +63,19 @@ public class MessageTag extends BodyTagSupport {
 			});
 			put(Pattern.compile("\\[img\\](https?://.*?)\\[/img\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
 					if (state.inCode) return;
 					String url = escape(matcher.group(1));
 //					state.token = matcher.replaceFirst(
 //						String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src='%s'></a>", url, url)
 //					);
-					if (StringUtils.isEmpty(author.getNick())) {
+					
+					String showAnonImg = "yes";
+					if (loggedUser != null) {
+						showAnonImg = loggedUser.getPreferences().getProperty(User.PREF_SHOWANONIMG);
+					}
+					
+					if (StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) {
 						state.token = state.token.substring(0, matcher.start()) + 
 							String.format("<a class='preview' href='%s'>Immagine postata da ANOnimo</a>", url) +
 							state.token.substring(matcher.end());
@@ -120,30 +88,42 @@ public class MessageTag extends BodyTagSupport {
 			});
 			put(Pattern.compile("\\[yt\\]([a-zA-Z0-9\\+\\/=\\-_]{7,12})\\[/yt\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
 					if (state.inCode) return;
 					String youcode = escape(matcher.group(1));
-					StringBuffer sb = new StringBuffer()
-					.append("<object height='329' width='400'>")
-					.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>")
-					.append("<param value='transparent' name='wmode'>")
-					.append("<embed height='329' width='400' wmode='transparent' ")
-					.append("type='application/x-shockwave-flash' ")
-					.append("src='http://www.youtube.com/v/").append(youcode).append("'></object>");
+					StringBuffer sb = new StringBuffer();
+					
+					String embeddYt = "yes";
+					if (loggedUser != null) {
+						embeddYt = loggedUser.getPreferences().getProperty(User.PREF_EMBEDDYT);
+					}
+					
+					if (StringUtils.isEmpty(embeddYt)) {
+						// mostra un link
+						sb.append("<a href='http://www.youtube.com/v/").append(youcode).append("'>");
+						sb.append("http://www.youtube.com/v/").append(youcode).append("</a>");
+					} else {
+						sb.append("<object height='329' width='400'>");
+						sb.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>");
+						sb.append("<param value='transparent' name='wmode'>");
+						sb.append("<embed height='329' width='400' wmode='transparent' ");
+						sb.append("type='application/x-shockwave-flash' ");
+						sb.append("src='http://www.youtube.com/v/").append(youcode).append("'></object>");
+					}
 //					state.token = matcher.replaceFirst(sb.toString());
 					state.token = state.token.substring(0, matcher.start()) + sb.toString() + state.token.substring(matcher.end());
 				}
 			});
 			put(Pattern.compile("\\[code$"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
 					state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
 					state.openCode = true;
 				}
 			});
 			put(Pattern.compile("^([a-zA-Z0-9]+)\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
 					if (state.openCode) {
 						state.openCode = false;
 //						state.token = matcher.replaceFirst(String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)));
@@ -156,14 +136,14 @@ public class MessageTag extends BodyTagSupport {
 			});
 			put(Pattern.compile("\\[/code\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
 					state.token = matcher.replaceFirst("</pre>");
 					state.inCode = false;
 				}
 			});
 			put(Pattern.compile("\\[color$"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
 					state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
 					state.openColor = true;
 				}
@@ -171,7 +151,7 @@ public class MessageTag extends BodyTagSupport {
 			//http://www.w3schools.com/cssref/css_colornames.asp
 			put(Pattern.compile("^([a-zA-Z]{3,15}|\\#[A-Za-z0-9]{6})\\]"), new BodyTokenProcessor() {
 				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author) {
+				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
 					if (state.openColor) {
 						String color = matcher.group(1);
 						state.token = state.token.substring(0, matcher.start()) +
@@ -193,17 +173,20 @@ public class MessageTag extends BodyTagSupport {
 		return src;
 	}
 	
+	/* TODO: Never used ?
 	private static String simpleReplaceFirst(String src, String search, String replacement) {
 		if (search == null || search.length() == 0) return src;
 		int p = src.indexOf(search);
 		return src.substring(0, p) + replacement + src.substring(p + search.length());
 	}
+	*/
 	
 	private static String emoticons(String line) {
-		Map<String,String> emoMap = Messages.getEmoMap();
-		for (String key: emoMap.keySet()) {
-			String value = emoMap.get(key);
-			String alt = EMO_ALT_MAP.get(key);
+		Map<String,String[]> emoMap = Messages.getEmoMap();
+		for (Entry<String, String[]> entry : emoMap.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue()[0];
+			String alt = entry.getValue()[1];
 			line = simpleReplaceAll(line, value, String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
 			line = simpleReplaceAll(line, value.toUpperCase(), String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
 			line = simpleReplaceAll(line, value.toLowerCase(), String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
@@ -222,19 +205,18 @@ public class MessageTag extends BodyTagSupport {
 		return line;
 	}
 	
-
-
 	public int doAfterBody() throws JspTagException {
 		try {
-		String body = getBodyContent().getString();
-			getBodyContent().getEnclosingWriter().write(getMessage(body, search, author));
+			String body = getBodyContent().getString();
+			AuthorDTO loggedUser = (AuthorDTO) pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			getBodyContent().getEnclosingWriter().write(getMessage(body, search, author, loggedUser));
 		} catch (Exception e) {
 			throw new JspTagException(e);
 		}
 		return SKIP_BODY;
-		}
+	}
 		
-	public static String getMessage(String body, String search, AuthorDTO author) throws Exception {
+	public static String getMessage(String body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
 		StringBuilder out = new StringBuilder();
 		
 		// questo elimina il caso di multipli [code] sulla stessa linea (casino da gestire, bisognava cambiare stile di parsing del body)
@@ -282,7 +264,7 @@ public class MessageTag extends BodyTagSupport {
 
 //								System.out.println("token: "+state.token);
 //								System.out.println("regex: "+pattern.pattern());
-							processor.process(matcher, state, search, author);
+							processor.process(matcher, state, search, author, loggedUser);
 //								System.out.println("---->: "+state.token);
 			}
 		}

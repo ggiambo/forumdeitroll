@@ -9,12 +9,12 @@
 					<div class="userPanelSection">
 						<c:url value="" var="avatarURL">
 							<c:param name="action" value="getAvatar"/>
-							<c:param name="nick" value="${author.nick}"/>
+							<c:param name="nick" value="${loggedUser.nick}"/>
 						</c:url>
 						<img src="<c:out value="${avatarURL}" escapeXml="true" />" alt="Avatar" class="avatar" />
 						<h3>Informazioni</h3>
-						<span class="lbl">Nome utente:</span> ${author.nick}<br/>
-						<span class="lbl">Messaggi:</span> ${author.messages}
+						<span class="lbl">Nome utente:</span> ${loggedUser.nick}<br/>
+						<span class="lbl">Messaggi:</span> ${loggedUser.messages}
 						<div style="clear: both;"></div>
 					</div>
 					<div class="userPanelSection">
@@ -68,6 +68,32 @@
 						<h3>Altre Azioni</h3>
 						<a href="?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
 						<a href="./Pvt?action=inbox" class="userPanelButton">Posta</a>
+						<c:set var="showAnonImg" value="${loggedUser.preferences['showAnonImg']}"/>
+						<div style="clear: both;"></div>
+					</div>
+					<div class="userPanelSection">
+						<h3>Preferenze</h3>
+						<form action="User?action=updatePreferences" method="post">
+							<div>
+								<div class="inputUserPanel">
+									<input type="checkbox" name="showAnonImg" id="showAnonImg" ${loggedUser.preferences['showAnonImg']} />
+								</div>
+								<div class="lblUserPanel">
+									<label for="showAnonImg" class="lbl">Immagini ANOnimo</label>
+								</div>
+								<div style="clear: both;"></div>
+							</div>
+							<div>
+								<div class="inputUserPanel">
+									<input type="checkbox" name="embeddYt" id="embeddYt" ${loggedUser.preferences['embeddYt']} />
+								</div>
+								<div class="lblUserPanel">
+									<label for="embeddYt" class="lbl">Embedda youtube</label>
+								</div>
+								<div style="clear: both;"></div>
+							</div>
+							<input type="submit" value="Modifica" class="sendUserPanel" />
+						</form>
 						<div style="clear: both;"></div>
 					</div>
 				</div>

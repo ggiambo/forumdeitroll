@@ -56,4 +56,8 @@ public interface IPersistence {
 	public void deletePvt(long pvt_id, AuthorDTO user);
 	
 	public PrivateMsgDTO getPvtDetails(long pvt_id, AuthorDTO user);
+	
+	public Properties getPreferences(AuthorDTO user);
+
+	public Properties setPreference(AuthorDTO user, String key, String value);
 }

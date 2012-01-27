@@ -27,45 +27,46 @@ public class Messages extends MainServlet {
 	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
 	private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?v=(.{11})");
 
-	private static final Map<String, String> EMO_MAP = new HashMap<String, String>();
+	// key: filename, value[0]: edit value, value[1]: alt
+	private static final Map<String, String[]> EMO_MAP = new HashMap<String, String[]>();
 	static {
-		EMO_MAP.put("1", " :)");
-		EMO_MAP.put("2", " :D");
-		EMO_MAP.put("3", " ;)");
-		EMO_MAP.put("4", " :o");
-		EMO_MAP.put("5", " :p");
-		EMO_MAP.put("6", " :\\");
-		EMO_MAP.put("7", " :@");
-		EMO_MAP.put("8", " :s");
-		EMO_MAP.put("9", " :$");
-		EMO_MAP.put("10", " :(");
-		EMO_MAP.put("11", ":'(");
-		EMO_MAP.put("12", " :|");
-		EMO_MAP.put("13", " 8)");
-		EMO_MAP.put("angelo", " O)");
-		EMO_MAP.put("anonimo", "(anonimo)");
-		EMO_MAP.put("diavoletto", " @^");
-		EMO_MAP.put("fantasmino", "(ghost)");
-		EMO_MAP.put("geek", "(geek)");
-		EMO_MAP.put("idea", "(idea)");
-		EMO_MAP.put("love", "(love)");
-		EMO_MAP.put("loveamiga", "(amiga)");
-		EMO_MAP.put("loveapple", "(apple)");
-		EMO_MAP.put("loveatari", "(atari)");
-		EMO_MAP.put("lovec64", "(c64)");
-		EMO_MAP.put("lovelinux", "(linux)");
-		EMO_MAP.put("lovewin", "(win)");
-		EMO_MAP.put("newbie", "(newbie)");
-		EMO_MAP.put("noia3", " :-o");
-		EMO_MAP.put("nolove", "(nolove)");
-		EMO_MAP.put("pirata", " p)");
-		EMO_MAP.put("robot", "(cylon)");
-		EMO_MAP.put("rotfl", "(rotfl)");
-		EMO_MAP.put("troll1", "(troll1)");
-		EMO_MAP.put("troll2", "(troll2)");
-		EMO_MAP.put("troll3", "(troll3)");
-		EMO_MAP.put("troll4", "(troll4)");
-		EMO_MAP.put("troll", "(troll)");
+		EMO_MAP.put("1", new String[] {" :)", "Sorride" });
+		EMO_MAP.put("2", new String[] {" :D", "A bocca aperta"});
+		EMO_MAP.put("3", new String[] {" ;)", "Occhiolino"});
+		EMO_MAP.put("4", new String[] {" :o", "Sorpressa"});
+		EMO_MAP.put("5", new String[] {" :p", "Con la lingua fuori"});
+		EMO_MAP.put("6", new String[] {" :\\", "A bocca storta"});
+		EMO_MAP.put("7", new String[] {" :@", "Arrabbiato"});
+		EMO_MAP.put("8", new String[] {" :s", "Perplesso"});
+		EMO_MAP.put("9", new String[] {" :$", "Imbarazzato"});
+		EMO_MAP.put("10", new String[] {" :(", "Triste"});
+		EMO_MAP.put("11", new String[] {":'(", "In lacrime"});
+		EMO_MAP.put("12", new String[] {" :|", "Deluso"});
+		EMO_MAP.put("13", new String[] {" 8)", "Ficoso"});
+		EMO_MAP.put("angelo", new String[] {" O)", "Angioletto"});
+		EMO_MAP.put("anonimo", new String[] {"(anonimo)", "Anonimo"});
+		EMO_MAP.put("diavoletto", new String[] {" @^", "Indiavolato"});
+		EMO_MAP.put("fantasmino", new String[] {"(ghost)", "Fantasma"});
+		EMO_MAP.put("geek", new String[] {"(geek)", "Geek"});
+		EMO_MAP.put("idea", new String[] {"(idea)", "Idea!"});
+		EMO_MAP.put("love", new String[] {"(love)", "Innamorato"});
+		EMO_MAP.put("loveamiga", new String[] {"(amiga)", "Fan Amiga"});
+		EMO_MAP.put("loveapple", new String[] {"(apple)", "Fan Apple"});
+		EMO_MAP.put("loveatari", new String[] {"(atari)", "Fan Atari"});
+		EMO_MAP.put("lovec64", new String[] {"(c64)", "Fan Commodore64"});
+		EMO_MAP.put("lovelinux", new String[] {"(linux)", "Fan Linux"});
+		EMO_MAP.put("lovewin", new String[] {"(win)", "Fan Windows"});
+		EMO_MAP.put("newbie", new String[] {"(newbie)", "Newbie, inesperto"});
+		EMO_MAP.put("noia3", new String[] {" :-o", "Annoiato"});
+		EMO_MAP.put("nolove", new String[] {"(nolove)", "Disinnamorato"});
+		EMO_MAP.put("pirata", new String[] {" p)", "Pirata"});
+		EMO_MAP.put("robot", new String[] {"(cylon)", "Cylon"});
+		EMO_MAP.put("rotfl", new String[] {"(rotfl)", "Rotola dal ridere"});
+		EMO_MAP.put("troll1", new String[] {"(troll1)", "Troll occhiolino"});
+		EMO_MAP.put("troll2", new String[] {"(troll2)", "Troll chiacchierone"});
+		EMO_MAP.put("troll3", new String[] {"(troll3)", "Troll occhi di fuori"});
+		EMO_MAP.put("troll4", new String[] {"(troll4)", "Troll di tutti i colori"});
+		EMO_MAP.put("troll", new String[] {"(troll)", "Troll"});
 	}
 
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
@@ -101,7 +102,7 @@ public class Messages extends MainServlet {
 	protected GiamboAction getByAuthor = new GiamboAction("getByAuthor", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String author = req.getParameter("author");
-			req.setAttribute("specificParams", "&amp;author=" + author);
+			addSpecificParam(req, "author", author);
 			setWebsiteTitle(req, "Messaggi di " + author + " @ Forum dei Troll");
 			setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + author + "</i>"));
 			req.setAttribute("messages", getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req)));
@@ -112,7 +113,7 @@ public class Messages extends MainServlet {
 	protected GiamboAction getByForum = new GiamboAction("getByForum", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String forum = req.getParameter("forum");
-			req.setAttribute("specificParams", "&amp;forum=" + forum);
+			addSpecificParam(req, "forum", forum);
 			setWebsiteTitle(req, forum + " @ Forum dei Troll");
 			setNavigationMessage(req, NavigationMessage.info("Forum <i>" + forum + "</i>"));
 			req.setAttribute("messages", getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req)));
@@ -130,7 +131,7 @@ public class Messages extends MainServlet {
 	protected GiamboAction search = new GiamboAction("search", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String search = req.getParameter("search");
-			req.setAttribute("specificParams", "&amp;search=" + search);
+			addSpecificParam(req, "search", search);
 			setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
 			req.setAttribute("messages", getPersistence().searchMessages(search, PAGE_SIZE, getPageNr(req)));
 			return "messages.jsp";
@@ -151,7 +152,7 @@ public class Messages extends MainServlet {
 			req.setAttribute("message", msg);
 			setWebsiteTitle(req, "Nuovo messaggio @ Forum dei Troll");
 			// faccine - ordinate per key
-			TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
+			TreeMap<String, String[]> emoMap = new TreeMap<String, String[]>(EMO_MAP);
 			req.setAttribute("emoMap", emoMap);
 			return "newMessage.jsp";
 		}
@@ -199,7 +200,7 @@ public class Messages extends MainServlet {
 			req.setAttribute("message", newMsg);
 
 			// faccine - ordinate per key
-			TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
+			TreeMap<String, String[]> emoMap = new TreeMap<String, String[]>(EMO_MAP);
 			req.setAttribute("emoMap", emoMap);
 
 			return "incReplyMessage.jsp";
@@ -267,7 +268,7 @@ public class Messages extends MainServlet {
 			AuthorDTO user = login(req);
 			String msgId = req.getParameter("msgId");
 			MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
-		if (!user.isValid() || !user.getNick().equals(msg.getAuthor().getNick())) {
+			if (!user.isValid() || !user.getNick().equals(msg.getAuthor().getNick())) {
 				setNavigationMessage(req, NavigationMessage.error("Non puoi editare un messaggio non tuo !"));
 				return getByPage.action(req, res);
 			}
@@ -277,7 +278,7 @@ public class Messages extends MainServlet {
 			req.setAttribute("message", msg);
 
 			// faccine - ordinate per key
-			TreeMap<String, String> emoMap = new TreeMap<String, String>(EMO_MAP);
+			TreeMap<String, String[]> emoMap = new TreeMap<String, String[]>(EMO_MAP);
 			req.setAttribute("emoMap", emoMap);
 
 			req.setAttribute("isEdit", true);
@@ -303,7 +304,7 @@ public class Messages extends MainServlet {
 			JsonWriter writer = new JsonWriter(res.getWriter());
 			writer.beginObject();
 			writer.name("resultCode").value("OK");
-			writer.name("content").value(MessageTag.getMessage(text, null, author).replaceAll("\n", "<BR/>"));
+			writer.name("content").value(MessageTag.getMessage(text, null, author, null).replaceAll("\n", "<BR/>"));
 			writer.endObject();
 			writer.flush();
 			writer.close();
@@ -478,8 +479,17 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
-	public static Map<String, String> getEmoMap() {
-		return new HashMap<String, String>(EMO_MAP);
+	public static Map<String, String[]> getEmoMap() {
+		return new HashMap<String, String[]>(EMO_MAP);
+	}
+	
+	private void addSpecificParam(HttpServletRequest req, String key, String value) {
+		Map<String, String> specificParams = (Map<String, String>)req.getAttribute("specificParams");
+		if (specificParams == null) {
+			specificParams = new HashMap<String, String>();
+			req.setAttribute("specificParams", specificParams);
+		}
+		specificParams.put(key, value);
 	}
 
 }

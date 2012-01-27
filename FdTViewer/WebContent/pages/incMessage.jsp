@@ -62,7 +62,7 @@
 		</div>
 			</c:if>
 		</div>
-		<c:if test="${not empty loggedUser && msg.author.nick == loggedUser}">
+		<c:if test="${not empty loggedUser && msg.author.nick == loggedUser.nick}">
 			<div class="msgAction">
 				<a href="Messages?action=editMessage&amp;msgId=${msg.id}&amp;forum=${msg.forum}">Modifica</a>
 			</div>

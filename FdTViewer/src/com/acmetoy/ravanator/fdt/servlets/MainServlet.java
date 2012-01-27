@@ -37,7 +37,7 @@ public abstract class MainServlet extends HttpServlet {
 
 	protected static final int PAGE_SIZE = 20;
 
-	protected static final String LOGGED_USER_SESSION_ATTR = "loggedUser";
+	public static final String LOGGED_USER_SESSION_ATTR = "loggedUser";
 
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
@@ -119,6 +119,9 @@ public abstract class MainServlet extends HttpServlet {
 
 		// forums
 		req.setAttribute("forums", getPersistence().getForums());
+		
+		// sidebar statsu 
+		setSidebarStatusInSession(req, res);
 
 		// this context
 		req.setAttribute("contextPath", req.getRequestURL());
@@ -212,7 +215,7 @@ public abstract class MainServlet extends HttpServlet {
 			final AuthorDTO author = getPersistence().getAuthor(nick);
 			if (author.passwordIs(pass)) {
 				// ok, ci siamo loggati con successo, salvare nella sessione
-				req.getSession().setAttribute(LOGGED_USER_SESSION_ATTR, author.getNick());
+				req.getSession().setAttribute(LOGGED_USER_SESSION_ATTR, author);
 				if (!author.newAuth()) {
 					// CODICE DI MIGRAZIONE DELLA FUNZIONE DI HASHING DELLE PASSWORD
 					// autenticazione con username e password effettuata con successo ma
@@ -226,9 +229,8 @@ public abstract class MainServlet extends HttpServlet {
 		}
 
 		// se non e` stato specificato nome utente e password tentiamo l'autenticazione tramite sessione
-		final String sesNick = (String)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
-		if (sesNick != null) {
-			final AuthorDTO author = getPersistence().getAuthor(sesNick);
+		final AuthorDTO author = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+		if (author != null) {
 			if (!author.newAuth()) {
 				// CODICE DI MIGRAZIONE DELLA FUNZIONE DI HASHING DELLE PASSWORD
 				// l'utente e` loggato con il cookie ma la password usa sempre l'hashing vecchio, piallare il
@@ -255,6 +257,44 @@ public abstract class MainServlet extends HttpServlet {
 			return mapGet.get("init").action(req, res);
 		}
 	};
+	
+	/**
+	 * Setta lo stato della sidebar nella session, nelle preferenze utente o nel cookie se non e' gia' stato fatto.
+	 * @param req
+	 * @param res
+	 * @throws Exception
+	 */
+	private void setSidebarStatusInSession(HttpServletRequest req, HttpServletResponse res) {
+		String sidebarStatus = (String) req.getSession().getAttribute("sidebarStatus");
+		if (StringUtils.isEmpty(sidebarStatus)) {
+			// proviamo a leggerla dalle preferences dell'utente
+			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			if (loggedUser != null && loggedUser.isValid()) {
+				sidebarStatus = getPersistence().getPreferences(loggedUser).getProperty("sidebarStatus");
+				if (StringUtils.isEmpty(sidebarStatus)) {
+					// update preference - default "show"
+					sidebarStatus = "show";
+					getPersistence().setPreference(loggedUser, "sidebarStatus", sidebarStatus);
+				}
+			} else {
+				// utente non loggato, andiamo di cookie ...
+				if (req.getCookies() != null) {
+					for (Cookie cookie : req.getCookies()) {
+						if ("sidebarStatus".equals(cookie.getName())) {
+							sidebarStatus = cookie.getValue();
+						}
+					}
+				}
+				if (StringUtils.isEmpty(sidebarStatus)) {
+					// update nel cookie - default "show"
+					sidebarStatus = "show";
+					res.addCookie(new Cookie("sidebarStatus", sidebarStatus));
+				}
+			}
+			// settiamo nella session
+			req.getSession().setAttribute("sidebarStatus", sidebarStatus);
+		}
+	}
 
 	/**
 	 * Setta nella session lo stato della sidebar (Aperta/chiusa)
@@ -263,42 +303,31 @@ public abstract class MainServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected GiamboAction sidebarStatus = new GiamboAction("sidebarStatus", ONGET|ONPOST) {
+	protected GiamboAction updateSidebarStatus = new GiamboAction("updateSidebarStatus", ONGET|ONPOST) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String sidebarStatus = req.getParameter("sidebarStatus");
-			// get sidebar status
-			if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
-				sidebarStatus = (String) req.getSession().getAttribute("sidebarStatus");
-				if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
-					// get from cookie
-					if (req.getCookies() != null) {
-						for (Cookie cookie : req.getCookies()) {
-							if ("sidebarStatus".equals(cookie.getName())) {
-								sidebarStatus = cookie.getValue();
-							}
+			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			if (loggedUser != null && loggedUser.isValid()) {
+				// settiamo nelle preferences dell'utente
+				getPersistence().setPreference(loggedUser, "sidebarStatus", sidebarStatus);
+			} else {
+				// settiamo nel cookie
+				boolean found = false;
+				if (req.getCookies() != null) {
+					for (Cookie cookie : req.getCookies()) {
+						if ("sidebarStatus".equals(cookie.getName())) {
+							cookie.setValue(sidebarStatus);
+							found = true;
 						}
 					}
-					if (sidebarStatus == null || sidebarStatus.trim().length() == 0) {
-	    				// default: show
-	    				sidebarStatus = "show";
-					}
+				}
+				if (!found) {
+					res.addCookie(new Cookie("sidebarStatus", sidebarStatus));
 				}
 			}
+			// settiamo nella session
 			req.getSession().setAttribute("sidebarStatus", sidebarStatus);
-			// set in cookie
-			boolean found = false;
-			for (Cookie c : req.getCookies()) {
-				if ("sidebarStatus".equals(c.getName())) {
-					c.setValue(sidebarStatus);
-					found = true;
-				}
-			}
-			if (!found) {
-				Cookie cookie = new Cookie("sidebarStatus", sidebarStatus);
-				res.addCookie(cookie);
-			}
-			res.getWriter().write(sidebarStatus);
-			res.flushBuffer();
+			
 			return null;
 		}
 	};
