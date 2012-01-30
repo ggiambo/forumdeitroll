@@ -1,5 +1,6 @@
 package com.acmetoy.ravanator.fdt.persistence;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,27 +16,16 @@ import javax.crypto.spec.PBEKeySpec;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-public class AuthorDTO {
+public class AuthorDTO implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	static {
 		Security.addProvider(new BouncyCastleProvider());
 	}
 
-	static protected ThreadLocal<SecretKeyFactory> secretKeyFactory = new ThreadLocal<SecretKeyFactory>() {
-		@Override protected SecretKeyFactory initialValue() {
-			try {
-				return SecretKeyFactory.getInstance("PBEWithSHAAnd3-KeyTripleDES-CBC");
-			} catch(NoSuchAlgorithmException e) {
-				throw new RuntimeException("Algoritmo di hashing non supportato?!", e);
-			}
-		}
-	};
-
-	static protected ThreadLocal<SecureRandom> secureRandom = new ThreadLocal<SecureRandom>() {
-		@Override protected SecureRandom initialValue() {
-			return new SecureRandom();
-		}
-	};
-
+	private transient SecretKeyFactory secretKeyFactory = null;
+	
 	private int ranking = -1;
 
 	private int messages = -1;
@@ -113,7 +103,7 @@ public class AuthorDTO {
 	public void changePassword(final String password) {
 		if (StringUtils.isEmpty(this.salt)) {
 			byte[] saltBytes = new byte[8];
-			secureRandom.get().nextBytes(saltBytes);
+			new SecureRandom().nextBytes(saltBytes);
 			this.salt = hex(saltBytes, false);
 		}
 
@@ -153,10 +143,10 @@ public class AuthorDTO {
 		return result;
 	}
 
-	static protected String passwordHash(final String password, final String salt) {
+	private String passwordHash(final String password, final String salt) {
 		final KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 1024, 192);
 		try {
-			byte[] hash = secretKeyFactory.get().generateSecret(spec).getEncoded();
+			byte[] hash = getSecretKeyFactory().generateSecret(spec).getEncoded();
 			return hex(hash, true);
 		} catch(InvalidKeySpecException e) {
 			throw new RuntimeException("Algoritmo di hashing fallito per strane ragioni", e);
@@ -169,7 +159,7 @@ public class AuthorDTO {
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 */
-	static protected String md5(String input) {
+	private String md5(String input) {
 		try {
 			String result = input;
 			if (input != null) {
@@ -181,6 +171,17 @@ public class AuthorDTO {
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException("La tua virtual machine non esiste", e);
 		}
+	}
+	
+	private SecretKeyFactory getSecretKeyFactory() {
+		if (secretKeyFactory == null) {
+			try {
+				secretKeyFactory = SecretKeyFactory.getInstance("PBEWithSHAAnd3-KeyTripleDES-CBC");
+			} catch(NoSuchAlgorithmException e) {
+				throw new RuntimeException("Algoritmo di hashing non supportato?!", e);
+			}
+		}
+		return secretKeyFactory;
 	}
 
 	@Override
