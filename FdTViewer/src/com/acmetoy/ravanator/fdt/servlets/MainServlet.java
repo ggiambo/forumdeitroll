@@ -254,6 +254,7 @@ public abstract class MainServlet extends HttpServlet {
 	protected GiamboAction logoutAction = new GiamboAction("logoutAction", ONGET|ONPOST) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
+			req.getSession().invalidate();
 			return mapGet.get("init").action(req, res);
 		}
 	};
