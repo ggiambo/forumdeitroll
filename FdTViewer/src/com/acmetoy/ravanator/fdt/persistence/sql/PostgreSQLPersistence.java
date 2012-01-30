@@ -66,7 +66,7 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 		} finally {
 			close(rs, ps, conn);
 		}
-		return null;
+		return out;
 	}
 	
 }
