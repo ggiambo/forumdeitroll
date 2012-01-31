@@ -10,12 +10,12 @@
 					<div class="userPanelSection">
 						<c:url value="" var="avatarURL">
 							<c:param name="action" value="getAvatar"/>
-							<c:param name="nick" value="${author.nick}"/>
+							<c:param name="nick" value="${loggedUser.nick}"/>
 						</c:url>
 						<img src="<c:out value="${avatarURL}" escapeXml="true" />" alt="Avatar" class="avatar" />
 						<h3>Informazioni</h3>
-						<span class="lbl">Nome utente:</span> ${author.nick}<br/>
-						<span class="lbl">Messaggi:</span> ${author.messages}
+						<span class="lbl">Nome utente:</span> ${loggedUser.nick}<br/>
+						<span class="lbl">Messaggi:</span> ${loggedUser.messages}
 						<div style="clear: both;"></div>
 					</div>
 					<div class="userPanelSection">
