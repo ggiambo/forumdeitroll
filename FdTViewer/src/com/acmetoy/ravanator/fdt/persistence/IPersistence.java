@@ -15,6 +15,8 @@ public interface IPersistence {
 
 	public List<ThreadDTO> getThreadsByLastPost(int limit, int page);
 
+	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page);
+
 	public MessageDTO getMessage(long id);
 
 	public List<MessageDTO> getMessagesByDate(int limit, int page);

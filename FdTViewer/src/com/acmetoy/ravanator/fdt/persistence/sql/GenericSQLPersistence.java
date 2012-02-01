@@ -160,6 +160,45 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
+	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		final List<ThreadDTO> result = new ArrayList<ThreadDTO>();
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement(
+			"SELECT last_global.threadid " +
+			"FROM " +
+				"(SELECT threadid, max(id) AS mid FROM messages " +
+				"GROUP BY threadid ORDER BY mid DESC LIMIT 512) " +
+				"AS last_global, " +
+				"(SELECT threadid FROM messages " +
+				"WHERE author = ? " +
+				"GROUP BY threadid ORDER BY max(id) DESC LIMIT 512) " +
+				"AS last_author " +
+			"WHERE last_author.threadid = last_global.threadid " +
+			"ORDER BY last_global.mid DESC LIMIT ? OFFSET ?;");
+
+			int i = 1;
+			ps.setString(i++, author);
+			ps.setInt(i++, limit);
+			ps.setInt(i++, limit*page);
+
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				result.add(getMessage(rs.getLong(1)));
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get author threads by last post", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return result;
+	}
+
+	@Override
 	public MessageDTO insertMessage(MessageDTO message) {
 		if (message.getParentId() != -1) {
 			if (message.getId() == -1) {
