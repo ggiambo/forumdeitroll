@@ -71,7 +71,7 @@
 													<a href="Pvt?action=show&amp;id=${pvt.id}"><fmt:formatDate value="${pvt.date}" pattern="dd/MM/yyyy"/></a>
 												</td>
 												<td class="pvtAction">
-													<a href="Pvt?action=delete&amp;id=${pvt.id}" title="Cancella messaggio"><img src="images/delete.png" alt="Cancella" /></a>
+													<a href="Pvt?action=delete&amp;id=${pvt.id}&from=${from}" title="Cancella messaggio"><img src="images/delete.png" alt="Cancella" /></a>
 												</td>
 											</tr>
 										</c:forEach>

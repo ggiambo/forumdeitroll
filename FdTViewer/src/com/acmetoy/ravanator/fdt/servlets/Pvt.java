@@ -142,6 +142,10 @@ public class Pvt extends MainServlet implements Servlet {
 			if (login(req).isValid()) {
 				long id = Long.parseLong(req.getParameter("id"));
 				getPersistence().deletePvt(id, login(req));
+				String from = req.getParameter("from");
+				if ("outbox".equals(from)) {
+					return outbox.action(req, res);
+				}
 				return inbox.action(req, res);
 			}
 			return "pvts.jsp";
