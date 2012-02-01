@@ -256,7 +256,6 @@ public class User extends MainServlet {
 
 			Long quoteId = Long.parseLong(req.getParameter("quoteId"));
 			String content = req.getParameter("quote_" + quoteId);
-			content = new String(content.getBytes(), "UTF-8"); // VOGLIO.TUTTO.UTF-8 :@ !!!
 			if (StringUtils.isEmpty(content) || content.length() < 3 || content.length() > 100) {
 				setNavigationMessage(req, NavigationMessage.warn("Minimo 3 caratteri, massimo 100"));
 				return getQuotes.action(req, res);

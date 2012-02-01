@@ -114,6 +114,10 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	public final void doDo(HttpServletRequest req, HttpServletResponse res, final Map<String, GiamboAction> map) throws IOException {
+		// I love UTF-8
+		req.setCharacterEncoding("UTF-8");
+		res.setCharacterEncoding("UTF-8");
+		
 		// actual time
 		req.setAttribute("currentTimeMillis", System.currentTimeMillis());
 

@@ -167,7 +167,6 @@ public class Messages extends MainServlet {
 	 */
 	protected GiamboAction showReplyDiv = new GiamboAction("showReplyDiv", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			res.setCharacterEncoding("UTF-8");
 			String type = req.getParameter("type");
 			long parentId = Long.parseLong(req.getParameter("parentId"));
 			req.setAttribute("parentId", parentId);
@@ -297,7 +296,6 @@ public class Messages extends MainServlet {
 	
 	protected GiamboAction getMessagePreview = new GiamboAction("getMessagePreview", ONPOST) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			res.setCharacterEncoding("UTF-8");
 			String text = req.getParameter("text");
 			AuthorDTO author = login(req);
 			// crea la preview del messaggio
