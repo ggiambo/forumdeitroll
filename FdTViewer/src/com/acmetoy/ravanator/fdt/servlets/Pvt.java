@@ -132,6 +132,7 @@ public class Pvt extends MainServlet implements Servlet {
 			pvt = getPersistence().getPvtDetails(id, login(req));
 			req.setAttribute("pvtdetail", pvt);
 			req.setAttribute("from", "show");
+			req.setAttribute("sender", getPersistence().getAuthor(pvt.getFromNick()));
 			return "pvts.jsp";
 		}
 	};
@@ -166,6 +167,28 @@ public class Pvt extends MainServlet implements Servlet {
 				return "pvts.jsp";
 			}
 			return null; //TODO pagina user non auth
+		}
+	};
+	
+	protected GiamboAction reply = new GiamboAction("reply", ONGET) {
+		@Override
+		public String action(HttpServletRequest req, HttpServletResponse res)
+				throws Exception {
+			long id = Long.parseLong(req.getParameter("id"));
+			PrivateMsgDTO pvt = new PrivateMsgDTO();
+			pvt.setId(id);
+			pvt = getPersistence().getPvtDetails(id, login(req));
+			// prepara il reply
+			req.setAttribute("recipient", new String[] { pvt.getFromNick() });
+			String subject = pvt.getSubject();
+			if (!subject.startsWith("Re:")) {
+				subject = "Re: " + subject;
+			}
+			req.setAttribute("subject", subject);
+			String text = pvt.getText().replaceAll("^", "> ").replaceAll("<BR>", "> ");
+			req.setAttribute("text", text);
+			req.setAttribute("from", "sendNew");
+			return "pvts.jsp";
 		}
 	};
 }

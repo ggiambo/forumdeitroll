@@ -124,8 +124,12 @@
 								</c:forEach>
 							</p>
 							<div class="pvtTextMessage">
-								<fdt:msg>${pvtdetail.text }</fdt:msg>
+								<fdt:msg author="${sender}">${pvtdetail.text }</fdt:msg>
 							</div>
+							<c:if test="${pvtdetail.fromNick != loggedUser.nick}">
+								<a href="?action=reply&amp;id=${pvtdetail.id}" class="userPanelButton">Rispondi</a>
+								<div style="clear: both;"></div>
+							</c:if>
 						</div>
 					</c:if>
 				</div> <%-- /Content --%>
