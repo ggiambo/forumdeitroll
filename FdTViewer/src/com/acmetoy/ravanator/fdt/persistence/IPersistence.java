@@ -15,6 +15,8 @@ public interface IPersistence {
 
 	public List<ThreadDTO> getThreadsByLastPost(int limit, int page);
 
+	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page);
+
 	public MessageDTO getMessage(long id);
 
 	public List<MessageDTO> getMessagesByDate(int limit, int page);
@@ -44,19 +46,19 @@ public interface IPersistence {
 	public QuoteDTO getRandomQuote();
 
 	public List<PrivateMsgDTO> getSentPvts(AuthorDTO author, int limit, int pageNr);
-	
+
 	public List<PrivateMsgDTO> getInbox(AuthorDTO author, int limit, int pageNr);
 
 	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients);
-	
+
 	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg);
-	
+
 	public boolean checkForNewPvts(AuthorDTO author);
-	
+
 	public void deletePvt(long pvt_id, AuthorDTO user);
-	
+
 	public PrivateMsgDTO getPvtDetails(long pvt_id, AuthorDTO user);
-	
+
 	public Properties getPreferences(AuthorDTO user);
 
 	public Properties setPreference(AuthorDTO user, String key, String value);

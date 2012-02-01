@@ -36,7 +36,7 @@ public class Threads extends MainServlet {
 			return "thread.jsp";
 		}
 	};
-	
+
 	protected GiamboAction openThreadTree = new GiamboAction("openThreadTree", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			Long threadId = Long.parseLong(req.getParameter("threadId"));
@@ -46,11 +46,11 @@ public class Threads extends MainServlet {
 				indentMsg.add(new IndentMessageDTO(dto));
 			}
 			req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
-			
+
 			return "threadTree.jsp";
 		}
 	};
-	
+
 	/**
 	 * Ordinati per thread / data iniziale
 	 */
@@ -62,7 +62,7 @@ public class Threads extends MainServlet {
 			return "threads.jsp";
 		}
 	};
-	
+
 	/**
 	 * Ordinati per thread / ultimo post
 	 */
@@ -75,4 +75,12 @@ public class Threads extends MainServlet {
 		}
 	};
 
+	protected GiamboAction getAuthorThreadsByLastPost = new GiamboAction("getAuthorThreadsByLastPost", ONPOST|ONGET) {
+		public String action(final HttpServletRequest req, final HttpServletResponse res) throws Exception {
+			String author = req.getParameter("author");
+			if (author == null) author = "";
+			req.setAttribute("messages", getPersistence().getAuthorThreadsByLastPost(author, PAGE_SIZE, getPageNr(req)));
+			return "threadsByLastPost.jsp";
+		}
+	};
 }

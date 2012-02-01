@@ -29,7 +29,10 @@ CREATE TABLE IF NOT EXISTS `authors` (
   `nick` tinytext NOT NULL,
   `ranking` int(11) NOT NULL,
   `messages` int(11) NOT NULL,
-  `avatar` mediumblob
+  `avatar` mediumblob,
+  `password` tinytext NOT NULL,
+  `salt` tinytext,
+  `hash` tinytext
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -65,4 +68,41 @@ CREATE TABLE IF NOT EXISTS `quotes` (
   `content` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+-- --------------------------------------------------------
+
+--
+-- pvt.sql -- tabelle per i messaggi privati
+--
+
+CREATE TABLE IF NOT EXISTS `pvt_content` (
+	`id` int(11) NOT NULL AUTO_INCREMENT,
+	`sender` text NOT NULL,
+	`content` mediumtext NOT NULL,
+	`senddate` datetime NOT NULL,
+	`subject` text NOT NULL,
+	`replyTo` int(11),
+	`deleted` int(1) DEFAULT 0,
+	PRIMARY KEY(`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+CREATE TABLE IF NOT EXISTS `pvt_recipient` (
+	`pvt_id` int(11) NOT NULL,
+	`recipient` text NOT NULL,
+	`read` int(1) DEFAULT 0,
+	`deleted` int(1) DEFAULT 0
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
+
+-- --------------------------------------------------------
+
+--
+-- preferences.sql -- tabella di salvataggio delle preferenze
+--
+
+CREATE TABLE IF NOT EXISTS `preferences` (
+  `nick` tinytext NOT NULL,
+  `key` tinytext NOT NULL,
+  `value` tinytext NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
+
 
