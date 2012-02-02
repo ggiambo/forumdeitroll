@@ -17,7 +17,7 @@
 		<li>|</li>
 			<c:choose>
 				<c:when test="${not empty loggedUser}">
-					<li>Loggato come <a href="User">${loggedUser.nick}</a> | <fdt:pvt/> | [<a href="Messages?action=logoutAction">Logout</a>]</li>
+					<li>Loggato come <a href="User">${loggedUser.nick}</a> | <fdt:pvt/> | <a href="Threads?action=getAuthorThreadsByLastPost&author=${loggedUser.nick}">Tuoi thread</a> |  [<a href="Messages?action=logoutAction">Logout</a>]</li>
 				</c:when>
 				<c:otherwise>
 					<li><a href="User?action=loginAction">Login</a></li>
