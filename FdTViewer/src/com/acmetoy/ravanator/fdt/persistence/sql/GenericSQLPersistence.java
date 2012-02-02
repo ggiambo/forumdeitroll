@@ -573,7 +573,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<PrivateMsgDTO> result = new LinkedList<PrivateMsgDTO>();
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT pvt_id, `read` FROM pvt_recipient WHERE recipient = ? AND deleted = 0 LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement("SELECT pvt_id, `read`, senddate FROM pvt_recipient, pvt_content WHERE pvt_id = id AND recipient = ? AND pvt_recipient.deleted = 0 ORDER BY `read` desc, senddate desc LIMIT ? OFFSET ?");
 			ps.setString(1, user.getNick());
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*pageNr);
@@ -696,7 +696,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(1, recipient.getNick());
 			ps.setLong(2, privateMsg.getId());
 			int result;
-			if ((result = ps.executeUpdate()) != 1) {
+			if ((result = ps.executeUpdate()) > 1) { // 0 == messaggio gia' letto
 				throw new SQLException("Le scimmie presto! "+recipient.getNick()+"ha aggiornato "+result+" records!");
 			}
 		} catch (SQLException e) {
@@ -745,7 +745,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<PrivateMsgDTO> result = new LinkedList<PrivateMsgDTO>();
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT id, subject, senddate FROM pvt_content WHERE sender = ? AND deleted = 0 LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement("SELECT id, subject, senddate FROM pvt_content WHERE sender = ? AND deleted = 0 ORDER BY senddate desc LIMIT ? OFFSET ?");
 			ps.setString(1, user.getNick());
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*pageNr);
@@ -771,6 +771,46 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 		return result;
+	}
+	
+	@Override
+	public int getInboxPages(AuthorDTO author) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT COUNT(*) FROM pvt_recipient WHERE recipient = ? AND deleted = 0");
+			ps.setString(1, author.getNick());
+			rs = ps.executeQuery();
+			rs.next();
+			return (rs.getInt(1) / 10);
+		} catch (SQLException e) {
+			LOG.error(e.getMessage(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return 1;
+	}
+	
+	@Override
+	public int getOutboxPages(AuthorDTO author) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT COUNT(*) FROM pvt_content WHERE sender = ? AND deleted = 0");
+			ps.setString(1, author.getNick());
+			rs = ps.executeQuery();
+			rs.next();
+			return (rs.getInt(1) / 10);
+		} catch (SQLException e) {
+			LOG.error(e.getMessage(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return 1;
 	}
 	
 	@Override

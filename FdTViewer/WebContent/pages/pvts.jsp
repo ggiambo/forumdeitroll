@@ -78,6 +78,7 @@
 									</tbody>
 								</table>
 							</c:if>
+							<fdt:pager handler="pvt"/>
 						</div>
 					</c:if>
 					<c:if test="${from == 'sendNew' }">

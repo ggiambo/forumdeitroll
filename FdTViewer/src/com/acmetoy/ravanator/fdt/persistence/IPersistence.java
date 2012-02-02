@@ -48,6 +48,10 @@ public interface IPersistence {
 	public List<PrivateMsgDTO> getSentPvts(AuthorDTO author, int limit, int pageNr);
 
 	public List<PrivateMsgDTO> getInbox(AuthorDTO author, int limit, int pageNr);
+	
+	public int getInboxPages(AuthorDTO author);
+	
+	public int getOutboxPages(AuthorDTO author);
 
 	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients);
 
