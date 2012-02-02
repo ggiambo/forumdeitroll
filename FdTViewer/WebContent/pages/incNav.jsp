@@ -17,7 +17,11 @@
 		<li>|</li>
 			<c:choose>
 				<c:when test="${not empty loggedUser}">
-					<li>Loggato come <a href="User">${loggedUser.nick}</a> | <fdt:pvt/> | <a href="Threads?action=getAuthorThreadsByLastPost&author=${loggedUser.nick}">Tuoi thread</a> |  [<a href="Messages?action=logoutAction">Logout</a>]</li>
+					<c:url value="Threads" var="tuoiThreadURL">
+							<c:param name="action" value="getAuthorThreadsByLastPost"/>
+							<c:param name="author" value="${loggedUser.nick}"/>
+					</c:url>
+					<li>Loggato come <a href="User">${loggedUser.nick}</a> | <fdt:pvt/> | <a href="<c:out value="${tuoiThreadURL}" escapeXml="true" />">Tuoi thread</a> |  [<a href="Messages?action=logoutAction">Logout</a>]</li>
 				</c:when>
 				<c:otherwise>
 					<li><a href="User?action=loginAction">Login</a></li>
