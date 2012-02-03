@@ -71,7 +71,7 @@
 													<a href="Pvt?action=show&amp;id=${pvt.id}"><fmt:formatDate value="${pvt.date}" pattern="dd/MM/yyyy"/></a>
 												</td>
 												<td class="pvtAction">
-													<a href="Pvt?action=delete&amp;id=${pvt.id}&from=${from}" title="Cancella messaggio"><img src="images/delete.png" alt="Cancella" /></a>
+													<a href="Pvt?action=delete&amp;id=${pvt.id}&amp;from=${from}" title="Cancella messaggio"><img src="images/delete.png" alt="Cancella" /></a>
 												</td>
 											</tr>
 										</c:forEach>
@@ -133,6 +133,12 @@
 							</c:if>
 						</div>
 					</c:if>
+					<div class="userPanelSection">
+						<h3>Altre Azioni</h3>
+						<a href="./User" class="userPanelButton">User Panel</a>
+						<a href="./User?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
+						<div style="clear: both;"></div>
+					</div>
 				</div> <%-- /Content --%>
 			</div> <%-- /Panel --%>
 		</div> <%-- /Main --%>
