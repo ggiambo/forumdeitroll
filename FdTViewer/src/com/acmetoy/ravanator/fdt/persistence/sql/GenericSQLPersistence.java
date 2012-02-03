@@ -573,7 +573,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<PrivateMsgDTO> result = new LinkedList<PrivateMsgDTO>();
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT pvt_id, `read`, senddate FROM pvt_recipient, pvt_content WHERE pvt_id = id AND recipient = ? AND pvt_recipient.deleted = 0 ORDER BY `read` desc, senddate desc LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement("SELECT pvt_id, `read`, senddate FROM pvt_recipient, pvt_content WHERE pvt_id = id AND recipient = ? AND pvt_recipient.deleted = 0 ORDER BY senddate desc LIMIT ? OFFSET ?");
 			ps.setString(1, user.getNick());
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*pageNr);
