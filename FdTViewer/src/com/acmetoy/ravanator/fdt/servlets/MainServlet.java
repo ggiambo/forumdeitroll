@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -49,6 +50,10 @@ public abstract class MainServlet extends HttpServlet {
 
 	protected static final int ONGET = 0x01;
 	protected static final int ONPOST = 0x02;
+
+	protected volatile List<String> cachedForums = null;
+	protected long cachedForumsTimestamp = -1;
+	protected static final long FORUMS_CACHE_EXPIRATION_TIME = 60 * 60 * 1000;
 
 	protected abstract class GiamboAction {
 		public GiamboAction(final String name, final int when) {
@@ -113,18 +118,32 @@ public abstract class MainServlet extends HttpServlet {
 		doDo(req, res, mapPost);
 	}
 
+	protected void maybeUpdateCachedForums() {
+		if ((cachedForums == null) || (System.currentTimeMillis() - cachedForumsTimestamp > FORUMS_CACHE_EXPIRATION_TIME)) {
+			synchronized (this) {
+				if ((cachedForums == null) || (System.currentTimeMillis() - cachedForumsTimestamp > FORUMS_CACHE_EXPIRATION_TIME)) {
+					cachedForumsTimestamp = System.currentTimeMillis();
+					final List<String> forums = getPersistence().getForums();
+					cachedForums = forums;
+				}
+			}
+		}
+	}
+
 	public final void doDo(HttpServletRequest req, HttpServletResponse res, final Map<String, GiamboAction> map) throws IOException {
 		// I love UTF-8
 		req.setCharacterEncoding("UTF-8");
 		res.setCharacterEncoding("UTF-8");
-		
+
 		// actual time
 		req.setAttribute("currentTimeMillis", System.currentTimeMillis());
 
+		maybeUpdateCachedForums();
+
 		// forums
-		req.setAttribute("forums", getPersistence().getForums());
-		
-		// sidebar statsu 
+		req.setAttribute("forums", cachedForums);
+
+		// sidebar statsu
 		setSidebarStatusInSession(req, res);
 
 		// this context
@@ -146,7 +165,7 @@ public abstract class MainServlet extends HttpServlet {
 
 		// random quote
 		req.setAttribute("randomQuote", getRandomQuote(req, res));
-				
+
 		try {
 			// call via reflection
 			GiamboAction giamboAction = map.get(action);
@@ -262,7 +281,7 @@ public abstract class MainServlet extends HttpServlet {
 			return mapGet.get("init").action(req, res);
 		}
 	};
-	
+
 	/**
 	 * Setta lo stato della sidebar nella session, nelle preferenze utente o nel cookie se non e' gia' stato fatto.
 	 * @param req
