@@ -39,6 +39,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		config.maxIdle = 10;
 		config.minIdle = 3;
 		config.maxWait = 100;
+		config.testOnBorrow = true;
+		config.testWhileIdle = true;
 
 		ObjectPool connectionPool = new GenericObjectPool(null, config);
 
@@ -837,6 +839,29 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return res;
 	}
+	
+	/* TODO: abilitare quando search destinatari PVT implementato
+	public List<String> searchAuthor(String searchString) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<String> res = new ArrayList<String>();
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick LIKE ?");
+			ps.setString(1, searchString + "%");
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				res.add(rs.getString(1));
+			}
+		} catch (SQLException e) {
+			LOG.error(e.getMessage(), e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return res;
+	}
+	*/
 	
 	@Override
 	public Properties setPreference(AuthorDTO user, String key, String value) {
