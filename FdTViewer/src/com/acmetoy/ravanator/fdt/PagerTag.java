@@ -1,9 +1,11 @@
 package com.acmetoy.ravanator.fdt;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
@@ -14,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
+import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 import com.acmetoy.ravanator.fdt.servlets.MainServlet;
 
@@ -30,7 +33,9 @@ public class PagerTag extends TagSupport  {
 	
 	private static final Logger LOG = Logger.getLogger(PagerTag.class);
 	
+	// quanti elementi prima
 	private static final int HEAD = 2;
+	// quanti elementi dopo
 	private static final int TAIL = 4;
 	
 	private static enum PagerType {
@@ -50,6 +55,7 @@ public class PagerTag extends TagSupport  {
 		}
 	}
 	
+	// porting di una versione in javascript ben testata, non dovrebbe avere errori qua dentro
 	private LinkedList<PagerElem> generatePager(int cur, int max) {
 		LOG.debug("generatePager("+cur+","+max+")");
 		LinkedList<PagerElem> pager = new LinkedList<PagerTag.PagerElem>();
@@ -137,7 +143,6 @@ public class PagerTag extends TagSupport  {
 	@Override
 	public int doEndTag() throws JspException {
 		try {
-			JspWriter out = pageContext.getOut();
 			PagerHandler pagerHandler = handlers.get(handler);
 			
 			int cur = pagerHandler.getCurrentPage(pageContext);
@@ -203,6 +208,64 @@ public class PagerTag extends TagSupport  {
 			@Override
 			public String getLink(int pageNumber, PageContext pageContext) {
 				return "?action=" + pageContext.getRequest().getAttribute("from") + "&page=" + pageNumber;
+			}
+		});
+		
+		put("Messages", new PagerHandler() {
+			// test Messages?action=init (default) ok
+			// test Messages?action=getByForum ok
+			// test Messages?action=getByPage INCOGNITA: non viene chiamato direttamente dalle pagine, ma la GiamboAction e' usata altrove
+			// test Threads?action=getAuthorThreadsByLastPost FIXATO a mano, ma non dovrebbe essere cosi'
+			// test Threads?action=init (default) ok
+			// test Threads?action=getThreadsByLastPost ok
+			// test Messages?action=getByAuthor ok
+			@Override
+			public int getMaxPages(PageContext pageContext) {
+				List<MessageDTO> messages = (List<MessageDTO>) pageContext.getRequest().getAttribute("messages");
+				if (messages.size() < 20) // MainServlet.PAGE_SIZE
+					return getCurrentPage(pageContext);
+				else
+					return Integer.MAX_VALUE; //sto barando per non fare la query dipendente dal parametro action
+			}
+			
+			@Override
+			public String getLink(int pageNumber, PageContext pageContext) {
+				String action = pageContext.getRequest().getParameter("action");
+				if (action == null) {
+					action = "init";
+				}
+				
+				String link =
+						"?action=" + action +
+						"&pageNr=" + pageNumber;
+				if (pageContext.getRequest().getAttribute("specificParams") != null) {
+					HashMap<String, String> specificParams =
+							(HashMap<String, String>) pageContext.getRequest().getAttribute("specificParams");
+					for (String key: specificParams.keySet()) {
+						try {
+							link += "&" + key + "=" + java.net.URLEncoder.encode(specificParams.get(key), "UTF-8");
+						} catch (UnsupportedEncodingException e) {
+							// ignore
+						}
+					}
+				}
+				if ("getAuthorThreadsByLastPost".equals(action) && pageContext.getRequest().getParameter("author") != null) {
+					try {
+						link += "&author=" + java.net.URLEncoder.encode(pageContext.getRequest().getParameter("author"), "UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// ignore
+					} 
+				}
+				return link;
+			}
+			
+			@Override
+			public int getCurrentPage(PageContext pageContext) {
+				try {
+					return Integer.parseInt(pageContext.getRequest().getParameter("pageNr"));
+				} catch (Exception e) {
+					return 0; //default
+				}
 			}
 		});
 	}};
