@@ -26,6 +26,7 @@ import nl.captcha.text.producer.NumbersAnswerProducer;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
@@ -33,6 +34,8 @@ import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 
 public abstract class MainServlet extends HttpServlet {
+
+	private static final Logger LOG = Logger.getLogger(MainServlet.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -100,12 +103,14 @@ public abstract class MainServlet extends HttpServlet {
 			config.getServletContext().setAttribute("PAGE_SIZE", PAGE_SIZE);
 
 		} catch (IOException e) {
+			LOG.error(e);
 			throw new ServletException("Cannot read default images", e);
 		}
 
 		try {
 			persistence = PersistenceFactory.getInstance();
 		} catch (Exception e) {
+			LOG.fatal(e);
 			throw new ServletException("Cannot instantiate persistence", e);
 		}
 	}
@@ -135,6 +140,16 @@ public abstract class MainServlet extends HttpServlet {
 		req.setCharacterEncoding("UTF-8");
 		res.setCharacterEncoding("UTF-8");
 
+		// mostrare di disclaimer ?
+		if (req.getSession(false) == null && !"OK".equals(req.getParameter("disclaimer"))) {
+			try {
+				getServletContext().getRequestDispatcher("/pages/disclaimer.jsp").forward(req, res);
+			} catch (ServletException e) {
+				handleException(e, req, res);
+			}
+			return;
+		}
+
 		// actual time
 		req.setAttribute("currentTimeMillis", System.currentTimeMillis());
 
@@ -143,11 +158,8 @@ public abstract class MainServlet extends HttpServlet {
 		// forums
 		req.setAttribute("forums", cachedForums);
 
-		// sidebar statsu
+		// sidebar status
 		setSidebarStatusInSession(req, res);
-
-		// this context
-		req.setAttribute("contextPath", req.getRequestURL());
 
 		// action
 		String action = req.getParameter("action");
@@ -179,15 +191,7 @@ public abstract class MainServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			req.setAttribute("exceptionStackTrace", ExceptionUtils.getStackTrace(e));
-			e.printStackTrace(System.err);
-			try {
-				getServletContext().getRequestDispatcher("/pages/error.jsp").forward(req, res);
-			} catch (ServletException e1) {
-				for (StackTraceElement elem : e1.getStackTrace()) {
-					res.getWriter().write(elem + "<br/>");
-				}
-			}
+			handleException(e, req, res);
 		}
 	}
 
@@ -351,7 +355,7 @@ public abstract class MainServlet extends HttpServlet {
 			}
 			// settiamo nella session
 			req.getSession().setAttribute("sidebarStatus", sidebarStatus);
-			
+
 			return null;
 		}
 	};
@@ -412,42 +416,42 @@ public abstract class MainServlet extends HttpServlet {
 			return null;
 		}
 	};
-	
+
 	public static class NavigationMessage {
-		
+
 		static enum TYPE {
 			INFO, WARN, ERROR;
 		}
-		
+
 		private String content;
-		
+
 		private TYPE type;
-		
+
 		private NavigationMessage(TYPE type, String content) {
 			this.type = type;
 			this.content = content;
 		}
-		
+
 		public static NavigationMessage info(String content) {
 			return new NavigationMessage(TYPE.INFO, content);
 		}
-		
+
 		public static NavigationMessage warn(String content) {
 			return new NavigationMessage(TYPE.WARN, content);
 		}
-		
+
 		public static NavigationMessage error(String content) {
 			return new NavigationMessage(TYPE.ERROR, content);
 		}
-		
+
 		public String getContent() {
 			return content;
 		}
-		
+
 		public String getType() {
 			return type.name();
 		}
-		
+
 	}
 
 	/**
@@ -461,5 +465,26 @@ public abstract class MainServlet extends HttpServlet {
 		QuoteDTO quote = getPersistence().getRandomQuote();
 		quote.setContent(StringEscapeUtils.escapeHtml4(quote.getContent()));
 		return quote;
+	}
+
+	/**
+	 * Scrive l'exception nel log, mostra la pagina d'errore o scrive
+	 * direttamete la stacktrace nella response
+	 *
+	 * @param e
+	 * @param req
+	 * @param res
+	 * @throws IOException
+	 */
+	private void handleException(Exception e, HttpServletRequest req, HttpServletResponse res) throws IOException {
+		LOG.error(e);
+		req.setAttribute("exceptionStackTrace", ExceptionUtils.getStackTrace(e));
+		try {
+			getServletContext().getRequestDispatcher("/pages/error.jsp").forward(req, res);
+		} catch (ServletException e1) {
+			for (StackTraceElement elem : e1.getStackTrace()) {
+				res.getWriter().write(elem + "<br/>");
+			}
+		}
 	}
 }
