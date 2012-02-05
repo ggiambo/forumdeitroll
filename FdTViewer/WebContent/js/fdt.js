@@ -67,7 +67,7 @@ function preview(parentId) {
 		},
 		dataType: "json"
 	});
-	
+
 }
 
 function edit(parentId) {
@@ -78,8 +78,12 @@ function edit(parentId) {
 	$("#reply_" + parentId + " :input[name='edit']").hide();
 }
 
+var sent = false;
+
 function send(parentId) {
 	// post data
+	if (sent) return;
+	sent = true;
 	var data = { parentId: parentId };
 	$("#reply_" + parentId + " :input").each(function() {
 		var val = $(this);
