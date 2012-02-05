@@ -173,7 +173,7 @@ public class MessageTag extends BodyTagSupport {
 		return src;
 	}
 	
-	/* TODO: Never used ?
+	/* TODO: Never used ? nope
 	private static String simpleReplaceFirst(String src, String search, String replacement) {
 		if (search == null || search.length() == 0) return src;
 		int p = src.indexOf(search);
@@ -187,9 +187,9 @@ public class MessageTag extends BodyTagSupport {
 			String key = entry.getKey();
 			String value = entry.getValue()[0];
 			String alt = entry.getValue()[1];
+			// tutte le emo sono lower case ora
 			line = simpleReplaceAll(line, value, String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
 			line = simpleReplaceAll(line, value.toUpperCase(), String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
-			line = simpleReplaceAll(line, value.toLowerCase(), String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
 		}
 		return line;
 	}
@@ -219,8 +219,11 @@ public class MessageTag extends BodyTagSupport {
 	public static String getMessage(String body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
 		StringBuilder out = new StringBuilder();
 		
-		// questo elimina il caso di multipli [code] sulla stessa linea (casino da gestire, bisognava cambiare stile di parsing del body)
-		body = simpleReplaceAll(body, "[/code]", "[/code]<BR>");
+		// questo elimina il caso di multipli tags sulla stessa linea non separati
+		body = simpleReplaceAll(body, "[/code]", "[/code] ");
+		body = simpleReplaceAll(body, "[/img]", "[/img] ");
+		body = simpleReplaceAll(body, "[/yt]", "[/yt] ");
+		body = simpleReplaceAll(body, "[/color]", "[/color] ");
 		
 //			System.out.println("------ body ------");
 //			System.out.println(body);
