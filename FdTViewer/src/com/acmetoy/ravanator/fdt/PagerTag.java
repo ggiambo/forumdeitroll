@@ -51,6 +51,7 @@ public class PagerTag extends TagSupport  {
 	}
 	
 	private LinkedList<PagerElem> generatePager(int cur, int max) {
+		LOG.debug("generatePager("+cur+","+max+")");
 		LinkedList<PagerElem> pager = new LinkedList<PagerTag.PagerElem>();
 		if (HEAD - cur >= -1) {
 			int limit = cur + TAIL;
@@ -148,8 +149,9 @@ public class PagerTag extends TagSupport  {
 				cur = (int) (Math.random() * max);
 				System.out.println("DATI TEST: max = "+max+" cur = "+cur);
 			}*/
-			
-			renderPager(generatePager(cur, max), pageContext, handlers.get(handler));
+			LinkedList<PagerElem> pager = generatePager(cur, max);
+			LOG.debug("pager -> "+pager);
+			renderPager(pager, pageContext, handlers.get(handler));
 			
 		} catch (Exception e) {
 			LOG.error("Errore durante il rendering del pager: "+e.getMessage(), e);

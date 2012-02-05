@@ -784,7 +784,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(1, author.getNick());
 			rs = ps.executeQuery();
 			rs.next();
-			return (rs.getInt(1) / 10);
+			int nElem = rs.getInt(1);
+			return 1 + ((nElem - 1) / 10);
 		} catch (SQLException e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
@@ -804,7 +805,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(1, author.getNick());
 			rs = ps.executeQuery();
 			rs.next();
-			return (rs.getInt(1) / 10);
+			int nElem = rs.getInt(1);
+			return 1 + ((nElem - 1) / 10);
 		} catch (SQLException e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
