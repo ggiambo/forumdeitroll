@@ -2,6 +2,7 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <jsp:include page="incTop.jsp"/>
 <div id="main">
 
@@ -15,7 +16,7 @@
 					</c:otherwise>
 				</c:choose>
 				<div id="threadTree_${thread.id}" class="${class} threadBox">
-					<span class="threadTitle"><a href="Threads?action=getByThread&amp;threadId=${thread.id}">${thread.subject}</a></span>
+					<span class="threadTitle"><fdt:threadprettyurl subject="${thread.subject}" threadId="${thread.id}" msgId="${thread.id}"/></span>
 					 (${thread.numberOfMessages}
 					<c:choose>
 						<c:when test="${thread.numberOfMessages > 1}">

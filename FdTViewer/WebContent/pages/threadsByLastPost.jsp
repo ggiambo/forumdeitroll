@@ -2,6 +2,7 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <jsp:include page="incTop.jsp"/>
 <div id="main">
 	<c:forEach items="${messages}" var="msg" varStatus="index">
@@ -14,7 +15,7 @@
 			</c:otherwise>
 		</c:choose>
 		<div class="${class} threadBox">
-			<span class="threadTitle"><a href="Threads?action=getByThread&amp;threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a></span>
+			<span class="threadTitle"><fdt:threadprettyurl subject="${msg.subject}" threadId="${msg.threadId}" msgId="${msg.id}"/></span>
 			<c:if test="${!empty msg.forum}">
 				<span class="tagForum">${msg.forum}</span>
 			</c:if>

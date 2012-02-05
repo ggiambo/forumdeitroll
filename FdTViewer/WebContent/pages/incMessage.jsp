@@ -28,11 +28,11 @@
 						<c:param name="nick" value="${msg.author.nick}"/>
 					</c:url>
 					<a href="<c:out value="${userInfoUrl}" escapeXml="true"/>">
-						<img class="avatarImgLinkable" alt="Avatar" src="<c:out value="${avatarUrl}" escapeXml="true" />" />
+						<img class="avatarImgLinkable" alt="Avatar" src="User<c:out value="${avatarUrl}" escapeXml="true" />" />
 					</a>
 				</c:when>
 				<c:otherwise>
-					<img class="avatarImg" alt="Avatar" src="<c:out value="${avatarUrl}" escapeXml="true" />" />
+					<img class="avatarImg" alt="Avatar" src="User<c:out value="${avatarUrl}" escapeXml="true" />" />
 				</c:otherwise>
 			</c:choose>
 		</div>
@@ -70,7 +70,9 @@
 	</div>
 
 	<span style="width:100%; margin:5px;">
-		<b><a href="Threads?action=getByThread&amp;threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a></b>
+		<b>
+			<fdt:threadprettyurl subject="${msg.subject}" threadId="${msg.threadId}" msgId="${msg.id}"/>
+		</b>
 	</span>
 
 	<div style="padding: 10px;" class="message">

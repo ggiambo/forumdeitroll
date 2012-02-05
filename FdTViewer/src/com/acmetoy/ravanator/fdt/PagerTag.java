@@ -19,6 +19,8 @@ import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 import com.acmetoy.ravanator.fdt.servlets.MainServlet;
+import com.acmetoy.ravanator.fdt.servlets.Messages;
+import com.acmetoy.ravanator.fdt.servlets.Threads;
 
 public class PagerTag extends TagSupport  {
 	
@@ -57,7 +59,7 @@ public class PagerTag extends TagSupport  {
 	
 	// porting di una versione in javascript ben testata, non dovrebbe avere errori qua dentro
 	private LinkedList<PagerElem> generatePager(int cur, int max) {
-		LOG.debug("generatePager("+cur+","+max+")");
+		//LOG.debug("generatePager("+cur+","+max+")");
 		LinkedList<PagerElem> pager = new LinkedList<PagerTag.PagerElem>();
 		if (HEAD - cur >= -1) {
 			int limit = cur + TAIL;
@@ -155,7 +157,7 @@ public class PagerTag extends TagSupport  {
 				System.out.println("DATI TEST: max = "+max+" cur = "+cur);
 			}*/
 			LinkedList<PagerElem> pager = generatePager(cur, max);
-			LOG.debug("pager -> "+pager);
+			//LOG.debug("pager -> "+pager);
 			renderPager(pager, pageContext, handlers.get(handler));
 			
 		} catch (Exception e) {
@@ -227,15 +229,17 @@ public class PagerTag extends TagSupport  {
 				else
 					return Integer.MAX_VALUE; //sto barando per non fare la query dipendente dal parametro action
 			}
-			
+			private Class[] servlets = new Class[] {
+				Messages.class,
+				Threads.class
+			};
 			@Override
 			public String getLink(int pageNumber, PageContext pageContext) {
-				String action = pageContext.getRequest().getParameter("action");
-				if (action == null) {
-					action = "init";
-				}
+				String action = (String) pageContext.getRequest().getAttribute("action");
+				String servlet = (String) pageContext.getRequest().getAttribute("servlet");
+				servlet = servlet.substring(servlet.lastIndexOf('.') + 1);
 				
-				String link =
+				String link = servlet +
 						"?action=" + action +
 						"&pageNr=" + pageNumber;
 				if (pageContext.getRequest().getAttribute("specificParams") != null) {

@@ -61,4 +61,13 @@
     <servlet-name>Pvt</servlet-name>
     <url-pattern>/Pvt</url-pattern>
   </servlet-mapping>
+  <filter>
+  	<description>url rewriter</description>
+  	<filter-name>PrettyUrl</filter-name>
+  	<filter-class>com.acmetoy.ravanator.fdt.filters.PrettyUrlFilter</filter-class>
+  </filter>
+  <filter-mapping>
+  	<filter-name>PrettyUrl</filter-name>
+  	<url-pattern>/thread/*</url-pattern>
+  </filter-mapping>
 </web-app>
