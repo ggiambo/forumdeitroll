@@ -14,11 +14,14 @@ import org.apache.commons.dbcp.ConnectionFactory;
 import org.apache.commons.dbcp.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDataSource;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
+import org.bouncycastle.crypto.RuntimeCryptoException;
 
+import com.acmetoy.ravanator.fdt.FdTException;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
@@ -616,6 +619,17 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		long pvt_id = -1;
 		try {
 			conn = getConnection();
+			
+			//verifica esistenza dei destinatari
+			for (String recipient: recipients) {
+				if (recipient.equals("")) continue;
+				ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick = ?");
+				ps.setString(1, recipient);
+				rs = ps.executeQuery();
+				if (!rs.next()) throw new FdTException("Il destinatario "+StringEscapeUtils.escapeHtml4(recipient)+" non esiste.");
+			}
+			
+			
 			ps = conn.prepareStatement("INSERT INTO pvt_content" +
 										"(sender, content, senddate, subject, replyTo) " +
 										"VALUES  (?,?,sysdate(),?,?)", Statement.RETURN_GENERATED_KEYS);
