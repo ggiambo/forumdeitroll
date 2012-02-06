@@ -14,7 +14,9 @@
 				send(${message.parentId});
 			}
 		});
+		jscolor.init()
 	});
+
 
 	
 </script>
@@ -50,6 +52,7 @@
 			<a href="javascript:void(0);" onmousedown="insert('[img]', '[/img]', '${message.parentId}')" class="msgButton">[immagine]</a>
 			<a href="javascript:void(0);" onmousedown="insert('[code]', '[/code]', '${message.parentId}')" class="msgButton">[codice]</a>
 			<a href="javascript:void(0);" onmousedown="insert('[yt]', '[/yt]', '${message.parentId}')" class="msgButton">[youtube]</a>
+			<a href="javascript:void(0);" onmousedown="insert('[color #' + $('.color').val() + ']', '[/color]', '${message.parentId}')">[color]</a> <input type='text' class='color' value='66ff00' style='width:40px; font-size: 10px'>
 			<input style="float:right" tabindex="5" type="button" name="preview" value="Preview" onClick="preview(${message.parentId})"/>&nbsp;
 			<input style="display:none;float:right" tabindex="5" type="button" name="edit" value="Edit" onClick="edit(${message.parentId})"/>&nbsp;
 		</div>

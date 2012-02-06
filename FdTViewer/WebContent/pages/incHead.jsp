@@ -25,6 +25,7 @@
 	<link href="css/sh/shThemeEclipse.css" rel="stylesheet" type="text/css" />
 	<script src="js/sh/shCore.js" type="text/javascript"></script>
 	<script src="js/sh/shAutoloader.js" type="text/javascript"></script>
+	<script src="js/jscolor/jscolor.js" type="text/javascript"></script>
 	<link href="css/jquery-ui-1.8.17.custom.css" type="text/css" rel="stylesheet" />
 	<link href="css/fdt.css?v=<%=bootTime%>" type="text/css" rel="stylesheet" />
 	<base href="<%=request.getContextPath()%>/">
