@@ -79,7 +79,7 @@ public class PagerTag extends TagSupport  {
 				}
 			}
 		} else {
-			pager.add(new PagerElem(1, PagerType.FIRST));
+			pager.add(new PagerElem(0, PagerType.FIRST));
 			pager.add(new PagerElem(cur - HEAD - 1, PagerType.PREV));
 			int limit = cur + TAIL;
 			if (limit > max) limit = max;
