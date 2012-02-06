@@ -8,11 +8,11 @@
 			<div class="userPanel">
 				<div class="userPanelCaption">Pannello Utente - Messaggi Privati</div>
 				<div class="userPanelContent">
-					<a href="?action=inbox">Ricevuti</a>
+					<a href="Pvt?action=inbox">Ricevuti</a>
 					|
-					<a href="?action=outbox">Inviati</a>
+					<a href="Pvt?action=outbox">Inviati</a>
 					|
-					<a href="?action=sendNew">Scrivi nuovo</a>
+					<a href="Pvt?action=sendNew">Scrivi nuovo</a>
 				</div>
 				<div class="userPanelContent">
 					<c:if test="${from == 'inbox' || from == 'outbox'}">

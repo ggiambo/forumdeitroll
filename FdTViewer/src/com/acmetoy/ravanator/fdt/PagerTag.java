@@ -209,7 +209,7 @@ public class PagerTag extends TagSupport  {
 			
 			@Override
 			public String getLink(int pageNumber, PageContext pageContext) {
-				return "?action=" + pageContext.getRequest().getAttribute("from") + "&page=" + pageNumber;
+				return "Pvt?action=" + pageContext.getRequest().getAttribute("from") + "&page=" + pageNumber;
 			}
 		});
 		
