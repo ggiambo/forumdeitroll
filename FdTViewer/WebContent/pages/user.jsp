@@ -66,7 +66,7 @@
 					</div>
 					<div class="userPanelSection">
 						<h3>Altre Azioni</h3>
-						<a href="?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
+						<a href="User?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
 						<a href="./Pvt?action=inbox" class="userPanelButton">Posta</a>
 						<c:set var="showAnonImg" value="${loggedUser.preferences['showAnonImg']}"/>
 						<div style="clear: both;"></div>
