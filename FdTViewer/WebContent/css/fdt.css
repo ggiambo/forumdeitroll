@@ -808,6 +808,7 @@ div.userPanelSection form.pvtSendMessage textarea {
 	width: 97%;
 	border: 1px solid #7BAAE7;
 	padding: 0 5px;
+	height: 27em;
 }
 
 div.userPanelSection form.pvtSendMessage input.sendPvt {
@@ -875,6 +876,7 @@ div.userPanelSection div.pvtTextMessage {
 	border: 1px dashed gray;
 	background-color: cornsilk;
 	margin: 0.2em;
+	overflow: auto;
 }
 
 div.userPanelSection a.pvtNickname {
