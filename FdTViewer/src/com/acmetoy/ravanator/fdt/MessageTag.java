@@ -87,6 +87,7 @@ public class MessageTag extends BodyTagSupport {
 				}
 			});
 			put(Pattern.compile("\\[yt\\]([a-zA-Z0-9\\+\\/=\\-_]{7,12})\\[/yt\\]"), new BodyTokenProcessor() {
+				Long ytCounter = 0l;
 				@Override
 				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
 					if (state.inCode) return;
@@ -100,9 +101,28 @@ public class MessageTag extends BodyTagSupport {
 					
 					if (StringUtils.isEmpty(embeddYt)) {
 						// mostra un link
-						sb.append("<a href='http://www.youtube.com/v/").append(youcode).append("'>");
-						sb.append("http://www.youtube.com/v/").append(youcode).append("</a>");
+						long myYtCounter = 0l;
+						synchronized (ytCounter) {
+							if (ytCounter == Long.MAX_VALUE) {
+								ytCounter = 0l;
+							} else {
+								ytCounter++;
+							}
+							myYtCounter = ytCounter;
+						}
+						
+						sb.append("<a href=\"http://www.youtube.com/watch?v=").append(youcode).append("\" ");
+						sb.append("id=\"yt_").append(myYtCounter).append("\">");
+						sb.append("http://www.youtube.com/watch?v=").append(youcode).append("</a>");
+						sb.append("<script type='text/javascript'>YTgetInfo_");
+						sb.append(myYtCounter).append("= YTgetInfo('");
+						sb.append(myYtCounter).append("')</script>");
+						sb.append("<script type='text/javascript' src=\"");
+						sb.append("http://gdata.youtube.com/feeds/api/videos/").append(youcode);
+						sb.append("?v=2&amp;alt=json-in-script&amp;callback=YTgetInfo_");
+						sb.append(myYtCounter).append("\"></script>");
 					} else {
+						// un glande classico: l'embed
 						sb.append("<object height='329' width='400'>");
 						sb.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>");
 						sb.append("<param value='transparent' name='wmode'>");
