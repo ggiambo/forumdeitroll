@@ -883,6 +883,24 @@ div.userPanelSection a.pvtNickname {
 	font-weight: bold;
 	text-decoration: none;
 }
+
+div.userPanelSection a.pvtRispondiBtn {
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	padding: 0.2em;
+	text-decoration: none;
+	color: black;
+	width: 8em;
+	float: right;
+	background-color: white;
+	text-align: center;
+	margin-top: 0.2em;
+}
+
+div.userPanelSection a.pvtRispondiBtn:hover {
+	box-shadow: 0 0 8px #0A78FF;
+}
 	
 div.threadTreeEntries {
 	font-size: 90%;
