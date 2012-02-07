@@ -209,7 +209,7 @@ public class PagerTag extends TagSupport  {
 			
 			@Override
 			public String getLink(int pageNumber, PageContext pageContext) {
-				return "Pvt?action=" + pageContext.getRequest().getAttribute("from") + "&page=" + pageNumber;
+				return "Pvt?action=" + pageContext.getRequest().getAttribute("from") + "&amp;page=" + pageNumber;
 			}
 		});
 		
@@ -241,13 +241,13 @@ public class PagerTag extends TagSupport  {
 				
 				String link = servlet +
 						"?action=" + action +
-						"&pageNr=" + pageNumber;
+						"&amp;pageNr=" + pageNumber;
 				if (pageContext.getRequest().getAttribute("specificParams") != null) {
 					HashMap<String, String> specificParams =
 							(HashMap<String, String>) pageContext.getRequest().getAttribute("specificParams");
 					for (String key: specificParams.keySet()) {
 						try {
-							link += "&" + key + "=" + java.net.URLEncoder.encode(specificParams.get(key), "UTF-8");
+							link += "&amp;" + key + "=" + java.net.URLEncoder.encode(specificParams.get(key), "UTF-8");
 						} catch (UnsupportedEncodingException e) {
 							// ignore
 						}
@@ -255,7 +255,7 @@ public class PagerTag extends TagSupport  {
 				}
 				if ("getAuthorThreadsByLastPost".equals(action) && pageContext.getRequest().getParameter("author") != null) {
 					try {
-						link += "&author=" + java.net.URLEncoder.encode(pageContext.getRequest().getParameter("author"), "UTF-8");
+						link += "&amp;author=" + java.net.URLEncoder.encode(pageContext.getRequest().getParameter("author"), "UTF-8");
 					} catch (UnsupportedEncodingException e) {
 						// ignore
 					} 
