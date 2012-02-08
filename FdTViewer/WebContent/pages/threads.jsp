@@ -29,6 +29,11 @@
 					<c:if test="${!empty thread.forum}">
 						<span class="tagForum">${thread.forum}</span>
 					</c:if>
+					<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
+						<c:if test="${thread.forum != 'Proc di Catania'}">
+						<a class="pedonizeThread" href="javascript:pedonizeThread('${thread.subject}', '${thread.id}');">Pedonize !</a>
+						</c:if>
+					</c:if>
 					<div class="threadDetail">
 						<c:choose>
 							<c:when test="${thread.numberOfMessages > 1}">

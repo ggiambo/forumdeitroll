@@ -66,4 +66,6 @@ public interface IPersistence {
 	public Properties getPreferences(AuthorDTO user);
 
 	public Properties setPreference(AuthorDTO user, String key, String value);
+
+	void pedonizeThread(long threadId);
 }

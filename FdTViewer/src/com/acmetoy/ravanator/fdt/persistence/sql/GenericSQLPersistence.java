@@ -888,6 +888,23 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return getPreferences(user);
 	}
 	
+	@Override
+	public void pedonizeThread(long threadId) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("UPDATE messages SET forum = 'Proc di Catania' where threadId = ?");
+			ps.setLong(1,threadId);
+			ps.execute();
+		} catch (SQLException e) {
+			LOG.error("Cannot pedonize " + threadId, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
 	private void insertPreference(AuthorDTO user, String key, String value) {
 		Connection conn = null;
 		PreparedStatement ps = null;

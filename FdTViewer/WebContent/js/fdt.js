@@ -195,3 +195,9 @@ var YTgetInfo = function(myYtCounter) {
 		youlink.appendChild(img)
 	}
 }
+
+function pedonizeThread(threadTitle, threadId) {
+	if (confirm("Vuoi spostare il thread '" + threadTitle + "' in Procura ?")) {
+		window.location.assign("Threads?action=pedonizeThread&threadId=" + threadId);
+	}
+}
