@@ -104,9 +104,10 @@ function send(parentId) {
 			} else if (data.resultCode == "ERROR") {
 				$("html").html(data.content);
 			}
+			sent = false;
 		},
 		beforeSend : function(jqXhr, settings) {
-			jqXhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+			jqXhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 		},
 		dataType: "json"
 	});
