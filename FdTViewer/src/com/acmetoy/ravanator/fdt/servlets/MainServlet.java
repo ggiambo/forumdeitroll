@@ -178,6 +178,12 @@ public abstract class MainServlet extends HttpServlet {
 
 		// random quote
 		req.setAttribute("randomQuote", getRandomQuote(req, res));
+		
+		// update loggedUser in session
+		AuthorDTO loggedUser = (AuthorDTO)session.getAttribute(LOGGED_USER_SESSION_ATTR);
+		if (loggedUser != null && loggedUser.isValid()) {
+			session.setAttribute(LOGGED_USER_SESSION_ATTR, getPersistence().getAuthor(loggedUser.getNick()));
+		}
 
 		try {
 			// call via reflection

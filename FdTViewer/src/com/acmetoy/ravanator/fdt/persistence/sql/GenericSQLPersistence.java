@@ -19,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
-import org.bouncycastle.crypto.RuntimeCryptoException;
 
 import com.acmetoy.ravanator.fdt.FdTException;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
