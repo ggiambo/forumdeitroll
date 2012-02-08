@@ -50,7 +50,7 @@
   	</description>
   	<name>pager</name>
   	<tag-class>com.acmetoy.ravanator.fdt.PagerTag</tag-class>
-  	<body-content>JSP</body-content>
+  	<body-content>empty</body-content>
   	<attribute>
   		<name>handler</name>
   		<required>true</required>
@@ -58,4 +58,25 @@
   	</attribute>
   </tag>
 
+	<tag>
+		<description>genera url carini per i thread</description>
+		<name>threadprettyurl</name>
+		<tag-class>com.acmetoy.ravanator.fdt.ThreadPrettyUrlTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+	  		<name>threadId</name>
+	  		<required>true</required>
+	  		<rtexprvalue>true</rtexprvalue>
+  		</attribute>
+  		<attribute>
+	  		<name>subject</name>
+	  		<required>true</required>
+	  		<rtexprvalue>true</rtexprvalue>
+  		</attribute>
+		<attribute>
+	  		<name>msgId</name>
+	  		<required>true</required>
+	  		<rtexprvalue>true</rtexprvalue>
+  		</attribute>
+	</tag>
 </taglib>

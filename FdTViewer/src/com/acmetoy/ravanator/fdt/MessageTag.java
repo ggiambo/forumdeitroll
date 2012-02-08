@@ -87,6 +87,7 @@ public class MessageTag extends BodyTagSupport {
 				}
 			});
 			put(Pattern.compile("\\[yt\\]([a-zA-Z0-9\\+\\/=\\-_]{7,12})\\[/yt\\]"), new BodyTokenProcessor() {
+				Long ytCounter = 0l;
 				@Override
 				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
 					if (state.inCode) return;
@@ -100,9 +101,28 @@ public class MessageTag extends BodyTagSupport {
 					
 					if (StringUtils.isEmpty(embeddYt)) {
 						// mostra un link
-						sb.append("<a href='http://www.youtube.com/v/").append(youcode).append("'>");
-						sb.append("http://www.youtube.com/v/").append(youcode).append("</a>");
+						long myYtCounter = 0l;
+						synchronized (ytCounter) {
+							if (ytCounter == Long.MAX_VALUE) {
+								ytCounter = 0l;
+							} else {
+								ytCounter++;
+							}
+							myYtCounter = ytCounter;
+						}
+						
+						sb.append("<a href=\"http://www.youtube.com/watch?v=").append(youcode).append("\" ");
+						sb.append("id=\"yt_").append(myYtCounter).append("\">");
+						sb.append("http://www.youtube.com/watch?v=").append(youcode).append("</a>");
+						sb.append("<script type='text/javascript'>YTgetInfo_");
+						sb.append(myYtCounter).append("= YTgetInfo('");
+						sb.append(myYtCounter).append("')</script>");
+						sb.append("<script type='text/javascript' src=\"");
+						sb.append("http://gdata.youtube.com/feeds/api/videos/").append(youcode);
+						sb.append("?v=2&amp;alt=json-in-script&amp;callback=YTgetInfo_");
+						sb.append(myYtCounter).append("\"></script>");
 					} else {
+						// un glande classico: l'embed
 						sb.append("<object height='329' width='400'>");
 						sb.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>");
 						sb.append("<param value='transparent' name='wmode'>");
@@ -173,7 +193,7 @@ public class MessageTag extends BodyTagSupport {
 		return src;
 	}
 	
-	/* TODO: Never used ?
+	/* TODO: Never used ? nope
 	private static String simpleReplaceFirst(String src, String search, String replacement) {
 		if (search == null || search.length() == 0) return src;
 		int p = src.indexOf(search);
@@ -187,9 +207,9 @@ public class MessageTag extends BodyTagSupport {
 			String key = entry.getKey();
 			String value = entry.getValue()[0];
 			String alt = entry.getValue()[1];
+			// tutte le emo sono lower case ora
 			line = simpleReplaceAll(line, value, String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
 			line = simpleReplaceAll(line, value.toUpperCase(), String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
-			line = simpleReplaceAll(line, value.toLowerCase(), String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
 		}
 		return line;
 	}
@@ -219,8 +239,11 @@ public class MessageTag extends BodyTagSupport {
 	public static String getMessage(String body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
 		StringBuilder out = new StringBuilder();
 		
-		// questo elimina il caso di multipli [code] sulla stessa linea (casino da gestire, bisognava cambiare stile di parsing del body)
-		body = simpleReplaceAll(body, "[/code]", "[/code]<BR>");
+		// questo elimina il caso di multipli tags sulla stessa linea non separati
+		body = simpleReplaceAll(body, "[/code]", "[/code] ");
+		body = simpleReplaceAll(body, "[/img]", "[/img] ");
+		body = simpleReplaceAll(body, "[/yt]", "[/yt] ");
+		body = simpleReplaceAll(body, "[/color]", "[/color] ");
 		
 //			System.out.println("------ body ------");
 //			System.out.println(body);

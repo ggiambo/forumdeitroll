@@ -28,10 +28,11 @@ public class Messages extends MainServlet {
 	private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?v=(.{11})");
 
 	// key: filename, value[0]: edit value, value[1]: alt
+	// tutte le emo ora sono in lower case
 	private static final Map<String, String[]> EMO_MAP = new HashMap<String, String[]>();
 	static {
 		EMO_MAP.put("1", new String[] {" :)", "Sorride" });
-		EMO_MAP.put("2", new String[] {" :D", "A bocca aperta"});
+		EMO_MAP.put("2", new String[] {" :d", "A bocca aperta"});
 		EMO_MAP.put("3", new String[] {" ;)", "Occhiolino"});
 		EMO_MAP.put("4", new String[] {" :o", "Sorpressa"});
 		EMO_MAP.put("5", new String[] {" :p", "Con la lingua fuori"});
@@ -43,7 +44,7 @@ public class Messages extends MainServlet {
 		EMO_MAP.put("11", new String[] {":'(", "In lacrime"});
 		EMO_MAP.put("12", new String[] {" :|", "Deluso"});
 		EMO_MAP.put("13", new String[] {" 8)", "Ficoso"});
-		EMO_MAP.put("angelo", new String[] {" O)", "Angioletto"});
+		EMO_MAP.put("angelo", new String[] {" o)", "Angioletto"});
 		EMO_MAP.put("anonimo", new String[] {"(anonimo)", "Anonimo"});
 		EMO_MAP.put("diavoletto", new String[] {" @^", "Indiavolato"});
 		EMO_MAP.put("fantasmino", new String[] {"(ghost)", "Fantasma"});

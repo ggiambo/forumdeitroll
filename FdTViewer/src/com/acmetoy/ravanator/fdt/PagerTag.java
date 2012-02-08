@@ -1,9 +1,11 @@
 package com.acmetoy.ravanator.fdt;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
@@ -14,8 +16,11 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
+import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 import com.acmetoy.ravanator.fdt.servlets.MainServlet;
+import com.acmetoy.ravanator.fdt.servlets.Messages;
+import com.acmetoy.ravanator.fdt.servlets.Threads;
 
 public class PagerTag extends TagSupport  {
 	
@@ -30,7 +35,9 @@ public class PagerTag extends TagSupport  {
 	
 	private static final Logger LOG = Logger.getLogger(PagerTag.class);
 	
+	// quanti elementi prima
 	private static final int HEAD = 2;
+	// quanti elementi dopo
 	private static final int TAIL = 4;
 	
 	private static enum PagerType {
@@ -50,7 +57,9 @@ public class PagerTag extends TagSupport  {
 		}
 	}
 	
+	// porting di una versione in javascript ben testata, non dovrebbe avere errori qua dentro
 	private LinkedList<PagerElem> generatePager(int cur, int max) {
+		//LOG.debug("generatePager("+cur+","+max+")");
 		LinkedList<PagerElem> pager = new LinkedList<PagerTag.PagerElem>();
 		if (HEAD - cur >= -1) {
 			int limit = cur + TAIL;
@@ -70,7 +79,7 @@ public class PagerTag extends TagSupport  {
 				}
 			}
 		} else {
-			pager.add(new PagerElem(1, PagerType.FIRST));
+			pager.add(new PagerElem(0, PagerType.FIRST));
 			pager.add(new PagerElem(cur - HEAD - 1, PagerType.PREV));
 			int limit = cur + TAIL;
 			if (limit > max) limit = max;
@@ -136,7 +145,6 @@ public class PagerTag extends TagSupport  {
 	@Override
 	public int doEndTag() throws JspException {
 		try {
-			JspWriter out = pageContext.getOut();
 			PagerHandler pagerHandler = handlers.get(handler);
 			
 			int cur = pagerHandler.getCurrentPage(pageContext);
@@ -148,8 +156,9 @@ public class PagerTag extends TagSupport  {
 				cur = (int) (Math.random() * max);
 				System.out.println("DATI TEST: max = "+max+" cur = "+cur);
 			}*/
-			
-			renderPager(generatePager(cur, max), pageContext, handlers.get(handler));
+			LinkedList<PagerElem> pager = generatePager(cur, max);
+			//LOG.debug("pager -> "+pager);
+			renderPager(pager, pageContext, handlers.get(handler));
 			
 		} catch (Exception e) {
 			LOG.error("Errore durante il rendering del pager: "+e.getMessage(), e);
@@ -200,7 +209,67 @@ public class PagerTag extends TagSupport  {
 			
 			@Override
 			public String getLink(int pageNumber, PageContext pageContext) {
-				return "?action=" + pageContext.getRequest().getAttribute("from") + "&page=" + pageNumber;
+				return "Pvt?action=" + pageContext.getRequest().getAttribute("from") + "&amp;page=" + pageNumber;
+			}
+		});
+		
+		put("Messages", new PagerHandler() {
+			// test Messages?action=init (default) ok
+			// test Messages?action=getByForum ok
+			// test Messages?action=getByPage INCOGNITA: non viene chiamato direttamente dalle pagine, ma la GiamboAction e' usata altrove
+			// test Threads?action=getAuthorThreadsByLastPost FIXATO a mano, ma non dovrebbe essere cosi'
+			// test Threads?action=init (default) ok
+			// test Threads?action=getThreadsByLastPost ok
+			// test Messages?action=getByAuthor ok
+			@Override
+			public int getMaxPages(PageContext pageContext) {
+				List<MessageDTO> messages = (List<MessageDTO>) pageContext.getRequest().getAttribute("messages");
+				if (messages.size() < 20) // MainServlet.PAGE_SIZE
+					return getCurrentPage(pageContext);
+				else
+					return Integer.MAX_VALUE; //sto barando per non fare la query dipendente dal parametro action
+			}
+			private Class[] servlets = new Class[] {
+				Messages.class,
+				Threads.class
+			};
+			@Override
+			public String getLink(int pageNumber, PageContext pageContext) {
+				String action = (String) pageContext.getRequest().getAttribute("action");
+				String servlet = (String) pageContext.getRequest().getAttribute("servlet");
+				servlet = servlet.substring(servlet.lastIndexOf('.') + 1);
+				
+				String link = servlet +
+						"?action=" + action +
+						"&amp;pageNr=" + pageNumber;
+				if (pageContext.getRequest().getAttribute("specificParams") != null) {
+					HashMap<String, String> specificParams =
+							(HashMap<String, String>) pageContext.getRequest().getAttribute("specificParams");
+					for (String key: specificParams.keySet()) {
+						try {
+							link += "&amp;" + key + "=" + java.net.URLEncoder.encode(specificParams.get(key), "UTF-8");
+						} catch (UnsupportedEncodingException e) {
+							// ignore
+						}
+					}
+				}
+				if ("getAuthorThreadsByLastPost".equals(action) && pageContext.getRequest().getParameter("author") != null) {
+					try {
+						link += "&amp;author=" + java.net.URLEncoder.encode(pageContext.getRequest().getParameter("author"), "UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// ignore
+					} 
+				}
+				return link;
+			}
+			
+			@Override
+			public int getCurrentPage(PageContext pageContext) {
+				try {
+					return Integer.parseInt(pageContext.getRequest().getParameter("pageNr"));
+				} catch (Exception e) {
+					return 0; //default
+				}
 			}
 		});
 	}};

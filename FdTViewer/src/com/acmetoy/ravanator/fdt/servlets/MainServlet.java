@@ -167,6 +167,7 @@ public abstract class MainServlet extends HttpServlet {
 			action = "init";
 		}
 		req.setAttribute("action", action);
+		req.setAttribute("servlet", this.getClass().getName());
 
 		// hack per persistere la sessione -- sarrusofono
 		final HttpSession session = req.getSession();

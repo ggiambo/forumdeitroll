@@ -808,6 +808,7 @@ div.userPanelSection form.pvtSendMessage textarea {
 	width: 97%;
 	border: 1px solid #7BAAE7;
 	padding: 0 5px;
+	height: 27em;
 }
 
 div.userPanelSection form.pvtSendMessage input.sendPvt {
@@ -875,6 +876,7 @@ div.userPanelSection div.pvtTextMessage {
 	border: 1px dashed gray;
 	background-color: cornsilk;
 	margin: 0.2em;
+	overflow: auto;
 }
 
 div.userPanelSection a.pvtNickname {
@@ -882,6 +884,24 @@ div.userPanelSection a.pvtNickname {
 	font-style: italic;
 	font-weight: bold;
 	text-decoration: none;
+}
+
+div.userPanelSection a.pvtRispondiBtn {
+	border: 1px solid #7BAAE7;
+	font-weight: bold;
+	font-size: 90%;
+	padding: 0.2em;
+	text-decoration: none;
+	color: black;
+	width: 8em;
+	float: right;
+	background-color: white;
+	text-align: center;
+	margin-top: 0.2em;
+}
+
+div.userPanelSection a.pvtRispondiBtn:hover {
+	box-shadow: 0 0 8px #0A78FF;
 }
 	
 div.threadTreeEntries {
@@ -894,9 +914,13 @@ ul.pager {
 	text-align: center;
 	margin: 0;
 	padding: 0;
+	display: inline !important;
 }
 
-ul.pager li {
-	display: inline;
-	margin: 1em 0 1em;
+ul.pager>li {
+	display: inline !important;
+	padding-top: 0.2em !important;
+	padding-bottom: 0.2em !important;
+	padding-left: 0.2em !important;
+	padding-right: 0.2em !important;
 }

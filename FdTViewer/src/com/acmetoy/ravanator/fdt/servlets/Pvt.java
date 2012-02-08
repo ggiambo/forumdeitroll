@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.acmetoy.ravanator.fdt.FdTException;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.PrivateMsgDTO;
 
@@ -107,8 +108,15 @@ public class Pvt extends MainServlet implements Servlet {
 				PrivateMsgDTO message = new PrivateMsgDTO();
 				message.setText(text);
 				message.setSubject(subject);
-				if (!getPersistence().sendAPvtForGreatGoods(author, message, recipients)) {
-					setNavigationMessage(req, NavigationMessage.error("Il messaggio non è stato inviato<img src='images/emo/10.gif'>"));
+				try {
+					if (!getPersistence().sendAPvtForGreatGoods(author, message, recipients)) {
+						setNavigationMessage(req, NavigationMessage.error("Il messaggio non è stato inviato<img src='images/emo/10.gif'>"));
+						ripopola(req);
+						req.setAttribute("from", "sendNew");
+						return "pvts.jsp";	
+					}
+				} catch (FdTException e) {
+					setNavigationMessage(req, NavigationMessage.error(e.getMessage()+"<img src='images/emo/10.gif'>"));
 					ripopola(req);
 					req.setAttribute("from", "sendNew");
 					return "pvts.jsp";	

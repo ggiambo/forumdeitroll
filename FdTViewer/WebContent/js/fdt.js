@@ -67,7 +67,7 @@ function preview(parentId) {
 		},
 		dataType: "json"
 	});
-	
+
 }
 
 function edit(parentId) {
@@ -78,8 +78,12 @@ function edit(parentId) {
 	$("#reply_" + parentId + " :input[name='edit']").hide();
 }
 
+var sent = false;
+
 function send(parentId) {
 	// post data
+	if (sent) return;
+	sent = true;
 	var data = { parentId: parentId };
 	$("#reply_" + parentId + " :input").each(function() {
 		var val = $(this);
@@ -175,3 +179,19 @@ jQuery("document").ready(function(){
 	SyntaxHighlighter.defaults['toolbar'] = false;
 	SyntaxHighlighter.all();
 });
+
+var YTgetInfo = function(myYtCounter) {
+	return function(ytResponse) {
+		var youcode = ytResponse.entry.media$group.yt$videoid.$t
+		var title = ytResponse.entry.title.$t
+		var youthumb = ytResponse.entry.media$group.media$thumbnail[0].url
+		
+		var youlink = document.getElementById('yt_'+myYtCounter)
+		youlink.appendChild(document.createElement('br'))
+		youlink.appendChild(document.createTextNode(title))
+		youlink.appendChild(document.createElement('br'))
+		var img = document.createElement('img')
+		img.src = youthumb
+		youlink.appendChild(img)
+	}
+}

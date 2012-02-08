@@ -11,7 +11,7 @@
 							<c:param name="action" value="getAvatar"/>
 							<c:param name="nick" value="${loggedUser.nick}"/>
 						</c:url>
-						<img src="<c:out value="${avatarURL}" escapeXml="true" />" alt="Avatar" class="avatar" />
+						<img src="User<c:out value="${avatarURL}" escapeXml="true" />" alt="Avatar" class="avatar" />
 						<h3>Informazioni</h3>
 						<span class="lbl">Nome utente:</span> ${loggedUser.nick}<br/>
 						<span class="lbl">Messaggi:</span> ${loggedUser.messages}
@@ -65,13 +65,6 @@
 						</form>		
 					</div>
 					<div class="userPanelSection">
-						<h3>Altre Azioni</h3>
-						<a href="?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
-						<a href="./Pvt?action=inbox" class="userPanelButton">Posta</a>
-						<c:set var="showAnonImg" value="${loggedUser.preferences['showAnonImg']}"/>
-						<div style="clear: both;"></div>
-					</div>
-					<div class="userPanelSection">
 						<h3>Preferenze</h3>
 						<form action="User?action=updatePreferences" method="post">
 							<div>
@@ -96,6 +89,13 @@
 						</form>
 						<div style="clear: both;"></div>
 					</div>
+					<div class="userPanelSection">
+						<h3>Altre Azioni</h3>
+						<a href="User?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
+						<a href="./Pvt?action=inbox" class="userPanelButton">Posta</a>
+						<c:set var="showAnonImg" value="${loggedUser.preferences['showAnonImg']}"/>
+						<div style="clear: both;"></div>
+					</div>	
 				</div>
 			</div>
 		</div>

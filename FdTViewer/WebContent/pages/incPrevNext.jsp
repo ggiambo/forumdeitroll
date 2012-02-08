@@ -1,8 +1,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
+<c:if test="${!empty pageNr}">
+	<fdt:pager handler="Messages"></fdt:pager>
+</c:if>
+<%--
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 
 <c:if test="${!empty pageNr}">
-
 	<c:if test="${pageNr gt 0}">
 		<c:url value="" var="prevLink">
 			<c:param name="action" value="${action}"/>
@@ -28,3 +33,4 @@
 	</c:if>
 	
 </c:if>
+--%>
