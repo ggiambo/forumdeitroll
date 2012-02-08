@@ -77,7 +77,7 @@ public class MessageTag extends BodyTagSupport {
 					
 					if (StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) {
 						state.token = state.token.substring(0, matcher.start()) + 
-							String.format("<a class='preview' href='%s'>Immagine postata da ANOnimo</a>", url) +
+							String.format("<a href='%s'>Immagine postata da ANOnimo</a>", url) +
 							state.token.substring(matcher.end());
 					} else {
 						state.token = state.token.substring(0, matcher.start()) + 
