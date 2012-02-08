@@ -1,10 +1,9 @@
 package com.acmetoy.ravanator.fdt;
 
-import javax.servlet.ServletContext;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
+
 import org.apache.log4j.Logger;
 
 public class ThreadPrettyUrlTag extends TagSupport {
@@ -16,7 +15,7 @@ public class ThreadPrettyUrlTag extends TagSupport {
 	private static String prettifySubject(String subject) {
 		StringBuilder out = new StringBuilder();
 		for (char c : subject.toCharArray()) {
-			if ((Character.isAlphabetic(c)) || (Character.isDigit(c)))
+			if ((isAlphabetic(c)) || (Character.isDigit(c)))
 				out.append(c);
 			else {
 				out.append('-');
@@ -51,6 +50,16 @@ public class ThreadPrettyUrlTag extends TagSupport {
 			LOG.error(e.getMessage(), e);
 		}
 		return 0;
+	}
+	
+	private static boolean isAlphabetic(char ch) {
+		int type = Character.getType(ch);
+		return type == Character.UPPERCASE_LETTER
+				|| type == Character.LOWERCASE_LETTER
+				|| type == Character.TITLECASE_LETTER
+				|| type == Character.MODIFIER_LETTER
+				|| type == Character.OTHER_LETTER
+				|| type == Character.LETTER_NUMBER;
 	}
 
 	public String getThreadId() {
