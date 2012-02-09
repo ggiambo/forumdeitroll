@@ -1,9 +1,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page trimDirectiveWhitespaces="true" %>
+<%! static final long bootTime = System.currentTimeMillis(); %>
 <img id="headerimg" alt="" src="./images/2.0.png" />
 <div id="header">
 	<h1>
-		<a href="Threads" id="titoloForum">
+		<a title="Boot time: <%=new java.util.Date(bootTime)%>" href="Threads" id="titoloForum">
 			Forum dei Troll
 		</a>
 	</h1>
