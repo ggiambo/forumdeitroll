@@ -1,18 +1,14 @@
 package com.acmetoy.ravanator.fdt;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.servlets.MainServlet;
@@ -20,317 +16,510 @@ import com.acmetoy.ravanator.fdt.servlets.Messages;
 import com.acmetoy.ravanator.fdt.servlets.User;
 
 public class MessageTag extends BodyTagSupport {
-
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -4382505626768797422L;
+	private static final Logger LOG = Logger.getLogger(MessageTag.class);
 	
+	// ----- BodyTagSupport -----
 	private String search;
-	
 	private AuthorDTO author;
-	
-	private static String escape(String in) {return simpleReplaceAll(StringEscapeUtils.escapeHtml4(in), "'", "&apos;");}
-	
-	private static class BodyState {
-		public String token;
-		public boolean openCode;
-		public boolean inCode;
-		public boolean openColor;
-		public int open_b = 0, open_i = 0, open_u = 0, open_s = 0;
+	public void setSearch(String search) {
+		this.search = search;
 	}
-	
-	private static interface BodyTokenProcessor {
-		public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser);
+	public String getSearch() {
+		return search;
 	}
-	
-	private static final Pattern QUOTE = Pattern.compile("^(&gt; ?)+");
-
-	private static final Map<Pattern, BodyTokenProcessor> patternProcessorMapping =
-		new HashMap<Pattern, BodyTokenProcessor>() {{
-			put(Pattern.compile("^(www\\.|https?://|ftp://|mailto:).*$"), new BodyTokenProcessor() {
-				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
-					if (state.inCode) return;
-					String url = escape(state.token);
-					String desc = url;
-					if (url.startsWith("www.")) {
-						url = "http://" + url;
-					}
-					if (state.token.length() > 50) {
-						desc = escape(state.token.substring(0,50)) + "...";
-					}
-					desc = simpleReplaceAll(desc, search, "<span style='background-color: yellow'>" + search + "</span>");
-					state.token = String.format("<a href='%s' target='_blank'>%s</a>",url, desc);
-				}
-			});
-			put(Pattern.compile("\\[img\\](https?://.*?)\\[/img\\]"), new BodyTokenProcessor() {
-				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
-					if (state.inCode) return;
-					String url = escape(matcher.group(1));
-//					state.token = matcher.replaceFirst(
-//						String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src='%s'></a>", url, url)
-//					);
-					
-					String showAnonImg = "yes";
-					if (loggedUser != null) {
-						showAnonImg = loggedUser.getPreferences().getProperty(User.PREF_SHOWANONIMG);
-					}
-					
-					if (StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) {
-						state.token = state.token.substring(0, matcher.start()) + 
-							String.format("<a href='%s'>Immagine postata da ANOnimo</a>", url) +
-							state.token.substring(matcher.end());
-					} else {
-						state.token = state.token.substring(0, matcher.start()) + 
-							String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src='%s'></a>", url, url) +
-							state.token.substring(matcher.end());
-					}
-				}
-			});
-			put(Pattern.compile("\\[yt\\]([a-zA-Z0-9\\+\\/=\\-_]{7,12})\\[/yt\\]"), new BodyTokenProcessor() {
-				Long ytCounter = 0l;
-				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
-					if (state.inCode) return;
-					String youcode = escape(matcher.group(1));
-					StringBuffer sb = new StringBuffer();
-					
-					String embeddYt = "yes";
-					if (loggedUser != null) {
-						embeddYt = loggedUser.getPreferences().getProperty(User.PREF_EMBEDDYT);
-					}
-					
-					if (StringUtils.isEmpty(embeddYt)) {
-						// mostra un link
-						long myYtCounter = 0l;
-						synchronized (ytCounter) {
-							if (ytCounter == Long.MAX_VALUE) {
-								ytCounter = 0l;
-							} else {
-								ytCounter++;
-							}
-							myYtCounter = ytCounter;
-						}
-						
-						sb.append("<a href=\"http://www.youtube.com/watch?v=").append(youcode).append("\" ");
-						sb.append("id=\"yt_").append(myYtCounter).append("\">");
-						sb.append("http://www.youtube.com/watch?v=").append(youcode).append("</a>");
-						sb.append("<script type='text/javascript'>YTgetInfo_");
-						sb.append(myYtCounter).append("= YTgetInfo('");
-						sb.append(myYtCounter).append("')</script>");
-						sb.append("<script type='text/javascript' src=\"");
-						sb.append("http://gdata.youtube.com/feeds/api/videos/").append(youcode);
-						sb.append("?v=2&amp;alt=json-in-script&amp;callback=YTgetInfo_");
-						sb.append(myYtCounter).append("\"></script>");
-					} else {
-						// un glande classico: l'embed
-						sb.append("<object height='329' width='400'>");
-						sb.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>");
-						sb.append("<param value='transparent' name='wmode'>");
-						sb.append("<embed height='329' width='400' wmode='transparent' ");
-						sb.append("type='application/x-shockwave-flash' ");
-						sb.append("src='http://www.youtube.com/v/").append(youcode).append("'></object>");
-					}
-//					state.token = matcher.replaceFirst(sb.toString());
-					state.token = state.token.substring(0, matcher.start()) + sb.toString() + state.token.substring(matcher.end());
-				}
-			});
-			put(Pattern.compile("\\[code$"), new BodyTokenProcessor() {
-				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
-					state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
-					state.openCode = true;
-				}
-			});
-			put(Pattern.compile("^([a-zA-Z0-9]+)\\]"), new BodyTokenProcessor() {
-				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
-					if (state.openCode) {
-						state.openCode = false;
-//						state.token = matcher.replaceFirst(String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)));
-						state.token = state.token.substring(0, matcher.start()) +
-								String.format("<pre class='brush: %s; class-name: code'>", matcher.group(1)) +
-								state.token.substring(matcher.end());
-						state.inCode = true;
-					}
-				}
-			});
-			put(Pattern.compile("\\[/code\\]"), new BodyTokenProcessor() {
-				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
-					state.token = matcher.replaceFirst("</pre>");
-					state.inCode = false;
-				}
-			});
-			put(Pattern.compile("\\[color$"), new BodyTokenProcessor() {
-				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
-					state.token = state.token.substring(0, matcher.start()) + "" + state.token.substring(matcher.end());
-					state.openColor = true;
-				}
-			});
-			//http://www.w3schools.com/cssref/css_colornames.asp
-			put(Pattern.compile("^([a-zA-Z]{3,15}|\\#[A-Za-z0-9]{6})\\]"), new BodyTokenProcessor() {
-				@Override
-				public void process(Matcher matcher, BodyState state, String search, AuthorDTO author, AuthorDTO loggedUser) {
-					if (state.openColor) {
-						String color = matcher.group(1);
-						state.token = state.token.substring(0, matcher.start()) +
-								String.format("<span style='color: %s'>", color) +
-								state.token.substring(matcher.end());
-						state.openColor = false;
-					}
-				}
-			});
-		}};
-	
-	private static String simpleReplaceAll(String src, String search, String replacement) {
-		if (search == null || search.length() == 0) return src;
-		int p = 0;
-		while ((p=src.indexOf(search, p)) != -1) {
-			src = src.substring(0, p) + replacement + src.substring(p + search.length());
-			p += replacement.length();
-		}
-		return src;
+	public void setAuthor(AuthorDTO author) {
+		this.author = author;
 	}
-	
-	/* TODO: Never used ? nope
-	private static String simpleReplaceFirst(String src, String search, String replacement) {
-		if (search == null || search.length() == 0) return src;
-		int p = src.indexOf(search);
-		return src.substring(0, p) + replacement + src.substring(p + search.length());
-	}
-	*/
-	
-	private static String emoticons(String line) {
-		Map<String,String[]> emoMap = Messages.getEmoMap();
-		for (Entry<String, String[]> entry : emoMap.entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue()[0];
-			String alt = entry.getValue()[1];
-			// tutte le emo sono lower case ora
-			line = simpleReplaceAll(line, value, String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
-			line = simpleReplaceAll(line, value.toUpperCase(), String.format("<img class='emoticon' alt='%s' title='%s' src='images/emo/%s.gif'>", alt, alt, key));
-		}
-		return line;
-	}
-	
-	private static String color_quote(String line) {
-		Matcher m = QUOTE.matcher(line);
-		if (m.find()) {
-			int quoteLvl = m.group(0).replaceAll(" ", "").replaceAll("&gt;", " ").length();
-			quoteLvl--;
-			String cssClass = "quoteLvl" + ((quoteLvl % 4) + 1);
-			line =  "<span class='" + cssClass + "'>" + line + "</span>";
-		}
-		return line;
+	public AuthorDTO getAuthor() {
+		return author;
 	}
 	
 	public int doAfterBody() throws JspTagException {
 		try {
-			String body = getBodyContent().getString();
 			AuthorDTO loggedUser = (AuthorDTO) pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			getBodyContent().getEnclosingWriter().write(getMessage(body, search, author, loggedUser));
+			getBodyContent().getEnclosingWriter().write(getMessage(getBodyContent().getString().toCharArray(), search, author, loggedUser).toString());
 		} catch (Exception e) {
+			LOG.error("Errore durante il rendering del post "+e.getMessage(), e);
+			LOG.error("BODY:\n"+getBodyContent().getString());
 			throw new JspTagException(e);
 		}
 		return SKIP_BODY;
 	}
-		
+	
+	// ----- message parsing -----
+	
+	// per la preview
 	public static String getMessage(String body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
-		StringBuilder out = new StringBuilder();
-		
-		// questo elimina il caso di multipli tags sulla stessa linea non separati
-		body = simpleReplaceAll(body, "[/code]", "[/code] ");
-		body = simpleReplaceAll(body, "[/img]", "[/img] ");
-		body = simpleReplaceAll(body, "[/yt]", "[/yt] ");
-		body = simpleReplaceAll(body, "[/color]", "[/color] ");
-		
-//			System.out.println("------ body ------");
-//			System.out.println(body);
-//			System.out.println("------ body ------");
-
-			BodyState state = new BodyState();
-			// contiamo 'sti cazzo di tag
-			Matcher tagMatcher = Pattern.compile("(<b>|</b>|<i>|</i>|<s>|</s>|<u>|</u>)", Pattern.CASE_INSENSITIVE).matcher(body);
-			while (tagMatcher.find()) {
-				String tag = tagMatcher.group(1);
-				if (      tag.equalsIgnoreCase("<b>") ) state.open_b++;
-				else if (tag.equalsIgnoreCase("</b>")) state.open_b--;
-				else if (tag.equalsIgnoreCase("<i>") ) state.open_i++;
-				else if (tag.equalsIgnoreCase("</i>")) state.open_i--;
-				else if (tag.equalsIgnoreCase("<s>") ) state.open_s++;
-				else if (tag.equalsIgnoreCase("</s>")) state.open_s--;
-				else if (tag.equalsIgnoreCase("<u>") ) state.open_u++;
-				else if (tag.equalsIgnoreCase("</u>")) state.open_u--;
-			}
-
-			String[] lines = body.split("<BR>");
-			for (int i=0;i<lines.length;++i) {
-				String line = lines[i];
-				StringTokenizer tokens = new StringTokenizer(line, " ", true);
-				StringBuffer lineBuf = new StringBuffer();
-				boolean wasInCode = state.inCode;
-				while (tokens.hasMoreTokens()) {
-					String token = tokens.nextToken();
-					state.token = token;
-					boolean noMatch = true;
-					if (token.length() > 3) { // non c'è niente da matchare di interessante sotto i 4 caratteri
-						state.token = simpleReplaceAll(state.token, "[code]", "<pre class='code'>");
-						//state.token = simpleReplaceAll(state.token, "[/code]", "</pre>");
-						state.token = simpleReplaceAll(state.token, "[/color]", "</span>");
-						for(Iterator<Pattern> it = patternProcessorMapping.keySet().iterator(); it.hasNext();) {
-							Pattern pattern = it.next();
-							Matcher matcher = pattern.matcher(state.token);
-							while (matcher.find()) {
-								noMatch = false;
-								BodyTokenProcessor processor = patternProcessorMapping.get(pattern);
-
-//								System.out.println("token: "+state.token);
-//								System.out.println("regex: "+pattern.pattern());
-							processor.process(matcher, state, search, author, loggedUser);
-//								System.out.println("---->: "+state.token);
-			}
+		MessageTag messageTag = new MessageTag();
+		try {
+			return messageTag.getMessage(body.toCharArray(),search, author, loggedUser).toString();
+		} catch (Exception e) {
+			LOG.error("Errore durante il rendering del post "+e.getMessage(), e);
+			LOG.error("BODY:\n"+new String(messageTag.body));
+			throw new JspTagException(e);
 		}
-				}
-				if (noMatch) {
-					state.token = simpleReplaceAll(state.token, search, "<span style='background-color: yellow'>" + search + "</span>");
-				}
-				lineBuf.append(state.token);
-			}
-			line = lineBuf.toString();
-			if ((!state.inCode) && (!wasInCode)) {
-				line = emoticons(line);
-				line = color_quote(line);
-			}
-			out.append(line);
-			if (state.inCode)
-				out.append("\n");
-			else
-				out.append("<BR>");
-		}
-		
-		int i;
-		for (i=0;i<state.open_b;++i) out.append("</b>");
-		for (i=0;i<state.open_i;++i) out.append("</i>");
-		for (i=0;i<state.open_s;++i) out.append("</s>");
-		for (i=0;i<state.open_u;++i) out.append("</u>");
-		
-		return out.toString();
-	}
-
-	public void setSearch(String search) {
-		this.search = search;
-	}
-
-	public String getSearch() {
-		return search;
 	}
 	
-	public void setAuthor(AuthorDTO author) {
-		this.author = author;
+	
+	private char[] body;
+	private char[] ibody;
+	private int p;
+	private StringBuilder out, word, line;
+	private String[] searches;
+	private static String[] EMPTY_STRING_ARRAY = new String[0];
+	int open_b = 0, open_i = 0, open_s = 0, open_u = 0;
+	
+	private StringBuilder getMessage(char[] body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
+		this.body = body;
+		ibody = new String(body).toLowerCase().toCharArray();
+		out = new StringBuilder((int) (body.length * 1.3));
+		word = new StringBuilder();
+		line = new StringBuilder();
+		searches = search != null && !search.equals("") ? search.split(" ") : EMPTY_STRING_ARRAY;
+		open_b = 0; open_i = 0; open_s = 0; open_u = 0;
+		p = -1;
+		
+		while (++p < body.length) {
+			char c = body[p];
+			
+			if (ifound(TAG_B)) {
+				on_tag(TAG_B);
+			} else if (ifound(TAG_B_END)) {
+				on_tag(TAG_B_END);
+			} else if (ifound(TAG_I)) {
+				on_tag(TAG_I);
+			} else if (ifound(TAG_I_END)) {
+				on_tag(TAG_I_END);
+			} else if (ifound(TAG_S)) {
+				on_tag(TAG_S);
+			} else if (ifound(TAG_S_END)) {
+				on_tag(TAG_S_END);
+			} else if (ifound(TAG_U)) {
+				on_tag(TAG_U);
+			} else if (ifound(TAG_U_END)) {
+				on_tag(TAG_U_END);
+			} else if (found(CODE)) {
+				on_word();
+				code();
+			} else if (found(IMG)) {
+				on_word();
+				img(loggedUser);
+			} else if (found(YT)) {
+				on_word();
+				youtube(loggedUser);
+			} else if (found(COLOR)) {
+				on_word();
+				start_color();
+			} else if (found(COLOR_END)) {
+				on_word();
+				line.append("</span>");
+				p += COLOR_END.length - 1;
+			} else if (c == ' ') {
+				on_word();
+				line.append(' ');
+			} else if (ifound(TAG_BR)) {
+				on_line();
+				out.append(TAG_BR);
+				p += TAG_BR.length - 1;
+			} else {
+				word.append(c);
+			}
+		}
+		
+		on_line();
+		
+		for (int i=0;i<open_b;++i) out.append(TAG_B_END);
+		for (int i=0;i<open_i;++i) out.append(TAG_I_END);
+		for (int i=0;i<open_s;++i) out.append(TAG_S_END);
+		for (int i=0;i<open_u;++i) out.append(TAG_U_END);
+		
+		return out;
 	}
 	
-	public AuthorDTO getAuthor() {
-		return author;
+	private void on_tag(char[] tag) {
+		on_word();
+		switch (tag[1]){
+		case 'b': open_b++; break;
+		case 'i': open_i++; break;
+		case 's': open_s++; break;
+		case 'u': open_u++; break;
+		default:
+			switch(tag[2]){
+			case 'b': open_b--; break;
+			case 'i': open_i--; break;
+			case 's': open_s--; break;
+			case 'u': open_u--; break;
+			}
+		}
+		line.append(tag);
+		p += tag.length - 1;
 	}
+	
+	private void on_word() {
+		if (!emoticons()) {
+			if (!link()) {
+				search();
+			}
+		}
+		line.append(word);
+		word.setLength(0);
+	}
+	
+	private void on_line() {
+		on_word();
+		color_quote();
+		out.append(line);
+		line.setLength(0);
+	}
+	
+	private static final String[][] emos = load_emos();
+	private static final char[][] emos_ch = to_chars(emos);
+	private static String[][] load_emos() {
+		Map<String, String[]> emoMap = Messages.getEmoMap();
+		String[][] emos = new String[emoMap.size()][3];
+		int i = 0;
+		for (Iterator<String> imgNameIter = emoMap.keySet().iterator(); imgNameIter.hasNext();) {
+			String imgName = imgNameIter.next();
+			//NB: se non va bene trim, valutare diversamente nel metodo emoticons, eventualmente controllo se body[p-1] è uno spazio
+			String emoSequence = emoMap.get(imgName)[0].trim();
+			String altText = emoMap.get(imgName)[1];
+			emos[i++] = new String[] {imgName, emoSequence, altText};
+		}
+		return emos;
+	}
+	private static final char[][] to_chars(String[][] emos) {
+		char[][] emos_ch = new char[emos.length][];
+		int i = 0;
+		for (String[] emo: emos) {
+			emos_ch[i++] = emo[1].toCharArray();
+		}
+		return emos_ch;
+	}
+	
+	private boolean emoticons() {
+		int wlen = word.length();
+		p -= wlen;
+		for (int i=0;i<emos_ch.length;i++) {
+			if (emos_ch[i].length == wlen) {
+				if (ifound(emos_ch[i])) {
+					String[] emo = emos[i];
+					word.setLength(0);
+					word.append( String.format( "<img alt='%s' title='%s' src='images/emo/%s.gif'>", emo[2], emo[2], emo[0]));
+					p += wlen;
+					return true;
+				}
+			}
+		}
+		p += wlen;
+		return false;
+	}
+	
+	private boolean link() {
+		if (word.indexOf("http://") == 0 || word.indexOf("https://") == 0 ||
+				word.indexOf("www.") == 0 || word.indexOf("ftp://") == 0 || word.indexOf("mailto:") == 0) {
+			String url = escape(word);
+			String desc = word.toString();
+			if (url.startsWith("www.")) {
+				url = "http://" + url;
+			}
+			if (desc.length() > 50) {
+				desc = desc.substring(0, 50) + "...";
+			}
+			for (String s : searches) {
+				int p = 0;
+				while ((p = desc.indexOf(s, p)) != -1) {
+					String hilight = String.format("<span style='color: yellow'>%s</span>", s);
+					desc = desc.substring(0, p) + hilight+ desc.substring(p + s.length(), desc.length());
+					p += hilight.length();
+				}
+			}
+			word.setLength(0);
+			word.append(String.format("<a href=\"%s\">%s</a>", url, desc));
+		}
+		return false;
+	}
+	
+	private void search() {
+		for (String s : searches) {
+			simpleReplaceAll(word, s, String.format("<span style='color: yellow'>%s</span>", s));
+		}
+	}
+	
+	private void color_quote() {
+		int quoteLvl = 0;
+		String q = QUOTE;
+		int pq = 0;
+		while (line.indexOf(q, pq) == pq) {
+			pq += q.length();
+			q = SP_QUOTE;
+			quoteLvl++;
+		}
+		if (quoteLvl != 0) {
+			if (quoteLvl > 4) quoteLvl = 1 + (quoteLvl % 4);
+			line.insert(0, "<span class='quoteLvl" + quoteLvl + "'>");
+			line.append("</span>");
+		}
+	}
+	
+	private void code() {
+		if (']' == body[p + CODE.length]) {
+			p += CODE.length;
+			int p_end;
+			if ((p_end = scanFor(CODE_END)) != -1) {
+				// [code]...[/code]
+				line.append("<pre class='code'>");
+				StringBuilder code_body = new StringBuilder();
+				code_body.append(body, p + 1, p_end - (p + 1));
+				simpleReplaceAll(code_body, "<BR>", "\n");
+				line.append(code_body);
+				line.append(PRE_TAG_END);
+				p = p_end + PRE_TAG_END.length;
+			} else {
+				// [code] orfano di chiusura: ignora
+				line.append(CODE).append(']');
+				p--;
+			}
+		} else if (' ' == body[p + CODE.length]) {
+			// cerco [code ${lang}]
+			p += CODE.length + 1;
+			boolean ok = false;
+			int i;
+			for (i=0;i<10;i++) {
+				char c = body[p+i];
+				if (isAlphabetic(c) || Character.isDigit(c)) continue;
+				else if (i > 0 && ']' == c) {
+					ok = true;
+					break;
+				}
+				else break;
+			}
+			if (ok) {
+				int p_end;
+				if ((p_end = scanFor(CODE_END)) != -1) {
+					// [code $lang]...[/code]
+					line.append(String.format("<pre class='brush: %s; class-name: code'>", new String(body, p, i)));
+					StringBuilder code_body = new StringBuilder();
+					code_body.append(body, p + i + 1, p_end - (p + i + 1));
+					simpleReplaceAll(code_body, "<BR>", "\n");
+					line.append(code_body);
+					line.append(PRE_TAG_END);
+					p = p_end + PRE_TAG_END.length;
+				} else {
+					// [code $lang] senza [/code] finale
+					line.append(CODE).append(' ');
+					p--;
+				}
+			} else {
+				//[code ...qualcosa non accettato
+				line.append(CODE).append(' ');
+				p--;
+			}
+		} else {
+			// [code...qualcosa /= ' ' | ']'
+			line.append(CODE);
+			p += CODE.length - 1;
+		}
+	}
+	
+	private void img(AuthorDTO loggedUser) {
+		p += IMG.length;
+		int img_end = scanFor(IMG_END);
+		if (img_end == -1) {
+			line.append(IMG);
+			p--;
+			return;
+		}
+		int ps = scanFor(' ');
+		if (ps != -1 && ps < img_end) {
+			line.append(IMG);
+			p--;
+			return;
+		}
+		String url = escape(new String(body, p, img_end - p));
+		String showAnonImg = "yes";
+		if (loggedUser != null) {
+			showAnonImg = loggedUser.getPreferences().getProperty(User.PREF_SHOWANONIMG);
+		}
+		if (StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) {
+			line.append(String.format("<a href=\"%s\">Immagine postata da ANOnimo</a>", url));
+		} else {
+			line.append(String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src=\"%s\"></a>", url, url));
+		}
+		p = img_end + (IMG_END.length - 1);
+	}
+	
+	Long ytCounter = 0l;
+	private void youtube(AuthorDTO loggedUser) {
+		p += YT.length;
+		int yt_end = scanFor(YT_END);
+		if (yt_end == -1) {
+			line.append(YT);
+			p--;
+			return;
+		}
+		int ps = scanFor(' ');
+		if (ps != -1 && ps < yt_end) {
+			line.append(YT);
+			p--;
+			return;
+		}
+		String youcode = escape(new String(body, p, yt_end - p));
+		String embeddYt = "yes";
+		if (loggedUser != null) {
+			embeddYt = loggedUser.getPreferences().getProperty(User.PREF_EMBEDDYT);
+		}
+		if (StringUtils.isEmpty(embeddYt)) {
+			long myYtCounter = 0l;
+			synchronized (ytCounter) {
+				if (ytCounter == Long.MAX_VALUE) {
+					ytCounter = 0l;
+				} else {
+					ytCounter++;
+				}
+				myYtCounter = ytCounter;
+			}
+			line.append("<a href=\"http://www.youtube.com/watch?v=").append(youcode).append("\" ");
+			line.append("id=\"yt_").append(myYtCounter).append("\">");
+			line.append("http://www.youtube.com/watch?v=").append(youcode).append("</a>");
+			line.append("<script type='text/javascript'>YTgetInfo_");
+			line.append(myYtCounter).append("= YTgetInfo('");
+			line.append(myYtCounter).append("')</script>");
+			line.append("<script type='text/javascript' src=\"");
+			line.append("http://gdata.youtube.com/feeds/api/videos/").append(youcode);
+			line.append("?v=2&amp;alt=json-in-script&amp;callback=YTgetInfo_");
+			line.append(myYtCounter).append("\"></script>");
+		} else {
+			// un glande classico: l'embed
+			line.append("<object height='329' width='400'>");
+			line.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>");
+			line.append("<param value='transparent' name='wmode'>");
+			line.append("<embed height='329' width='400' wmode='transparent' ");
+			line.append("type='application/x-shockwave-flash' ");
+			line.append("src='http://www.youtube.com/v/").append(youcode).append("'></object>");
+		}
+		p = yt_end + (YT_END.length - 1);
+	}
+	
+	private void start_color() {
+		p += COLOR.length;
+		int end_p = scanFor(']', 12);
+		if (end_p != -1) {
+			int i;
+			for (i = p; i < end_p; i++) {
+				char c = body[i];
+				if (i == p && c == '#') continue;
+				if (isAlphabetic(c) || Character.isDigit(c)) continue;
+				break;
+			}
+			if (i == end_p) {
+				// ok
+				line.append(String.format("<span style='color:%s'>", new String(body, p, end_p - p)));
+				p += end_p - p;
+			} else {
+				// caratteri non validi dopo il [color ${qua}]
+				line.append(COLOR);
+				p--;
+			}
+		} else {
+			// tag [color non chiuso (entro i 12 char)
+			line.append(COLOR);
+			p--;
+		}
+	}
+	
+	//----- util -----
+	public boolean found(char[] C) {
+		if (C.length > body.length - p) return false;
+		int i = 0;
+		while (i < C.length && C[i] == body[p+i]) i++;
+		return i == C.length;
+	}
+	
+	public boolean ifound(char[] C) {
+		if (C.length > ibody.length - p) return false;
+		int i = 0;
+		while (i < C.length && C[i] == ibody[p+i]) i++;
+		return i == C.length;
+	}
+	public int scanFor(char[] C) {
+		for (int i=p;i<body.length;i++) {
+			if (C.length > body.length - i) return -1;
+			int j = 0;
+			while (j < C.length && C[j] == body[i + j]) j++;
+			if (j == C.length) return i;
+		}
+		return -1;
+	}
+	public int scanFor(char c) {
+		for (int i=p;i<body.length;i++) {
+			if (body[i] == c) return i;
+		}
+		return -1;
+	}
+	public int scanFor(char c, int limit) {
+		for (int i=p;i<body.length && i - p < limit;i++) {
+			if (body[i] == c) return i;
+		}
+		return -1;
+	}
+	private static String escape(StringBuilder in) {
+		return StringEscapeUtils.escapeHtml4(in.toString()).replace("'", "&quot;");
+	}
+	private static String escape(String in) {
+		return StringEscapeUtils.escapeHtml4(in).replace("'", "&quot;");
+	}
+	private static void simpleReplaceAll(StringBuilder src, String search, String replacement) {
+		if (search == null || search.length() == 0) return;
+		int i = 0;
+		while ((i = src.indexOf(search, i)) != -1) {
+			src.replace(i, i + search.length(), replacement);
+			i += replacement.length();
+		}
+	}
+	private static boolean isAlphabetic(char ch) {
+		int type = Character.getType(ch);
+		return type == Character.UPPERCASE_LETTER
+				|| type == Character.LOWERCASE_LETTER
+				|| type == Character.TITLECASE_LETTER
+				|| type == Character.MODIFIER_LETTER
+				|| type == Character.OTHER_LETTER
+				|| type == Character.LETTER_NUMBER;
+	}
+	
+	//------ const -----
+	private static final char[] TAG_B = "<b>".toCharArray();
+	private static final char[] TAG_I = "<i>".toCharArray();
+	private static final char[] TAG_S = "<s>".toCharArray();
+	private static final char[] TAG_U = "<u>".toCharArray();
+	private static final char[] TAG_B_END = "</b>".toCharArray();
+	private static final char[] TAG_I_END = "</i>".toCharArray();
+	private static final char[] TAG_S_END = "</s>".toCharArray();
+	private static final char[] TAG_U_END = "</u>".toCharArray();
+	private static final char[] PRE_TAG_END = "</pre>".toCharArray();
+	
+	private static final char[] TAG_BR = "<br>".toCharArray();
+	
+	private static final char[] CODE = "[code".toCharArray();
+	private static final char[] CODE_END = "[/code]".toCharArray();
+	
+	private static final char[] IMG = "[img]".toCharArray();
+	private static final char[] IMG_END = "[/img]".toCharArray();
+	
+	private static final char[] YT = "[yt]".toCharArray();
+	private static final char[] YT_END = "[/yt]".toCharArray();
+	
+	private static final char[] COLOR = "[color ".toCharArray();
+	private static final char[] COLOR_END = "[/color]".toCharArray();
+	
+	private static final String QUOTE = "&gt;";
+	private static final String SP_QUOTE = " &gt;";
+	
+	//----- test -----
+	
+	// injection varie
+	// http://localhost:8080/fdtduezero/Threads?action=getByThread&threadId=2658737
+	// [code]
+	// http://localhost:8080/fdtduezero/Threads?action=getByThread&threadId=2661449
+	//
 }
