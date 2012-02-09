@@ -201,14 +201,13 @@ public class MessageTag extends BodyTagSupport {
 		int wlen = word.length();
 		p -= wlen;
 		for (int i=0;i<emos_ch.length;i++) {
-			if (emos_ch[i].length == wlen) {
-				if (ifound(emos_ch[i])) {
-					String[] emo = emos[i];
-					word.setLength(0);
-					word.append( String.format( "<img alt='%s' title='%s' src='images/emo/%s.gif'>", emo[2], emo[2], emo[0]));
-					p += wlen;
-					return true;
-				}
+			if (ifound(emos_ch[i])) {
+				String[] emo = emos[i];
+				String emoReplacement = String.format( "<img alt='%s' title='%s' src='images/emo/%s.gif'>", emo[2], emo[2], emo[0]);
+				word.delete(0, emos_ch[i].length);
+				word.insert(0, emoReplacement);
+				p += wlen;
+				return true;
 			}
 		}
 		p += wlen;
