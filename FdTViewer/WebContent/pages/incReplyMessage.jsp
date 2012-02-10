@@ -1,6 +1,8 @@
 <%@page import="java.util.Map"%>
+<%@page import="com.acmetoy.ravanator.fdt.servlets.Messages"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
+
 
 <script>
 	$(document).ready(function() {
@@ -66,8 +68,10 @@
 	</c:if>
 	
 	<%-- input area --%>
-	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt" id="text_${message.id}" onkeyup="update_counter(${message.id})" onchange="update_counter(${message.id})">${message.text}</textarea>
-
+	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt" id="text_${message.id}" 
+	onkeyup="update_counter(${message.id},<%=Messages.MAX_MESSAGE_LENGTH%>)" 
+	onchange="update_counter(${message.id},<%=Messages.MAX_MESSAGE_LENGTH%>)">${message.text}</textarea>
+	
 	<%-- preview area --%>
 	<div id="preview_${message.parentId}" class="msgReplyTxt"></div>
 	
@@ -78,7 +82,7 @@
 		<c:when test="${empty loggedUser}">
 			<div class="msgAnonBox">
 				<div class='counter-container'>
-					<input type='text' id='counter_${message.id}' disabled="disabled" value='${10000-fn:length(message.text)}'/>
+					<input type='text' id='counter_${message.id}' disabled="disabled" value='${MAX_MESSAGE_LENGTH - fn:length(message.text)}'/>
 				</div>
 				<label for="nick">Nome:&nbsp;</label><input tabindex="2" name="nick" id="nick" size="10"/>&nbsp;&nbsp;<label for="password">Password:&nbsp;</label><input tabindex="3" type="password" id="password" name="pass" size="10"/>
 				<div class="msgCaptcha">
@@ -90,7 +94,7 @@
 		</c:when>
 		<c:otherwise>
 			<div style="margin: 3px">
-				<input type='text' id='counter_${message.id}' class='counter' disabled="disabled" value='${10000-fn:length(message.text)}'/>
+				<input type='text' id='counter_${message.id}' class='counter' disabled="disabled" value='0'/>
 				<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />&nbsp;
 			</div>
 		</c:otherwise>

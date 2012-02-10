@@ -203,18 +203,19 @@ function pedonizeThread(threadTitle, threadId) {
 	}
 }
 
-var update_counter = function(messageId) {
+// n.b. non furmigate, il controllo della lunghezza c'è anche lato server
+var update_counter = function(messageId, limit) {
 	try {
 	var counter = document.getElementById('counter_' + messageId)
 	var textarea = document.getElementById('text_' + messageId)
-	if (textarea.value.length > 10000) {
-		textarea.value = textarea.value.substring(0, 10000)
+	if (textarea.value.length > limit) {
+		textarea.value = textarea.value.substring(0, limit)
 		counter.style.backgroundColor = 'red'
 		setTimeout(function() {
 			counter.style.backgroundColor = null
 		}, 200)
 	}
-	counter.value = 10000 - textarea.value.length
+	counter.value = limit - textarea.value.length
 	
 	} catch (e) {alert(e.message)}
 }

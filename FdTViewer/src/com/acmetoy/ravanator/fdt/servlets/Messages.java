@@ -203,10 +203,14 @@ public class Messages extends MainServlet {
 			TreeMap<String, String[]> emoMap = new TreeMap<String, String[]>(EMO_MAP);
 			req.setAttribute("emoMap", emoMap);
 
+			//jstl non accede ai campi stitici
+			req.setAttribute("MAX_MESSAGE_LENGTH", MAX_MESSAGE_LENGTH);
 			return "incReplyMessage.jsp";
 		}
 	};
 
+	public static final int MAX_MESSAGE_LENGTH = 40000;
+	
 	/**
 	 * Ritorna una stringa diversa da null da mostrare come messaggio d'errore all'utente
 	 * @param req
@@ -224,7 +228,7 @@ public class Messages extends MainServlet {
 		}
 
 		// testo al massimo di 10000 caratteri ...
-		if (text.length() > 10000) {
+		if (text.length() > MAX_MESSAGE_LENGTH) {
 			return "Sei piu' logorroico di una Wakka, stai sotto i 10000 caratteri !";
 		}
 
