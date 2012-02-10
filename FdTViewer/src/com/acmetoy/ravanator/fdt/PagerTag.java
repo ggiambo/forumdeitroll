@@ -232,13 +232,13 @@ public class PagerTag extends TagSupport  {
 					ServletRequest req = pageContext.getRequest();
 					String action = (String) req.getAttribute("action");
 					if ("init".equals(action)) {
-						return (getPersistence().countMessages() / MainServlet.PAGE_SIZE) + 1;
+						return ((getPersistence().countMessages() - 1) / MainServlet.PAGE_SIZE);
 					} else if ("getByForum".equals(action)) {
 						String forum = req.getParameter("forum");
-						return (getPersistence().countMessagesByForum(forum) / MainServlet.PAGE_SIZE) + 1;
+						return 1 + ((getPersistence().countMessagesByForum(forum) - 1) / MainServlet.PAGE_SIZE);
 					} else if ("getByAuthor".equals(action)) {
 						String author = req.getParameter("author");
-						return (getPersistence().countMessagesByAuthor(author) / MainServlet.PAGE_SIZE) + 1;
+						return ((getPersistence().countMessagesByAuthor(author) - 1) / MainServlet.PAGE_SIZE);
 					} else {
 						return Integer.MAX_VALUE;
 					} 
