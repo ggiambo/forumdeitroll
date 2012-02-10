@@ -1,5 +1,6 @@
 package com.acmetoy.ravanator.fdt;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -172,7 +173,7 @@ public class MessageTag extends BodyTagSupport {
 		out.append(line);
 		line.setLength(0);
 	}
-	private static final class Emo {
+	private static final class Emo implements Comparable {
 		public final String imgName, sequence, altText, replacement, sequenceToUpper;
 		public final char[] sequenceCh;
 		public final int length;
@@ -186,7 +187,11 @@ public class MessageTag extends BodyTagSupport {
 			this.sequenceCh = emoSequence.toCharArray();
 			this.length = sequenceCh.length;
 		}
-		
+		@Override
+		public int compareTo(Object o) {
+			Emo e = (Emo) o;
+			return e.length - this.length;
+		}
 	}
 	private static final Emo[] emos = load_emos();
 	private static Emo[] load_emos() {
@@ -201,6 +206,7 @@ public class MessageTag extends BodyTagSupport {
 			String emoReplacement = String.format("<img alt='%s' title='%s' src='images/emo/%s.gif'>", altText, altText, imgName);
 			emos[i++] = new Emo(imgName, emoSequence, altText, emoReplacement);
 		}
+		Arrays.sort(emos);
 		return emos;
 	}
 	
