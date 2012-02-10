@@ -68,4 +68,12 @@ public interface IPersistence {
 	public Properties setPreference(AuthorDTO user, String key, String value);
 
 	void pedonizeThread(long threadId);
+
+	int countMessages();
+	
+	int countMessagesByForum(String forum);
+	
+	int countMessagesByAuthor(String author);
+
+	int countThreads();
 }

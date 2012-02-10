@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
@@ -224,10 +226,23 @@ public class PagerTag extends TagSupport  {
 			@Override
 			public int getMaxPages(PageContext pageContext) {
 				List<MessageDTO> messages = (List<MessageDTO>) pageContext.getRequest().getAttribute("messages");
-				if (messages.size() < 20) // MainServlet.PAGE_SIZE
+				if (messages.size() < MainServlet.PAGE_SIZE)
 					return getCurrentPage(pageContext);
-				else
-					return Integer.MAX_VALUE; //sto barando per non fare la query dipendente dal parametro action
+				else {
+					ServletRequest req = pageContext.getRequest();
+					String action = (String) req.getAttribute("action");
+					if ("init".equals(action)) {
+						return (getPersistence().countMessages() / MainServlet.PAGE_SIZE) + 1;
+					} else if ("getByForum".equals(action)) {
+						String forum = req.getParameter("forum");
+						return (getPersistence().countMessagesByForum(forum) / MainServlet.PAGE_SIZE) + 1;
+					} else if ("getByAuthor".equals(action)) {
+						String author = req.getParameter("author");
+						return (getPersistence().countMessagesByAuthor(author) / MainServlet.PAGE_SIZE) + 1;
+					} else {
+						return Integer.MAX_VALUE;
+					} 
+				}
 			}
 			private Class[] servlets = new Class[] {
 				Messages.class,

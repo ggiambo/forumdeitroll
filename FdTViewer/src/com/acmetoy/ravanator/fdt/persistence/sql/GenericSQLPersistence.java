@@ -60,6 +60,85 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			return null;
 		}
 	}
+	
+	@Override
+	public int countMessages() {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages");
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("nr");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return -1;
+	}
+	
+	@Override
+	public int countMessagesByForum(String forum) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages where forum = ?");
+			ps.setString(1, forum);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("nr");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return -1;
+	}
+	
+	@Override
+	public int countMessagesByAuthor(String author) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages where author = ?");
+			ps.setString(1, author);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("nr");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return -1;
+	}
+	
+	@Override
+	public int countThreads() {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages WHERE id = threadid");
+			return ps.executeQuery().getInt("nr");
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return -1;
+	}
 
 	@Override
 	public List<MessageDTO> getMessagesByDate(int limit, int page) {
