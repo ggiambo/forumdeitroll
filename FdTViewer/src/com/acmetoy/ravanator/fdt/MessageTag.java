@@ -244,7 +244,7 @@ public class MessageTag extends BodyTagSupport {
 				}
 			}
 			word.setLength(0);
-			word.append(String.format("<a href=\"%s\">%s</a>", url, desc));
+			word.append(String.format("<a href=\"%s\" target='_blank'>%s</a>", url, desc));
 		}
 		return false;
 	}
