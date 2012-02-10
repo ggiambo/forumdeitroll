@@ -340,7 +340,7 @@ public class MessageTag extends BodyTagSupport {
 		if (loggedUser != null) {
 			showAnonImg = loggedUser.getPreferences().getProperty(User.PREF_SHOWANONIMG);
 		}
-		if (StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) {
+		if (author != null && StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) {
 			line.append(String.format("<a href=\"%s\">Immagine postata da ANOnimo</a>", url));
 		} else {
 			line.append(String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src=\"%s\"></a>", url, url));
