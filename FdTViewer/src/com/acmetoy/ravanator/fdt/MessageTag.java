@@ -174,44 +174,28 @@ public class MessageTag extends BodyTagSupport {
 	}
 	
 	private static final String[][] emos = load_emos();
-	private static final char[][] emos_ch = to_chars(emos);
 	private static String[][] load_emos() {
 		Map<String, String[]> emoMap = Messages.getEmoMap();
-		String[][] emos = new String[emoMap.size()][3];
+		String[][] emos = new String[emoMap.size()][4];
 		int i = 0;
 		for (Iterator<String> imgNameIter = emoMap.keySet().iterator(); imgNameIter.hasNext();) {
 			String imgName = imgNameIter.next();
 			//NB: se non va bene trim, valutare diversamente nel metodo emoticons, eventualmente controllo se body[p-1] è uno spazio
 			String emoSequence = emoMap.get(imgName)[0].trim();
 			String altText = emoMap.get(imgName)[1];
-			emos[i++] = new String[] {imgName, emoSequence, altText};
+			String emoReplacement = String.format("<img alt='%s' title='%s' src='images/emo/%s.gif'>", altText, altText, imgName);
+			emos[i++] = new String[] {imgName, emoSequence, altText, emoReplacement};
 		}
 		return emos;
-	}
-	private static final char[][] to_chars(String[][] emos) {
-		char[][] emos_ch = new char[emos.length][];
-		int i = 0;
-		for (String[] emo: emos) {
-			emos_ch[i++] = emo[1].toCharArray();
-		}
-		return emos_ch;
 	}
 	
 	private boolean emoticons() {
 		int wlen = word.length();
-		p -= wlen;
-		for (int i=0;i<emos_ch.length;i++) {
-			if (ifound(emos_ch[i])) {
-				String[] emo = emos[i];
-				String emoReplacement = String.format( "<img alt='%s' title='%s' src='images/emo/%s.gif'>", emo[2], emo[2], emo[0]);
-				word.delete(0, emos_ch[i].length);
-				word.insert(0, emoReplacement);
-				p += wlen;
-				return true;
-			}
+		if (wlen == 1) return false;
+		for (int i=0;i<emos.length;i++) {
+			simpleReplaceAll(word, emos[i][1], emos[i][3]);
 		}
-		p += wlen;
-		return false;
+		return wlen != word.length();
 	}
 	
 	private boolean link() {
