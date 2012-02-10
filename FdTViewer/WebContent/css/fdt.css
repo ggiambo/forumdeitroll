@@ -953,3 +953,6 @@ div.counter-container>input {
 	text-align: right;
 	width: 40px;
 }
+input.counter {
+	width: 40px;
+}

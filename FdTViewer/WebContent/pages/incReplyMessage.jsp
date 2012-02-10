@@ -90,6 +90,7 @@
 		</c:when>
 		<c:otherwise>
 			<div style="margin: 3px">
+				<input type='text' id='counter_${message.id}' class='counter' disabled="disabled" value='${10000-fn:length(message.text)}'/>
 				<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />&nbsp;
 			</div>
 		</c:otherwise>
