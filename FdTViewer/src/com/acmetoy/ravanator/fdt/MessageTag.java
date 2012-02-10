@@ -200,8 +200,7 @@ public class MessageTag extends BodyTagSupport {
 		int i = 0;
 		for (Iterator<String> imgNameIter = emoMap.keySet().iterator(); imgNameIter.hasNext();) {
 			String imgName = imgNameIter.next();
-			//NB: se non va bene trim, valutare diversamente nel metodo emoticons, eventualmente controllo se body[p-1] è uno spazio
-			String emoSequence = emoMap.get(imgName)[0].trim();
+			String emoSequence = emoMap.get(imgName)[0];
 			String altText = emoMap.get(imgName)[1];
 			String emoReplacement = String.format("<img alt='%s' title='%s' src='images/emo/%s.gif'>", altText, altText, imgName);
 			emos[i++] = new Emo(imgName, emoSequence, altText, emoReplacement);
@@ -209,14 +208,20 @@ public class MessageTag extends BodyTagSupport {
 		Arrays.sort(emos);
 		return emos;
 	}
-	
+	//mi arrendo: metodo giambo, spazi significativi
 	private boolean emoticons() {
+		word.insert(0, ' ');
 		int wlen = word.length();
 		for (Emo emo: emos) {
 			simpleReplaceAll(word, emo.sequence, emo.replacement);
 			simpleReplaceAll(word, emo.sequenceToUpper, emo.replacement);
 		}
-		return wlen != word.length();
+		if (wlen != word.length()) {
+			return true;
+		} else {
+			word.delete(0, 1);
+			return false;
+		}
 	}
 	
 	private boolean link() {
@@ -482,13 +487,15 @@ public class MessageTag extends BodyTagSupport {
 	private static String escape(String in) {
 		return StringEscapeUtils.escapeHtml4(in).replace("'", "&quot;");
 	}
-	private static void simpleReplaceAll(StringBuilder src, String search, String replacement) {
-		if (search == null || search.length() == 0) return;
+	private static boolean simpleReplaceAll(StringBuilder src, String search, String replacement) {
+		if (search == null || search.length() == 0) return false;
 		int i = 0;
+		int len = src.length();
 		while ((i = src.indexOf(search, i)) != -1) {
 			src.replace(i, i + search.length(), replacement);
 			i += replacement.length();
 		}
+		return src.length() != len;
 	}
 	
 	private static void simpleReplaceFirst(StringBuilder src, String search, String replacement) {
