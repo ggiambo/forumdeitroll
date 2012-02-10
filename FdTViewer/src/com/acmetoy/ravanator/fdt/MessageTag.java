@@ -172,30 +172,43 @@ public class MessageTag extends BodyTagSupport {
 		out.append(line);
 		line.setLength(0);
 	}
-	
-	private static final String[][] emos = load_emos();
-	private static String[][] load_emos() {
+	private static final class Emo {
+		public final String imgName, sequence, altText, replacement, sequenceToUpper;
+		public final char[] sequenceCh;
+		public final int length;
+		public Emo(String imgName, String emoSequence, String altText, String emoReplacement) {
+			super();
+			this.imgName = imgName;
+			this.sequence = emoSequence;
+			this.sequenceToUpper = emoSequence.toUpperCase();
+			this.altText = altText;
+			this.replacement = emoReplacement;
+			this.sequenceCh = emoSequence.toCharArray();
+			this.length = sequenceCh.length;
+		}
+		
+	}
+	private static final Emo[] emos = load_emos();
+	private static Emo[] load_emos() {
 		Map<String, String[]> emoMap = Messages.getEmoMap();
-		String[][] emos = new String[emoMap.size()][5];
+		Emo[] emos = new Emo[emoMap.size()];
 		int i = 0;
 		for (Iterator<String> imgNameIter = emoMap.keySet().iterator(); imgNameIter.hasNext();) {
 			String imgName = imgNameIter.next();
 			//NB: se non va bene trim, valutare diversamente nel metodo emoticons, eventualmente controllo se body[p-1] è uno spazio
 			String emoSequence = emoMap.get(imgName)[0].trim();
-			String emoSeqToupper = emoSequence.toUpperCase();
 			String altText = emoMap.get(imgName)[1];
 			String emoReplacement = String.format("<img alt='%s' title='%s' src='images/emo/%s.gif'>", altText, altText, imgName);
-			emos[i++] = new String[] {imgName, emoSequence, altText, emoReplacement, emoSeqToupper};
+			emos[i++] = new Emo(imgName, emoSequence, altText, emoReplacement);
 		}
 		return emos;
 	}
 	
 	private boolean emoticons() {
 		int wlen = word.length();
-		if (wlen == 1) return false;
-		for (int i=0;i<emos.length;i++) {
-			simpleReplaceAll(word, emos[i][1], emos[i][3]);
-			simpleReplaceAll(word, emos[i][4], emos[i][3]);
+		for (Emo emo: emos) {
+			simpleReplaceAll(word, emo.sequence, emo.replacement);
+			simpleReplaceAll(word, emo.sequenceToUpper, emo.replacement);
 		}
 		return wlen != word.length();
 	}
@@ -436,6 +449,15 @@ public class MessageTag extends BodyTagSupport {
 		}
 		return -1;
 	}
+	public int iscanFor(char[] C, int limit) {
+		for (int i=p;i<ibody.length && i < limit;i++) {
+			if (C.length > ibody.length - i) return -1;
+			int j = 0;
+			while (j < C.length && C[j] == ibody[i + j]) j++;
+			if (j == C.length) return i;
+		}
+		return -1;
+	}
 	public int scanFor(char c) {
 		for (int i=p;i<body.length;i++) {
 			if (body[i] == c) return i;
@@ -458,6 +480,15 @@ public class MessageTag extends BodyTagSupport {
 		if (search == null || search.length() == 0) return;
 		int i = 0;
 		while ((i = src.indexOf(search, i)) != -1) {
+			src.replace(i, i + search.length(), replacement);
+			i += replacement.length();
+		}
+	}
+	
+	private static void simpleReplaceFirst(StringBuilder src, String search, String replacement) {
+		if (search == null || search.length() == 0) return;
+		int i = 0;
+		if ((i = src.indexOf(search, i)) != -1) {
 			src.replace(i, i + search.length(), replacement);
 			i += replacement.length();
 		}
