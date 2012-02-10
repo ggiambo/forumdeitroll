@@ -66,7 +66,7 @@
 	</c:if>
 	
 	<%-- input area --%>
-	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt">${message.text}</textarea>
+	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt" id="text_${message.id}" onkeyup="update_counter(${message.id})" onchange="update_counter(${message.id})">${message.text}</textarea>
 
 	<%-- preview area --%>
 	<div id="preview_${message.parentId}" class="msgReplyTxt"></div>
@@ -77,6 +77,9 @@
 		<%--Mostra username password captcha solo se non autenticato --%>
 		<c:when test="${empty loggedUser}">
 			<div class="msgAnonBox">
+				<div class='counter-container'>
+					<input type='text' id='counter_${message.id}' disabled="disabled" value='${10000-fn:length(message.text)}'/>
+				</div>
 				<label for="nick">Nome:&nbsp;</label><input tabindex="2" name="nick" id="nick" size="10"/>&nbsp;&nbsp;<label for="password">Password:&nbsp;</label><input tabindex="3" type="password" id="password" name="pass" size="10"/>
 				<div class="msgCaptcha">
 					<div><img src="Messages?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" /></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">Copia qui il testo dell'immagine</div></div>

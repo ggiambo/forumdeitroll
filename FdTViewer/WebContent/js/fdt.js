@@ -202,3 +202,19 @@ function pedonizeThread(threadTitle, threadId) {
 		window.location.assign("Threads?action=pedonizeThread&threadId=" + threadId);
 	}
 }
+
+var update_counter = function(messageId) {
+	try {
+	var counter = document.getElementById('counter_' + messageId)
+	var textarea = document.getElementById('text_' + messageId)
+	if (textarea.value.length > 10000) {
+		textarea.value = textarea.value.substring(0, 10000)
+		counter.style.backgroundColor = 'red'
+		setTimeout(function() {
+			counter.style.backgroundColor = null
+		}, 200)
+	}
+	counter.value = 10000 - textarea.value.length
+	
+	} catch (e) {alert(e.message)}
+}
