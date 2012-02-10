@@ -176,15 +176,16 @@ public class MessageTag extends BodyTagSupport {
 	private static final String[][] emos = load_emos();
 	private static String[][] load_emos() {
 		Map<String, String[]> emoMap = Messages.getEmoMap();
-		String[][] emos = new String[emoMap.size()][4];
+		String[][] emos = new String[emoMap.size()][5];
 		int i = 0;
 		for (Iterator<String> imgNameIter = emoMap.keySet().iterator(); imgNameIter.hasNext();) {
 			String imgName = imgNameIter.next();
 			//NB: se non va bene trim, valutare diversamente nel metodo emoticons, eventualmente controllo se body[p-1] è uno spazio
 			String emoSequence = emoMap.get(imgName)[0].trim();
+			String emoSeqToupper = emoSequence.toUpperCase();
 			String altText = emoMap.get(imgName)[1];
 			String emoReplacement = String.format("<img alt='%s' title='%s' src='images/emo/%s.gif'>", altText, altText, imgName);
-			emos[i++] = new String[] {imgName, emoSequence, altText, emoReplacement};
+			emos[i++] = new String[] {imgName, emoSequence, altText, emoReplacement, emoSeqToupper};
 		}
 		return emos;
 	}
@@ -194,6 +195,7 @@ public class MessageTag extends BodyTagSupport {
 		if (wlen == 1) return false;
 		for (int i=0;i<emos.length;i++) {
 			simpleReplaceAll(word, emos[i][1], emos[i][3]);
+			simpleReplaceAll(word, emos[i][4], emos[i][3]);
 		}
 		return wlen != word.length();
 	}
