@@ -78,12 +78,9 @@ function edit(parentId) {
 	$("#reply_" + parentId + " :input[name='edit']").hide();
 }
 
-var sent = false;
-
 function send(parentId) {
-	// post data
-	if (sent) return;
-	sent = true;
+	$("#reply_" + parentId + " :input[type='button']").attr("disabled", "disabled");
+	$("body").css("cursor", "progress");
 	var data = { parentId: parentId };
 	$("#reply_" + parentId + " :input").each(function() {
 		var val = $(this);
@@ -104,7 +101,8 @@ function send(parentId) {
 			} else if (data.resultCode == "ERROR") {
 				$("html").html(data.content);
 			}
-			sent = false;
+			$("#reply_" + parentId + " :input[type='button']").removeAttr("disabled");
+			$("body").css("cursor", "auto");
 		},
 		beforeSend : function(jqXhr, settings) {
 			jqXhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
@@ -183,19 +181,18 @@ jQuery("document").ready(function(){
 
 var YTgetInfo = function(myYtCounter) {
 	return function(ytResponse) {
-		var youcode = ytResponse.entry.media$group.yt$videoid.$t
-		var title = ytResponse.entry.title.$t
-		var youthumb = ytResponse.entry.media$group.media$thumbnail[0].url
+		var title = ytResponse.entry.title.$t;
+		var youthumb = ytResponse.entry.media$group.media$thumbnail[0].url;
 		
-		var youlink = document.getElementById('yt_'+myYtCounter)
-		youlink.appendChild(document.createElement('br'))
-		youlink.appendChild(document.createTextNode(title))
-		youlink.appendChild(document.createElement('br'))
-		var img = document.createElement('img')
-		img.src = youthumb
-		youlink.appendChild(img)
-	}
-}
+		var youlink = document.getElementById('yt_'+myYtCounter);
+		youlink.appendChild(document.createElement('br'));
+		youlink.appendChild(document.createTextNode(title));
+		youlink.appendChild(document.createElement('br'));
+		var img = document.createElement('img');
+		img.src = youthumb;
+		youlink.appendChild(img);
+	};
+};
 
 function pedonizeThread(threadTitle, threadId) {
 	if (confirm("Vuoi spostare il thread '" + threadTitle + "' in Procura ?")) {
@@ -206,16 +203,16 @@ function pedonizeThread(threadTitle, threadId) {
 // n.b. non furmigate, il controllo della lunghezza c'è anche lato server
 var update_counter = function(messageId, limit) {
 	try {
-	var counter = document.getElementById('counter_' + messageId)
-	var textarea = document.getElementById('text_' + messageId)
+	var counter = document.getElementById('counter_' + messageId);
+	var textarea = document.getElementById('text_' + messageId);
 	if (textarea.value.length > limit) {
-		textarea.value = textarea.value.substring(0, limit)
-		counter.style.backgroundColor = 'red'
+		textarea.value = textarea.value.substring(0, limit);
+		counter.style.backgroundColor = 'red';
 		setTimeout(function() {
-			counter.style.backgroundColor = null
-		}, 200)
+			counter.style.backgroundColor = null;
+		}, 200);
 	}
-	counter.value = limit - textarea.value.length
+	counter.value = limit - textarea.value.length;
 	
-	} catch (e) {alert(e.message)}
-}
+	} catch (e) {alert(e.message);}
+};
