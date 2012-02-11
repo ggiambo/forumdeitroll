@@ -20,6 +20,8 @@ import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
+import com.acmetoy.ravanator.fdt.SingleValueCache;
+
 import com.acmetoy.ravanator.fdt.FdTException;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
@@ -61,7 +63,46 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			return null;
 		}
 	}
-	
+
+	protected SingleValueCache<Integer> messagesCount = new SingleValueCache<Integer>(30 * 60 * 1000) {
+		@Override protected Integer update() {
+			Connection conn = null;
+			PreparedStatement ps = null;
+			ResultSet rs = null;
+			try {
+				conn = getConnection();
+				ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages");
+				rs = ps.executeQuery();
+				if (rs.next()) {
+					return rs.getInt("nr");
+				}
+			} catch (SQLException e) {
+				LOG.error("Cannot count messages", e);
+			} finally {
+				close(rs, ps, conn);
+			}
+			return -1;
+		}
+	};
+
+	protected SingleValueCache<Integer> threadsCount = new SingleValueCache<Integer>(30 * 60 * 1000) {
+		@Override protected Integer update() {
+			Connection conn = null;
+			PreparedStatement ps = null;
+			ResultSet rs = null;
+			try {
+				conn = getConnection();
+				ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages WHERE id = threadid");
+				return ps.executeQuery().getInt("nr");
+			} catch (SQLException e) {
+				LOG.error("Cannot count messages", e);
+			} finally {
+				close(rs, ps, conn);
+			}
+			return -1;
+		}
+	};
+
 	@Override
 	public int countThreads() {
 		Connection conn = null;
@@ -76,7 +117,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} finally {
 			close(rs, ps, conn);
 		}
-		return -1;
+		return threadsCount.get();
 	}
 
 	@Override
@@ -347,7 +388,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<String> result = new ArrayList<String>();
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT DISTINCT forum FROM messages WHERE forum IS NOT NULL ORDER BY forum ASC");
+			ps = conn.prepareStatement("SELECT forum FROM messages WHERE forum IS NOT NULL GROUP BY forum ORDER BY COUNT(id) DESC, forum ASC");
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				result.add(rs.getString(1));

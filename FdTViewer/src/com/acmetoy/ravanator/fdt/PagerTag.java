@@ -24,7 +24,7 @@ import com.acmetoy.ravanator.fdt.servlets.Messages;
 import com.acmetoy.ravanator.fdt.servlets.Threads;
 
 public class PagerTag extends TagSupport  {
-	
+
 	/* esempi di output desiderati
 	[1] 2 3 4 5 > >>
 	1 [2] 3 4 5 6 > >>
@@ -33,18 +33,18 @@ public class PagerTag extends TagSupport  {
 	<< < 3 4 [5] 6 7 8 9 > >>
 	<< < 4 5 [6] 7 8 9 10
 	*/
-	
+
 	private static final Logger LOG = Logger.getLogger(PagerTag.class);
-	
+
 	// quanti elementi prima
 	private static final int HEAD = 2;
 	// quanti elementi dopo
 	private static final int TAIL = 4;
-	
+
 	private static enum PagerType {
 		CURRENT, PAGE, NEXT, LAST, FIRST, PREV
 	};
-	
+
 	private static class PagerElem {
 		 public final PagerType type;
 		 public final int n;
@@ -57,7 +57,7 @@ public class PagerTag extends TagSupport  {
 			return "{type="+type.toString()+";n="+n+"}";
 		}
 	}
-	
+
 	// porting di una versione in javascript ben testata, non dovrebbe avere errori qua dentro
 	private LinkedList<PagerElem> generatePager(int cur, int max) {
 		//LOG.debug("generatePager("+cur+","+max+")");
@@ -65,7 +65,7 @@ public class PagerTag extends TagSupport  {
 		if (HEAD - cur >= -1) {
 			int limit = cur + TAIL;
 			if (limit > max) limit = max;
-			for (int i=0; i<limit; ++i) {
+			for (int i=0; i<=limit; ++i) {
 				if (i == cur)
 					pager.add(new PagerElem(i, PagerType.CURRENT));
 				else
@@ -101,7 +101,7 @@ public class PagerTag extends TagSupport  {
 		}
 		return pager;
 	}
-	
+
 	private static void renderPager(LinkedList<PagerElem> pager, PageContext pageContext, PagerHandler handler) throws IOException {
 		JspWriter out = pageContext.getOut();
 		out.write("<ul class='pager'>");
@@ -142,15 +142,15 @@ public class PagerTag extends TagSupport  {
 		}
 		out.write("</ul>");
 	}
-	
+
 	@Override
 	public int doEndTag() throws JspException {
 		try {
 			PagerHandler pagerHandler = handlers.get(handler);
-			
+
 			int cur = pagerHandler.getCurrentPage(pageContext);
 			int max = pagerHandler.getMaxPages(pageContext);
-			
+
 			/*{
 				// fuzzy pager per test
 				max = (int) (Math.random() * 20);
@@ -160,17 +160,21 @@ public class PagerTag extends TagSupport  {
 			LinkedList<PagerElem> pager = generatePager(cur, max);
 			//LOG.debug("pager -> "+pager);
 			renderPager(pager, pageContext, handlers.get(handler));
-			
+
 		} catch (Exception e) {
 			LOG.error("Errore durante il rendering del pager: "+e.getMessage(), e);
 		}
 		return SKIP_BODY;
 	}
-	
+
+	protected static int pagify(int itemCount, int pageSize) {
+		return (int)Math.floor((double)itemCount / (double)pageSize);
+	}
+
 	private static final HashMap<String, PagerHandler> handlers = new HashMap<String, PagerTag.PagerHandler>() {
 		private static final long serialVersionUID = -7479181330396773734L;
 		private IPersistence persistence;
-		
+
 		private IPersistence getPersistence() {
 			if (persistence == null) {
 				try {
@@ -184,7 +188,7 @@ public class PagerTag extends TagSupport  {
 		}
 	{
 		put("pvt", new PagerHandler() {
-			
+
 			@Override
 			public int getMaxPages(PageContext pageContext) {
 				//se vedi la lista dei pvt sei loggato per forza
@@ -198,7 +202,7 @@ public class PagerTag extends TagSupport  {
 				}
 				return -1; //furmigamento
 			}
-			
+
 			@Override
 			public int getCurrentPage(PageContext pageContext) {
 				try {
@@ -207,13 +211,13 @@ public class PagerTag extends TagSupport  {
 					return 0; //default
 				}
 			}
-			
+
 			@Override
 			public String getLink(int pageNumber, PageContext pageContext) {
 				return "Pvt?action=" + pageContext.getRequest().getAttribute("from") + "&amp;page=" + pageNumber;
 			}
 		});
-		
+
 		put("Messages", new PagerHandler() {
 			// test Messages?action=init (default) ok
 			// test Messages?action=getByForum ok
@@ -247,7 +251,7 @@ public class PagerTag extends TagSupport  {
 				String action = (String) pageContext.getRequest().getAttribute("action");
 				String servlet = (String) pageContext.getRequest().getAttribute("servlet");
 				servlet = servlet.substring(servlet.lastIndexOf('.') + 1);
-				
+
 				String link = servlet +
 						"?action=" + action +
 						"&amp;pageNr=" + pageNumber;
@@ -267,11 +271,11 @@ public class PagerTag extends TagSupport  {
 						link += "&amp;author=" + java.net.URLEncoder.encode(pageContext.getRequest().getParameter("author"), "UTF-8");
 					} catch (UnsupportedEncodingException e) {
 						// ignore
-					} 
+					}
 				}
 				return link;
 			}
-			
+
 			@Override
 			public int getCurrentPage(PageContext pageContext) {
 				try {
@@ -282,7 +286,7 @@ public class PagerTag extends TagSupport  {
 			}
 		});
 	}};
-	
+
 	private String handler;
 	public String getHandler() {
 		return handler;
@@ -290,7 +294,7 @@ public class PagerTag extends TagSupport  {
 	public void setHandler(String handler) {
 		this.handler = handler;
 	}
-	
+
 	private static interface PagerHandler {
 		public int getCurrentPage(PageContext pageContext);
 		public int getMaxPages(PageContext pageContext);
