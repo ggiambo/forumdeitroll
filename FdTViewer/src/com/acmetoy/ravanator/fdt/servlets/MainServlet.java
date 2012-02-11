@@ -147,9 +147,6 @@ public abstract class MainServlet extends HttpServlet {
 		// forums
 		req.setAttribute("forums", cachedForums.get());
 
-		// sidebar status
-		setSidebarStatusInSession(req, res);
-
 		// action
 		String action = req.getParameter("action");
 		if (action == null || action.trim().length() == 0) {
@@ -173,6 +170,26 @@ public abstract class MainServlet extends HttpServlet {
 		if (loggedUser != null && loggedUser.isValid()) {
 			session.setAttribute(LOGGED_USER_SESSION_ATTR, getPersistence().getAuthor(loggedUser.getNick()));
 		}
+		
+		// sidebar status come attributo nel reques
+		String sidebarStatus = "show";
+		if (loggedUser != null && loggedUser.isValid()) {
+			sidebarStatus = loggedUser.getPreferences().getProperty("sidebarStatus");
+			if (StringUtils.isEmpty(sidebarStatus)) {
+				sidebarStatus = "show";
+			}
+		} else {
+			// nel cookie ?
+			if (req.getCookies() != null) {
+				for (Cookie cookie : req.getCookies()) {
+					if ("sidebarStatus".equals(cookie.getName())) {
+						sidebarStatus = cookie.getValue();
+						break;
+					}
+				}
+			}
+		}
+		req.setAttribute("sidebarStatus", sidebarStatus);
 
 		try {
 			// call via reflection
@@ -283,44 +300,6 @@ public abstract class MainServlet extends HttpServlet {
 	};
 
 	/**
-	 * Setta lo stato della sidebar nella session, nelle preferenze utente o nel cookie se non e' gia' stato fatto.
-	 * @param req
-	 * @param res
-	 * @throws Exception
-	 */
-	private void setSidebarStatusInSession(HttpServletRequest req, HttpServletResponse res) {
-		String sidebarStatus = (String) req.getSession().getAttribute("sidebarStatus");
-		if (StringUtils.isEmpty(sidebarStatus)) {
-			// proviamo a leggerla dalle preferences dell'utente
-			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			if (loggedUser != null && loggedUser.isValid()) {
-				sidebarStatus = getPersistence().getPreferences(loggedUser).getProperty("sidebarStatus");
-				if (StringUtils.isEmpty(sidebarStatus)) {
-					// update preference - default "show"
-					sidebarStatus = "show";
-					getPersistence().setPreference(loggedUser, "sidebarStatus", sidebarStatus);
-				}
-			} else {
-				// utente non loggato, andiamo di cookie ...
-				if (req.getCookies() != null) {
-					for (Cookie cookie : req.getCookies()) {
-						if ("sidebarStatus".equals(cookie.getName())) {
-							sidebarStatus = cookie.getValue();
-						}
-					}
-				}
-				if (StringUtils.isEmpty(sidebarStatus)) {
-					// update nel cookie - default "show"
-					sidebarStatus = "show";
-					res.addCookie(new Cookie("sidebarStatus", sidebarStatus));
-				}
-			}
-			// settiamo nella session
-			req.getSession().setAttribute("sidebarStatus", sidebarStatus);
-		}
-	}
-
-	/**
 	 * Setta nella session lo stato della sidebar (Aperta/chiusa)
 	 * @param req
 	 * @param res
@@ -330,28 +309,25 @@ public abstract class MainServlet extends HttpServlet {
 	protected GiamboAction updateSidebarStatus = new GiamboAction("updateSidebarStatus", ONGET|ONPOST) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String sidebarStatus = req.getParameter("sidebarStatus");
+			if (StringUtils.isEmpty(sidebarStatus)) {
+				return null;
+			}
 			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
 			if (loggedUser != null && loggedUser.isValid()) {
 				// settiamo nelle preferences dell'utente
 				getPersistence().setPreference(loggedUser, "sidebarStatus", sidebarStatus);
+				loggedUser.getPreferences().setProperty("sidebarStatus", sidebarStatus);
 			} else {
 				// settiamo nel cookie
-				boolean found = false;
 				if (req.getCookies() != null) {
 					for (Cookie cookie : req.getCookies()) {
 						if ("sidebarStatus".equals(cookie.getName())) {
 							cookie.setValue(sidebarStatus);
-							found = true;
+							res.addCookie(new Cookie("sidebarStatus", sidebarStatus));
 						}
 					}
 				}
-				if (!found) {
-					res.addCookie(new Cookie("sidebarStatus", sidebarStatus));
-				}
 			}
-			// settiamo nella session
-			req.getSession().setAttribute("sidebarStatus", sidebarStatus);
-
 			return null;
 		}
 	};

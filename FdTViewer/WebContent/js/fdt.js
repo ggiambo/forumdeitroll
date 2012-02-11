@@ -4,7 +4,7 @@ function hideSidebar() {
 	sidebar.hide("slow", function() {
 		var sidebarSmall = $("#sidebarSmall");
 		sidebarSmall.show("slow");
-		jQuery.ajax("?action=updateSidebarStatus&sidebarStatus=hide");
+		jQuery.ajax("Messages?action=updateSidebarStatus&sidebarStatus=hide");
 	});
 }
 
@@ -13,7 +13,7 @@ function showSidebar() {
 	sidebarSmall.hide("slow", function() {
 		var sidebar = $("#sidebar");
 		sidebar.show("slow");
-		jQuery.ajax("?action=updateSidebarStatus&sidebarStatus=show");
+		jQuery.ajax("Messages?action=updateSidebarStatus&sidebarStatus=show");
 	});
 }
 
