@@ -423,7 +423,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<String> result = new ArrayList<String>();
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT DISTINCT forum FROM messages WHERE forum IS NOT NULL ORDER BY forum ASC");
+			ps = conn.prepareStatement("SELECT forum FROM messages WHERE forum IS NOT NULL GROUP BY forum ORDER BY COUNT(id) DESC, forum ASC");
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				result.add(rs.getString(1));
