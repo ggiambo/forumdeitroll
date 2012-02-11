@@ -5,7 +5,7 @@ define 'FdTViewer' do
 
 	compile.from "src/"
 
-	compile.with transitive("tomcat:servlet-api:jar:5.5.23")
+	compile.with transitive("org.apache.tomcat:servlet-api:jar:6.0.35")
 	compile.with transitive("commons-fileupload:commons-fileupload:jar:1.2.2")
 	compile.with transitive("org.apache.commons:commons-lang3:jar:3.1")
 	compile.with transitive("org.apache.tomcat:jsp-api:jar:6.0.35")
