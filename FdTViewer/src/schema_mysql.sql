@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.3.10deb1
+-- version 3.4.5deb1
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 01, 2011 at 10:07 AM
--- Server version: 5.1.54
--- PHP Version: 5.3.5-1ubuntu7.2
+-- Generation Time: Feb 11, 2012 at 08:59 PM
+-- Server version: 5.1.58
+-- PHP Version: 5.3.6-13ubuntu3.5
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -45,21 +45,23 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `text` mediumtext NOT NULL,
   `date` datetime NOT NULL,
-  `subject` text NOT NULL,
+  `subject` tinytext NOT NULL,
   `threadId` int(11) NOT NULL,
   `parentId` int(11) NOT NULL,
-  `author` text,
-  `forum` text,
+  `author` varchar(256) DEFAULT NULL,
+  `forum` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `parentId` (`parentId`),
   KEY `threadId` (`threadId`),
+  KEY `author` (`author`),
+  KEY `forum` (`forum`)
   FULLTEXT KEY `text` (`text`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `quote`
+-- Table structure for table `quotes`
 --
 
 CREATE TABLE IF NOT EXISTS `quotes` (
@@ -76,22 +78,22 @@ CREATE TABLE IF NOT EXISTS `quotes` (
 --
 
 CREATE TABLE IF NOT EXISTS `pvt_content` (
-	`id` int(11) NOT NULL AUTO_INCREMENT,
-	`sender` text NOT NULL,
-	`content` mediumtext NOT NULL,
-	`senddate` datetime NOT NULL,
-	`subject` text NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sender` text NOT NULL,
+  `content` mediumtext NOT NULL,
+  `senddate` datetime NOT NULL,
+  `subject` text NOT NULL,
 	`replyTo` int(11),
 	`deleted` int(1) DEFAULT 0,
-	PRIMARY KEY(`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `pvt_recipient` (
-	`pvt_id` int(11) NOT NULL,
-	`recipient` text NOT NULL,
+  `pvt_id` int(11) NOT NULL,
+  `recipient` text NOT NULL,
 	`read` int(1) DEFAULT 0,
 	`deleted` int(1) DEFAULT 0
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -104,5 +106,6 @@ CREATE TABLE IF NOT EXISTS `preferences` (
   `key` tinytext NOT NULL,
   `value` tinytext NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
+
 
 
