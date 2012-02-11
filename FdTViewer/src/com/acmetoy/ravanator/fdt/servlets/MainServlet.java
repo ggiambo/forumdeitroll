@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
+import com.acmetoy.ravanator.fdt.SingleValueCache;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
@@ -54,9 +55,11 @@ public abstract class MainServlet extends HttpServlet {
 	protected static final int ONGET = 0x01;
 	protected static final int ONPOST = 0x02;
 
-	protected volatile List<String> cachedForums = null;
-	protected long cachedForumsTimestamp = -1;
-	protected static final long FORUMS_CACHE_EXPIRATION_TIME = 60 * 60 * 1000;
+	protected SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
+		@Override protected List<String> update() {
+			return getPersistence().getForums();
+		}
+	};
 
 	protected abstract class GiamboAction {
 		public GiamboAction(final String name, final int when) {
@@ -123,18 +126,6 @@ public abstract class MainServlet extends HttpServlet {
 		doDo(req, res, mapPost);
 	}
 
-	protected void maybeUpdateCachedForums() {
-		if ((cachedForums == null) || (System.currentTimeMillis() - cachedForumsTimestamp > FORUMS_CACHE_EXPIRATION_TIME)) {
-			synchronized (this) {
-				if ((cachedForums == null) || (System.currentTimeMillis() - cachedForumsTimestamp > FORUMS_CACHE_EXPIRATION_TIME)) {
-					cachedForumsTimestamp = System.currentTimeMillis();
-					final List<String> forums = getPersistence().getForums();
-					cachedForums = forums;
-				}
-			}
-		}
-	}
-
 	public final void doDo(HttpServletRequest req, HttpServletResponse res, final Map<String, GiamboAction> map) throws IOException {
 		// I love UTF-8
 		req.setCharacterEncoding("UTF-8");
@@ -153,10 +144,8 @@ public abstract class MainServlet extends HttpServlet {
 		// actual time
 		req.setAttribute("currentTimeMillis", System.currentTimeMillis());
 
-		maybeUpdateCachedForums();
-
 		// forums
-		req.setAttribute("forums", cachedForums);
+		req.setAttribute("forums", cachedForums.get());
 
 		// sidebar status
 		setSidebarStatusInSession(req, res);
@@ -178,7 +167,7 @@ public abstract class MainServlet extends HttpServlet {
 
 		// random quote
 		req.setAttribute("randomQuote", getRandomQuote(req, res));
-		
+
 		// update loggedUser in session
 		AuthorDTO loggedUser = (AuthorDTO)session.getAttribute(LOGGED_USER_SESSION_ATTR);
 		if (loggedUser != null && loggedUser.isValid()) {
