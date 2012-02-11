@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
@@ -231,17 +230,12 @@ public class PagerTag extends TagSupport  {
 				else {
 					ServletRequest req = pageContext.getRequest();
 					String action = (String) req.getAttribute("action");
-					if ("init".equals(action)) {
-						return ((getPersistence().countMessages() - 1) / MainServlet.PAGE_SIZE);
-					} else if ("getByForum".equals(action)) {
-						String forum = req.getParameter("forum");
-						return 1 + ((getPersistence().countMessagesByForum(forum) - 1) / MainServlet.PAGE_SIZE);
-					} else if ("getByAuthor".equals(action)) {
-						String author = req.getParameter("author");
-						return ((getPersistence().countMessagesByAuthor(author) - 1) / MainServlet.PAGE_SIZE);
-					} else {
-						return Integer.MAX_VALUE;
-					} 
+					Integer maxNrOfMessages = (Integer)req.getAttribute("maxNrOfMessages");
+					if (maxNrOfMessages == null) {
+						// vabbeh, io ci ho provato :$ ...
+						maxNrOfMessages = Integer.MAX_VALUE;
+					}
+					return ((maxNrOfMessages - 1) / MainServlet.PAGE_SIZE);
 				}
 			}
 			private Class[] servlets = new Class[] {

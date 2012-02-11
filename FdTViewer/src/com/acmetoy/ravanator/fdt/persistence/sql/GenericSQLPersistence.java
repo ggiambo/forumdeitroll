@@ -24,6 +24,7 @@ import com.acmetoy.ravanator.fdt.FdTException;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
+import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
 import com.acmetoy.ravanator.fdt.persistence.PrivateMsgDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
@@ -62,75 +63,13 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 	
 	@Override
-	public int countMessages() {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			conn = getConnection();
-			ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages");
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getInt("nr");
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot count messages", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return -1;
-	}
-	
-	@Override
-	public int countMessagesByForum(String forum) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			conn = getConnection();
-			ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages where forum = ?");
-			ps.setString(1, forum);
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getInt("nr");
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot count messages", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return -1;
-	}
-	
-	@Override
-	public int countMessagesByAuthor(String author) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			conn = getConnection();
-			ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages where author = ?");
-			ps.setString(1, author);
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getInt("nr");
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot count messages", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return -1;
-	}
-	
-	@Override
 	public int countThreads() {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages WHERE id = threadid");
+			ps = conn.prepareStatement("SELECT count(id) AS nr FROM messages WHERE id = threadid");
 			return ps.executeQuery().getInt("nr");
 		} catch (SQLException e) {
 			LOG.error("Cannot count messages", e);
@@ -141,7 +80,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public List<MessageDTO> getMessagesByDate(int limit, int page) {
+	public MessagesDTO getMessagesByDate(int limit, int page) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -150,17 +89,17 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
-			return getMessages(ps.executeQuery());
+			return new MessagesDTO(getMessages(ps.executeQuery()), countMessages(conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
 			close(rs, ps, conn);
 		}
-		return new ArrayList<MessageDTO>();
+		return new MessagesDTO();
 	}
 
 	@Override
-	public List<MessageDTO> getMessagesByAuthor(String author, int limit, int page) {
+	public MessagesDTO getMessagesByAuthor(String author, int limit, int page) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -170,17 +109,17 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(1, author);
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*page);
-			return getMessages(ps.executeQuery());
+			return new MessagesDTO(getMessages(ps.executeQuery()), countMessagesByAuthor(author, conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
 			close(rs, ps, conn);
 		}
-		return new ArrayList<MessageDTO>();
+		return new MessagesDTO();
 	}
 
 	@Override
-	public List<MessageDTO> getMessagesByForum(String forum, int limit, int page) {
+	public MessagesDTO getMessagesByForum(String forum, int limit, int page) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -190,13 +129,13 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(1, forum);
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*page);
-			return getMessages(ps.executeQuery());
+			return new MessagesDTO(getMessages(ps.executeQuery()), countMessagesByForum(forum, conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
 			close(rs, ps, conn);
 		}
-		return new ArrayList<MessageDTO>();
+		return new MessagesDTO();
 	}
 
 	@Override
@@ -437,7 +376,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				dto.setNick(rs.getString("nick"));
-				dto.setRanking(rs.getInt("ranking"));
 				dto.setAvatar(rs.getBytes("avatar"));
 				dto.setMessages(rs.getInt("messages"));
 				dto.setOldPassword(rs.getString("password"));
@@ -469,7 +407,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			a.changePassword(password);
 
 			// inserisci
-			ps = conn.prepareStatement("INSERT INTO authors (nick, password, ranking, messages, salt, hash) VALUES (?, ?, ?, ?, ?, ?)");
+			ps = conn.prepareStatement("INSERT INTO authors (nick, password, messages, salt, hash) VALUES (?, ?, ?, ?, ?)");
 			int i = 1;
 			ps.setString(i++, nick);
 			ps.setString(i++, ""); // <- campo "password", ospitava la vecchia "hash", non lo settiamo piu`
@@ -1093,6 +1031,60 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			messages.add(message);
 		}
 		return messages;
+	}
+	
+
+	private int countMessages(Connection conn) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT count(id) AS nr FROM messages");
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("nr");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			close(rs, ps, null);
+		}
+		return -1;
+	}
+	
+	private int countMessagesByForum(String forum, Connection conn) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT count(id) AS nr FROM messages where forum = ?");
+			ps.setString(1, forum);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("nr");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			close(rs, ps, null);
+		}
+		return -1;
+	}
+	
+	private int countMessagesByAuthor(String author, Connection conn) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT count(id) AS nr FROM messages where author = ?");
+			ps.setString(1, author);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("nr");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			close(rs, ps, null);
+		}
+		return -1;
 	}
 
 	protected int getNumberOfMessages(long threadId) {

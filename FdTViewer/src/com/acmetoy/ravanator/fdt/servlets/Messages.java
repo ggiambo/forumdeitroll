@@ -17,6 +17,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
+import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
 import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
@@ -86,7 +87,9 @@ public class Messages extends MainServlet {
 	 */
 	protected GiamboAction getByPage = new GiamboAction("getByPage", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			req.setAttribute("messages", getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req)));
+			MessagesDTO messages = getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req));
+			req.setAttribute("messages", messages.getMessages());
+			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 			setWebsiteTitle(req, "Forum dei troll");
 			setNavigationMessage(req, NavigationMessage.info("Ordinati cronologicamente"));
 			return "messages.jsp";
@@ -106,7 +109,9 @@ public class Messages extends MainServlet {
 			addSpecificParam(req, "author", author);
 			setWebsiteTitle(req, "Messaggi di " + author + " @ Forum dei Troll");
 			setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + author + "</i>"));
-			req.setAttribute("messages", getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req)));
+			MessagesDTO messages = getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req));
+			req.setAttribute("messages", messages.getMessages());
+			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 			return "messages.jsp";
 		}
 	};
@@ -117,7 +122,9 @@ public class Messages extends MainServlet {
 			addSpecificParam(req, "forum", forum);
 			setWebsiteTitle(req, forum + " @ Forum dei Troll");
 			setNavigationMessage(req, NavigationMessage.info("Forum <i>" + forum + "</i>"));
-			req.setAttribute("messages", getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req)));
+			MessagesDTO messages = getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req));
+			req.setAttribute("messages", messages.getMessages());
+			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 			return "messages.jsp";
 		}
 	};

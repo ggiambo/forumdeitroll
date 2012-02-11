@@ -19,13 +19,13 @@ public interface IPersistence {
 
 	public MessageDTO getMessage(long id);
 
-	public List<MessageDTO> getMessagesByDate(int limit, int page);
+	public MessagesDTO getMessagesByDate(int limit, int page);
 
 	public List<MessageDTO> getMessagesByThread(long threadId);
 
-	public List<MessageDTO> getMessagesByAuthor(String author, int pageSize, int page);
+	public MessagesDTO getMessagesByAuthor(String author, int pageSize, int page);
 
-	public List<MessageDTO> getMessagesByForum(String forum, int pageSize, int page);
+	public MessagesDTO getMessagesByForum(String forum, int pageSize, int page);
 
 	public AuthorDTO getAuthor(String nick);
 
@@ -68,12 +68,6 @@ public interface IPersistence {
 	public Properties setPreference(AuthorDTO user, String key, String value);
 
 	void pedonizeThread(long threadId);
-
-	int countMessages();
-	
-	int countMessagesByForum(String forum);
-	
-	int countMessagesByAuthor(String author);
 
 	int countThreads();
 }

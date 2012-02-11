@@ -26,8 +26,6 @@ public class AuthorDTO implements Serializable {
 
 	private transient SecretKeyFactory secretKeyFactory = null;
 	
-	private int ranking = -1;
-
 	private int messages = -1;
 
 	private String nick = null;
@@ -54,14 +52,6 @@ public class AuthorDTO implements Serializable {
 
 	public void setAvatar(byte[] avatar) {
 		this.avatar = avatar;
-	}
-
-	public int getRanking() {
-		return ranking;
-	}
-
-	public void setRanking(int ranking) {
-		this.ranking = ranking;
 	}
 
 	public int getMessages() {
@@ -188,7 +178,6 @@ public class AuthorDTO implements Serializable {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("nick:").append(nick).append(",");
-		sb.append("ranking:").append(ranking).append(",");
 		sb.append("avatar:");
 		if (avatar != null) {
 			sb.append(avatar.length);
@@ -201,7 +190,7 @@ public class AuthorDTO implements Serializable {
 	}
 
 	public boolean isValid() {
-		return nick != null && ranking != -1 && messages != -1;
+		return nick != null && messages != -1;
 	}
 
 }
