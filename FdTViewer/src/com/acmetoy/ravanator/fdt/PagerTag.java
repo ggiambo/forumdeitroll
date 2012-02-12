@@ -167,8 +167,8 @@ public class PagerTag extends TagSupport  {
 		return SKIP_BODY;
 	}
 
-	protected static int pagify(int itemCount, int pageSize) {
-		return (int)Math.floor((double)itemCount / (double)pageSize);
+	public static int pagify(int itemCount, int pageSize) {
+		return (int)Math.floor((double)(itemCount-1) / (double)pageSize);
 	}
 
 	private static final HashMap<String, PagerHandler> handlers = new HashMap<String, PagerTag.PagerHandler>() {
