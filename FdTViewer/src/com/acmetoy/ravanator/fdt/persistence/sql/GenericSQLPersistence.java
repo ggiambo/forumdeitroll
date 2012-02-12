@@ -21,6 +21,7 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.SingleValueCache;
+import com.acmetoy.ravanator.fdt.PagerTag;
 
 import com.acmetoy.ravanator.fdt.FdTException;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
@@ -712,7 +713,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				ps = conn.prepareStatement("INSERT INTO pvt_recipient" +
 											"(pvt_id, recipient) "+
 											"VALUES (?,(SELECT nick FROM authors WHERE nick = ?))"); // mi assicuro che il nick esista
-				
+
 				ps.setLong(1, pvt_id);
 				ps.setString(2, recipient);
 				try {
@@ -737,7 +738,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean checkForNewPvts(AuthorDTO recipient) {
 		Connection conn = null;
@@ -757,7 +758,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
 		Connection conn = null;
@@ -778,7 +779,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	@Override
 	public void deletePvt(long pvt_id, AuthorDTO user) {
 		Connection conn = null;
@@ -809,7 +810,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	@Override
 	public List<PrivateMsgDTO> getSentPvts(AuthorDTO user, int limit, int pageNr) {
 		Connection conn = null;
@@ -845,7 +846,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public int getInboxPages(AuthorDTO author) {
 		Connection conn = null;
@@ -858,7 +859,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			rs = ps.executeQuery();
 			rs.next();
 			int nElem = rs.getInt(1);
-			return 1 + ((nElem - 1) / 10);
+			return PagerTag.pagify(nElem, 10);
 		} catch (SQLException e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
@@ -866,7 +867,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return 1;
 	}
-	
+
 	@Override
 	public int getOutboxPages(AuthorDTO author) {
 		Connection conn = null;
@@ -879,7 +880,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			rs = ps.executeQuery();
 			rs.next();
 			int nElem = rs.getInt(1);
-			return 1 + ((nElem - 1) / 10);
+			return PagerTag.pagify(nElem, 10);
 		} catch (SQLException e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
@@ -887,7 +888,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return 1;
 	}
-	
+
 	@Override
 	public Properties getPreferences(AuthorDTO user) {
 		Properties res = new Properties();
@@ -912,7 +913,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return res;
 	}
-	
+
 	/* TODO: abilitare quando search destinatari PVT implementato
 	public List<String> searchAuthor(String searchString) {
 		Connection conn = null;
@@ -935,7 +936,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return res;
 	}
 	*/
-	
+
 	@Override
 	public Properties setPreference(AuthorDTO user, String key, String value) {
 		if (getPreferences(user).getProperty(key) == null) {
@@ -945,7 +946,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return getPreferences(user);
 	}
-	
+
 	@Override
 	public void pedonizeThread(long threadId) {
 		Connection conn = null;
@@ -962,7 +963,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	private void insertPreference(AuthorDTO user, String key, String value) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -979,7 +980,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(null, ps, conn);
 		}
 	}
-	
+
 	private void updatePreference(AuthorDTO user, String key, String value) {
 		Connection conn = null;
 		PreparedStatement ps = null;
