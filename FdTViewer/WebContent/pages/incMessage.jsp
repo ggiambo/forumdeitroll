@@ -17,7 +17,7 @@
 
 	<div class="msgInfo">
 		<div>
-			<c:url value="" var="avatarUrl">
+			<c:url value="" var="avatarURL">
 				<c:param name="action" value="getAvatar"/>
 				<c:param name="nick" value="${msg.author.nick}"/>
 			</c:url>
@@ -28,11 +28,11 @@
 						<c:param name="nick" value="${msg.author.nick}"/>
 					</c:url>
 					<a href="<c:out value="${userInfoUrl}" escapeXml="true"/>">
-						<img class="avatarImgLinkable" alt="Avatar" src="User<c:out value="${avatarUrl}" escapeXml="true" />" />
+						<img class="avatarImgLinkable" alt="Avatar" src="Misc<c:out value="${avatarURL}" escapeXml="true" />" />
 					</a>
 				</c:when>
 				<c:otherwise>
-					<img class="avatarImg" alt="Avatar" src="User<c:out value="${avatarUrl}" escapeXml="true" />" />
+					<img class="avatarImg" alt="Avatar" src="Misc<c:out value="${avatarURL}" escapeXml="true" />" />
 				</c:otherwise>
 			</c:choose>
 		</div>

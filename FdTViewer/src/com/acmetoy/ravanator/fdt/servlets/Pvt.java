@@ -39,6 +39,7 @@ public class Pvt extends MainServlet implements Servlet {
 			} catch (Exception e) {}
 			req.setAttribute("pvts", getPersistence().getInbox(author, PVT_PER_PAGE, npage));
 			req.setAttribute("from", "inbox");
+			req.setAttribute("maxNrOfMessages", getPersistence().getInboxPages(author));
 			return "pvts.jsp";
 		}
 	};
@@ -164,14 +165,16 @@ public class Pvt extends MainServlet implements Servlet {
 	protected GiamboAction outbox = new GiamboAction("outbox", ONGET) {
 		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			if (login(req).isValid()) {
+			AuthorDTO author = login(req);
+			if (author.isValid()) {
 				int npage = 0;
 				try {
 					npage = Integer.parseInt(req.getParameter("page"));
 				} catch (Exception e) {}
 				List<PrivateMsgDTO> pvts = getPersistence().getSentPvts(login(req), PVT_PER_PAGE, npage);
 				req.setAttribute("pvts", pvts);
-				req.setAttribute("from","outbox");
+				req.setAttribute("from", "outbox");
+				req.setAttribute("maxNrOfMessages", getPersistence().getOutboxPages(author));
 				return "pvts.jsp";
 			}
 			return null; //TODO pagina user non auth

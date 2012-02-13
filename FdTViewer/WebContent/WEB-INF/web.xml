@@ -25,6 +25,22 @@
     <servlet-name>User</servlet-name>
     <url-pattern>/User</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>Pvt</servlet-name>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Pvt</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Pvt</servlet-name>
+    <url-pattern>/Pvt</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>Misc</servlet-name>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Misc</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Misc</servlet-name>
+    <url-pattern>/Misc</url-pattern>
+  </servlet-mapping>
   <jsp-config>
     <taglib>
       <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
@@ -51,16 +67,6 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
-  <servlet>
-    <description></description>
-    <display-name>Pvt</display-name>
-    <servlet-name>Pvt</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Pvt</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Pvt</servlet-name>
-    <url-pattern>/Pvt</url-pattern>
-  </servlet-mapping>
   <filter>
   	<description>url rewriter</description>
   	<filter-name>PrettyUrl</filter-name>
@@ -69,5 +75,17 @@
   <filter-mapping>
   	<filter-name>PrettyUrl</filter-name>
   	<url-pattern>/thread/*</url-pattern>
+  </filter-mapping>
+  <filter>
+  	<description>Main filter</description>
+  	<filter-name>MainFilter</filter-name>
+  	<filter-class>com.acmetoy.ravanator.fdt.filters.MainFilter</filter-class>
+  </filter>
+  <filter-mapping>
+  	<filter-name>MainFilter</filter-name>
+  	<url-pattern>/Messages/*</url-pattern>
+  	<url-pattern>/Threads/*</url-pattern>
+  	<url-pattern>/User/*</url-pattern>
+  	<url-pattern>/Pvt/*</url-pattern>
   </filter-mapping>
 </web-app>
