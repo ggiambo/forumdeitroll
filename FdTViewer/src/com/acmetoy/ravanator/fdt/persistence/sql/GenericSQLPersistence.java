@@ -10,14 +10,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.dbcp.ConnectionFactory;
-import org.apache.commons.dbcp.DriverManagerConnectionFactory;
-import org.apache.commons.dbcp.PoolableConnectionFactory;
-import org.apache.commons.dbcp.PoolingDataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.FdTException;
@@ -34,26 +29,21 @@ import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
 
 public abstract class GenericSQLPersistence implements IPersistence {
 
-	private PoolingDataSource dataSource;
+	private BasicDataSource dataSource;
 
 	private static final Logger LOG = Logger.getLogger(GenericSQLPersistence.class);
 
 	void setupDataSource(String connectURI, String user, String password) {
-
-		GenericObjectPool.Config config = new GenericObjectPool.Config();
-		config.maxActive = 15;
-		config.maxIdle = 10;
-		config.minIdle = 3;
-		config.maxWait = 100;
-		config.testOnBorrow = true;
-		config.testWhileIdle = true;
-
-		ObjectPool connectionPool = new GenericObjectPool(null, config);
-
-		ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, user, password);
-		new PoolableConnectionFactory(connectionFactory, connectionPool, null, null, false, true);
-
-		dataSource = new PoolingDataSource(connectionPool);
+		dataSource = new BasicDataSource();
+		dataSource.setMaxActive(15);
+		dataSource.setMaxIdle(10);
+		dataSource.setMinIdle(3);
+		dataSource.setMaxWait(100);
+		dataSource.setTestOnBorrow(true);
+		dataSource.setTestWhileIdle(true);
+		dataSource.setUrl(connectURI);
+		dataSource.setUsername(user);
+		dataSource.setPassword(password);
 	}
 
 	protected final synchronized Connection getConnection() {
