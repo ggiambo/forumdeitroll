@@ -44,6 +44,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		dataSource.setUrl(connectURI);
 		dataSource.setUsername(user);
 		dataSource.setPassword(password);
+		dataSource.setValidationQuery("SELECT 1");
+		dataSource.setValidationQueryTimeout(30);
 	}
 
 	protected final synchronized Connection getConnection() {
