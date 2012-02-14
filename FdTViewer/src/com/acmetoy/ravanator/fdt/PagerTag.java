@@ -16,9 +16,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
-import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
-import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 import com.acmetoy.ravanator.fdt.servlets.MainServlet;
 import com.acmetoy.ravanator.fdt.servlets.Messages;
 import com.acmetoy.ravanator.fdt.servlets.Threads;
@@ -33,6 +31,8 @@ public class PagerTag extends TagSupport  {
 	<< < 3 4 [5] 6 7 8 9 > >>
 	<< < 4 5 [6] 7 8 9 10
 	*/
+
+	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOG = Logger.getLogger(PagerTag.class);
 
@@ -173,19 +173,7 @@ public class PagerTag extends TagSupport  {
 
 	private static final HashMap<String, PagerHandler> handlers = new HashMap<String, PagerTag.PagerHandler>() {
 		private static final long serialVersionUID = -7479181330396773734L;
-		private IPersistence persistence;
 
-		private IPersistence getPersistence() {
-			if (persistence == null) {
-				try {
-					persistence = PersistenceFactory.getInstance();
-				} catch (Exception e) {
-					LOG.error("Impossibile inizializzare la persistence in PagerTag", e);
-					return null;
-				}
-			}
-			return persistence;
-		}
 	{
 		put("pvt", new PagerHandler() {
 
@@ -194,11 +182,8 @@ public class PagerTag extends TagSupport  {
 				//se vedi la lista dei pvt sei loggato per forza
 				AuthorDTO author = (AuthorDTO) pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
 				if (author != null) {
-					if (pageContext.getRequest().getAttribute("from").equals("inbox"))
-						return getPersistence().getInboxPages(author);
-					else if (pageContext.getRequest().getAttribute("from").equals("outbox"))
-						return getPersistence().getOutboxPages(author);
-					else return -1; //imbozzibile
+					Integer maxNrOfMessages = (Integer)pageContext.getAttribute("maxNrOfMessages");
+					return maxNrOfMessages == null ? -1 : maxNrOfMessages;
 				}
 				return -1; //furmigamento
 			}
@@ -233,7 +218,6 @@ public class PagerTag extends TagSupport  {
 					return getCurrentPage(pageContext);
 				else {
 					ServletRequest req = pageContext.getRequest();
-					String action = (String) req.getAttribute("action");
 					Integer maxNrOfMessages = (Integer)req.getAttribute("maxNrOfMessages");
 					if (maxNrOfMessages == null) {
 						// vabbeh, io ci ho provato :$ ...

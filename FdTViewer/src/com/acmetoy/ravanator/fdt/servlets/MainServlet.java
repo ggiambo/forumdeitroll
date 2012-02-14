@@ -1,13 +1,10 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
-import java.awt.Color;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -16,12 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import nl.captcha.Captcha;
-import nl.captcha.backgrounds.GradiatedBackgroundProducer;
-import nl.captcha.gimpy.RippleGimpyRenderer;
-import nl.captcha.servlet.CaptchaServletUtil;
-import nl.captcha.text.producer.NumbersAnswerProducer;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,9 +35,6 @@ public abstract class MainServlet extends HttpServlet {
 
 	public static final String LOGGED_USER_SESSION_ATTR = "loggedUser";
 
-	private byte[] notAuthenticated;
-	private byte[] noAvatar;
-
 	private IPersistence persistence;
 
 	protected final Map<String, GiamboAction> mapGet = new HashMap<String, GiamboAction>();
@@ -54,7 +42,7 @@ public abstract class MainServlet extends HttpServlet {
 
 	protected static final int ONGET = 0x01;
 	protected static final int ONPOST = 0x02;
-
+	
 	protected SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
 			return getPersistence().getForums();
@@ -78,38 +66,7 @@ public abstract class MainServlet extends HttpServlet {
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
-
 		super.init(config);
-
-		try {
-			// anonimo
-			InputStream is = config.getServletContext().getResourceAsStream("/images/avataranonimo.gif");
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] buffer = new byte[1024];
-			int count = -1;
-			while ((count = is.read(buffer)) != -1) {
-				bos.write(buffer, 0, count);
-			}
-			notAuthenticated = bos.toByteArray();
-
-			// default
-			is = config.getServletContext().getResourceAsStream("/images/avatardefault.gif");
-			bos = new ByteArrayOutputStream();
-			buffer = new byte[1024];
-			count = -1;
-			while ((count = is.read(buffer)) != -1) {
-				bos.write(buffer, 0, count);
-			}
-			noAvatar = bos.toByteArray();
-
-			//
-			config.getServletContext().setAttribute("PAGE_SIZE", PAGE_SIZE);
-
-		} catch (IOException e) {
-			LOG.error(e);
-			throw new ServletException("Cannot read default images", e);
-		}
-
 		try {
 			persistence = PersistenceFactory.getInstance();
 		} catch (Exception e) {
@@ -127,59 +84,29 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	public final void doDo(HttpServletRequest req, HttpServletResponse res, final Map<String, GiamboAction> map) throws IOException {
-		// I love UTF-8
-		req.setCharacterEncoding("UTF-8");
-		res.setCharacterEncoding("UTF-8");
-
-		// mostrare di disclaimer ?
-		if (req.getSession(false) == null && !"OK".equals(req.getParameter("disclaimer"))) {
-			try {
-				getServletContext().getRequestDispatcher("/pages/disclaimer.jsp").forward(req, res);
-			} catch (ServletException e) {
-				handleException(e, req, res);
-			}
-			return;
-		}
-
-		// actual time
-		req.setAttribute("currentTimeMillis", System.currentTimeMillis());
-
+		
+		req.setAttribute("servlet", this.getClass().getName());
+		
 		// forums
 		req.setAttribute("forums", cachedForums.get());
-
-		// action
-		String action = req.getParameter("action");
-		if (action == null || action.trim().length() == 0) {
-			action = "init";
-		}
-		req.setAttribute("action", action);
-		req.setAttribute("servlet", this.getClass().getName());
-
-		// hack per persistere la sessione -- sarrusofono
-		final HttpSession session = req.getSession();
-		if (session.isNew()) {
-			String id = session.getId();
-			res.setHeader("Set-Cookie", String.format("JSESSIONID=%s;Max-Age=%d;Path=/", id, 365*24*60*60));
-		}
-
+		
 		// random quote
 		req.setAttribute("randomQuote", getRandomQuote(req, res));
-
-		// update loggedUser in session
-		AuthorDTO loggedUser = (AuthorDTO)session.getAttribute(LOGGED_USER_SESSION_ATTR);
-		if (loggedUser != null && loggedUser.isValid()) {
-			session.setAttribute(LOGGED_USER_SESSION_ATTR, getPersistence().getAuthor(loggedUser.getNick()));
-		}
 		
-		// sidebar status come attributo nel reques
-		String sidebarStatus = "show";
+		// user
+		HttpSession session = req.getSession();
+		AuthorDTO loggedUser = (AuthorDTO)session.getAttribute(LOGGED_USER_SESSION_ATTR);
+		
+		String sidebarStatus = null;
 		if (loggedUser != null && loggedUser.isValid()) {
+			// pvts ?
+			req.setAttribute("hasPvts", getPersistence().checkForNewPvts(loggedUser));
+			// update loggedUser in session
+			session.setAttribute(LOGGED_USER_SESSION_ATTR,persistence.getAuthor(loggedUser.getNick()));
+			// sidebar status come attributo nel reques
 			sidebarStatus = loggedUser.getPreferences().getProperty("sidebarStatus");
-			if (StringUtils.isEmpty(sidebarStatus)) {
-				sidebarStatus = "show";
-			}
 		} else {
-			// nel cookie ?
+			// status sidebar nel cookie ?
 			if (req.getCookies() != null) {
 				for (Cookie cookie : req.getCookies()) {
 					if ("sidebarStatus".equals(cookie.getName())) {
@@ -189,10 +116,15 @@ public abstract class MainServlet extends HttpServlet {
 				}
 			}
 		}
+		if (StringUtils.isEmpty(sidebarStatus)) {
+			sidebarStatus = "show";
+		}
 		req.setAttribute("sidebarStatus", sidebarStatus);
-
+		
+		
+		// execute action
+		String action = (String)req.getAttribute("action");
 		try {
-			// call via reflection
 			GiamboAction giamboAction = map.get(action);
 			if (giamboAction == null) {
 				throw new IllegalArgumentException("Azione sconosciuta: " + action);
@@ -217,26 +149,11 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	/**
-	 * Scrive direttamente nella response i bytes che compongono l'avatar
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
+	 * Mostra il disclaimer
 	 */
-	protected GiamboAction getAvatar = new GiamboAction("getAvatar", ONGET|ONPOST) {
+	protected GiamboAction getDisclaimer = new GiamboAction("getDisclaimer", ONGET|ONPOST) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			String nick = req.getParameter("nick");
-			AuthorDTO author = getPersistence().getAuthor(nick);
-			if (author.isValid()) {
-				if (author.getAvatar() != null) {
-					res.getOutputStream().write(author.getAvatar());
-				} else {
-					res.getOutputStream().write(noAvatar);
-				}
-			} else {
-				res.getOutputStream().write(notAuthenticated);
-			}
-			return null;
+			return "disclaimer.jsp";
 		}
 	};
 
@@ -283,21 +200,6 @@ public abstract class MainServlet extends HttpServlet {
 		// captcha corretto, restituisce l'Author di default
 		return new AuthorDTO();
 	}
-
-	/**
-	 * Cancella l'utente loggato dalla sessione
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
-	protected GiamboAction logoutAction = new GiamboAction("logoutAction", ONGET|ONPOST) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
-			req.getSession().invalidate();
-			return mapGet.get("init").action(req, res);
-		}
-	};
 
 	/**
 	 * Setta nella session lo stato della sidebar (Aperta/chiusa)
@@ -364,30 +266,6 @@ public abstract class MainServlet extends HttpServlet {
 	protected void setWebsiteTitle(HttpServletRequest req, String websiteTitle) {
 		req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(websiteTitle));
 	}
-
-	/**
-	 * Genera un captcha
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
-	protected GiamboAction getCaptcha = new GiamboAction("getCaptcha", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			Captcha captcha = new Captcha.Builder(150, 50)
-					.addText(new NumbersAnswerProducer(6))
-					.addBackground(new GradiatedBackgroundProducer(Color.MAGENTA, Color.CYAN))
-					.gimp(new RippleGimpyRenderer())
-					.build();
-			res.setHeader("Cache-Control", "no-store");
-			res.setHeader("Pragma", "no-cache");
-			res.setDateHeader("Expires", 0);
-			res.setContentType("image/jpeg");
-			CaptchaServletUtil.writeImage(res, captcha.getImage());
-			req.getSession().setAttribute("captcha", captcha.getAnswer());
-			return null;
-		}
-	};
 
 	public static class NavigationMessage {
 

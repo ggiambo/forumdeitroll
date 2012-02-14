@@ -460,12 +460,11 @@ public class Messages extends MainServlet {
 			msg.setForum(forum);
 			msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 			msg.setThreadId(-1);
-		}
-
-		// incrementa il numero di messaggi scritti (anche per i modificati, dai ;) !)
-		if (author.isValid()) {
-			author.setMessages(author.getMessages() + 1);
-			getPersistence().updateAuthor(author);
+			// incrementa il numero di messaggi scritti
+			if (author.isValid()) {
+				author.setMessages(author.getMessages() + 1);
+				getPersistence().updateAuthor(author);
+			}
 		}
 
 		msg = getPersistence().insertMessage(msg);

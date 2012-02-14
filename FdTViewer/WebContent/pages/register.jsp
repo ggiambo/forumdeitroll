@@ -25,7 +25,7 @@
 						<div style="clear: both;"></div>
 					</div>
 					<div class="registrationCaptcha">		
-						<div><img src="Messages?action=getCaptcha" /></div><div><input tabindex="3" name="captcha" size="5"/><div class="registrationCaptchaInput">Copia qui il testo dell'immagine</div></div>
+						<div><img src="Misc?action=getCaptcha" /></div><div><input tabindex="3" name="captcha" size="5"/><div class="registrationCaptchaInput">Copia qui il testo dell'immagine</div></div>
 						<div style="clear: both;"></div>
 					</div>
 					<input tabindex="4" type="submit" value="Registra" class="sendRegistrationForm" />

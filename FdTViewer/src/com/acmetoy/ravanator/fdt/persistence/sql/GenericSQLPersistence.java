@@ -20,10 +20,9 @@ import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
-import com.acmetoy.ravanator.fdt.SingleValueCache;
-import com.acmetoy.ravanator.fdt.PagerTag;
-
 import com.acmetoy.ravanator.fdt.FdTException;
+import com.acmetoy.ravanator.fdt.PagerTag;
+import com.acmetoy.ravanator.fdt.SingleValueCache;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
@@ -31,6 +30,7 @@ import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
 import com.acmetoy.ravanator.fdt.persistence.PrivateMsgDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
+import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
 
 public abstract class GenericSQLPersistence implements IPersistence {
 
@@ -94,7 +94,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			try {
 				conn = getConnection();
 				ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages WHERE id = threadid");
-				return ps.executeQuery().getInt("nr");
+				rs = ps.executeQuery();
+				if (rs.next()) {
+					return rs.getInt("nr");
+				}
 			} catch (SQLException e) {
 				LOG.error("Cannot count messages", e);
 			} finally {
@@ -103,23 +106,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			return -1;
 		}
 	};
-
-	@Override
-	public int countThreads() {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			conn = getConnection();
-			ps = conn.prepareStatement("SELECT count(id) AS nr FROM messages WHERE id = threadid");
-			return ps.executeQuery().getInt("nr");
-		} catch (SQLException e) {
-			LOG.error("Cannot count messages", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return threadsCount.get();
-	}
 
 	@Override
 	public MessagesDTO getMessagesByDate(int limit, int page) {
@@ -131,7 +117,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
-			return new MessagesDTO(getMessages(ps.executeQuery()), countMessages(conn));
+			return new MessagesDTO(getMessages(ps.executeQuery()), messagesCount.get());
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
@@ -181,27 +167,26 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public List<ThreadDTO> getThreads(int limit, int page) {
+	public ThreadsDTO getThreads(int limit, int page) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
-			return getThreads(ps.executeQuery());
+			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount.get());
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads", e);
 		} finally {
 			close(rs, ps, conn);
 		}
-		return result;
+		return new ThreadsDTO();
 	}
 
 	@Override
-	public List<ThreadDTO> getThreadsByLastPost(int limit, int page) {
+	public ThreadsDTO getThreadsByLastPost(int limit, int page) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -215,12 +200,13 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			while (rs.next()) {
 				result.add(getMessage(rs.getLong(1)));
 			}
+			return new ThreadsDTO(result, threadsCount.get());
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads by last post", e);
 		} finally {
 			close(rs, ps, conn);
 		}
-		return result;
+		return new ThreadsDTO();
 	}
 
 	@Override
@@ -1075,24 +1061,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return messages;
 	}
 	
-
-	private int countMessages(Connection conn) {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("SELECT count(id) AS nr FROM messages");
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getInt("nr");
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot count messages", e);
-		} finally {
-			close(rs, ps, null);
-		}
-		return -1;
-	}
-	
 	private int countMessagesByForum(String forum, Connection conn) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1128,7 +1096,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return -1;
 	}
-
+	
 	protected int getNumberOfMessages(long threadId) {
 		Connection conn = null;
 		PreparedStatement ps = null;

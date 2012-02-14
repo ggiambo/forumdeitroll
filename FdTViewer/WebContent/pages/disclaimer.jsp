@@ -44,7 +44,7 @@
 			</ul>
 			<br/>
 			<a href="http://www.flickr.com/groups/mlpitaly/">ESCI - Via via subito da qui!</a>
-			<a style="float:right;" href="Messages?disclaimer=OK">Entra</a>
+			<a style="float:right;" href='Messages?disclaimer=OK&originalURL=<%=java.net.URLEncoder.encode((String)request.getAttribute("originalURL"), "UTF-8") %>'>Entra</a>
 		</div>
 	</body>
 </html>
