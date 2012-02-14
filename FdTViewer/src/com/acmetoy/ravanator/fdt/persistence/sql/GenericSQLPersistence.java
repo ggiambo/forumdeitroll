@@ -661,7 +661,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			//verifica esistenza dei destinatari
 			for (String recipient: recipients) {
 				if (recipient.equals("")) continue;
-				ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick = ?");
+				ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick = ? AND hash IS NOT NULL");
 				ps.setString(1, recipient);
 				rs = ps.executeQuery();
 				if (!rs.next()) throw new FdTException("Il destinatario "+StringEscapeUtils.escapeHtml4(recipient)+" non esiste.");
