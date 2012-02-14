@@ -218,7 +218,6 @@ public class PagerTag extends TagSupport  {
 					return getCurrentPage(pageContext);
 				else {
 					ServletRequest req = pageContext.getRequest();
-					String action = (String) req.getAttribute("action");
 					Integer maxNrOfMessages = (Integer)req.getAttribute("maxNrOfMessages");
 					if (maxNrOfMessages == null) {
 						// vabbeh, io ci ho provato :$ ...

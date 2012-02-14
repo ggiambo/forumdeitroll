@@ -12,6 +12,7 @@ import com.acmetoy.ravanator.fdt.IndentMessageDTO;
 import com.acmetoy.ravanator.fdt.ThreadTree;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
+import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
 
 public class Threads extends MainServlet {
 
@@ -68,7 +69,9 @@ public class Threads extends MainServlet {
 	 */
 	protected GiamboAction getThreadsByLastPost = new GiamboAction("getThreadsByLastPost", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			req.setAttribute("messages", getPersistence().getThreadsByLastPost(PAGE_SIZE, getPageNr(req)));
+			ThreadsDTO messages = getPersistence().getThreadsByLastPost(PAGE_SIZE, getPageNr(req));
+			req.setAttribute("messages", messages.getMessages());
+			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 			setWebsiteTitle(req, "Forum dei troll");
 			setNavigationMessage(req, NavigationMessage.info("Ordinati per ultimo post"));
 			return "threadsByLastPost.jsp";
@@ -106,7 +109,9 @@ public class Threads extends MainServlet {
 	};
 	
 	private String initWithMessage(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
-		req.setAttribute("messages", getPersistence().getThreads(PAGE_SIZE, getPageNr(req)));
+		ThreadsDTO messages = getPersistence().getThreads(PAGE_SIZE, getPageNr(req));
+		req.setAttribute("messages", messages.getMessages());
+		req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 		setWebsiteTitle(req, "Forum dei troll");
 		setNavigationMessage(req, message);
 		return "threads.jsp";

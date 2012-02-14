@@ -11,9 +11,9 @@ public interface IPersistence {
 
 	public List<String> getForums();
 
-	public List<ThreadDTO> getThreads(int limit, int page);
+	public ThreadsDTO getThreads(int limit, int page);
 
-	public List<ThreadDTO> getThreadsByLastPost(int limit, int page);
+	public ThreadsDTO getThreadsByLastPost(int limit, int page);
 
 	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page);
 
@@ -69,5 +69,4 @@ public interface IPersistence {
 
 	void pedonizeThread(long threadId);
 
-	int countThreads();
 }

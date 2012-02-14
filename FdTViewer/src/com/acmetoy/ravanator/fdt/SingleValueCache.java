@@ -25,8 +25,7 @@ public abstract class SingleValueCache<V> {
 				if (expired()) {
 					LOG.info(getClass().getName() + ": Reloading");
 					timestamp = System.currentTimeMillis();
-					V newv = update();
-					v = newv;
+					v = update();
 				}
 			}
 		}
