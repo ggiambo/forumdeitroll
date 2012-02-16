@@ -432,7 +432,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(i++, nick);
 			ps.setString(i++, ""); // <- campo "password", ospitava la vecchia "hash", non lo settiamo piu`
 			ps.setInt(i++, 0);
-			ps.setInt(i++, 0);
 			ps.setString(i++, a.getSalt());
 			ps.setString(i++, a.getHash());
 			ps.execute();
