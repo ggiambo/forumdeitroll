@@ -1,8 +1,10 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -116,6 +118,9 @@ public class Messages extends MainServlet {
 		}
 	};
 
+	/**
+	 * I messaggi di questo forum in ordine di data
+	 */
 	protected GiamboAction getByForum = new GiamboAction("getByForum", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String forum = req.getParameter("forum");
@@ -125,6 +130,24 @@ public class Messages extends MainServlet {
 			MessagesDTO messages = getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req));
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+			return "messages.jsp";
+		}
+	};
+	
+	/**
+	 * Questo singolo messaggio
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	protected GiamboAction getById = new GiamboAction("getById", ONPOST|ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			Long msgId = Long.parseLong(req.getParameter("msgId"));
+			setWebsiteTitle(req, "Singolo messaggio @ Forum dei Troll");
+			List<MessageDTO> messages = new ArrayList<MessageDTO>();
+			messages.add(getPersistence().getMessage(msgId));
+			req.setAttribute("messages",messages);
 			return "messages.jsp";
 		}
 	};
