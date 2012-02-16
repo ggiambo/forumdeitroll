@@ -188,7 +188,7 @@ public class User extends MainServlet {
 				return "register.jsp";
 			}
 			// registra il nick
-			if (StringUtils.isEmpty(nick) || nick.length() > 20) {
+			if (StringUtils.isEmpty(nick) || nick.length() > 40) {
 				setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick: Troppo lungo o troppo corto"));
 				return "register.jsp";
 			}
