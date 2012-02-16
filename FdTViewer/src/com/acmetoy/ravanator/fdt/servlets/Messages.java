@@ -337,7 +337,15 @@ public class Messages extends MainServlet {
 			JsonWriter writer = new JsonWriter(res.getWriter());
 			writer.beginObject();
 			writer.name("resultCode").value("OK");
-			writer.name("content").value(MessageTag.getMessage(text, null, author, null).replaceAll("\n", "<BR/>"));
+			// replace dei caratteri HTML
+			text = text.replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\n", "<BR>");
+
+			// restore <i>, <b>, <u> e <s>
+			for (String t : new String[] {"i", "b", "u", "s"}) {
+				text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
+				text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
+			}
+			writer.name("content").value(MessageTag.getMessage(text, null, author, null));
 			writer.endObject();
 			writer.flush();
 			writer.close();
