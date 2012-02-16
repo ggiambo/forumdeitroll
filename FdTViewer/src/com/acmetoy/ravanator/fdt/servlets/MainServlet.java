@@ -1,6 +1,7 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,10 @@ public abstract class MainServlet extends HttpServlet {
 		}
 	};
 
-	protected abstract class GiamboAction {
+	protected abstract class GiamboAction implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
 		public GiamboAction(final String name, final int when) {
 			if ((when & ONGET) != 0) {
 				mapGet.put(name, this);

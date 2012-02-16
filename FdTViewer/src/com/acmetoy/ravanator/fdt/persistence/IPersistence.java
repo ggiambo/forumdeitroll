@@ -1,9 +1,10 @@
 package com.acmetoy.ravanator.fdt.persistence;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 
-public interface IPersistence {
+public interface IPersistence extends Serializable {
 
 	public void init(Properties databaseConfig) throws Exception;
 

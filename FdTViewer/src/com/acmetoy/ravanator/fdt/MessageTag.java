@@ -1,7 +1,6 @@
 package com.acmetoy.ravanator.fdt;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.jsp.JspTagException;
@@ -173,24 +172,21 @@ public class MessageTag extends BodyTagSupport {
 		out.append(line);
 		line.setLength(0);
 	}
-	private static final class Emo implements Comparable {
-		public final String imgName, sequence, altText, replacement, sequenceToUpper;
+	private static final class Emo implements Comparable<Emo> {
+		public final String sequence, replacement, sequenceToUpper;
 		public final char[] sequenceCh;
 		public final int length;
-		public Emo(String imgName, String emoSequence, String altText, String emoReplacement) {
+		public Emo(String emoSequence, String emoReplacement) {
 			super();
-			this.imgName = imgName;
 			this.sequence = emoSequence;
 			this.sequenceToUpper = emoSequence.toUpperCase();
-			this.altText = altText;
 			this.replacement = emoReplacement;
 			this.sequenceCh = emoSequence.toCharArray();
 			this.length = sequenceCh.length;
 		}
 		@Override
-		public int compareTo(Object o) {
-			Emo e = (Emo) o;
-			return e.length - this.length;
+		public int compareTo(Emo o) {
+			return o.length - this.length;
 		}
 	}
 	private static final Emo[] emos = load_emos();
@@ -198,12 +194,12 @@ public class MessageTag extends BodyTagSupport {
 		Map<String, String[]> emoMap = Messages.getEmoMap();
 		Emo[] emos = new Emo[emoMap.size()];
 		int i = 0;
-		for (Iterator<String> imgNameIter = emoMap.keySet().iterator(); imgNameIter.hasNext();) {
-			String imgName = imgNameIter.next();
-			String emoSequence = emoMap.get(imgName)[0];
-			String altText = emoMap.get(imgName)[1];
+		for (Map.Entry<String, String[]> entry : emoMap.entrySet()) {
+			String imgName = entry.getKey();
+			String emoSequence = entry.getValue()[0];
+			String altText = entry.getValue()[1];
 			String emoReplacement = String.format("<img alt='%s' title='%s' src='images/emo/%s.gif'>", altText, altText, imgName);
-			emos[i++] = new Emo(imgName, emoSequence, altText, emoReplacement);
+			emos[i++] = new Emo(emoSequence, emoReplacement);
 		}
 		Arrays.sort(emos);
 		return emos;
@@ -498,6 +494,7 @@ public class MessageTag extends BodyTagSupport {
 		return src.length() != len;
 	}
 	
+	/* never used ?
 	private static void simpleReplaceFirst(StringBuilder src, String search, String replacement) {
 		if (search == null || search.length() == 0) return;
 		int i = 0;
@@ -506,6 +503,7 @@ public class MessageTag extends BodyTagSupport {
 			i += replacement.length();
 		}
 	}
+	*/
 	private static boolean isAlphabetic(char ch) {
 		int type = Character.getType(ch);
 		return type == Character.UPPERCASE_LETTER

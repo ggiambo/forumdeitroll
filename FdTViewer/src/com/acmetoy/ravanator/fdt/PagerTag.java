@@ -2,10 +2,12 @@ package com.acmetoy.ravanator.fdt;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
@@ -18,8 +20,6 @@ import org.apache.log4j.Logger;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.servlets.MainServlet;
-import com.acmetoy.ravanator.fdt.servlets.Messages;
-import com.acmetoy.ravanator.fdt.servlets.Threads;
 
 public class PagerTag extends TagSupport  {
 
@@ -226,25 +226,28 @@ public class PagerTag extends TagSupport  {
 					return ((maxNrOfMessages - 1) / MainServlet.PAGE_SIZE);
 				}
 			}
+			/* never used ?
 			private Class[] servlets = new Class[] {
 				Messages.class,
 				Threads.class
 			};
+			*/
 			@Override
 			public String getLink(int pageNumber, PageContext pageContext) {
 				String action = (String) pageContext.getRequest().getAttribute("action");
 				String servlet = (String) pageContext.getRequest().getAttribute("servlet");
 				servlet = servlet.substring(servlet.lastIndexOf('.') + 1);
 
-				String link = servlet +
-						"?action=" + action +
-						"&amp;pageNr=" + pageNumber;
+				StringBuilder link = new StringBuilder(servlet)
+					.append("?action=").append(action)
+					.append("&amp;pageNr=").append(pageNumber);
 				if (pageContext.getRequest().getAttribute("specificParams") != null) {
-					HashMap<String, String> specificParams =
-							(HashMap<String, String>) pageContext.getRequest().getAttribute("specificParams");
-					for (String key: specificParams.keySet()) {
+					Map<String, String> specificParams =
+							(Map<String, String>) pageContext.getRequest().getAttribute("specificParams");
+					for (Map.Entry<String, String> entry: specificParams.entrySet()) {
 						try {
-							link += "&amp;" + key + "=" + java.net.URLEncoder.encode(specificParams.get(key), "UTF-8");
+							link.append("&amp;").append(entry.getKey())
+								.append("=").append(URLEncoder.encode(specificParams.get(entry.getValue()), "UTF-8"));
 						} catch (UnsupportedEncodingException e) {
 							// ignore
 						}
@@ -252,12 +255,12 @@ public class PagerTag extends TagSupport  {
 				}
 				if ("getAuthorThreadsByLastPost".equals(action) && pageContext.getRequest().getParameter("author") != null) {
 					try {
-						link += "&amp;author=" + java.net.URLEncoder.encode(pageContext.getRequest().getParameter("author"), "UTF-8");
+						link.append("&amp;author=").append(URLEncoder.encode(pageContext.getRequest().getParameter("author"), "UTF-8"));
 					} catch (UnsupportedEncodingException e) {
 						// ignore
 					}
 				}
-				return link;
+				return link.toString();
 			}
 
 			@Override

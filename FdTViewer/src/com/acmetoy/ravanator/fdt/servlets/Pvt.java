@@ -2,11 +2,11 @@ package com.acmetoy.ravanator.fdt.servlets;
 
 import java.util.List;
 
-import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.FdTException;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
@@ -15,8 +15,10 @@ import com.acmetoy.ravanator.fdt.persistence.PrivateMsgDTO;
 /**
  * Servlet implementation class Pvt
  */
-public class Pvt extends MainServlet implements Servlet {
+public class Pvt extends MainServlet {
 	private static final long serialVersionUID = 1L;
+	
+	private static final Logger LOG = Logger.getLogger(MainServlet.class);
 	
 	private static int PVT_PER_PAGE = 10;
 	
@@ -36,7 +38,9 @@ public class Pvt extends MainServlet implements Servlet {
 			int npage = 0;
 			try {
 				npage = Integer.parseInt(page);
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				LOG.warn("Impossibile parsare '" + page + "' come Integer", e);
+			}
 			req.setAttribute("pvts", getPersistence().getInbox(author, PVT_PER_PAGE, npage));
 			req.setAttribute("from", "inbox");
 			req.setAttribute("maxNrOfMessages", getPersistence().getInboxPages(author));
@@ -170,7 +174,9 @@ public class Pvt extends MainServlet implements Servlet {
 				int npage = 0;
 				try {
 					npage = Integer.parseInt(req.getParameter("page"));
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					LOG.warn("Impossibile parsare '" + req.getParameter("page") + "' come Integer", e);
+				}
 				List<PrivateMsgDTO> pvts = getPersistence().getSentPvts(login(req), PVT_PER_PAGE, npage);
 				req.setAttribute("pvts", pvts);
 				req.setAttribute("from", "outbox");

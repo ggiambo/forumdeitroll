@@ -15,6 +15,8 @@ import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 
 public class PostgreSQLPersistence extends GenericSQLPersistence {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger LOG = Logger.getLogger(PostgreSQLPersistence.class);
 
 	public void init(Properties databaseConfig) throws Exception {

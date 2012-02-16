@@ -2,6 +2,7 @@ package com.acmetoy.ravanator.fdt.filters;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,17 +39,17 @@ public class PrettyUrlFilter implements Filter {
 	private static Logger LOG = Logger.getLogger(PrettyUrlFilter.class);
 
 	private String rebuildParams(String input, HttpServletRequest request) {
-		String out = "?";
+		StringBuilder out = new StringBuilder("?");
 		for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
 			String key = e.nextElement().toString();
 			String value = request.getParameter(key);
 			try {
-				out += key + "=" + java.net.URLEncoder.encode(value, "UTF-8") + "&";
+				out.append(key).append("=").append(URLEncoder.encode(value, "UTF-8")).append("&");
 			} catch (UnsupportedEncodingException e1) {
 				// ignore
 			}
 		}
-		return input + out;
+		return input + out.toString();
 	}
 	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {

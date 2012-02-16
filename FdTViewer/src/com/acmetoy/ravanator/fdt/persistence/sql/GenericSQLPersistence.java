@@ -679,10 +679,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			rs = ps.getGeneratedKeys();
 			rs.next();
 			pvt_id = rs.getLong(1);
-			close(rs, ps, null);
 		} catch (SQLException e) {
 			LOG.error("Cannot insert into pvt_content", e);
 			return false;
+		} finally {
+			close(rs, ps, null);
 		}
 		try {
 			for (String recipient: recipients) {
