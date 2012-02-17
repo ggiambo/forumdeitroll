@@ -107,7 +107,11 @@ public class PrettyUrlFilter implements Filter {
 			Matcher matcher = threadPattern.matcher(requestUri);
 			if (matcher.find()) {
 				String threadId = matcher.group(1);
-				rewriteTo = "/Threads?action=getByThread&threadId=" + threadId;
+				// fix per chetare la giambosità scassa-link :@ - me la pagherà
+				rewriteTo =(hsRequest.getContextPath().equals("/FdTViewer") ?
+								"" : hsRequest.getContextPath())
+						+ "/Threads?action=getByThread&threadId=" + threadId;
+				redirect = true;
 			}
 		}
 		
