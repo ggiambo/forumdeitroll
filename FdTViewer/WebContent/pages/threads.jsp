@@ -70,4 +70,8 @@
 		<div id="footer">
 			<jsp:include page="incPrevNext.jsp" />
 		</div>
+
+		<script>
+			var token = "${token}";
+		</script>
 <jsp:include page="incBottom.jsp" />

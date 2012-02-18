@@ -183,7 +183,7 @@ var YTgetInfo = function(myYtCounter) {
 	return function(ytResponse) {
 		var title = ytResponse.entry.title.$t;
 		var youthumb = ytResponse.entry.media$group.media$thumbnail[0].url;
-		
+
 		var youlink = document.getElementById('yt_'+myYtCounter);
 		youlink.appendChild(document.createElement('br'));
 		youlink.appendChild(document.createTextNode(title));
@@ -196,7 +196,7 @@ var YTgetInfo = function(myYtCounter) {
 
 function pedonizeThread(threadTitle, threadId) {
 	if (confirm("Vuoi spostare il thread '" + threadTitle + "' in Procura ?")) {
-		window.location.assign("Threads?action=pedonizeThread&threadId=" + threadId);
+		window.location.assign("Threads?action=pedonizeThread&threadId=" + threadId + "&token=" + token);
 	}
 }
 
@@ -213,6 +213,6 @@ var update_counter = function(messageId, limit) {
 		}, 200);
 	}
 	counter.value = limit - textarea.value.length;
-	
+
 	} catch (e) {alert(e.message);}
 };

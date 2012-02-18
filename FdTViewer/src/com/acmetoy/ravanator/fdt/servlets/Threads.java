@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.acmetoy.ravanator.fdt.IndentMessageDTO;
 import com.acmetoy.ravanator.fdt.ThreadTree;
+import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
@@ -17,6 +18,8 @@ import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
 public class Threads extends MainServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
 	/**
 	 * Tutti i messaggi di questo thread, identati
@@ -86,7 +89,7 @@ public class Threads extends MainServlet {
 			return "threadsByLastPost.jsp";
 		}
 	};
-	
+
 	/**
 	 * Sposta il thread in procura
 	 */
@@ -96,6 +99,15 @@ public class Threads extends MainServlet {
 			if (loggedUser == null || !loggedUser.isValid()) {
 				return initWithMessage(req, res, NavigationMessage.warn("Cosa stai cercando di fare ;) ?"));
 			}
+
+			final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
+			final String inToken = req.getParameter("token");
+
+			if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+				return initWithMessage(req, res, NavigationMessage.warn("Verifica token fallita"));
+			}
+
+
 			String threadId = req.getParameter("threadId");
 			if (StringUtils.isEmpty(threadId)) {
 				return initWithMessage(req, res, NavigationMessage.warn("Scegli un thread da spostare in Procura."));
@@ -107,13 +119,22 @@ public class Threads extends MainServlet {
 			return initWithMessage(req, res, NavigationMessage.warn("\"Da un grande potere deriva una grande responsabilit&agrave;\""));
 		}
 	};
-	
+
 	private String initWithMessage(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
 		ThreadsDTO messages = getPersistence().getThreads(PAGE_SIZE, getPageNr(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 		setWebsiteTitle(req, "Forum dei troll");
 		setNavigationMessage(req, message);
+
+		final AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		if ((loggedUser != null) && ("yes".equals(loggedUser.getPreferences().get("pedonizeThread")))) {
+			final String token = RandomPool.getString(3);
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, token);
+			req.setAttribute("token", token);
+		} else {
+			req.setAttribute("token", "");
+		}
 		return "threads.jsp";
 	}
 }
