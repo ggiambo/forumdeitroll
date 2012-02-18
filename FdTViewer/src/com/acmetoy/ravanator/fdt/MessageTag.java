@@ -219,7 +219,7 @@ public class MessageTag extends BodyTagSupport {
 			return false;
 		}
 	}
-	
+
 	private boolean link() {
 		if (word.indexOf("http://") == 0 || word.indexOf("https://") == 0 ||
 				word.indexOf("www.") == 0 || word.indexOf("ftp://") == 0 || word.indexOf("mailto:") == 0) {
@@ -244,13 +244,13 @@ public class MessageTag extends BodyTagSupport {
 		}
 		return false;
 	}
-	
+
 	private void search() {
 		for (String s : searches) {
 			simpleReplaceAll(word, s, String.format("<span style='color: yellow'>%s</span>", s));
 		}
 	}
-	
+
 	private void color_quote() {
 		int quoteLvl = 0;
 		String q = QUOTE;
@@ -266,7 +266,7 @@ public class MessageTag extends BodyTagSupport {
 			line.append("</span>");
 		}
 	}
-	
+
 	private void code() {
 		if (']' == body[p + CODE.length]) {
 			p += CODE.length;
@@ -326,7 +326,7 @@ public class MessageTag extends BodyTagSupport {
 			p += CODE.length - 1;
 		}
 	}
-	
+
 	private void img(AuthorDTO loggedUser) {
 		p += IMG.length;
 		int img_end = scanFor(IMG_END);
@@ -344,7 +344,7 @@ public class MessageTag extends BodyTagSupport {
 		String url = escape(new String(body, p, img_end - p));
 		String showAnonImg = "yes";
 		if (loggedUser != null) {
-			showAnonImg = loggedUser.getPreferences().getProperty(User.PREF_SHOWANONIMG);
+			showAnonImg = loggedUser.getPreferences().get(User.PREF_SHOWANONIMG);
 		}
 		if (author != null && StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) {
 			line.append(String.format("<a href=\"%s\">Immagine postata da ANOnimo</a>", url));
@@ -353,7 +353,7 @@ public class MessageTag extends BodyTagSupport {
 		}
 		p = img_end + (IMG_END.length - 1);
 	}
-	
+
 	Long ytCounter = 0l;
 	private void youtube(AuthorDTO loggedUser) {
 		p += YT.length;
@@ -372,7 +372,7 @@ public class MessageTag extends BodyTagSupport {
 		String youcode = escape(new String(body, p, yt_end - p));
 		String embeddYt = "yes";
 		if (loggedUser != null) {
-			embeddYt = loggedUser.getPreferences().getProperty(User.PREF_EMBEDDYT);
+			embeddYt = loggedUser.getPreferences().get(User.PREF_EMBEDDYT);
 		}
 		if (StringUtils.isEmpty(embeddYt)) {
 			long myYtCounter = 0l;
@@ -405,7 +405,7 @@ public class MessageTag extends BodyTagSupport {
 		}
 		p = yt_end + (YT_END.length - 1);
 	}
-	
+
 	private void start_color() {
 		p += COLOR.length;
 		int end_p = scanFor(']', 12);
@@ -432,7 +432,7 @@ public class MessageTag extends BodyTagSupport {
 			p--;
 		}
 	}
-	
+
 	//----- util -----
 	public boolean found(char[] C) {
 		if (C.length > body.length - p) return false;
@@ -440,7 +440,7 @@ public class MessageTag extends BodyTagSupport {
 		while (i < C.length && C[i] == body[p+i]) i++;
 		return i == C.length;
 	}
-	
+
 	public boolean ifound(char[] C) {
 		if (C.length > ibody.length - p) return false;
 		int i = 0;
@@ -493,7 +493,7 @@ public class MessageTag extends BodyTagSupport {
 		}
 		return src.length() != len;
 	}
-	
+
 	/* never used ?
 	private static void simpleReplaceFirst(StringBuilder src, String search, String replacement) {
 		if (search == null || search.length() == 0) return;
@@ -513,7 +513,7 @@ public class MessageTag extends BodyTagSupport {
 				|| type == Character.OTHER_LETTER
 				|| type == Character.LETTER_NUMBER;
 	}
-	
+
 	//------ const -----
 	private static final char[] TAG_B = "<b>".toCharArray();
 	private static final char[] TAG_I = "<i>".toCharArray();

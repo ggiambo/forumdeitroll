@@ -223,7 +223,7 @@ public class User extends MainServlet {
 				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
-			
+
 			List<QuoteDTO> list = getPersistence().getQuotes(loggedUser);
 			int size = list.size();
 			if (size < 5) {
@@ -285,7 +285,7 @@ public class User extends MainServlet {
 				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
-			
+
 			Long quoteId = Long.parseLong(req.getParameter("quoteId"));
 			QuoteDTO quote = new QuoteDTO();
 			quote.setNick(loggedUser.getNick());
@@ -312,7 +312,7 @@ public class User extends MainServlet {
 			return "userInfo.jsp";
 		}
 	};
-	
+
 	/**
 	 * Cambia le preference per mostrare/nascondere le immagini di ANOninmo
 	 */
@@ -323,7 +323,7 @@ public class User extends MainServlet {
 				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
-			
+
 			// setta le preferences
 			for (String key : new String[] {PREF_SHOWANONIMG, PREF_EMBEDDYT}) {
 				String value = req.getParameter(key);
@@ -332,9 +332,9 @@ public class User extends MainServlet {
 				} else {
 					loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, ""));
 				}
-				
+
 			}
-			
+
 			return "user.jsp";
 		}
 	};

@@ -8,7 +8,8 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.Properties;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -25,7 +26,7 @@ public class AuthorDTO implements Serializable {
 	}
 
 	private transient SecretKeyFactory secretKeyFactory = null;
-	
+
 	private int messages = -1;
 
 	private String nick = null;
@@ -35,8 +36,8 @@ public class AuthorDTO implements Serializable {
 	protected String oldPassword = null;
 
 	protected String salt = null, hash = null;
-	
-	private Properties preferences = new Properties();
+
+	private ConcurrentHashMap<String, String> preferences = new ConcurrentHashMap<String, String>();
 
 	public String getNick() {
 		return nick;
@@ -82,11 +83,11 @@ public class AuthorDTO implements Serializable {
 		return this.hash;
 	}
 
-	public Properties getPreferences() {
+	public Map<String, String> getPreferences() {
 		return preferences;
 	}
 
-	public void setPreferences(Properties preferences) {
+	public void setPreferences(final ConcurrentHashMap<String, String> preferences) {
 		this.preferences = preferences;
 	}
 
@@ -162,7 +163,7 @@ public class AuthorDTO implements Serializable {
 			throw new RuntimeException("La tua virtual machine non esiste", e);
 		}
 	}
-	
+
 	private SecretKeyFactory getSecretKeyFactory() {
 		if (secretKeyFactory == null) {
 			try {

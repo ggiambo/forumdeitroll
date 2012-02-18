@@ -3,6 +3,7 @@ package com.acmetoy.ravanator.fdt.persistence;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface IPersistence extends Serializable {
 
@@ -49,9 +50,9 @@ public interface IPersistence extends Serializable {
 	public List<PrivateMsgDTO> getSentPvts(AuthorDTO author, int limit, int pageNr);
 
 	public List<PrivateMsgDTO> getInbox(AuthorDTO author, int limit, int pageNr);
-	
+
 	public int getInboxPages(AuthorDTO author);
-	
+
 	public int getOutboxPages(AuthorDTO author);
 
 	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients);
@@ -64,9 +65,9 @@ public interface IPersistence extends Serializable {
 
 	public PrivateMsgDTO getPvtDetails(long pvt_id, AuthorDTO user);
 
-	public Properties getPreferences(AuthorDTO user);
+	public ConcurrentHashMap<String, String> getPreferences(AuthorDTO user);
 
-	public Properties setPreference(AuthorDTO user, String key, String value);
+	public ConcurrentHashMap<String, String> setPreference(AuthorDTO user, String key, String value);
 
 	void pedonizeThread(long threadId);
 

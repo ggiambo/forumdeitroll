@@ -43,7 +43,7 @@ public abstract class MainServlet extends HttpServlet {
 
 	protected static final int ONGET = 0x01;
 	protected static final int ONPOST = 0x02;
-	
+
 	protected SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
 			return getPersistence().getForums();
@@ -88,19 +88,19 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	public final void doDo(HttpServletRequest req, HttpServletResponse res, final Map<String, GiamboAction> map) throws IOException {
-		
+
 		req.setAttribute("servlet", this.getClass().getName());
-		
+
 		// forums
 		req.setAttribute("forums", cachedForums.get());
-		
+
 		// random quote
 		req.setAttribute("randomQuote", getRandomQuote(req, res));
-		
+
 		// user
 		HttpSession session = req.getSession();
 		AuthorDTO loggedUser = (AuthorDTO)session.getAttribute(LOGGED_USER_SESSION_ATTR);
-		
+
 		String sidebarStatus = null;
 		if (loggedUser != null && loggedUser.isValid()) {
 			// pvts ?
@@ -108,7 +108,7 @@ public abstract class MainServlet extends HttpServlet {
 			// update loggedUser in session
 			session.setAttribute(LOGGED_USER_SESSION_ATTR,persistence.getAuthor(loggedUser.getNick()));
 			// sidebar status come attributo nel reques
-			sidebarStatus = loggedUser.getPreferences().getProperty("sidebarStatus");
+			sidebarStatus = loggedUser.getPreferences().get("sidebarStatus");
 		} else {
 			// status sidebar nel cookie ?
 			if (req.getCookies() != null) {
@@ -124,8 +124,8 @@ public abstract class MainServlet extends HttpServlet {
 			sidebarStatus = "show";
 		}
 		req.setAttribute("sidebarStatus", sidebarStatus);
-		
-		
+
+
 		// execute action
 		String action = (String)req.getAttribute("action");
 		try {
@@ -222,7 +222,7 @@ public abstract class MainServlet extends HttpServlet {
 			if (loggedUser != null && loggedUser.isValid()) {
 				// settiamo nelle preferences dell'utente
 				getPersistence().setPreference(loggedUser, "sidebarStatus", sidebarStatus);
-				loggedUser.getPreferences().setProperty("sidebarStatus", sidebarStatus);
+				loggedUser.getPreferences().put("sidebarStatus", sidebarStatus);
 			} else {
 				// settiamo nel cookie
 				if (req.getCookies() != null) {

@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -868,10 +868,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public Properties getPreferences(AuthorDTO user) {
-		Properties res = new Properties();
+	public ConcurrentHashMap<String, String> getPreferences(AuthorDTO user) {
+		final ConcurrentHashMap<String, String> r = new ConcurrentHashMap<String, String>();
 		if (user == null || !user.isValid()) {
-			return res;
+			return r;
 		}
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -882,14 +882,14 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(1, user.getNick());
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				res.setProperty(rs.getString("key"), rs.getString("value"));
+				r.put(rs.getString("key"), rs.getString("value"));
 			}
 		} catch (SQLException e) {
 			LOG.error("Cannot read properties for user " + user.getNick(), e);
 		} finally {
 			close(rs, ps, conn);
 		}
-		return res;
+		return r;
 	}
 
 	/* TODO: abilitare quando search destinatari PVT implementato
@@ -916,8 +916,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	*/
 
 	@Override
-	public Properties setPreference(AuthorDTO user, String key, String value) {
-		if (getPreferences(user).getProperty(key) == null) {
+	public ConcurrentHashMap<String, String> setPreference(AuthorDTO user, String key, String value) {
+		if (!getPreferences(user).contains(key)) {
 			insertPreference(user, key, value);
 		} else {
 			updatePreference(user, key, value);
@@ -1052,7 +1052,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return messages;
 	}
-	
+
 	private int countMessagesByForum(String forum, Connection conn) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
