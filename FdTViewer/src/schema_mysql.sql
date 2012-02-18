@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `subject` tinytext NOT NULL,
   `threadId` int(11) NOT NULL,
   `parentId` int(11) NOT NULL,
-  `author` varchar(256) DEFAULT NULL,
-  `forum` varchar(256) DEFAULT NULL,
+  `author` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `forum` varchar(256) CHARCTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `parentId` (`parentId`),
   KEY `threadId` (`threadId`),
@@ -106,6 +106,15 @@ CREATE TABLE IF NOT EXISTS `preferences` (
   `key` tinytext NOT NULL,
   `value` tinytext NOT NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
+
+-- --------------------------------------------------------
+
+--
+-- messageIndices.sql -- indici
+--
+
+ALTER TABLE `messages` ADD INDEX ( `author` )
+ALTER TABLE `messages` ADD INDEX ( `forum` )
 
 
 
