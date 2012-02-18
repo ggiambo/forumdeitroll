@@ -1,10 +1,8 @@
 package com.acmetoy.ravanator.fdt.persistence;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -16,6 +14,8 @@ import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import com.acmetoy.ravanator.fdt.RandomPool;
 
 public class AuthorDTO implements Serializable {
 
@@ -93,9 +93,7 @@ public class AuthorDTO implements Serializable {
 
 	public void changePassword(final String password) {
 		if (StringUtils.isEmpty(this.salt)) {
-			byte[] saltBytes = new byte[8];
-			new SecureRandom().nextBytes(saltBytes);
-			this.salt = hex(saltBytes, false);
+			this.salt = RandomPool.getString(8);
 		}
 
 		this.hash = passwordHash(password, this.salt);
@@ -122,23 +120,11 @@ public class AuthorDTO implements Serializable {
 		return !(StringUtils.isEmpty(this.salt));
 	}
 
-	static protected String hex(final byte[] input, final boolean padding) {
-		BigInteger hash = new BigInteger(1, input);
-		String result = hash.toString(16);
-		if (padding) {
-			while (result.length() < 32) {
-				result = "0" + result;
-			}
-		}
-
-		return result;
-	}
-
 	private String passwordHash(final String password, final String salt) {
 		final KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 1024, 192);
 		try {
 			byte[] hash = getSecretKeyFactory().generateSecret(spec).getEncoded();
-			return hex(hash, true);
+			return RandomPool.hex(hash, true);
 		} catch(InvalidKeySpecException e) {
 			throw new RuntimeException("Algoritmo di hashing fallito per strane ragioni", e);
 		}
@@ -156,7 +142,7 @@ public class AuthorDTO implements Serializable {
 			if (input != null) {
 				MessageDigest md = MessageDigest.getInstance("MD5"); // or "SHA-1"
 				md.update(input.getBytes());
-				result = hex(md.digest(), true);
+				result = RandomPool.hex(md.digest(), true);
 			}
 			return result;
 		} catch (NoSuchAlgorithmException e) {

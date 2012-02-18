@@ -14,6 +14,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
 
+import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 
@@ -24,9 +25,11 @@ public class User extends MainServlet {
 	private static final int MAX_SIZE_AVATAR_BYTES = 512*1024;
 	private static final long MAX_SIZE_AVATAR_WIDTH = 100;
 	private static final long MAX_SIZE_AVATAR_HEIGHT = 100;
-	
+
 	public static final String PREF_SHOWANONIMG = "showAnonImg";
 	public static final String PREF_EMBEDDYT = "embeddYt";
+
+	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -114,7 +117,7 @@ public class User extends MainServlet {
 				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 				return loginAction.action(req,  res);
 			}
-			
+
 			if (!ServletFileUpload.isMultipartContent(req)) {
 				setNavigationMessage(req, NavigationMessage.warn("Nessun avatar caricato"));
 				return "user.jsp";
@@ -309,7 +312,75 @@ public class User extends MainServlet {
 			AuthorDTO author = getPersistence().getAuthor(nick);
 			req.setAttribute("author", author);
 			req.setAttribute("quotes", getPersistence().getQuotes(author));
+
+			final AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+
+			if ((loggedUser != null) && "yes".equals(loggedUser.getPreferences().get("super"))) {
+				final String token = RandomPool.getString(3);
+				req.getSession().setAttribute(ANTI_XSS_TOKEN, token);
+				req.setAttribute("token", token);
+			}
+
 			return "userInfo.jsp";
+		}
+	};
+
+	protected GiamboAction editUser = new GiamboAction("edit", ONPOST) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			if (loggedUser == null || !loggedUser.isValid()) {
+				setNavigationMessage(req, NavigationMessage.warn("Non sei loggato !"));
+				return loginAction.action(req,  res);
+			}
+
+			if (!("yes".equals(loggedUser.getPreferences().get("super")))) {
+				setNavigationMessage(req, NavigationMessage.warn("Non sei superutente, non puoi fare questa cosa!"));
+				return loginAction.action(req, res);
+			}
+
+			final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
+			final String inToken = req.getParameter("token");
+
+			if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+				setNavigationMessage(req, NavigationMessage.warn("Verifica token fallita"));
+				return getUserInfo.action(req, res);
+			}
+
+			final String nick = req.getParameter("nick");
+
+			if (nick == null) {
+				setNavigationMessage(req, NavigationMessage.warn("Nessun nickname specificato"));
+				return init.action(req, res);
+			}
+
+			final String pass = req.getParameter("pass");
+			final String pass2 = req.getParameter("pass2");
+
+			final AuthorDTO author = getPersistence().getAuthor(nick);
+
+			if ((author == null) || !author.isValid()) {
+				setNavigationMessage(req, NavigationMessage.warn("Il nickname è sparito!?"));
+				return getUserInfo.action(req, res);
+			}
+
+			if (!StringUtils.isEmpty(pass)) {
+				if (StringUtils.isEmpty(pass2) || !pass2.equals(pass)) {
+					setNavigationMessage(req, NavigationMessage.warn("Password sbagliata"));
+					return getUserInfo.action(req, res);
+				}
+
+				if (!getPersistence().updateAuthorPassword(author, pass)) {
+					setNavigationMessage(req, NavigationMessage.error("Errore in User.editUser / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :("));
+					return getUserInfo.action(req, res);
+				}
+			}
+
+			final String pedonizeThread = req.getParameter("pedonizeThread");
+			if (!StringUtils.isEmpty(pedonizeThread)) {
+				author.setPreferences(getPersistence().setPreference(author, "pedonizeThread", pedonizeThread));
+			}
+
+			return getUserInfo.action(req, res);
 		}
 	};
 

@@ -39,9 +39,52 @@
 							</c:url>
 							<a href="<c:out value="${sendPvt}" escapeXml="true" />" class="userPanelButton">Manda PVT</a>
 							<div style="clear: both;"></div>
+
 						</div>
+						<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
+							<div class="userPanelSection">
+								<h3>Superutente</h3>
+								<form action="User?action=edit" method="post">
+									<input type="hidden" name="token" id="token" value="${token}"/>
+									<input type="hidden" name="nick" id="nick" value="${author.nick}"/>
+									<div>
+										<div class="lblUserPanel">
+											<label for="pass" class="lbl">Password:</label>
+										</div>
+										<div class="inputUserPanel">
+											<input type="password" name="pass" id="pass"/>
+										</div>
+									</div>
+
+									<div>
+										<div class="lblUserPanel">
+											<label for="pass" class="lbl">Verifica password:</label>
+										</div>
+										<div class="inputUserPanel">
+											<input type="password" name="pass2" id="pass2"/>
+										</div>
+									</div>
+
+									<div>
+										<div class="lblUserPanel">
+											<label for="pedonizeThread" class="lbl">pedonizeThread:</label>
+										</div>
+										<div class="inputUserPanel">
+											<input type="text" name="pedonizeThread" id="pedonizeThread"  value="${author.preferences['pedonizeThread']}"/>
+										</div>
+									</div>
+
+									<input type="submit" value="Modifica" class="sendUserPanel"/>
+									<div style="clear: both;"></div>
+								</form>
+								<!-- TODO:
+								- cambio password
+								- abilita pedonizeThread
+								-->
+							</div>
+						</c:if>
 					</c:if>
-				</div>	
+				</div>
 			</div>
 		</div>
 		<div id="footer"></div>
