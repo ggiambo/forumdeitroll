@@ -331,7 +331,7 @@ public abstract class MainServlet extends HttpServlet {
 	 * @throws IOException
 	 */
 	private void handleException(Exception e, HttpServletRequest req, HttpServletResponse res) throws IOException {
-		LOG.error(e);
+		LOG.error(e.getMessage(), e);
 		req.setAttribute("exceptionStackTrace", ExceptionUtils.getStackTrace(e));
 		try {
 			getServletContext().getRequestDispatcher("/pages/error.jsp").forward(req, res);

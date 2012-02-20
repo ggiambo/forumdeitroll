@@ -36,10 +36,16 @@ public class ThreadPrettyUrlTag extends TagSupport {
 				// solo nella conf di test
 				out.write(this.pageContext.getServletContext().getContextPath());
 			}
+			/*
 			out.write("/thread/");
 			out.write(this.threadId);
 			out.write("/");
 			out.write(prettySubject);
+			
+			*/
+			out.write("/Threads?action=getByThread&threadId=");
+			out.write(this.threadId);
+			
 			out.write("#msg");
 			out.write(this.msgId);
 			out.write("\">");

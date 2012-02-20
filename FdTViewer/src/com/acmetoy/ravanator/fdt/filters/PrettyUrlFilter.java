@@ -33,6 +33,8 @@ public class PrettyUrlFilter implements Filter {
 	private String ctx_Threads = null;
 	private String User = "/User";
 	private String ctx_User = null;
+	private String Misc = "/Misc";
+	private String ctx_Misc = null;
 	
 	private String GET = "GET";
 
@@ -63,12 +65,10 @@ public class PrettyUrlFilter implements Filter {
 		if ((requestUri.contains(images)) && (!requestUri.startsWith(ctx_images))) {
 			rewriteTo = hsRequest.getContextPath() + requestUri.substring(requestUri.indexOf(images));
 			redirect = true;
-		}
-		if ((requestUri.contains(js)) && (!requestUri.startsWith(ctx_js))) {
+		} else if ((requestUri.contains(js)) && (!requestUri.startsWith(ctx_js))) {
 			rewriteTo = hsRequest.getContextPath() + requestUri.substring(requestUri.indexOf(js));
 			redirect = true;
-		}
-		if ((requestUri.contains(css)) && (!requestUri.startsWith(ctx_css))) {
+		} else if ((requestUri.contains(css)) && (!requestUri.startsWith(ctx_css))) {
 			rewriteTo = hsRequest.getContextPath() + requestUri.substring(requestUri.indexOf(css));
 			redirect = true;
 		}
@@ -102,25 +102,31 @@ public class PrettyUrlFilter implements Filter {
 				rewriteTo = User;
 			}
 		}
+		if (requestUri.endsWith(Misc) && !requestUri.equals(ctx_Misc)) {
+			if (GET.equals(hsRequest.getMethod())) {
+				rewriteTo = rebuildParams(ctx_Misc, hsRequest);
+				redirect = true;
+			} else {
+				rewriteTo = Misc;
+			}
+		}
 		// sarebbe da adottare uno strategy pattern...
 		if (rewriteTo == null && requestUri.startsWith(hsRequest.getContextPath() + "/thread/")) {
 			Matcher matcher = threadPattern.matcher(requestUri);
 			if (matcher.find()) {
 				String threadId = matcher.group(1);
-				// fix per chetare la giambosità scassa-link :@ - me la pagherà
-				rewriteTo =(hsRequest.getContextPath().equals("/FdTViewer") ?
-								"" : hsRequest.getContextPath())
-						+ "/Threads?action=getByThread&threadId=" + threadId;
-				redirect = true;
+				rewriteTo = "/Threads?action=getByThread&threadId=" + threadId;
+				hsRequest.setAttribute("action","getByThread");
 			}
 		}
 		
 		if (rewriteTo != null) {
 			if (redirect) {
-				LOG.debug("302 "+requestUri+" -> "+rewriteTo);
+				LOG.debug("301 "+requestUri+" -> "+rewriteTo);
 				hsResponse.sendRedirect(rewriteTo);
+				
 			} else {
-				LOG.debug("FW "+requestUri+" -> "+rewriteTo);
+				LOG.debug("FWD "+requestUri+" -> "+rewriteTo);
 				hsRequest.getRequestDispatcher(rewriteTo).forward(request, response);
 			}
 		} else {
@@ -133,11 +139,12 @@ public class PrettyUrlFilter implements Filter {
 	}
 
 	public void init(FilterConfig config) throws ServletException {
-		this.ctx_images = (config.getServletContext().getContextPath() + this.images);
-		this.ctx_js = (config.getServletContext().getContextPath() + this.js);
-		this.ctx_css = (config.getServletContext().getContextPath() + this.css);
-		this.ctx_Messages = (config.getServletContext().getContextPath() + this.Messages);
-		this.ctx_Threads = (config.getServletContext().getContextPath() + this.Threads);
-		this.ctx_User = (config.getServletContext().getContextPath() + this.User);
+		this.ctx_images = (config.getServletContext().getContextPath() + images);
+		this.ctx_js = (config.getServletContext().getContextPath() + js);
+		this.ctx_css = (config.getServletContext().getContextPath() + css);
+		this.ctx_Messages = (config.getServletContext().getContextPath() + Messages);
+		this.ctx_Threads = (config.getServletContext().getContextPath() + Threads);
+		this.ctx_User = (config.getServletContext().getContextPath() + User);
+		this.ctx_Misc = (config.getServletContext().getContextPath() + Misc);
 	}
 }

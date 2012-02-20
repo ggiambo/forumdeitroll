@@ -22,5 +22,4 @@ e' una possibilita' molto remota --%>
 	<link href="css/sh/shThemeEclipse.css" rel="stylesheet" type="text/css" />
 	<link href="css/jquery-ui-1.8.17.custom.css" type="text/css" rel="stylesheet" />
 	<link href="css/fdt.css?v=<%=bootTime%>" type="text/css" rel="stylesheet" />
-	<base href="<%=request.getContextPath()%>/">
 </head>
