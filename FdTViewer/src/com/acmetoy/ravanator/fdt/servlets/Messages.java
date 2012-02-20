@@ -479,6 +479,11 @@ public class Messages extends MainServlet {
 					msg.setSubject(replyMsg.getSubject());
 				}
 				msg.setThreadId(replyMsg.getThreadId());
+				// incrementa il numero di messaggi scritti
+				if (author.isValid()) {
+					author.setMessages(author.getMessages() + 1);
+					getPersistence().updateAuthor(author);
+				}
 			}
 		} else {
 			// nuovo messaggio
