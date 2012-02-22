@@ -175,7 +175,7 @@ public class Pvt extends MainServlet {
 				try {
 					npage = Integer.parseInt(req.getParameter("page"));
 				} catch (Exception e) {
-					LOG.warn("Impossibile parsare '" + req.getParameter("page") + "' come Integer", e);
+					
 				}
 				List<PrivateMsgDTO> pvts = getPersistence().getSentPvts(login(req), PVT_PER_PAGE, npage);
 				req.setAttribute("pvts", pvts);
