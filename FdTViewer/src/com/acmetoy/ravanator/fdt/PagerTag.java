@@ -182,7 +182,7 @@ public class PagerTag extends TagSupport  {
 				//se vedi la lista dei pvt sei loggato per forza
 				AuthorDTO author = (AuthorDTO) pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
 				if (author != null) {
-					Integer maxNrOfMessages = (Integer)pageContext.getAttribute("maxNrOfMessages");
+					Integer maxNrOfMessages = (Integer)pageContext.getRequest().getAttribute("maxNrOfMessages");
 					return maxNrOfMessages == null ? -1 : maxNrOfMessages;
 				}
 				return -1; //furmigamento
