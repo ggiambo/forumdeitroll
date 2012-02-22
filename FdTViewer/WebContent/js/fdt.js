@@ -179,6 +179,23 @@ jQuery("document").ready(function(){
 	SyntaxHighlighter.all();
 });
 
+// tasto 'j' per saltare al prossimo messaggio
+$("body").live("keypress", function(e) {
+	if (e.charCode == 106) {
+		var target = $(e.target);
+		if (!target.is("input") && !target.is("textarea")) {
+			var scrollToMsgIndex = $.data(document.body, "scrollToMsgIndex");
+			if (scrollToMsgIndex == undefined) {
+				scrollToMsgIndex = -1;
+			}
+			$.data(document.body, "scrollToMsgIndex", ++scrollToMsgIndex);
+			$("html, body").animate({
+				scrollTop: $('div[id^="msg"]').eq(scrollToMsgIndex).offset().top
+			}, 500);
+		}
+	}
+});
+
 var YTgetInfo = function(myYtCounter) {
 	return function(ytResponse) {
 		var title = ytResponse.entry.title.$t;
