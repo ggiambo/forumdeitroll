@@ -247,7 +247,7 @@ public class PagerTag extends TagSupport  {
 					for (Map.Entry<String, String> entry: specificParams.entrySet()) {
 						try {
 							link.append("&amp;").append(entry.getKey())
-								.append("=").append(URLEncoder.encode(specificParams.get(entry.getValue()), "UTF-8"));
+								.append("=").append(URLEncoder.encode(entry.getValue(), "UTF-8"));
 						} catch (UnsupportedEncodingException e) {
 							// ignore
 						}
