@@ -35,7 +35,7 @@ public class MySQLPersistence extends GenericSQLPersistence {
 		ResultSet rs = null;
 		List<MessageDTO> result = new ArrayList<MessageDTO>();
 		try {
-			ps = conn.prepareStatement("SELECT * FROM messages WHERE MATCH (text) AGAINST (?) LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement("SELECT * FROM messages WHERE MATCH (text) AGAINST (?) ORDER BY `date` desc LIMIT ? OFFSET ?");
 			ps.setString(1, search);
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*page);
