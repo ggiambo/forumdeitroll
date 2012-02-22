@@ -430,6 +430,7 @@ textarea.msgReplyTxt {
   	border: 1px solid #7BAAE7;
   	padding: 5px;
 	margin-bottom: 5px;
+	font-family: monospace;
 }
 
 div.msgReplyTxt {
