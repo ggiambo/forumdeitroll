@@ -39,7 +39,7 @@ public class Pvt extends MainServlet {
 			try {
 				npage = Integer.parseInt(page);
 			} catch (Exception e) {
-				LOG.warn("Impossibile parsare '" + page + "' come Integer", e);
+				
 			}
 			req.setAttribute("pvts", getPersistence().getInbox(author, PVT_PER_PAGE, npage));
 			req.setAttribute("from", "inbox");
