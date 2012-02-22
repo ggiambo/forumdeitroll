@@ -196,18 +196,16 @@ $("body").live("keypress", function(e) {
 	}
 });
 
-var YTgetInfo = function(myYtCounter) {
+var YTgetInfo = function(myYtCounter, youcode) {
+	var script = document.createElement('script')
+	script.type = 'text/javascript'
+	script.src = 'http://gdata.youtube.com/feeds/api/videos/' + youcode + '?v=2&alt=json-in-script&callback=YTgetInfo_' + myYtCounter
+	document.body.appendChild(script)
 	return function(ytResponse) {
 		var title = ytResponse.entry.title.$t;
-		var youthumb = ytResponse.entry.media$group.media$thumbnail[0].url;
-
 		var youlink = document.getElementById('yt_'+myYtCounter);
-		youlink.appendChild(document.createElement('br'));
 		youlink.appendChild(document.createTextNode(title));
-		youlink.appendChild(document.createElement('br'));
-		var img = document.createElement('img');
-		img.src = youthumb;
-		youlink.appendChild(img);
+		youlink.onmouseover = null
 	};
 };
 

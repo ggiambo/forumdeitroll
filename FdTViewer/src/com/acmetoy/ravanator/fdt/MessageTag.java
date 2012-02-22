@@ -198,7 +198,7 @@ public class MessageTag extends BodyTagSupport {
 			String imgName = entry.getKey();
 			String emoSequence = entry.getValue()[0];
 			String altText = entry.getValue()[1];
-			String emoReplacement = String.format("<img alt='%s' title='%s' src='images/emo/%s.gif'>", altText, altText, imgName);
+			String emoReplacement = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emo/%s.gif'>", altText, altText, imgName);
 			emos[i++] = new Emo(emoSequence, emoReplacement);
 		}
 		Arrays.sort(emos);
@@ -385,6 +385,14 @@ public class MessageTag extends BodyTagSupport {
 				myYtCounter = ytCounter;
 			}
 			line.append("<a href=\"http://www.youtube.com/watch?v=").append(youcode).append("\" ");
+			line.append("id=\"yt_").append(myYtCounter).append("\" ");
+			line.append("onmouseover='YTgetInfo_").append(myYtCounter).append("= YTgetInfo(\"");
+			line.append(myYtCounter).append("\",\"").append(youcode).append("\")'>");
+			line.append("<img src='http://img.youtube.com/vi/").append(youcode).append("/2.jpg'></a>");
+			
+			
+			/*
+			line.append("<a href=\"http://www.youtube.com/watch?v=").append(youcode).append("\" ");
 			line.append("id=\"yt_").append(myYtCounter).append("\">");
 			line.append("http://www.youtube.com/watch?v=").append(youcode).append("</a>");
 			line.append("<script type='text/javascript'>YTgetInfo_");
@@ -394,6 +402,7 @@ public class MessageTag extends BodyTagSupport {
 			line.append("http://gdata.youtube.com/feeds/api/videos/").append(youcode);
 			line.append("?v=2&amp;alt=json-in-script&amp;callback=YTgetInfo_");
 			line.append(myYtCounter).append("\"></script>");
+			*/
 		} else {
 			// un glande classico: l'embed
 			line.append("<object height='329' width='400'>");
