@@ -28,6 +28,7 @@ public class User extends MainServlet {
 
 	public static final String PREF_SHOWANONIMG = "showAnonImg";
 	public static final String PREF_EMBEDDYT = "embeddYt";
+	public static final String PREF_COLLAPSE_QUOTES = "collapseQuotes";
 
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
@@ -396,7 +397,7 @@ public class User extends MainServlet {
 			}
 
 			// setta le preferences
-			for (String key : new String[] {PREF_SHOWANONIMG, PREF_EMBEDDYT}) {
+			for (String key : new String[] {PREF_SHOWANONIMG, PREF_EMBEDDYT, PREF_COLLAPSE_QUOTES}) {
 				String value = req.getParameter(key);
 				if (StringUtils.isNotEmpty(value)) {
 					loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, "checked"));

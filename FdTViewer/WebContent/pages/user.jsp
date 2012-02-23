@@ -85,6 +85,15 @@
 								</div>
 								<div style="clear: both;"></div>
 							</div>
+							<div>
+								<div class="inputUserPanel">
+									<input type="checkbox" name="collapseQuotes" id="collapseQuotes" ${loggedUser.preferences['collapseQuotes']} />
+								</div>
+								<div class="lblUserPanel">
+									<label for="collapseQuotes" class="lbl">Collassa quotes</label>
+								</div>
+								<div style="clear: both;"></div>
+							</div>
 							<input type="submit" value="Modifica" class="sendUserPanel" />
 						</form>
 						<div style="clear: both;"></div>

@@ -69,6 +69,8 @@ public class MessageTag extends BodyTagSupport {
 	private String[] searches;
 	private static String[] EMPTY_STRING_ARRAY = new String[0];
 	int open_b = 0, open_i = 0, open_s = 0, open_u = 0;
+	private String collapseQuotes;
+	private boolean multiLineQuoteStarted;
 	
 	private StringBuilder getMessage(char[] body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
 		this.body = body;
@@ -79,6 +81,9 @@ public class MessageTag extends BodyTagSupport {
 		searches = search != null && !search.equals("") ? search.split(" ") : EMPTY_STRING_ARRAY;
 		open_b = 0; open_i = 0; open_s = 0; open_u = 0;
 		p = -1;
+		multiLineQuoteStarted = false;
+		
+		collapseQuotes = loggedUser.getPreferences().get(User.PREF_COLLAPSE_QUOTES);
 		
 		while (++p < body.length) {
 			char c = body[p];
@@ -168,7 +173,7 @@ public class MessageTag extends BodyTagSupport {
 	
 	private void on_line() {
 		on_word();
-		color_quote();
+		color_collapse_quote();
 		out.append(line);
 		line.setLength(0);
 	}
@@ -251,7 +256,7 @@ public class MessageTag extends BodyTagSupport {
 		}
 	}
 
-	private void color_quote() {
+	private void color_collapse_quote() {
 		int quoteLvl = 0;
 		String q = QUOTE;
 		int pq = 0;
@@ -264,6 +269,15 @@ public class MessageTag extends BodyTagSupport {
 			if (quoteLvl > 4) quoteLvl = 1 + (quoteLvl % 4);
 			line.insert(0, "<span class='quoteLvl" + quoteLvl + "'>");
 			line.append("</span>");
+			if (!multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
+				multiLineQuoteStarted = true;
+				line.insert(0, "<div class='quote-container' onclick='$(this).removeClass(\"quote-container\")'>");
+			}
+		} else {
+			if (multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
+				multiLineQuoteStarted = false;
+				line.append("</div>");
+			}
 		}
 	}
 

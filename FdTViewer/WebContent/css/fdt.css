@@ -658,6 +658,20 @@ span.quoteLvl1 {
 	color: #007BDF;
 }
 
+div.quote-container {
+	height: 11px;
+	background-image: url(../images/plus_sign.gif);
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+div.quote-container:after {
+	content: "clicca per aprire";
+	margin-left: 25px;
+}
+div.quote-container * {
+	display: none;
+}
+
 div.userPanelCaption {
 	text-align: center;
 	font-weight: bold;
