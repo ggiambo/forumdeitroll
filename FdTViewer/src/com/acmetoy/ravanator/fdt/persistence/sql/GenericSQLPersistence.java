@@ -917,7 +917,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public ConcurrentHashMap<String, String> setPreference(AuthorDTO user, String key, String value) {
-		if (!getPreferences(user).contains(key)) {
+		if (!getPreferences(user).keySet().contains(key)) {
 			insertPreference(user, key, value);
 		} else {
 			updatePreference(user, key, value);
