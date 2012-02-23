@@ -83,7 +83,7 @@ public class MessageTag extends BodyTagSupport {
 		p = -1;
 		multiLineQuoteStarted = false;
 		
-		collapseQuotes = loggedUser.getPreferences().get(User.PREF_COLLAPSE_QUOTES);
+		collapseQuotes = loggedUser != null ?loggedUser.getPreferences().get(User.PREF_COLLAPSE_QUOTES) : null;
 		
 		while (++p < body.length) {
 			char c = body[p];
