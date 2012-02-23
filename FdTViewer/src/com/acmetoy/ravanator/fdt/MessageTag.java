@@ -405,12 +405,15 @@ public class MessageTag extends BodyTagSupport {
 			*/
 		} else {
 			// un glande classico: l'embed
-			line.append("<object height='329' width='400'>");
-			line.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>");
-			line.append("<param value='transparent' name='wmode'>");
-			line.append("<embed height='329' width='400' wmode='transparent' ");
-			line.append("type='application/x-shockwave-flash' ");
-			line.append("src='http://www.youtube.com/v/").append(youcode).append("'></object>");
+			line.append("<iframe class='youtube-player' type='text/html' width='400' height='329' src='http://www.youtube.com/embed/");
+			line.append(youcode);
+			line.append("' frameborder='0'></iframe>");
+//			line.append("<object height='329' width='400'>");
+//			line.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>");
+//			line.append("<param value='transparent' name='wmode'>");
+//			line.append("<embed height='329' width='400' wmode='transparent' ");
+//			line.append("type='application/x-shockwave-flash' ");
+//			line.append("src='http://www.youtube.com/v/").append(youcode).append("'></object>");
 		}
 		p = yt_end + (YT_END.length - 1);
 	}
