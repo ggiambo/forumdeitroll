@@ -426,11 +426,11 @@ input.msgReplyObj {
 
 textarea.msgReplyTxt {
 	width: 98%;
-  	font-size: 12px;
+  	font-size: 14px;
   	border: 1px solid #7BAAE7;
   	padding: 5px;
 	margin-bottom: 5px;
-	font-family: "Courier New", "Courier", monospace;
+	font-family: monospace;
 }
 
 div.msgReplyTxt {
