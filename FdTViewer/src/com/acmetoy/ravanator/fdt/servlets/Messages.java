@@ -20,6 +20,7 @@ import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
+import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
@@ -133,7 +134,7 @@ public class Messages extends MainServlet {
 			return "messages.jsp";
 		}
 	};
-	
+
 	/**
 	 * Questo singolo messaggio
 	 * @param req
@@ -161,10 +162,16 @@ public class Messages extends MainServlet {
 	 */
 	protected GiamboAction search = new GiamboAction("search", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			String search = req.getParameter("search");
+			final String search = req.getParameter("search");
+			final String sort = req.getParameter("sort");
+
 			addSpecificParam(req, "search", search);
+			addSpecificParam(req, "sort", sort);
+
 			setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
-			req.setAttribute("messages", getPersistence().searchMessages(search, PAGE_SIZE, getPageNr(req)));
+
+			req.setAttribute("messages", getPersistence().searchMessages(search, IPersistence.SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req)));
+
 			return "messages.jsp";
 		}
 	};
@@ -240,7 +247,7 @@ public class Messages extends MainServlet {
 	};
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
-	
+
 	/**
 	 * Ritorna una stringa diversa da null da mostrare come messaggio d'errore all'utente
 	 * @param req

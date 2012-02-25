@@ -30,7 +30,8 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 	}
 
 	@Override
-	public List<MessageDTO> searchMessages(String search, int limit, int page) {
+	public List<MessageDTO> searchMessagesEx(String search, SearchMessagesSort sort, int limit, int page) {
+		// ATTENZIONE: Questo metodo non e` stato aggiornato
 		Connection conn = getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -41,7 +42,7 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 			ps.setString(1, search);
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*page);
-			return getMessages(ps.executeQuery());
+			return getMessages(ps.executeQuery(), false);
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages", e);
 		} finally {
@@ -49,7 +50,7 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public QuoteDTO getRandomQuote() {
 		Connection conn = getConnection();
@@ -70,5 +71,5 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 		}
 		return out;
 	}
-	
+
 }

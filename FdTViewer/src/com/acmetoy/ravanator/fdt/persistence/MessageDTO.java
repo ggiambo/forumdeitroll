@@ -7,6 +7,9 @@ public class MessageDTO extends ThreadDTO {
 	private long threadId = -1;
 	private String text = null;
 
+	private double searchRelevance = -1.0;
+	private int searchCount = -1;
+
 	public long getParentId() {
 		return parentId;
 	}
@@ -31,6 +34,22 @@ public class MessageDTO extends ThreadDTO {
 		this.text = text;
 	}
 
+	public double getSearchRelevance() {
+		return searchRelevance;
+	}
+
+	public int getSearchCount() {
+		return searchCount;
+	}
+
+	public void setSearchRelevance(final double searchRelevance) {
+		this.searchRelevance = searchRelevance;
+	}
+
+	public void setSearchCount(final int searchCount) {
+		this.searchCount = searchCount;
+	}
+
 	public boolean isValid() {
 		boolean valid = super.isValid();
 		valid &= parentId != -1;
@@ -38,7 +57,7 @@ public class MessageDTO extends ThreadDTO {
 		valid &= text != null;
 		return valid;
 	}
-	
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder(super.toString());
 		sb.append("parentId:").append(parentId).append(",");

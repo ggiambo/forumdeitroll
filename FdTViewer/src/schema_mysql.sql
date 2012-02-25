@@ -116,5 +116,8 @@ CREATE TABLE IF NOT EXISTS `preferences` (
 ALTER TABLE `messages` ADD INDEX ( `author` )
 ALTER TABLE `messages` ADD INDEX ( `forum` )
 
+--
+-- fulltext index su subject
+--
 
-
+CREATE FULLTEXT INDEX subject ON messages(subject);

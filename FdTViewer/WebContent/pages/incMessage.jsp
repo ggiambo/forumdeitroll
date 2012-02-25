@@ -39,7 +39,7 @@
 		<c:if test="${!empty msg.forum}">
 			<div class="msgForum">${msg.forum}</div>
 		</c:if>
-		<div class="msgDetails"> 
+		<div class="msgDetails">
 			<div class="msgWrittenby">Scritto da</div>
 			<div class="msgAuthor">
 				<c:choose>
@@ -66,7 +66,7 @@
 			<div class="msgAction">
 				<a href="Messages?action=editMessage&amp;msgId=${msg.id}&amp;forum=${msg.forum}">Modifica</a>
 			</div>
-		</c:if>	
+		</c:if>
 	</div>
 
 	<span style="width:100%; margin:5px;">
@@ -75,10 +75,16 @@
 		</b>
 	</span>
 
+	<c:if test="${msg.searchRelevance >= 0}">
+		<div class="searchInfo">
+			<tt><!-- Ciao wakko :-) -->Rilevanza: <fmt:formatNumber value="${msg.searchRelevance}" pattern="#0.00" />. Messaggi nel thread: ${msg.searchCount - 1}</tt>
+		</div>
+	</c:if>
+
 	<div style="padding: 10px;" class="message">
 		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
-	
+
 	<div id="buttons_${msg.id}" class="messagesButtonBar">
 		<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img alt="Rispondi" style="vertical-align: middle;" src="images/rispondi.gif" /></a>
 		<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img alt="Quota" style="vertical-align: middle;" src="images/quota.gif" /></a>

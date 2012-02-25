@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -109,7 +110,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
-			return new MessagesDTO(getMessages(ps.executeQuery()), messagesCount.get());
+			return new MessagesDTO(getMessages(ps.executeQuery(), false), messagesCount.get());
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
@@ -129,7 +130,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(1, author);
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*page);
-			return new MessagesDTO(getMessages(ps.executeQuery()), countMessagesByAuthor(author, conn));
+			return new MessagesDTO(getMessages(ps.executeQuery(), false), countMessagesByAuthor(author, conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
@@ -149,7 +150,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(1, forum);
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*page);
-			return new MessagesDTO(getMessages(ps.executeQuery()), countMessagesByForum(forum, conn));
+			return new MessagesDTO(getMessages(ps.executeQuery(), false), countMessagesByForum(forum, conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
@@ -347,7 +348,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = ?");
 			ps.setLong(1, id);
-			List<MessageDTO> res = getMessages(ps.executeQuery());
+			List<MessageDTO> res = getMessages(ps.executeQuery(), false);
 			if (res.size() == 1) {
 				return res.get(0);
 			}
@@ -453,7 +454,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM messages WHERE threadId = ? ORDER BY id ASC");
 			ps.setLong(1, threadId);
-			return getMessages(ps.executeQuery());
+			return getMessages(ps.executeQuery(), false);
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with threadId " + threadId, e);
 		} finally {
@@ -892,6 +893,17 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return r;
 	}
 
+	protected abstract List<MessageDTO> searchMessagesEx(String search, SearchMessagesSort sort, int pageSize, int pageNr);
+
+	public List<MessageDTO> searchMessages(String search, SearchMessagesSort sort, int pageSize, int pageNr) {
+		if (StringUtils.isEmpty(search)) {
+			final List<MessageDTO> r = Collections.emptyList();
+			return r;
+		} else {
+			return searchMessagesEx(search, sort, pageSize, pageNr);
+		}
+	}
+
 	/* TODO: abilitare quando search destinatari PVT implementato
 	public List<String> searchAuthor(String searchString) {
 		Connection conn = null;
@@ -1021,7 +1033,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return -1;
 	}
 
-	protected List<MessageDTO> getMessages(ResultSet rs) throws SQLException {
+	protected List<MessageDTO> getMessages(ResultSet rs, final boolean search) throws SQLException {
 		List<MessageDTO> messages = new ArrayList<MessageDTO>();
 		while (rs.next()) {
 			MessageDTO message = new MessageDTO();
@@ -1033,6 +1045,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			message.setAuthor(getAuthor(rs.getString("author")));
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
+
+			if (search) {
+				message.setSearchRelevance(rs.getDouble("relevance"));
+				message.setSearchCount(rs.getInt("count"));
+			}
+
 			messages.add(message);
 		}
 		return messages;
@@ -1070,7 +1088,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return -1;
 	}
-	
+
 	private int countMessagesByAuthor(String author, Connection conn) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1088,7 +1106,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return -1;
 	}
-	
+
 	protected int getNumberOfMessages(long threadId) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1132,5 +1150,5 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			// ignore
 		}
 	}
-	
+
 }

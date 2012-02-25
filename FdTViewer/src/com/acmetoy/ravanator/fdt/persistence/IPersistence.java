@@ -4,8 +4,39 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
+import java.util.HashMap;
 
 public interface IPersistence extends Serializable {
+	public static enum SearchMessagesSort {
+		RELEVANCE("relevance DESC"),
+		DATE_LEAST_RECENT("date ASC"),
+		DATE_MOST_RECENT("date DESC");
+
+		protected static Map<String, SearchMessagesSort> stringToSort = new HashMap<String, SearchMessagesSort>();
+
+		static {
+			stringToSort.put("rank", RELEVANCE);
+			stringToSort.put("relevance", RELEVANCE);
+			stringToSort.put("date", DATE_MOST_RECENT);
+			stringToSort.put("rdate", DATE_LEAST_RECENT);
+		}
+
+		public static synchronized SearchMessagesSort parse(final String sortString) {
+			final SearchMessagesSort r = stringToSort.get(sortString);
+			return (r != null) ? r : RELEVANCE;
+		}
+
+		protected final String orderByString;
+
+		SearchMessagesSort(final String orderByString) {
+			this.orderByString = orderByString;
+		}
+
+		public String orderBy() {
+			return orderByString;
+		}
+	}
 
 	public void init(Properties databaseConfig) throws Exception;
 
@@ -35,7 +66,7 @@ public interface IPersistence extends Serializable {
 
 	public boolean updateAuthorPassword(AuthorDTO author, String newPassword);
 
-	public List<MessageDTO> searchMessages(String search, int pageSize, int pageNr);
+		public List<MessageDTO> searchMessages(String search, SearchMessagesSort sort, int pageSize, int pageNr);
 
 	public AuthorDTO registerUser(String nick, String password);
 
