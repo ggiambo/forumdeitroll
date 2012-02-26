@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Map;
-import java.util.HashMap;
 
 public interface IPersistence extends Serializable {
 

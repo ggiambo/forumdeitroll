@@ -16,6 +16,8 @@ import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 
 public class MySQLPersistence extends GenericSQLPersistence {
 
+	private static final long serialVersionUID = 1L;
+	
 	private static final Logger LOG = Logger.getLogger(MySQLPersistence.class);
 
 	public void init(Properties databaseConfig) throws Exception {

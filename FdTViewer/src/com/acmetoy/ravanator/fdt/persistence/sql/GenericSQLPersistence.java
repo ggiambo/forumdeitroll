@@ -31,6 +31,8 @@ import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
 
 public abstract class GenericSQLPersistence implements IPersistence {
 
+	private static final long serialVersionUID = 1L;
+
 	private BasicDataSource dataSource;
 
 	private static final Logger LOG = Logger.getLogger(GenericSQLPersistence.class);

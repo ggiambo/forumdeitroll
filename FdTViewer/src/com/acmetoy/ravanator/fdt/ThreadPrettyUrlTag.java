@@ -7,6 +7,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.log4j.Logger;
 
 public class ThreadPrettyUrlTag extends TagSupport {
+	private static final long serialVersionUID = 1L;
 	private static Logger LOG = Logger.getLogger(ThreadPrettyUrlTag.class);
 	private String threadId;
 	private String subject;
