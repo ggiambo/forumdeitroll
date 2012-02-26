@@ -35,15 +35,14 @@ public class MySQLPersistence extends GenericSQLPersistence {
 		ResultSet rs = null;
 		List<MessageDTO> result = new ArrayList<MessageDTO>();
 		try {
-			//TODO: cambiare MATCH(text) in MATCH(subject, text) quando viene creato l'indice fulltext su subject
 			ps = conn.prepareStatement(
 				"SELECT messages.*, gq.relevance AS relevance, gq.count AS count "
 				+"FROM messages, "
 					+"(SELECT threadId, MIN(id) AS mid, SUM(relevance) AS relevance, COUNT(id) AS count "
 					+"FROM "
-						+"(SELECT threadId, id, MATCH(text) AGAINST(? IN NATURAL LANGUAGE MODE) AS relevance "
+						+"(SELECT threadId, id, MATCH(subject, text) AGAINST(? IN NATURAL LANGUAGE MODE) AS relevance "
 						+"FROM messages "
-						+"WHERE MATCH(text) AGAINST(? IN NATURAL LANGUAGE MODE) "
+						+"WHERE MATCH(subject, text) AGAINST(? IN NATURAL LANGUAGE MODE) "
 						+"HAVING relevance > 0.1 "
 						+"ORDER BY relevance DESC "
 						+"LIMIT 2048) AS mq "

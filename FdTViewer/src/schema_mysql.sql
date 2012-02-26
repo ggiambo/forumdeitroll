@@ -120,4 +120,4 @@ ALTER TABLE `messages` ADD INDEX ( `forum` )
 -- fulltext index su subject
 --
 
-CREATE FULLTEXT INDEX subject ON messages(subject);
+CREATE FULLTEXT INDEX search ON messages(subject, text);
