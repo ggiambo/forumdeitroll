@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
+import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 
 public class PostgreSQLPersistence extends GenericSQLPersistence {
 

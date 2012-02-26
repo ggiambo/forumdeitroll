@@ -20,7 +20,7 @@ import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
-import com.acmetoy.ravanator.fdt.persistence.IPersistence;
+import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
@@ -170,7 +170,7 @@ public class Messages extends MainServlet {
 
 			setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
 
-			req.setAttribute("messages", getPersistence().searchMessages(search, IPersistence.SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req)));
+			req.setAttribute("messages", getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req)));
 
 			return "messages.jsp";
 		}

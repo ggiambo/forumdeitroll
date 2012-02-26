@@ -6,9 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -25,6 +25,7 @@ import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
 import com.acmetoy.ravanator.fdt.persistence.PrivateMsgDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
+import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
 
