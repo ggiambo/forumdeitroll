@@ -390,14 +390,12 @@ public class MessageTag extends BodyTagSupport {
 		}
 		if (StringUtils.isEmpty(embeddYt)) {
 			long myYtCounter = 0l;
-			synchronized (ytCounter) {
-				if (ytCounter == Long.MAX_VALUE) {
-					ytCounter = 0l;
-				} else {
-					ytCounter++;
-				}
-				myYtCounter = ytCounter;
+			if (ytCounter == Long.MAX_VALUE) {
+				ytCounter = 0l;
+			} else {
+				ytCounter++;
 			}
+			myYtCounter = ytCounter;
 			line.append("<a href=\"http://www.youtube.com/watch?v=").append(youcode).append("\" ");
 			line.append("id=\"yt_").append(myYtCounter).append("\" ");
 			line.append("onmouseover='YTgetInfo_").append(myYtCounter).append("= YTgetInfo(\"");
