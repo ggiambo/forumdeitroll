@@ -42,7 +42,8 @@ public abstract class DatabaseMigration {
 			pers = (GenericSQLPersistence) PersistenceFactory.getInstance();
 			conn = pers.getConnection();
 			
-			rs = conn.prepareStatement("select count(id) from messages").executeQuery();
+			stmt = conn.prepareStatement("select count(id) from messages");
+			rs = stmt.executeQuery();
 			rs.next();
 			double messages = rs.getDouble(1);
 			LOG.info("Start database migration: " + messages + " messages");
