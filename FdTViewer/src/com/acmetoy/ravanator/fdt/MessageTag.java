@@ -271,7 +271,7 @@ public class MessageTag extends BodyTagSupport {
 			line.append("</span>");
 			if (!multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
 				multiLineQuoteStarted = true;
-				line.insert(0, "<div class='quote-container' onclick='$(this).removeClass(\"quote-container\")'>");
+				line.insert(0, "<div class='quote-container'>");
 			}
 		} else {
 			if (multiLineQuoteStarted && "checked".equals(collapseQuotes)) {

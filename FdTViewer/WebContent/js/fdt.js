@@ -231,3 +231,11 @@ var update_counter = function(messageId, limit) {
 
 	} catch (e) {alert(e.message);}
 };
+
+document.addEventListener('click', function(evt) {
+	if (/quote\-container/.test(evt.target.className)) {
+		evt.target.className = 'quote-closer';
+	} else if (/quote\-closer/.test(evt.target.className)) {
+		evt.target.className = 'quote-container';
+	}
+});
