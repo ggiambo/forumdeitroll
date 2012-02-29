@@ -907,7 +907,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 	}
 
-	/* TODO: abilitare quando search destinatari PVT implementato
 	public List<String> searchAuthor(String searchString) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -915,7 +914,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<String> res = new ArrayList<String>();
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick LIKE ?");
+			ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick LIKE ? AND hash IS NOT NULL");
 			ps.setString(1, searchString + "%");
 			rs = ps.executeQuery();
 			while (rs.next()) {
@@ -928,7 +927,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return res;
 	}
-	*/
 
 	@Override
 	public ConcurrentHashMap<String, String> setPreference(AuthorDTO user, String key, String value) {

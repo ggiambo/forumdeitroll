@@ -35,7 +35,7 @@ public interface IPersistence extends Serializable {
 
 	public boolean updateAuthorPassword(AuthorDTO author, String newPassword);
 
-		public List<MessageDTO> searchMessages(String search, SearchMessagesSort sort, int pageSize, int pageNr);
+	public List<MessageDTO> searchMessages(String search, SearchMessagesSort sort, int pageSize, int pageNr);
 
 	public AuthorDTO registerUser(String nick, String password);
 
@@ -70,5 +70,7 @@ public interface IPersistence extends Serializable {
 	public ConcurrentHashMap<String, String> setPreference(AuthorDTO user, String key, String value);
 
 	void pedonizeThread(long threadId);
+	
+	public List<String> searchAuthor(String searchString);
 
 }

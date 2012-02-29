@@ -177,6 +177,12 @@ jQuery("document").ready(function(){
 			);
 	SyntaxHighlighter.defaults['toolbar'] = false;
 	SyntaxHighlighter.all();
+	// esegui altre funzioni custom definite prima che jQuery sia caricato
+	try {
+		ON_READY_FUNCTION();
+	} catch (e) {
+		// vabbuo' (cit.)
+	}
 });
 
 // tasto 'j' per saltare al prossimo messaggio
@@ -197,12 +203,12 @@ $("body").live("keypress", function(e) {
 });
 
 var YTgetInfo = function(myYtCounter, youcode) {
-	var script = document.createElement('script')
-	script.type = 'text/javascript'
-	script.src = 'http://gdata.youtube.com/feeds/api/videos/' + youcode + '?v=2&alt=json-in-script&callback=YTgetInfo_' + myYtCounter
+	var script = document.createElement('script');
+	script.type = 'text/javascript';
+	script.src = 'http://gdata.youtube.com/feeds/api/videos/' + youcode + '?v=2&alt=json-in-script&callback=YTgetInfo_' + myYtCounter;
 	var youlink = document.getElementById('yt_'+myYtCounter);
-	youlink.onmouseover = null
-	document.body.appendChild(script)
+	youlink.onmouseover = null;
+	document.body.appendChild(script);
 	return function(ytResponse) {
 		var title = ytResponse.entry.title.$t;
 		youlink.appendChild(document.createTextNode(title));

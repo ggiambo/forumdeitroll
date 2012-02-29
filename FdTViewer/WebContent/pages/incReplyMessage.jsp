@@ -3,9 +3,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 
-
-<script>
-	$(document).ready(function() {
+<script type="text/javascript">
+	var ON_READY_FUNCTION = function() {
 		$("#reply_${message.parentId} :input[name='pass']").keydown(function(e) {
 			if (e.which == 13) {
 				send(${message.parentId});
@@ -17,10 +16,7 @@
 			}
 		});
 		jscolor.init()
-	});
-
-
-	
+	};
 </script>
 
 <c:set var="isReply" value="${!isEdit && message.parentId > 0}"/>
