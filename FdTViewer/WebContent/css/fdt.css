@@ -672,6 +672,14 @@ div.quote-container * {
 	display: none;
 }
 
+div.quote-closer {
+	background-color: transparent;
+	background-image: url(../images/minus_sign.gif);
+	background-repeat: no-repeat;
+	cursor: pointer;
+	padding-top: 11px;
+}
+
 div.userPanelCaption {
 	text-align: center;
 	font-weight: bold;
