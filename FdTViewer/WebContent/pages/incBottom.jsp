@@ -1,4 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
+
 <%@ page trimDirectiveWhitespaces="true" %>
 			<div style="clear: both;"></div>
 		</div> <!-- Chiusura div #bodyContent -->
@@ -17,5 +19,8 @@
 	<script src="js/sh/shCore.js" type="text/javascript"></script>
 	<script src="js/sh/shAutoloader.js" type="text/javascript"></script>
 	<script src="js/jscolor/jscolor.js" type="text/javascript"></script>
+	<fdt:delayedScript dump="true">
+		questo non verra' stampato, ma se lo togli la taglib non viene eseguita
+	</fdt:delayedScript>
 	</body>
 </html>

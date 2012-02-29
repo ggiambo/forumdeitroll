@@ -79,4 +79,17 @@
 	  		<rtexprvalue>true</rtexprvalue>
   		</attribute>
 	</tag>
+	
+	<tag>
+		<description>accumula scripts da renderizzare successivamente</description>
+		<name>delayedScript</name>
+		<tag-class>com.acmetoy.ravanator.fdt.DelayedScriptTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+	  		<name>dump</name>
+	  		<required>false</required>
+	  		<rtexprvalue>true</rtexprvalue>
+  		</attribute>
+	</tag>
+	
 </taglib>
