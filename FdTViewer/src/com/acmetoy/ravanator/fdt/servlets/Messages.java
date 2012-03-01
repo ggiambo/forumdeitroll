@@ -90,7 +90,8 @@ public class Messages extends MainServlet {
 	 */
 	protected GiamboAction getByPage = new GiamboAction("getByPage", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			MessagesDTO messages = getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req));
+			boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+			MessagesDTO messages = getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req), hideProcCatania);
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 			setWebsiteTitle(req, "Forum dei troll");

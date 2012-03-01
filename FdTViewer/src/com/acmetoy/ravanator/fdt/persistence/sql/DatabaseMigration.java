@@ -49,7 +49,7 @@ public abstract class DatabaseMigration {
 			LOG.info("Start database migration: " + messages + " messages");
 			
 			int i = 0;
-			List<MessageDTO> msgs = pers.getMessagesByDate(chunkSize, i).getMessages();
+			List<MessageDTO> msgs = pers.getMessagesByDate(chunkSize, i, false).getMessages();
 			stmt = conn.prepareStatement("update messages set text = ? where id = ?");
 			String newText;
 			while (msgs != null && msgs.size() > 0) {
@@ -71,7 +71,7 @@ public abstract class DatabaseMigration {
 					}
 				}
 				i++;
-				msgs = pers.getMessagesByDate(chunkSize, i).getMessages();
+				msgs = pers.getMessagesByDate(chunkSize, i, false).getMessages();
 				double percent = (i*chunkSize) / messages;
 				LOG.info("Migrating database: " + percentFormat.format(percent*100) + "% done");
 			}			

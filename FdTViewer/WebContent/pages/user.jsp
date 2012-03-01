@@ -1,3 +1,4 @@
+<%@page import="com.acmetoy.ravanator.fdt.servlets.User"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -69,28 +70,37 @@
 						<form action="User?action=updatePreferences" method="post">
 							<div>
 								<div class="inputUserPanel">
-									<input type="checkbox" name="showAnonImg" id="showAnonImg" ${loggedUser.preferences['showAnonImg']} />
+									<input type="checkbox" name="<%=User.PREF_SHOWANONIMG%>" id="<%=User.PREF_SHOWANONIMG%>" ${loggedUser.preferences['showAnonImg']} />
 								</div>
 								<div class="lblUserPanel">
-									<label for="showAnonImg" class="lbl">Immagini ANOnimo</label>
+									<label for="<%=User.PREF_SHOWANONIMG%>" class="lbl">Immagini ANOnimo</label>
 								</div>
 								<div style="clear: both;"></div>
 							</div>
 							<div>
 								<div class="inputUserPanel">
-									<input type="checkbox" name="embeddYt" id="embeddYt" ${loggedUser.preferences['embeddYt']} />
+									<input type="checkbox" name="<%=User.PREF_EMBEDDYT%>" id="<%=User.PREF_EMBEDDYT%>" ${loggedUser.preferences['embeddYt']} />
 								</div>
 								<div class="lblUserPanel">
-									<label for="embeddYt" class="lbl">Embedda youtube</label>
+									<label for="<%=User.PREF_EMBEDDYT%>" class="lbl">Embedda youtube</label>
 								</div>
 								<div style="clear: both;"></div>
 							</div>
 							<div>
 								<div class="inputUserPanel">
-									<input type="checkbox" name="collapseQuotes" id="collapseQuotes" ${loggedUser.preferences['collapseQuotes']} />
+									<input type="checkbox" name="<%=User.PREF_COLLAPSE_QUOTES%>" id="<%=User.PREF_COLLAPSE_QUOTES%>" ${loggedUser.preferences['collapseQuotes']} />
 								</div>
 								<div class="lblUserPanel">
-									<label for="collapseQuotes" class="lbl">Collassa quotes</label>
+									<label for="<%=User.PREF_COLLAPSE_QUOTES%>" class="lbl">Collassa quotes</label>
+								</div>
+								<div style="clear: both;"></div>
+							</div>
+							<div>
+								<div class="inputUserPanel">
+									<input type="checkbox" name="<%=User.PREF_HIDE_PROC_CATANIA%>" id="<%=User.PREF_HIDE_PROC_CATANIA%>" ${loggedUser.preferences['hideProcCatania']} />
+								</div>
+								<div class="lblUserPanel">
+									<label for="<%=User.PREF_HIDE_PROC_CATANIA%>" class="lbl">Nascondi Thread della Procura</label>
 								</div>
 								<div style="clear: both;"></div>
 							</div>

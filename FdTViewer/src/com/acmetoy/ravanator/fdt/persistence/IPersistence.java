@@ -13,15 +13,15 @@ public interface IPersistence extends Serializable {
 
 	public List<String> getForums();
 
-	public ThreadsDTO getThreads(int limit, int page);
+	public ThreadsDTO getThreads(int limit, int page, boolean hideProcCatania);
 
-	public ThreadsDTO getThreadsByLastPost(int limit, int page);
+	public ThreadsDTO getThreadsByLastPost(int limit, int page, boolean hideProcCatania);
 
-	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page);
+	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page, boolean hideProcCatania);
 
 	public MessageDTO getMessage(long id);
 
-	public MessagesDTO getMessagesByDate(int limit, int page);
+	public MessagesDTO getMessagesByDate(int limit, int page, boolean hideProcCatania);
 
 	public List<MessageDTO> getMessagesByThread(long threadId);
 

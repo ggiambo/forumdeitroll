@@ -104,13 +104,18 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	};
 
 	@Override
-	public MessagesDTO getMessagesByDate(int limit, int page) {
+	public MessagesDTO getMessagesByDate(int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT * FROM messages ORDER BY id DESC LIMIT ? OFFSET ?");
+			StringBuilder query = new StringBuilder("SELECT * FROM messages ");
+			if (hideProcCatania) {
+				query.append("WHERE (forum IS NULL OR forum != 'Proc di Catania') ");
+			}
+			query.append("ORDER BY id DESC LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement(query.toString());
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
 			return new MessagesDTO(getMessages(ps.executeQuery(), false), messagesCount.get());
@@ -163,13 +168,18 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public ThreadsDTO getThreads(int limit, int page) {
+	public ThreadsDTO getThreads(int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT * FROM messages WHERE id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
+			StringBuilder query = new StringBuilder("SELECT * FROM messages WHERE id = threadid ");
+			if (hideProcCatania) {
+				query.append("AND (forum IS NULL OR forum != 'Proc di Catania') ");
+			}
+			query.append("ORDER BY id DESC LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement(query.toString());
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
 			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount.get());
@@ -182,14 +192,19 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public ThreadsDTO getThreadsByLastPost(int limit, int page) {
+	public ThreadsDTO getThreadsByLastPost(int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT MAX(id) AS mid FROM messages GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
+			StringBuilder query = new StringBuilder("SELECT MAX(id) AS mid FROM messages ");
+			if (hideProcCatania) {
+				query.append("WHERE (forum IS NULL OR forum != 'Proc di Catania') ");
+			}
+			query.append("GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement(query.toString());
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
 			rs = ps.executeQuery();
@@ -206,25 +221,28 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page) {
+	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		final List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement(
-			"SELECT last_global.threadid " +
-			"FROM " +
-				"(SELECT threadid, max(id) AS mid FROM messages " +
-				"GROUP BY threadid ORDER BY mid DESC LIMIT 512) " +
-				"AS last_global, " +
-				"(SELECT threadid FROM messages " +
-				"WHERE author = ? " +
-				"GROUP BY threadid ORDER BY max(id) DESC LIMIT 512) " +
-				"AS last_author " +
-			"WHERE last_author.threadid = last_global.threadid " +
-			"ORDER BY last_global.mid DESC LIMIT ? OFFSET ?;");
+			StringBuilder query = new StringBuilder("SELECT last_global.threadid ");
+			query.append("FROM ");
+			query.append("(SELECT threadid, max(id) AS mid FROM messages ");
+			if (hideProcCatania) {
+				query.append("WHERE (forum IS NULL OR forum != 'Proc di Catania') ");
+			}
+			query.append("GROUP BY threadid ORDER BY mid DESC LIMIT 512) ");
+			query.append("AS last_global, ");
+			query.append("(SELECT threadid FROM messages ");
+			query.append("WHERE author = ? ");
+			query.append("GROUP BY threadid ORDER BY max(id) DESC LIMIT 512) ");
+			query.append("AS last_author ");
+			query.append("WHERE last_author.threadid = last_global.threadid ");
+			query.append("ORDER BY last_global.mid DESC LIMIT ? OFFSET ?;");
+			ps = conn.prepareStatement(query.toString());
 
 			int i = 1;
 			ps.setString(i++, author);

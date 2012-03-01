@@ -72,7 +72,8 @@ public class Threads extends MainServlet {
 	 */
 	protected GiamboAction getThreadsByLastPost = new GiamboAction("getThreadsByLastPost", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			ThreadsDTO messages = getPersistence().getThreadsByLastPost(PAGE_SIZE, getPageNr(req));
+			boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+			ThreadsDTO messages = getPersistence().getThreadsByLastPost(PAGE_SIZE, getPageNr(req), hideProcCatania);
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 			setWebsiteTitle(req, "Forum dei troll");
@@ -85,7 +86,8 @@ public class Threads extends MainServlet {
 		public String action(final HttpServletRequest req, final HttpServletResponse res) throws Exception {
 			String author = req.getParameter("author");
 			if (author == null) author = "";
-			req.setAttribute("messages", getPersistence().getAuthorThreadsByLastPost(author, PAGE_SIZE, getPageNr(req)));
+			boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+			req.setAttribute("messages", getPersistence().getAuthorThreadsByLastPost(author, PAGE_SIZE, getPageNr(req), hideProcCatania));
 			return "threadsByLastPost.jsp";
 		}
 	};
@@ -121,7 +123,8 @@ public class Threads extends MainServlet {
 	};
 
 	private String initWithMessage(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
-		ThreadsDTO messages = getPersistence().getThreads(PAGE_SIZE, getPageNr(req));
+		boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+		ThreadsDTO messages = getPersistence().getThreads(PAGE_SIZE, getPageNr(req), hideProcCatania);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 		setWebsiteTitle(req, "Forum dei troll");

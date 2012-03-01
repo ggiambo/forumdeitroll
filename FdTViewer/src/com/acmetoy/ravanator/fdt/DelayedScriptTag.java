@@ -8,6 +8,8 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 public class DelayedScriptTag extends BodyTagSupport {
 	
+	private static final long serialVersionUID = 1L;
+	
 	/*
 	 * come si usa
 	 * 
@@ -21,7 +23,6 @@ public class DelayedScriptTag extends BodyTagSupport {
 	 * - in incBottom.jsp:
 	 * <fdt:delayedScript dump="true">ignore</fdt:delayedScript>
 	 */
-	
 	
 	private String dump;
 	public String getDump() {
