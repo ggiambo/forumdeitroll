@@ -2,9 +2,10 @@
 <%@page import="com.acmetoy.ravanator.fdt.servlets.Messages"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
+<%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
-<script type="text/javascript">
-	var ON_READY_FUNCTION = function() {
+<fdt:delayedScript dump="false">
+	$(document).ready(function() {
 		$("#reply_${message.parentId} :input[name='pass']").keydown(function(e) {
 			if (e.which == 13) {
 				send(${message.parentId});
@@ -16,8 +17,8 @@
 			}
 		});
 		jscolor.init()
-	};
-</script>
+	});
+</fdt:delayedScript>
 
 <c:set var="isReply" value="${!isEdit && message.parentId > 0}"/>
 <c:set var="isNewThread" value="${!isEdit && message.id == -1 && message.parentId == -1}"/>

@@ -177,12 +177,6 @@ jQuery("document").ready(function(){
 			);
 	SyntaxHighlighter.defaults['toolbar'] = false;
 	SyntaxHighlighter.all();
-	// esegui altre funzioni custom definite prima che jQuery sia caricato
-	try {
-		ON_READY_FUNCTION();
-	} catch (e) {
-		// vabbuo' (cit.)
-	}
 });
 
 // tasto 'j' per saltare al prossimo messaggio

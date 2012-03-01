@@ -1,7 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
-<script type="text/javascript">
-	var ON_READY_FUNCTION = function() {
+<fdt:delayedScript dump="false">
+	$(document).ready(function() {
 		
 		// porcheria che mischia scriptlet con javascript, brrrr :S
 <c:forEach items="${recipients}" var="recipient">
@@ -71,8 +72,8 @@
 			 });
 	        return true;
 	    });
-	}
-</script>
+	});
+</fdt:delayedScript>
 
 
 <div class="userPanelSection">

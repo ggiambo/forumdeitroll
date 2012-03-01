@@ -6,72 +6,72 @@
 <jsp:include page="incTop.jsp"/>
 <div id="main">
 
-			<c:forEach items="${messages}" var="thread" varStatus="index">
+	<fdt:delayedScript dump="false">
+		var token = "${token}";
+	</fdt:delayedScript>
+
+	<c:forEach items="${messages}" var="thread" varStatus="index">
+		<c:choose>
+			<c:when test="${index.count % 2 == 0}">
+				<c:set var="class" value="msgEven"/>
+			</c:when>
+			<c:otherwise>
+				<c:set var="class" value="msgOdd"/>
+			</c:otherwise>
+		</c:choose>
+		<div id="threadTree_${thread.id}" class="${class} threadBox">
+			<span class="threadTitle"><fdt:threadprettyurl subject="${thread.subject}" threadId="${thread.id}" msgId="${thread.id}"/></span>
+			 (${thread.numberOfMessages}
+			<c:choose>
+				<c:when test="${thread.numberOfMessages > 1}">
+					messaggi)
+				</c:when>
+				<c:otherwise>
+					messaggio)
+				</c:otherwise>
+			</c:choose>
+			<c:if test="${!empty thread.forum}">
+				<span class="tagForum">${thread.forum}</span>
+			</c:if>
+			<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
+				<c:if test="${thread.forum != 'Proc di Catania'}">
+				<a class="pedonizeThread" href="javascript:pedonizeThread('${thread.subject}', '${thread.id}');">Pedonize !</a>
+				</c:if>
+			</c:if>
+			<div class="threadDetail">
 				<c:choose>
-					<c:when test="${index.count % 2 == 0}">
-						<c:set var="class" value="msgEven"/>
+					<c:when test="${thread.numberOfMessages > 1}">
+						<a id="plus_${thread.id}" href="javascript:openThreadTree('${thread.id}');"><img src="./images/plus_sign.gif" alt="Espandi Thread"></a>
+						<a style="display:none" id="minus_${thread.id}" href="javascript:closeThreadTree('${thread.id}');"><img src="./images/minus_sign.gif" alt="Chiudi Thread"></a>
 					</c:when>
 					<c:otherwise>
-						<c:set var="class" value="msgOdd"/>
+						-
 					</c:otherwise>
 				</c:choose>
-				<div id="threadTree_${thread.id}" class="${class} threadBox">
-					<span class="threadTitle"><fdt:threadprettyurl subject="${thread.subject}" threadId="${thread.id}" msgId="${thread.id}"/></span>
-					 (${thread.numberOfMessages}
+				Iniziato da
+				<span class="msgAuthor">
 					<c:choose>
-						<c:when test="${thread.numberOfMessages > 1}">
-							messaggi)
+						<c:when test="${empty thread.author.nick}">
+							Non Autenticato
 						</c:when>
 						<c:otherwise>
-							messaggio)
+							<c:url value="Messages" var="authorURL">
+								<c:param name="action" value="getByAuthor"/>
+								<c:param name="author" value="${thread.author.nick}"/>
+							</c:url>
+							<a href="<c:out value="${authorURL}" escapeXml="true" />">${thread.author.nick}</a>
 						</c:otherwise>
 					</c:choose>
-					<c:if test="${!empty thread.forum}">
-						<span class="tagForum">${thread.forum}</span>
-					</c:if>
-					<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
-						<c:if test="${thread.forum != 'Proc di Catania'}">
-						<a class="pedonizeThread" href="javascript:pedonizeThread('${thread.subject}', '${thread.id}');">Pedonize !</a>
-						</c:if>
-					</c:if>
-					<div class="threadDetail">
-						<c:choose>
-							<c:when test="${thread.numberOfMessages > 1}">
-								<a id="plus_${thread.id}" href="javascript:openThreadTree('${thread.id}');"><img src="./images/plus_sign.gif" alt="Espandi Thread"></a>
-								<a style="display:none" id="minus_${thread.id}" href="javascript:closeThreadTree('${thread.id}');"><img src="./images/minus_sign.gif" alt="Chiudi Thread"></a>
-							</c:when>
-							<c:otherwise>
-								-
-							</c:otherwise>
-						</c:choose>
-						Iniziato da
-						<span class="msgAuthor">
-							<c:choose>
-								<c:when test="${empty thread.author.nick}">
-									Non Autenticato
-								</c:when>
-								<c:otherwise>
-									<c:url value="Messages" var="authorURL">
-										<c:param name="action" value="getByAuthor"/>
-										<c:param name="author" value="${thread.author.nick}"/>
-									</c:url>
-									<a href="<c:out value="${authorURL}" escapeXml="true" />">${thread.author.nick}</a>
-								</c:otherwise>
-							</c:choose>
-						</span>
-						il <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${thread.date}" pattern="HH:mm"/>
-					</div>
-					<div class="threadTreeEntries"></div>
-				</div>
-			</c:forEach>
-
+				</span>
+				il <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${thread.date}" pattern="HH:mm"/>
+			</div>
+			<div class="threadTreeEntries"></div>
 		</div>
+	</c:forEach>
 
-		<div id="footer">
-			<jsp:include page="incPrevNext.jsp" />
-		</div>
+</div>
 
-		<script>
-			var token = "${token}";
-		</script>
+<div id="footer">
+	<jsp:include page="incPrevNext.jsp" />
+</div>
 <jsp:include page="incBottom.jsp" />
