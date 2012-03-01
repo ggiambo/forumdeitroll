@@ -74,27 +74,19 @@
 	
 	<input type="hidden" name="forum" value="${message.forum }"/>
 	<input type="hidden" name="id" value="${message.id }"/>
-	<c:choose>
-		<%--Mostra username password captcha solo se non autenticato --%>
-		<c:when test="${empty loggedUser}">
-			<div class="msgAnonBox">
-				<div class='counter-container'>
-					<input type='text' id='counter_${message.id}' disabled="disabled" value='${MAX_MESSAGE_LENGTH - fn:length(message.text)}'/>
-				</div>
-				<label for="nick">Nome:&nbsp;</label><input tabindex="2" name="nick" id="nick" size="10"/>&nbsp;&nbsp;<label for="password">Password:&nbsp;</label><input tabindex="3" type="password" id="password" name="pass" size="10"/>
-				<div class="msgCaptcha">
-					<div><img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" /></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">Copia qui il testo dell'immagine</div></div>
-					<div style="clear: both;"></div>
-				</div>
-			</div>
-			<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />
-		</c:when>
-		<c:otherwise>
-			<div style="margin: 3px">
-				<input type='text' id='counter_${message.id}' class='counter' disabled="disabled" value='0'/>
-				<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />&nbsp;
-			</div>
-		</c:otherwise>
-	</c:choose>
+	<div class="msgAnonBox">
+		<div class='counter-container'>
+			<input type='text' id='counter_${message.id}' disabled="disabled" value='${MAX_MESSAGE_LENGTH - fn:length(message.text)}'/>
+		</div>
+		<label for="nick">Nome:&nbsp;</label>
+		<input tabindex="2" name="nick" id="nick" size="10" value="${loggedUser.nick }"/>&nbsp;&nbsp;
+		<label for="password">Password:&nbsp;</label>
+		<input tabindex="3" type="password" id="password" name="pass" size="10"/>
+		<div class="msgCaptcha">
+			<div><img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" /></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">Copia qui il testo dell'immagine</div></div>
+			<div style="clear: both;"></div>
+		</div>
+	</div>
+	<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />
 	<div style="clear: both;"></div>
 </div>

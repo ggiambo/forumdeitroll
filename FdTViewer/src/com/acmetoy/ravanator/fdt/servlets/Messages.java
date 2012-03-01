@@ -406,23 +406,40 @@ public class Messages extends MainServlet {
 			writer.close();
 			return null;
 		}
-
-		final AuthorDTO author = login(req);
-		if (!author.isValid()) {
+		
+		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+		AuthorDTO author = null;
+		String nick = req.getParameter("nick");
+		String pass = req.getParameter("pass");
+		if (loggedUser != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
+			// posta come utente loggato
+			author = loggedUser;
+		} else if (StringUtils.isNotEmpty(nick) && StringUtils.isNotEmpty(pass)) {
+			AuthorDTO sockpuppet = getPersistence().getAuthor(nick);
+			if (sockpuppet.passwordIs(pass)) {
+				// posta come altro utente
+				author = sockpuppet;
+			}
+		} else {
 			// la coppia nome utente/password non e` stata inserita e l'utente non e` loggato, ergo deve inserire il captcha giusto
 			String captcha = req.getParameter("captcha");
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
-			if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
-				//autenticazione fallita
-				JsonWriter writer = new JsonWriter(res.getWriter());
-				writer.beginObject();
-				writer.name("resultCode").value("MSG");
-				writer.name("content").value("Autenticazione / verifica captcha fallita");
-				writer.endObject();
-				writer.flush();
-				writer.close();
-				return null;
+			if (StringUtils.isNotEmpty(correctAnswer) && correctAnswer.equals(captcha)) {
+				// posta da anonimo
+				author = new AuthorDTO();
 			}
+		}
+		
+		if (author == null) {
+			//autenticazione fallita
+			JsonWriter writer = new JsonWriter(res.getWriter());
+			writer.beginObject();
+			writer.name("resultCode").value("MSG");
+			writer.name("content").value("Autenticazione / verifica captcha fallita");
+			writer.endObject();
+			writer.flush();
+			writer.close();
+			return null;
 		}
 
 		req.getSession().removeAttribute("captcha");
