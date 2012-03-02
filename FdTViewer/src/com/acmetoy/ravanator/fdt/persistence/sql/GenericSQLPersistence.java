@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -1144,6 +1145,61 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 		return 0;
+	}
+	
+	@Override
+	public void pedonizeThreadTree(long rootMessageId) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuilder sql = new StringBuilder();
+		try {
+			conn = getConnection();
+			sql.append("SELECT id FROM messages WHERE parentId = ?");
+			ps = conn.prepareStatement(sql.toString());
+			Stack<Long> parents = new Stack<Long>();
+			ArrayList<Long> messages = new ArrayList<Long>();
+			parents.push(rootMessageId);
+			Long currentId = rootMessageId;
+			while (!parents.isEmpty()) {
+				currentId = parents.pop();
+				messages.add(currentId);
+				LOG.debug(sql.toString()+currentId);
+				ps.setLong(1, currentId);
+				rs = ps.executeQuery();
+				while (rs.next()) {
+					if (rs.getLong(1) != currentId.longValue()) {
+						parents.push(rs.getLong(1));
+					}
+				}
+				rs.close();
+			}
+			// setta a tutti i messaggi il threadId = rootMessageId
+			ps.close();
+			sql.setLength(0);
+			sql.append("UPDATE messages SET threadId = ? , forum = 'Proc di Catania' WHERE id IN (");
+			// sono long, non temo injection io
+			for (Long id : messages) {
+				sql.append(id).append(',');
+			}
+			sql.deleteCharAt(sql.length() - 1);
+			sql.append(')');
+			LOG.debug(sql);
+			ps = conn.prepareStatement(sql.toString());
+			ps.setLong(1, rootMessageId);
+			int res = ps.executeUpdate();
+			if (res != messages.size()) throw new SQLException("AGGIORNATI "+res+" recordz! ids: "+messages);
+			ps.close();
+			sql.setLength(0);
+			sql.append("UPDATE messages SET parentId = -1 WHERE id = ").append(messages.get(0).toString());
+			LOG.debug(sql);
+			ps = conn.prepareStatement(sql.toString());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			LOG.error("Pedonize failed!", e);
+		} finally {
+			close(rs, ps, conn);
+		}
 	}
 
 	protected final void close(ResultSet rs, Statement stmt, Connection conn) {

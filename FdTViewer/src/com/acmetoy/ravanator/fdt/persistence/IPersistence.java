@@ -72,5 +72,7 @@ public interface IPersistence extends Serializable {
 	void pedonizeThread(long threadId);
 	
 	public List<String> searchAuthor(String searchString);
+	
+	public void pedonizeThreadTree(long rootMessageId);
 
 }

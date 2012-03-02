@@ -561,5 +561,20 @@ public class Messages extends MainServlet {
 		}
 		specificParams.put(key, value);
 	}
-
+	protected GiamboAction pedonizeThreadTree = new GiamboAction("pedonizeThreadTree", ONPOST) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+			if (loggedUser == null) {
+				throw new Exception("Non furmigare");
+			}
+			boolean isAdmin = "yes".equals(getPersistence().getPreferences(loggedUser).get("pedonizeThread"));
+			if (! isAdmin) {
+				throw new Exception("Non furmigare "+loggedUser.getNick()+" !!!");
+			}
+			getPersistence().pedonizeThreadTree(Long.parseLong(req.getParameter("rootMessageId")));
+			setNavigationMessage(req, NavigationMessage.info("Pedonization completed."));
+			res.sendRedirect("Threads");
+			return null;
+		}
+	};
 }
