@@ -239,3 +239,11 @@ document.addEventListener('click', function(evt) {
 		evt.target.className = 'quote-container';
 	}
 });
+
+var getRandomQuote = function() {
+	jQuery.ajax("Messages?action=getRandomQuote", {
+		success : function(data, textStatus, jqXHR) {
+			$('#quoteForum').html(data)
+		}
+	});
+}

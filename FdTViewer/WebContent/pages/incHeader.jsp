@@ -9,7 +9,7 @@
 		</a>
 	</h1>
 	<c:if test="${not empty randomQuote }">
-		<p id="quoteForum" title="${randomQuote.nick}">
+		<p id="quoteForum" title="${randomQuote.nick}" onclick="getRandomQuote()">
 			${randomQuote.content}
 		</p>
 	</c:if>
