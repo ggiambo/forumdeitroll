@@ -90,3 +90,7 @@
 	<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />
 	<div style="clear: both;"></div>
 </div>
+<fdt:delayedScript dump="true">
+questa jsp non è inclusa in altre jsp, quindi gli script delayed
+vanno piazzati qua
+</fdt:delayedScript>
