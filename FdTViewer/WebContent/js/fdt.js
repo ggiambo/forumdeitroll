@@ -243,7 +243,8 @@ document.addEventListener('click', function(evt) {
 var getRandomQuote = function() {
 	jQuery.ajax("Messages?action=getRandomQuote", {
 		success : function(data, textStatus, jqXHR) {
-			document.getElementById('quoteForum').innerHTML = data;
+			document.getElementById('quoteForum').innerHTML = data.split(/\n/)[0];
+			document.getElementById('quoteForum').title = data.split(/\n/)[1];
 		}
 	});
 }

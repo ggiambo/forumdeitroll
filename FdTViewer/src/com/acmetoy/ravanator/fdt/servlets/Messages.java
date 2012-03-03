@@ -20,6 +20,7 @@ import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
+import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.google.gson.stream.JsonWriter;
 
@@ -583,7 +584,8 @@ public class Messages extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			// già escapato da getRandomQuote di MainServlet
 			res.setContentType("text/plain");
-			res.getWriter().write(getRandomQuote(req, res).getContent());
+			QuoteDTO quote = getRandomQuote(req, res);
+			res.getWriter().write(quote.getContent()+'\n'+quote.getNick());
 			return null;
 		}
 	};
