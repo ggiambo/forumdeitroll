@@ -582,6 +582,7 @@ public class Messages extends MainServlet {
 		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			// già escapato da getRandomQuote di MainServlet
+			res.setContentType("text/plain");
 			res.getWriter().write(getRandomQuote(req, res).getContent());
 			return null;
 		}
