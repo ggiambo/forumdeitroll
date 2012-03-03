@@ -69,14 +69,25 @@ public class Threads extends MainServlet {
 
 	/**
 	 * Ordinati per thread / ultimo post
+	 * Se il parametro forum non e` presente ritorna thread da tutti i forum, se il parametro forum e` la stringa vuota restituisce i thread del forum principale, altrimenti restituisce i thread del forum specificato
 	 */
 	protected GiamboAction getThreadsByLastPost = new GiamboAction("getThreadsByLastPost", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
-			ThreadsDTO messages = getPersistence().getThreadsByLastPost(PAGE_SIZE, getPageNr(req), hideProcCatania);
+			String forum = req.getParameter("forum");
+			ThreadsDTO messages;
+			if (forum == null) {
+				messages = getPersistence().getThreadsByLastPost(PAGE_SIZE, getPageNr(req), hideProcCatania);
+				setWebsiteTitle(req, "Forum dei troll");
+			} else {
+				messages = getPersistence().getForumThreadsByLastPost(forum, PAGE_SIZE, getPageNr(req));
+				setWebsiteTitle(req, forum.equals("") ?
+					"Forum principale @ Forum dei troll"
+					: (forum + " @ Forum dei troll"));
+			}
+			
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
-			setWebsiteTitle(req, "Forum dei troll");
 			setNavigationMessage(req, NavigationMessage.info("Ordinati per ultimo post"));
 			return "threadsByLastPost.jsp";
 		}
@@ -122,12 +133,27 @@ public class Threads extends MainServlet {
 		}
 	};
 
+	/*
+	Se il parametro forum non e` presente restituisce i thread di tutti i forum, se e` presente ma contiene la stringa vuota restituisce i thread del forum principale, altrimenti restituisce i thread del forum specificato
+	*/
 	private String initWithMessage(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
 		boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
-		ThreadsDTO messages = getPersistence().getThreads(PAGE_SIZE, getPageNr(req), hideProcCatania);
+
+		String forum = req.getParameter("forum");
+		ThreadsDTO messages;
+
+		if (forum == null) {
+			messages = getPersistence().getThreads(PAGE_SIZE, getPageNr(req), hideProcCatania);
+			setWebsiteTitle(req, "Forum dei troll");
+		} else {
+			messages = getPersistence().getThreadsByForum(forum, PAGE_SIZE, getPageNr(req));
+			setWebsiteTitle(req, forum.equals("") ?
+				"Forum principale @ Forum dei troll"
+				: (forum + " @ Forum dei troll"));
+		}
+
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
-		setWebsiteTitle(req, "Forum dei troll");
 		setNavigationMessage(req, message);
 
 		final AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);

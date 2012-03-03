@@ -155,10 +155,15 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY id DESC LIMIT ? OFFSET ?");
-			ps.setString(1, forum);
-			ps.setInt(2, limit);
-			ps.setInt(3, limit*page);
+			int i = 1;
+			if (forum.equals("")) {
+				ps = conn.prepareStatement("SELECT * FROM messages WHERE forum IS NULL ORDER BY id DESC LIMIT ? OFFSET ?");
+			} else {
+				ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY id DESC LIMIT ? OFFSET ?");
+				ps.setString(i++, forum);
+			}
+			ps.setInt(i++, limit);
+			ps.setInt(i++, limit*page);
 			return new MessagesDTO(getMessages(ps.executeQuery(), false), countMessagesByForum(forum, conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
@@ -193,6 +198,31 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
+	public ThreadsDTO getThreadsByForum(String forum, int limit, int page) {
+			Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			int i = 1;
+			if (forum.equals("")) {
+				ps = conn.prepareStatement("SELECT * FROM messages WHERE forum IS NULL AND id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
+			} else {
+				ps = conn.prepareStatement("SELECT * FORM messages WHERE forum = ? AND id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
+				ps.setString(i++, forum);
+			}
+			ps.setInt(i++, limit);
+			ps.setInt(i++, limit*page);
+			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount.get());
+		} catch (SQLException e) {
+			LOG.error("Cannot get threads", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return new ThreadsDTO();
+	}
+
+	@Override
 	public ThreadsDTO getThreadsByLastPost(int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -208,6 +238,35 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement(query.toString());
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				result.add(getMessage(rs.getLong(1)));
+			}
+			return new ThreadsDTO(result, threadsCount.get());
+		} catch (SQLException e) {
+			LOG.error("Cannot get threads by last post", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return new ThreadsDTO();
+	}
+
+	public ThreadsDTO getForumThreadsByLastPost(String forum, int limit, int page) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
+		try {
+			conn = getConnection();
+			int i = 1;
+			if (forum.equals("")) {
+				ps = conn.prepareStatement("SELECT MAX(id) AS mid FROM messages WHERE forum IS NULL GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
+			} else {
+				ps = conn.prepareStatement("SELECT MAX(id) AS mid FROM messages WHERE forum = ? GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
+				ps.setString(i++, forum);
+			}
+			ps.setInt(i++, limit);
+			ps.setInt(i++, limit*page);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				result.add(getMessage(rs.getLong(1)));

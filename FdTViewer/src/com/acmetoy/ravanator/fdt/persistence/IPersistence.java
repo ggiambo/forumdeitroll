@@ -15,7 +15,11 @@ public interface IPersistence extends Serializable {
 
 	public ThreadsDTO getThreads(int limit, int page, boolean hideProcCatania);
 
+	public ThreadsDTO getThreadsByForum(String forum, int limit, int page);
+
 	public ThreadsDTO getThreadsByLastPost(int limit, int page, boolean hideProcCatania);
+
+	public ThreadsDTO getForumThreadsByLastPost(String forum, int limit, int page);
 
 	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page, boolean hideProcCatania);
 
@@ -27,6 +31,9 @@ public interface IPersistence extends Serializable {
 
 	public MessagesDTO getMessagesByAuthor(String author, int pageSize, int page);
 
+	/*
+	Se forum e` la string vuota restituisce i messaggi che hanno il campo forum NULL
+	*/
 	public MessagesDTO getMessagesByForum(String forum, int pageSize, int page);
 
 	public AuthorDTO getAuthor(String nick);
@@ -70,9 +77,9 @@ public interface IPersistence extends Serializable {
 	public ConcurrentHashMap<String, String> setPreference(AuthorDTO user, String key, String value);
 
 	void pedonizeThread(long threadId);
-	
+
 	public List<String> searchAuthor(String searchString);
-	
+
 	public void pedonizeThreadTree(long rootMessageId);
 
 }

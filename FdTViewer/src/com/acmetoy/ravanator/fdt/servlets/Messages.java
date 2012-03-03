@@ -122,12 +122,19 @@ public class Messages extends MainServlet {
 
 	/**
 	 * I messaggi di questo forum in ordine di data
+	 * Se il parametro forum e` la stringa vuota restituisce i soli messaggi del forum principale (NULL)
 	 */
 	protected GiamboAction getByForum = new GiamboAction("getByForum", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String forum = req.getParameter("forum");
+			if (StringUtils.isEmpty(forum)) {
+				setWebsiteTitle(req, "Forum Principale @ Forum dei Troll");
+				forum = "";
+			} else {
+				setWebsiteTitle(req, forum + " @ Forum dei Troll");
+			}
+			
 			addSpecificParam(req, "forum", forum);
-			setWebsiteTitle(req, forum + " @ Forum dei Troll");
 			setNavigationMessage(req, NavigationMessage.info("Forum <i>" + forum + "</i>"));
 			MessagesDTO messages = getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req));
 			req.setAttribute("messages", messages.getMessages());
