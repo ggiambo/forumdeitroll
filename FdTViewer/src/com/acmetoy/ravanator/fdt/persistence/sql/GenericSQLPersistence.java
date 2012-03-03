@@ -1155,6 +1155,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		StringBuilder sql = new StringBuilder();
 		try {
 			conn = getConnection();
+			conn.setAutoCommit(false);
 			sql.append("SELECT id FROM messages WHERE parentId = ?");
 			ps = conn.prepareStatement(sql.toString());
 			Stack<Long> parents = new Stack<Long>();
@@ -1195,6 +1196,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			LOG.debug(sql);
 			ps = conn.prepareStatement(sql.toString());
 			ps.executeUpdate();
+			conn.commit();
 		} catch (SQLException e) {
 			LOG.error("Pedonize failed!", e);
 		} finally {
@@ -1213,6 +1215,13 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		try {
 			if (stmt != null) {
 				stmt.close();
+			}
+		} catch (Exception ex) {
+			// ignore
+		}
+		try {
+			if (conn != null && !conn.getAutoCommit()) {
+				conn.rollback();
 			}
 		} catch (Exception ex) {
 			// ignore
