@@ -215,6 +215,12 @@ function pedonizeThread(threadTitle, threadId) {
 	}
 }
 
+function pedonizeThreadTree(msgId) {
+	if (confirm("Spostare il messaggio e relativa ramificazione in procura ?")) {
+		window.location.assign("Messages?action=pedonizeThreadTree&rootMessageId=" + msgId);
+	}
+}
+
 // n.b. non furmigate, il controllo della lunghezza c'è anche lato server
 var update_counter = function(messageId, limit) {
 	try {
@@ -247,4 +253,4 @@ var getRandomQuote = function() {
 			document.getElementById('quoteForum').title = data.split(/\n/)[1];
 		}
 	});
-}
+};

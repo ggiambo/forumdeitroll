@@ -87,11 +87,9 @@
 
 	<div id="buttons_${msg.id}" class="messagesButtonBar">
 		<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
-			<form action="Messages" style="display:inline" method="POST">
-				<input type="hidden" name="rootMessageId" value="${msg.id}">
-				<input type="hidden" name="action" value="pedonizeThreadTree">
-				<a class="pedonizeThread" href='#' onclick="javascript:if (confirm('Spostare il messaggio e relativa ramificazione in procura?')) this.parentNode.submit()">Pedonize!</a>
-			</form>
+			<c:if test="${msg.forum != 'Proc di Catania'}">
+				<a href="#" onClick="pedonizeThreadTree('${msg.id}');return false;"><img alt="Pedonize!" style="vertical-align: middle;" src="images/pedonize.png" /></a>
+			</c:if>
 		</c:if>
 		<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img alt="Rispondi" style="vertical-align: middle;" src="images/rispondi.gif" /></a>
 		<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img alt="Quota" style="vertical-align: middle;" src="images/quota.gif" /></a>

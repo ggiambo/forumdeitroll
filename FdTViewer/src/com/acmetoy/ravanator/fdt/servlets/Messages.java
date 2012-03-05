@@ -562,7 +562,9 @@ public class Messages extends MainServlet {
 		}
 		specificParams.put(key, value);
 	}
-	protected GiamboAction pedonizeThreadTree = new GiamboAction("pedonizeThreadTree", ONPOST) {
+	
+	protected GiamboAction pedonizeThreadTree = new GiamboAction("pedonizeThreadTree", ONGET) {
+		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
 			if (loggedUser == null) {
