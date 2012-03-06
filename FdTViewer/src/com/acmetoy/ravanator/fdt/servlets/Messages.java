@@ -75,6 +75,8 @@ public class Messages extends MainServlet {
 		EMO_MAP.put("troll", new String[] {"(troll)", "Troll"});
 	}
 
+	public static final int MAX_MESSAGE_LENGTH = 40000;
+
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			setWebsiteTitle(req, "Forum dei troll");
@@ -218,8 +220,8 @@ public class Messages extends MainServlet {
 			long parentId = Long.parseLong(req.getParameter("parentId"));
 			req.setAttribute("parentId", parentId);
 			MessageDTO newMsg = new MessageDTO();
+			MessageDTO msgDTO = getPersistence().getMessage(parentId);
 			if ("quote".equals(type)) {
-				MessageDTO msgDTO = getPersistence().getMessage(parentId);
 				String text = msgDTO.getText().trim();
 
 				// quote
@@ -236,12 +238,12 @@ public class Messages extends MainServlet {
 					m = PATTERN_QUOTE.matcher(text);
 				}
 
-			String author = msgDTO.getAuthor().getNick();
+				String author = msgDTO.getAuthor().getNick();
 				text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n> " + text + "\r\n";
 				newMsg.setText(text);
-				newMsg.setForum(msgDTO.getForum());
-				newMsg.setSubject(msgDTO.getSubject());
 			}
+			newMsg.setForum(msgDTO.getForum());
+			newMsg.setSubject("Re: " + msgDTO.getSubject());
 			newMsg.setParentId(parentId);
 			req.setAttribute("message", newMsg);
 
@@ -254,8 +256,6 @@ public class Messages extends MainServlet {
 			return "incReplyMessage.jsp";
 		}
 	};
-
-	public static final int MAX_MESSAGE_LENGTH = 40000;
 
 	/**
 	 * Ritorna una stringa diversa da null da mostrare come messaggio d'errore all'utente
@@ -279,21 +279,17 @@ public class Messages extends MainServlet {
 		}
 
 		// subject almeno di 5 caratteri, cribbio !
-		long parentId;
 		try {
-			parentId = Long.parseLong(req.getParameter("parentId"));
+			Long.parseLong(req.getParameter("parentId"));
 		} catch (NumberFormatException e) {
 			return "Il valore " + req.getParameter("parentId") + " assomiglia poco a un numero ...";
 		}
-		if (parentId == -1) {
-			// nuovo messaggio
-			String subject = req.getParameter("subject");
-			if (StringUtils.isEmpty(subject) || subject.trim().length() < 3) {
-				return "Oggetto di almeno di 3 caratteri, cribbio !";
-			}
-			if (subject.length() > 40) {
-				return "LOL oggetto piu' lungo di 40 caratteri !";
-			}
+		String subject = req.getParameter("subject");
+		if (StringUtils.isEmpty(subject) || subject.trim().length() < 3) {
+			return "Oggetto di almeno di 3 caratteri, cribbio !";
+		}
+		if (subject.length() > 40) {
+			return "LOL oggetto pi&ugrave; lungo di 40 caratteri !";
 		}
 
 		// qualcuno prova a creare un forum ;) ?
@@ -484,6 +480,7 @@ public class Messages extends MainServlet {
 		msg.setParentId(parentId);
 		msg.setDate(new Date());
 		msg.setText(text);
+		msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 		if (parentId > 0) {
 			long id = Long.parseLong(req.getParameter("id"));
 			if (id > -1) {
@@ -499,18 +496,12 @@ public class Messages extends MainServlet {
 					writer.close();
 					return null;
 				}
-				msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
 				msg.setText(text);
 			} else {
 				// reply
 				MessageDTO replyMsg = getPersistence().getMessage(parentId);
 				msg.setForum(replyMsg.getForum());
-				if (replyMsg.getId() == replyMsg.getParentId()) {
-					msg.setSubject("Re: " + replyMsg.getSubject());
-				} else {
-					msg.setSubject(replyMsg.getSubject());
-				}
 				msg.setThreadId(replyMsg.getThreadId());
 				// incrementa il numero di messaggi scritti
 				if (author.isValid()) {
@@ -527,7 +518,6 @@ public class Messages extends MainServlet {
 				forum = forum.replaceAll(">", "&gt;").replaceAll("<", "&lt;");
 			}
 			msg.setForum(forum);
-			msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 			msg.setThreadId(-1);
 			// incrementa il numero di messaggi scritti
 			if (author.isValid()) {
