@@ -20,6 +20,7 @@ import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
+import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.google.gson.stream.JsonWriter;
 
@@ -568,7 +569,9 @@ public class Messages extends MainServlet {
 		}
 		specificParams.put(key, value);
 	}
-	protected GiamboAction pedonizeThreadTree = new GiamboAction("pedonizeThreadTree", ONPOST) {
+	
+	protected GiamboAction pedonizeThreadTree = new GiamboAction("pedonizeThreadTree", ONGET) {
+		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
 			if (loggedUser == null) {
@@ -581,6 +584,17 @@ public class Messages extends MainServlet {
 			getPersistence().pedonizeThreadTree(Long.parseLong(req.getParameter("rootMessageId")));
 			setNavigationMessage(req, NavigationMessage.info("Pedonization completed."));
 			res.sendRedirect("Threads");
+			return null;
+		}
+	};
+
+	protected GiamboAction getRandomQuote = new GiamboAction("getRandomQuote", ONPOST) {
+		@Override
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			// già escapato da getRandomQuote di MainServlet
+			res.setContentType("text/plain");
+			QuoteDTO quote = getRandomQuote(req, res);
+			res.getWriter().write(quote.getContent()+'\n'+quote.getNick());
 			return null;
 		}
 	};

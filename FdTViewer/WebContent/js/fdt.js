@@ -215,6 +215,12 @@ function pedonizeThread(threadTitle, threadId) {
 	}
 }
 
+function pedonizeThreadTree(msgId) {
+	if (confirm("Spostare il messaggio e relativa ramificazione in procura ?")) {
+		window.location.assign("Messages?action=pedonizeThreadTree&rootMessageId=" + msgId);
+	}
+}
+
 // n.b. non furmigate, il controllo della lunghezza c'è anche lato server
 var update_counter = function(messageId, limit) {
 	try {
@@ -239,3 +245,12 @@ document.addEventListener('click', function(evt) {
 		evt.target.className = 'quote-container';
 	}
 });
+
+var getRandomQuote = function() {
+	jQuery.ajax("Messages?action=getRandomQuote", {
+		success : function(data, textStatus, jqXHR) {
+			document.getElementById('quoteForum').innerHTML = data.split(/\n/)[0];
+			document.getElementById('quoteForum').title = data.split(/\n/)[1];
+		}
+	});
+};
