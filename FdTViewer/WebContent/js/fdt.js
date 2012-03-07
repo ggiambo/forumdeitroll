@@ -209,15 +209,9 @@ var YTgetInfo = function(myYtCounter, youcode) {
 	};
 };
 
-function pedonizeThread(threadTitle, threadId) {
-	if (confirm("Vuoi spostare il thread '" + threadTitle + "' in Procura ?")) {
-		window.location.assign("Threads?action=pedonizeThread&threadId=" + threadId + "&token=" + token);
-	}
-}
-
 function pedonizeThreadTree(msgId) {
 	if (confirm("Spostare il messaggio e relativa ramificazione in procura ?")) {
-		window.location.assign("Messages?action=pedonizeThreadTree&rootMessageId=" + msgId);
+		window.location.assign("Messages?action=pedonizeThreadTree&rootMessageId=" + msgId + "&token=" + token);
 	}
 }
 

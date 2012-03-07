@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.acmetoy.ravanator.fdt.MessageTag;
+import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
@@ -32,6 +33,8 @@ public class Messages extends MainServlet {
 	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
 	private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?(\\S+&)?v=(\\S{7,11})");
 
+	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
+	
 	// key: filename, value[0]: edit value, value[1]: alt
 	// tutte le emo ora sono in lower case
 	private static final Map<String, String[]> EMO_MAP = new HashMap<String, String[]>();
@@ -94,13 +97,7 @@ public class Messages extends MainServlet {
 	 */
 	protected GiamboAction getByPage = new GiamboAction("getByPage", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
-			MessagesDTO messages = getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req), hideProcCatania);
-			req.setAttribute("messages", messages.getMessages());
-			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
-			setWebsiteTitle(req, "Forum dei troll");
-			setNavigationMessage(req, NavigationMessage.info("Ordinati cronologicamente"));
-			return "messages.jsp";
+			return initWithMessage(req, res, NavigationMessage.info("Ordinati cronologicamente"));
 		}
 	};
 
@@ -120,6 +117,7 @@ public class Messages extends MainServlet {
 			MessagesDTO messages = getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req));
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
 	};
@@ -143,6 +141,7 @@ public class Messages extends MainServlet {
 			MessagesDTO messages = getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req));
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
 	};
@@ -161,6 +160,7 @@ public class Messages extends MainServlet {
 			List<MessageDTO> messages = new ArrayList<MessageDTO>();
 			messages.add(getPersistence().getMessage(msgId));
 			req.setAttribute("messages",messages);
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
 	};
@@ -183,7 +183,7 @@ public class Messages extends MainServlet {
 			setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
 
 			req.setAttribute("messages", getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req)));
-
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
 	};
@@ -321,8 +321,7 @@ public class Messages extends MainServlet {
 			String msgId = req.getParameter("msgId");
 			MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
 			if (!user.isValid() || !user.getNick().equals(msg.getAuthor().getNick())) {
-				setNavigationMessage(req, NavigationMessage.error("Non puoi editare un messaggio non tuo !"));
-				return getByPage.action(req, res);
+				return initWithMessage(req, res, NavigationMessage.error("Non puoi editare un messaggio non tuo !"));
 			}
 
 			// cleanup
@@ -571,12 +570,20 @@ public class Messages extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
 			if (loggedUser == null) {
-				throw new Exception("Non furmigare");
+				return initWithMessage(req, res, NavigationMessage.error("Non furmigare !"));
 			}
 			boolean isAdmin = "yes".equals(getPersistence().getPreferences(loggedUser).get("pedonizeThread"));
 			if (! isAdmin) {
-				throw new Exception("Non furmigare "+loggedUser.getNick()+" !!!");
+				return initWithMessage(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
 			}
+			
+			final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
+			final String inToken = req.getParameter("token");
+
+			if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+				return initWithMessage(req, res, NavigationMessage.error("Verifica token fallita"));
+			}
+			
 			getPersistence().pedonizeThreadTree(Long.parseLong(req.getParameter("rootMessageId")));
 			setNavigationMessage(req, NavigationMessage.info("Pedonization completed."));
 			res.sendRedirect("Threads");
@@ -594,4 +601,16 @@ public class Messages extends MainServlet {
 			return null;
 		}
 	};
+
+	private String initWithMessage(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
+		boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+		MessagesDTO messages = getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req), hideProcCatania);
+		req.setAttribute("messages", messages.getMessages());
+		req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+		setWebsiteTitle(req, "Forum dei troll");
+		setNavigationMessage(req, message);
+		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		return "messages.jsp";
+	}
+	
 }
