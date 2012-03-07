@@ -76,6 +76,7 @@ public class Messages extends MainServlet {
 	}
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
+	public static final int MAX_SUBJECT_LENGTH = 40;
 
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -243,7 +244,12 @@ public class Messages extends MainServlet {
 				newMsg.setText(text);
 			}
 			newMsg.setForum(msgDTO.getForum());
-			newMsg.setSubject("Re: " + msgDTO.getSubject());
+			// setta il subject: aggiungi "Re: " e se necessario tronca a 40 caratteri
+			String subject = msgDTO.getSubject();
+			if (!subject.startsWith("Re:")) {
+				subject = "Re: " + subject;
+			}
+			newMsg.setSubject(subject.substring(0, Math.min(MAX_SUBJECT_LENGTH, subject.length())));
 			newMsg.setParentId(parentId);
 			req.setAttribute("message", newMsg);
 
@@ -288,8 +294,8 @@ public class Messages extends MainServlet {
 		if (StringUtils.isEmpty(subject) || subject.trim().length() < 3) {
 			return "Oggetto di almeno di 3 caratteri, cribbio !";
 		}
-		if (subject.length() > 40) {
-			return "LOL oggetto pi&ugrave; lungo di 40 caratteri !";
+		if (subject.length() > MAX_SUBJECT_LENGTH) {
+			return "LOL oggetto più lungo di " + MAX_SUBJECT_LENGTH + " caratteri !";
 		}
 
 		// qualcuno prova a creare un forum ;) ?
