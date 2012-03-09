@@ -591,7 +591,7 @@ public class Messages extends MainServlet {
 		}
 	};
 
-	protected GiamboAction getRandomQuote = new GiamboAction("getRandomQuote", ONPOST) {
+	protected GiamboAction getRandomQuote = new GiamboAction("getRandomQuote", ONGET) {
 		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			// già escapato da getRandomQuote di MainServlet
