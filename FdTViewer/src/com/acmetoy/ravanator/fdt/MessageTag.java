@@ -151,10 +151,22 @@ public class MessageTag extends BodyTagSupport {
 		case 'u': open_u++; break;
 		default:
 			switch(tag[2]){
-			case 'b': open_b--; break;
-			case 'i': open_i--; break;
-			case 's': open_s--; break;
-			case 'u': open_u--; break;
+			case 'b':
+				if (open_b > 0)
+					open_b--;
+				break;
+			case 'i':
+				if (open_i > 0)
+					open_i--;
+				break;
+			case 's':
+				if (open_s > 0)
+					open_s--;
+				break;
+			case 'u':
+				if (open_u > 0)
+					open_u--;
+				break;
 			}
 		}
 		line.append(tag);
