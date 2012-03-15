@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
 import com.acmetoy.ravanator.fdt.IndentMessageDTO;
+import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.ThreadTree;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
@@ -16,6 +17,8 @@ import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
 public class Threads extends MainServlet {
 
 	private static final long serialVersionUID = 1L;
+	
+	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
 	/**
 	 * Tutti i messaggi di questo thread, identati
@@ -36,6 +39,8 @@ public class Threads extends MainServlet {
 			setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
 			setNavigationMessage(req, NavigationMessage.info("Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>"));
 
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+			
 			return "thread.jsp";
 		}
 	};
