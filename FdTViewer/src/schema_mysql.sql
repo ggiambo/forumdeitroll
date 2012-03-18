@@ -110,6 +110,16 @@ CREATE TABLE IF NOT EXISTS `preferences` (
 -- --------------------------------------------------------
 
 --
+-- sysinfo.sql -- tabella per le informazioni di sistema
+--
+
+CREATE TABLE IF NOT EXISTS `sysinfo` (
+  `key` tinytext NOT NULL,
+  `value` tinytext NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
+
+-- --------------------------------------------------------
+--
 -- messageIndices.sql -- indici
 --
 

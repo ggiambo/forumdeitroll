@@ -33,6 +33,22 @@ CREATE TABLE messages (
     text_search tsvector
 );
 
+--
+-- preferences
+--
+CREATE TABLE preferences (
+    key character(256) NOT NULL,
+    value character(256) NOT NULL,
+);
+
+--
+-- sysinfo
+--
+CREATE TABLE sysinfo (
+    key character(256) NOT NULL,
+    value character(256) NOT NULL,
+);
+
 
 ALTER TABLE ONLY messages ADD CONSTRAINT messages_pkey PRIMARY KEY (id);
 
