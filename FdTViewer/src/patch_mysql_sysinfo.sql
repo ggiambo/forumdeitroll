@@ -1,3 +1,9 @@
+-- tabella tabelle delle mie brame ...
+CREATE TABLE IF NOT EXISTS `sysinfo` (
+  `key` tinytext NOT NULL,
+  `value` tinytext NOT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
+
 -- messaggi per forum
 INSERT INTO sysinfo(`key`, `value`) 
 SELECT concat('messages.forum.', coalesce(forum, '')), count(id) FROM messages 
