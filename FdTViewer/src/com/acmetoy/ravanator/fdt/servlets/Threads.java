@@ -40,6 +40,12 @@ public class Threads extends MainServlet {
 			setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
 			setNavigationMessage(req, NavigationMessage.info("Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>"));
 
+			if (msgs.size() > 0) {
+				req.setAttribute("navType", "");
+				final String forum = msgs.get(0).getForum();
+				req.setAttribute("navForum", (forum != null) ? forum : "");
+			}
+
 			return "thread.jsp";
 		}
 	};
@@ -73,19 +79,22 @@ public class Threads extends MainServlet {
 	 */
 	protected GiamboAction getThreadsByLastPost = new GiamboAction("getThreadsByLastPost", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			req.setAttribute("navType", "cthread");
 			boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
 			String forum = req.getParameter("forum");
 			ThreadsDTO messages;
 			if (forum == null) {
 				messages = getPersistence().getThreadsByLastPost(PAGE_SIZE, getPageNr(req), hideProcCatania);
 				setWebsiteTitle(req, "Forum dei troll");
+				req.setAttribute("navForum", "");
 			} else {
 				messages = getPersistence().getForumThreadsByLastPost(forum, PAGE_SIZE, getPageNr(req));
 				setWebsiteTitle(req, forum.equals("") ?
 					"Forum principale @ Forum dei troll"
 					: (forum + " @ Forum dei troll"));
+				req.setAttribute("navForum", forum.equals("") ? "Principale" : forum);
 			}
-			
+
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 			setNavigationMessage(req, NavigationMessage.info("Ordinati per ultimo post"));
@@ -142,14 +151,18 @@ public class Threads extends MainServlet {
 		String forum = req.getParameter("forum");
 		ThreadsDTO messages;
 
+		req.setAttribute("navType", "nthread");
+
 		if (forum == null) {
 			messages = getPersistence().getThreads(PAGE_SIZE, getPageNr(req), hideProcCatania);
 			setWebsiteTitle(req, "Forum dei troll");
+			req.setAttribute("navForum", "");
 		} else {
 			messages = getPersistence().getThreadsByForum(forum, PAGE_SIZE, getPageNr(req));
 			setWebsiteTitle(req, forum.equals("") ?
 				"Forum principale @ Forum dei troll"
 				: (forum + " @ Forum dei troll"));
+			req.setAttribute("navForum", forum.equals("") ? "Principale" : forum);
 		}
 
 		req.setAttribute("messages", messages.getMessages());

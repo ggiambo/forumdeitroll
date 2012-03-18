@@ -93,6 +93,8 @@ public class Messages extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
 			MessagesDTO messages = getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req), hideProcCatania);
+			req.setAttribute("navType", "crono");
+			req.setAttribute("navForum", "");
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
 			setWebsiteTitle(req, "Forum dei troll");
@@ -128,13 +130,16 @@ public class Messages extends MainServlet {
 	protected GiamboAction getByForum = new GiamboAction("getByForum", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String forum = req.getParameter("forum");
+			req.setAttribute("navType", "crono");
 			if (StringUtils.isEmpty(forum)) {
 				setWebsiteTitle(req, "Forum Principale @ Forum dei Troll");
 				forum = "";
+				req.setAttribute("navForum", "Principale");
 			} else {
 				setWebsiteTitle(req, forum + " @ Forum dei Troll");
+				req.setAttribute("navForum", forum);
 			}
-			
+
 			addSpecificParam(req, "forum", forum);
 			setNavigationMessage(req, NavigationMessage.info("Forum <i>" + forum + "</i>"));
 			MessagesDTO messages = getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req));

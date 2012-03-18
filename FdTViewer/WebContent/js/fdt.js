@@ -254,3 +254,33 @@ var getRandomQuote = function() {
 		}
 	});
 };
+
+function navchange(navForum) {
+	var ns = document.getElementById("navSelect");
+	var nextType = ns.options[ns.selectedIndex].value;
+	if (nextType == 'crono') {
+		if (navForum == '') {
+			window.location = "Messages?action=init";
+		} else if (navForum == 'Principale') {
+			window.location = "Messages?action=getByForum&forum=";
+		} else {
+			window.location = "Messages?action=getByForum&forum="+encodeURIComponent(navForum);
+		}
+	} else if (nextType == 'nthread') {
+		if (navForum == '') {
+			window.location = "Threads?action=init";
+		} else if (navForum == 'Principale') {
+			window.location = "Threads?action=init&forum=";
+		} else {
+			window.location = "Threads?action=init&forum=" + encodeURIComponent(navForum);
+		}
+	} else if (nextType == 'cthread') {
+		if (navForum == '') {
+			window.location = "Threads?action=getThreadsByLastPost";
+		} else if (navForum == 'Principale') {
+			window.location = "Threads?action=getThreadsByLastPost&forum=";
+		} else {
+			window.location = "Threads?action=getThreadsByLastPost&forum=" + encodeURIComponent(navForum);
+		}
+	}
+}

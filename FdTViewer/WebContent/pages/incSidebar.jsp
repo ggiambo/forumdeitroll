@@ -28,7 +28,8 @@
 		<input type="submit" value="Cerca"/>
 	</form>
 	<ul>
-		<li><a href="Threads">Forum dei Troll</a></li>
+		<li><a href="Messages">Forum dei Troll / Tutto</a></li>
+		<li><a href="Messages?action=getByForum&forum=">Forum dei Troll / Principale</a></li>
 		<c:forEach items="${forums}" var="forum">
 			<li>
 				<c:url value="Messages" var="forumUrl">
