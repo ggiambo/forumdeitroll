@@ -37,6 +37,8 @@ public interface IPersistence extends Serializable {
 	public MessagesDTO getMessagesByForum(String forum, int pageSize, int page);
 
 	public AuthorDTO getAuthor(String nick);
+	
+	public List<AuthorDTO> getAuthors(boolean onlyActive);
 
 	public void updateAuthor(AuthorDTO author);
 
@@ -75,8 +77,6 @@ public interface IPersistence extends Serializable {
 	public ConcurrentHashMap<String, String> getPreferences(AuthorDTO user);
 
 	public ConcurrentHashMap<String, String> setPreference(AuthorDTO user, String key, String value);
-
-	void pedonizeThread(long threadId);
 
 	public List<String> searchAuthor(String searchString);
 

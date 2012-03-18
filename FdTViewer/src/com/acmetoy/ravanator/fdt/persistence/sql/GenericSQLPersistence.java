@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.FdTException;
 import com.acmetoy.ravanator.fdt.PagerTag;
-import com.acmetoy.ravanator.fdt.SingleValueCache;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
@@ -52,7 +51,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		dataSource.setValidationQuery("SELECT 1");
 		dataSource.setValidationQueryTimeout(30);
 	}
-
+	
 	protected final synchronized Connection getConnection() {
 		try {
 			return dataSource.getConnection();
@@ -61,48 +60,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			return null;
 		}
 	}
-
-	protected SingleValueCache<Integer> messagesCount = new SingleValueCache<Integer>(30 * 60 * 1000) {
-		@Override protected Integer update() {
-			Connection conn = null;
-			PreparedStatement ps = null;
-			ResultSet rs = null;
-			try {
-				conn = getConnection();
-				ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages");
-				rs = ps.executeQuery();
-				if (rs.next()) {
-					return rs.getInt("nr");
-				}
-			} catch (SQLException e) {
-				LOG.error("Cannot count messages", e);
-			} finally {
-				close(rs, ps, conn);
-			}
-			return -1;
-		}
-	};
-
-	protected SingleValueCache<Integer> threadsCount = new SingleValueCache<Integer>(30 * 60 * 1000) {
-		@Override protected Integer update() {
-			Connection conn = null;
-			PreparedStatement ps = null;
-			ResultSet rs = null;
-			try {
-				conn = getConnection();
-				ps = conn.prepareStatement("SELECT count(*) AS nr FROM messages WHERE id = threadid");
-				rs = ps.executeQuery();
-				if (rs.next()) {
-					return rs.getInt("nr");
-				}
-			} catch (SQLException e) {
-				LOG.error("Cannot count messages", e);
-			} finally {
-				close(rs, ps, conn);
-			}
-			return -1;
-		}
-	};
 
 	@Override
 	public MessagesDTO getMessagesByDate(int limit, int page, boolean hideProcCatania) {
@@ -119,7 +76,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement(query.toString());
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
-			return new MessagesDTO(getMessages(ps.executeQuery(), false), messagesCount.get());
+			return new MessagesDTO(getMessages(ps.executeQuery(), false), countMessages(conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
@@ -188,7 +145,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement(query.toString());
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
-			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount.get());
+			return new ThreadsDTO(getThreads(ps.executeQuery()), countThreads(conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads", e);
 		} finally {
@@ -213,7 +170,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			}
 			ps.setInt(i++, limit);
 			ps.setInt(i++, limit*page);
-			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount.get());
+			return new ThreadsDTO(getThreads(ps.executeQuery()), countThreadsByForum(forum, conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads", e);
 		} finally {
@@ -242,7 +199,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			while (rs.next()) {
 				result.add(getMessage(rs.getLong(1)));
 			}
-			return new ThreadsDTO(result, threadsCount.get());
+			int threadsCount = countThreads(conn);
+			if (hideProcCatania) {
+				threadsCount -= countThreadsByForum("Proc di Catania", conn);
+			}
+			return new ThreadsDTO(result, threadsCount);
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads by last post", e);
 		} finally {
@@ -271,7 +232,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			while (rs.next()) {
 				result.add(getMessage(rs.getLong(1)));
 			}
-			return new ThreadsDTO(result, threadsCount.get());
+			return new ThreadsDTO(result, countThreadsByForum(forum, conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads by last post", e);
 		} finally {
@@ -361,7 +322,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			conn = getConnection();;
+			conn = getConnection();
+			conn.setAutoCommit(false);
 			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
@@ -373,9 +335,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(i++, message.getForum());
 			ps.setTimestamp(i++, new java.sql.Timestamp(message.getDate().getTime()));
 			ps.execute();
+			// update count
+			increaseNumberOfMessages(message.getForum(), false);
 			// get generated id
 			rs = ps.getGeneratedKeys();
 			rs.next();
+			conn.commit();
 			return rs.getLong(1);
 		} catch (SQLException e) {
 			LOG.error("Cannot insert message " + message.toString(), e);
@@ -400,6 +365,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(i++, message.getForum());
 			ps.setTimestamp(i++, new java.sql.Timestamp(message.getDate().getTime()));
 			ps.execute();
+			// update count
+			increaseNumberOfMessages(message.getForum(), true);
 			// get generated id
 			rs = ps.getGeneratedKeys();
 			rs.next();
@@ -491,6 +458,39 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 		return dto;
+	}
+	
+	@Override
+	public List<AuthorDTO> getAuthors(boolean onlyActive) {
+		List<AuthorDTO> res = new ArrayList<AuthorDTO>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		StringBuilder query = new StringBuilder("SELECT * FROM authors");
+		try {
+			conn = getConnection();
+			if (onlyActive) {
+				query.append(" WHERE hash IS NOT NULL");
+			}
+			ps = conn.prepareStatement(query.toString());
+			rs = ps.executeQuery();
+			AuthorDTO dto;
+			while (rs.next()) {
+				dto = new AuthorDTO();
+				dto.setNick(rs.getString("nick"));
+				dto.setAvatar(rs.getBytes("avatar"));
+				dto.setMessages(rs.getInt("messages"));
+				dto.setOldPassword(rs.getString("password"));
+				dto.setSalt(rs.getString("salt"));
+				dto.setHash(rs.getString("hash"));
+				res.add(dto);
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get Authors", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return res;
 	}
 
 	@Override
@@ -1016,23 +1016,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return getPreferences(user);
 	}
 
-	@Override
-	public void pedonizeThread(long threadId) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			conn = getConnection();
-			ps = conn.prepareStatement("UPDATE messages SET forum = 'Proc di Catania' where threadId = ?");
-			ps.setLong(1,threadId);
-			ps.execute();
-		} catch (SQLException e) {
-			LOG.error("Cannot pedonize " + threadId, e);
-		} finally {
-			close(rs, ps, conn);
-		}
-	}
-
 	private void insertPreference(AuthorDTO user, String key, String value) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1149,16 +1132,70 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return messages;
 	}
+	
+	private int countMessages(Connection conn) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = 'messages.total'");
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("value");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			close(rs, ps, null);
+		}
+		return -1;
+	}
 
 	private int countMessagesByForum(String forum, Connection conn) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		forum = forum == null ? "" : forum;
 		try {
-			ps = conn.prepareStatement("SELECT count(id) AS nr FROM messages where forum = ?");
-			ps.setString(1, forum);
+			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = ?");
+			ps.setString(1, "messages.forum." + forum);
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				return rs.getInt("nr");
+				return rs.getInt("value");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			close(rs, ps, null);
+		}
+		return -1;
+	}
+	
+	private int countThreadsByForum(String forum, Connection conn) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		forum = forum == null ? "" : forum;
+		try {
+			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = ?");
+			ps.setString(1, "threads.forum." + forum);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("value");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot count messages", e);
+		} finally {
+			close(rs, ps, null);
+		}
+		return -1;
+	}
+	
+	private int countThreads(Connection conn) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = 'threads.total'");
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getInt("value");
 			}
 		} catch (SQLException e) {
 			LOG.error("Cannot count messages", e);
@@ -1208,6 +1245,9 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public void pedonizeThreadTree(long rootMessageId) {
+		// forum originale
+		String forum = getMessage(rootMessageId).getForum();
+		forum = forum == null ? "" : forum;
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1255,9 +1295,53 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			LOG.debug(sql);
 			ps = conn.prepareStatement(sql.toString());
 			ps.executeUpdate();
+			// update numero di messaggi
+			ps = conn.prepareStatement("UPDATE sysinfo SET value = value + ? WHERE `key` = ?");
+			ps.setInt(1, res);
+			ps.setString(2, "messages.forum.Proc di Catania");
+			ps.execute();
+			ps.setInt(1, 1);
+			ps.setString(2, "threads.forum.Proc di Catania");
+			ps.execute(); 
+			ps.setInt(1, -1 * res);
+			ps.setString(2, "messages.forum." + forum);
+			ps.execute();
+			ps.setInt(1, - 1);
+			ps.setString(2, "threads.forum." + forum);
+			ps.execute();
 			conn.commit();
 		} catch (SQLException e) {
 			LOG.error("Pedonize failed!", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	private void increaseNumberOfMessages(String forum, boolean isNewThread) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		forum = forum == null ? "" : forum;
+		try {
+			// increase for this forum
+			conn = getConnection();
+			ps = conn.prepareStatement("UPDATE sysinfo SET value = value + 1 WHERE `key` = ?");
+			ps.setString(1, "messages.forum." + forum);
+			ps.execute();
+			// increase total
+			ps.setString(1, "messages.total");
+			ps.execute();
+			// increase threads 
+			if (isNewThread) {
+				// increase for this forum
+				ps.setString(1, "threads.forum." + forum);
+				ps.execute();
+				// increase total
+				ps.setString(1, "threads.total");
+				ps.execute();
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot increase number of messages of forum " + forum, e);
 		} finally {
 			close(rs, ps, conn);
 		}

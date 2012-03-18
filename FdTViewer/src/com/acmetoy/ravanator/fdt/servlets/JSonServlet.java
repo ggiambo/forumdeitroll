@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import sun.misc.BASE64Encoder;
@@ -22,6 +24,7 @@ import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
 import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
+import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
 import com.google.gson.stream.JsonWriter;
@@ -54,7 +57,7 @@ public class JSonServlet extends HttpServlet {
 			StringWriter writer = new StringWriter();
 			Method m = this.getClass().getDeclaredMethod(action, JsonWriter.class, Map.class);
 			JsonWriter jsw = initWriter(ResultCode.OK, writer);
-			m.invoke(this, jsw, req.getParameterMap());
+			m.invoke(this, jsw, Collections.unmodifiableMap(req.getParameterMap()));
 			closeWriter(jsw, time);
 			res.getWriter().write(writer.getBuffer().toString());
 		} catch (Exception e) {
@@ -92,7 +95,6 @@ public class JSonServlet extends HttpServlet {
 	
 	/**
 	 * Ritorna una stringa JSON contenente i threads ordinati temporalmente decrescentemente.
-	 * Parametro neccessario "page".
 	 * @param params
 	 * @return
 	 * @throws Exception
@@ -130,7 +132,6 @@ public class JSonServlet extends HttpServlet {
 	
 	/**
 	 * Ritorna una stringa JSON contenente i messaggi ordinati temporalmente decrescentemente. 
-	 * Parametro neccessario "page".
 	 * @param params
 	 * @return
 	 * @throws Exception
@@ -168,7 +169,6 @@ public class JSonServlet extends HttpServlet {
 	
 	/**
 	 * Ritorna una stringa JSON contenente i messaggi di un singolo thread. 
-	 * Parametro neccessario "page".
 	 * @param params
 	 * @return
 	 * @throws Exception
@@ -195,6 +195,70 @@ public class JSonServlet extends HttpServlet {
 		writer.endArray();
 		
 		writer.endObject(); // "messages"
+	}
+	
+	/**
+	 * Ritorna una stringa JSON contenente un singolo messaggio 
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	protected void getMessage(JsonWriter writer, Map<String, String[]> params) throws IOException {
+		long msgId = 0;
+		String[] paramMsgId = params.get("msgId");
+		if (paramMsgId == null || paramMsgId.length == 0) {
+			throw new IOException("missing parameter 'msgId'");
+		}
+		msgId = Long.parseLong(paramMsgId[0]);
+		
+		MessageDTO result = persistence.getMessage(msgId);
+		encodeMessage(result, writer);
+	}
+	
+	/**
+	 * Ritorna una stringa JSON contenente l'autore
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	protected void getAuthor(JsonWriter writer, Map<String, String[]> params) throws IOException {
+		String[] nick = params.get("nick");
+		if (nick == null || nick.length == 0) {
+			throw new IOException("missing parameter 'nick'");
+		}
+		
+		AuthorDTO result = persistence.getAuthor(nick[0]);
+
+		encodeAuthor(result, writer);
+	}
+	
+	/**
+	 * Ritorna una stringa JSON contenente gli autori
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	protected void getAuthors(JsonWriter writer, Map<String, String[]> params) throws IOException {
+		boolean onlyActive = false;
+		String[] paramOnlyActive = params.get("onlyActive");
+		if (paramOnlyActive != null && paramOnlyActive.length > 0) {
+			onlyActive = Boolean.parseBoolean(paramOnlyActive[0]);
+		}
+		
+		List<AuthorDTO> result = persistence.getAuthors(onlyActive);
+		
+		writer.beginObject();
+		writer.name("resultSize").value(result.size());
+		writer.name("authors");
+		
+		writer.beginArray();
+		for (AuthorDTO authorDTO : result) {
+			encodeAuthor(authorDTO, writer);
+		}
+		writer.endArray();
+		
+		writer.endObject(); // "authors"
+		
 	}
 	
 	/**
@@ -270,14 +334,39 @@ public class JSonServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	private void encodeAuthor(AuthorDTO author, JsonWriter writer) throws IOException {
+		writer.beginObject();
 		writer.name("author");
 		writer.beginObject();
 		writer.name("nick").value(author.getNick());
 		writer.name("messages").value(author.getMessages());
+		writer.name("active").value(StringUtils.isNotEmpty(author.getHash()));
 		if (author.getAvatar() != null) {
 			writer.name("avatar").value(new BASE64Encoder().encode(author.getAvatar()));
 		}
+		encodeQuotes(persistence.getQuotes(author), writer);
 		writer.endObject();
+		writer.endObject();
+	}
+	
+	/**
+	 * Codifica JSON un QuoteDTO
+	 * @param threadDTO
+	 * @param writer
+	 * @throws Exception
+	 */
+	private void encodeQuotes(List<QuoteDTO> quotes, JsonWriter writer) throws IOException {
+		writer.name("quotes");
+		writer.beginArray();
+		for (QuoteDTO quote : quotes) {
+			writer.beginObject();
+			writer.name("quote");
+			writer.beginObject();
+			writer.name("id").value(quote.getId());
+			writer.name("content").value(quote.getContent());
+			writer.endObject();
+			writer.endObject();
+		}
+		writer.endArray();
 	}
 	
 	/**
