@@ -46,6 +46,12 @@
 			</li>
 			<li>|</li>
 		</c:if>
+		<c:if test="${navForum == null}">
+			<li>
+				<a href="Messages">Torna ai messaggi</a>
+			</li>
+			<li>|</li>
+		</c:if>
 		<c:choose>
 			<c:when test="${not empty loggedUser}">
 				<c:url value="Threads" var="tuoiThreadURL">
