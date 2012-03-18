@@ -41,6 +41,14 @@
     <servlet-name>Misc</servlet-name>
     <url-pattern>/Misc</url-pattern>
   </servlet-mapping>
+    <servlet>
+    <servlet-name>JSon</servlet-name>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.JSonServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>JSon</servlet-name>
+    <url-pattern>/JSon</url-pattern>
+  </servlet-mapping>
   <jsp-config>
     <taglib>
       <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>

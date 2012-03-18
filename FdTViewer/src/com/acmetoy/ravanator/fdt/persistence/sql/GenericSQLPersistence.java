@@ -1205,7 +1205,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return 0;
 	}
-	
+
 	@Override
 	public void pedonizeThreadTree(long rootMessageId) {
 		Connection conn = null;
@@ -1251,7 +1251,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			if (res != messages.size()) throw new SQLException("AGGIORNATI "+res+" recordz! ids: "+messages);
 			ps.close();
 			sql.setLength(0);
-			sql.append("UPDATE messages SET parentId = -1 WHERE id = ").append(messages.get(0).toString());
+			sql.append("UPDATE messages SET parentId = id WHERE id = ").append(messages.get(0).toString());
 			LOG.debug(sql);
 			ps = conn.prepareStatement(sql.toString());
 			ps.executeUpdate();

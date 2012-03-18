@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.acmetoy.ravanator.fdt.MessageTag;
+import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
@@ -31,6 +32,8 @@ public class Messages extends MainServlet {
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
 	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
 	private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?(\\S+&)?v=(\\S{7,11})");
+
+	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
 	// key: filename, value[0]: edit value, value[1]: alt
 	// tutte le emo ora sono in lower case
@@ -75,6 +78,9 @@ public class Messages extends MainServlet {
 		EMO_MAP.put("troll", new String[] {"(troll)", "Troll"});
 	}
 
+	public static final int MAX_MESSAGE_LENGTH = 40000;
+	public static final int MAX_SUBJECT_LENGTH = 40;
+
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			setWebsiteTitle(req, "Forum dei troll");
@@ -91,15 +97,7 @@ public class Messages extends MainServlet {
 	 */
 	protected GiamboAction getByPage = new GiamboAction("getByPage", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
-			MessagesDTO messages = getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req), hideProcCatania);
-			req.setAttribute("navType", "crono");
-			req.setAttribute("navForum", "");
-			req.setAttribute("messages", messages.getMessages());
-			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
-			setWebsiteTitle(req, "Forum dei troll");
-			setNavigationMessage(req, NavigationMessage.info("Ordinati cronologicamente"));
-			return "messages.jsp";
+			return initWithMessage(req, res, NavigationMessage.info("Ordinati cronologicamente"));
 		}
 	};
 
@@ -119,6 +117,7 @@ public class Messages extends MainServlet {
 			MessagesDTO messages = getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req));
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
 	};
@@ -145,6 +144,7 @@ public class Messages extends MainServlet {
 			MessagesDTO messages = getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req));
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
 	};
@@ -163,6 +163,7 @@ public class Messages extends MainServlet {
 			List<MessageDTO> messages = new ArrayList<MessageDTO>();
 			messages.add(getPersistence().getMessage(msgId));
 			req.setAttribute("messages",messages);
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
 	};
@@ -185,7 +186,7 @@ public class Messages extends MainServlet {
 			setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
 
 			req.setAttribute("messages", getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req)));
-
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
 	};
@@ -223,8 +224,8 @@ public class Messages extends MainServlet {
 			long parentId = Long.parseLong(req.getParameter("parentId"));
 			req.setAttribute("parentId", parentId);
 			MessageDTO newMsg = new MessageDTO();
+			MessageDTO msgDTO = getPersistence().getMessage(parentId);
 			if ("quote".equals(type)) {
-				MessageDTO msgDTO = getPersistence().getMessage(parentId);
 				String text = msgDTO.getText().trim();
 
 				// quote
@@ -241,12 +242,17 @@ public class Messages extends MainServlet {
 					m = PATTERN_QUOTE.matcher(text);
 				}
 
-			String author = msgDTO.getAuthor().getNick();
+				String author = msgDTO.getAuthor().getNick();
 				text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n> " + text + "\r\n";
 				newMsg.setText(text);
-				newMsg.setForum(msgDTO.getForum());
-				newMsg.setSubject(msgDTO.getSubject());
 			}
+			newMsg.setForum(msgDTO.getForum());
+			// setta il subject: aggiungi "Re: " e se necessario tronca a 40 caratteri
+			String subject = msgDTO.getSubject();
+			if (!subject.startsWith("Re:")) {
+				subject = "Re: " + subject;
+			}
+			newMsg.setSubject(subject.substring(0, Math.min(MAX_SUBJECT_LENGTH, subject.length())));
 			newMsg.setParentId(parentId);
 			req.setAttribute("message", newMsg);
 
@@ -259,8 +265,6 @@ public class Messages extends MainServlet {
 			return "incReplyMessage.jsp";
 		}
 	};
-
-	public static final int MAX_MESSAGE_LENGTH = 40000;
 
 	/**
 	 * Ritorna una stringa diversa da null da mostrare come messaggio d'errore all'utente
@@ -284,21 +288,17 @@ public class Messages extends MainServlet {
 		}
 
 		// subject almeno di 5 caratteri, cribbio !
-		long parentId;
 		try {
-			parentId = Long.parseLong(req.getParameter("parentId"));
+			Long.parseLong(req.getParameter("parentId"));
 		} catch (NumberFormatException e) {
 			return "Il valore " + req.getParameter("parentId") + " assomiglia poco a un numero ...";
 		}
-		if (parentId == -1) {
-			// nuovo messaggio
-			String subject = req.getParameter("subject");
-			if (StringUtils.isEmpty(subject) || subject.trim().length() < 3) {
-				return "Oggetto di almeno di 3 caratteri, cribbio !";
-			}
-			if (subject.length() > 40) {
-				return "LOL oggetto piu' lungo di 40 caratteri !";
-			}
+		String subject = req.getParameter("subject");
+		if (StringUtils.isEmpty(subject) || subject.trim().length() < 3) {
+			return "Oggetto di almeno di 3 caratteri, cribbio !";
+		}
+		if (subject.length() > MAX_SUBJECT_LENGTH) {
+			return "LOL oggetto pié lungo di " + MAX_SUBJECT_LENGTH + " caratteri !";
 		}
 
 		// qualcuno prova a creare un forum ;) ?
@@ -324,8 +324,7 @@ public class Messages extends MainServlet {
 			String msgId = req.getParameter("msgId");
 			MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
 			if (!user.isValid() || !user.getNick().equals(msg.getAuthor().getNick())) {
-				setNavigationMessage(req, NavigationMessage.error("Non puoi editare un messaggio non tuo !"));
-				return getByPage.action(req, res);
+				return initWithMessage(req, res, NavigationMessage.error("Non puoi editare un messaggio non tuo !"));
 			}
 
 			// cleanup
@@ -489,6 +488,7 @@ public class Messages extends MainServlet {
 		msg.setParentId(parentId);
 		msg.setDate(new Date());
 		msg.setText(text);
+		msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 		if (parentId > 0) {
 			long id = Long.parseLong(req.getParameter("id"));
 			if (id > -1) {
@@ -504,18 +504,12 @@ public class Messages extends MainServlet {
 					writer.close();
 					return null;
 				}
-				msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
 				msg.setText(text);
 			} else {
 				// reply
 				MessageDTO replyMsg = getPersistence().getMessage(parentId);
 				msg.setForum(replyMsg.getForum());
-				if (replyMsg.getId() == replyMsg.getParentId()) {
-					msg.setSubject("Re: " + replyMsg.getSubject());
-				} else {
-					msg.setSubject(replyMsg.getSubject());
-				}
 				msg.setThreadId(replyMsg.getThreadId());
 				// incrementa il numero di messaggi scritti
 				if (author.isValid()) {
@@ -532,7 +526,6 @@ public class Messages extends MainServlet {
 				forum = forum.replaceAll(">", "&gt;").replaceAll("<", "&lt;");
 			}
 			msg.setForum(forum);
-			msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 			msg.setThreadId(-1);
 			// incrementa il numero di messaggi scritti
 			if (author.isValid()) {
@@ -580,12 +573,20 @@ public class Messages extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
 			if (loggedUser == null) {
-				throw new Exception("Non furmigare");
+				return initWithMessage(req, res, NavigationMessage.error("Non furmigare !"));
 			}
 			boolean isAdmin = "yes".equals(getPersistence().getPreferences(loggedUser).get("pedonizeThread"));
 			if (! isAdmin) {
-				throw new Exception("Non furmigare "+loggedUser.getNick()+" !!!");
+				return initWithMessage(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
 			}
+			
+			final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
+			final String inToken = req.getParameter("token");
+
+			if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+				return initWithMessage(req, res, NavigationMessage.error("Verifica token fallita"));
+			}
+			
 			getPersistence().pedonizeThreadTree(Long.parseLong(req.getParameter("rootMessageId")));
 			setNavigationMessage(req, NavigationMessage.info("Pedonization completed."));
 			res.sendRedirect("Threads");
@@ -593,7 +594,7 @@ public class Messages extends MainServlet {
 		}
 	};
 
-	protected GiamboAction getRandomQuote = new GiamboAction("getRandomQuote", ONPOST) {
+	protected GiamboAction getRandomQuote = new GiamboAction("getRandomQuote", ONGET) {
 		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			// già escapato da getRandomQuote di MainServlet
@@ -603,4 +604,16 @@ public class Messages extends MainServlet {
 			return null;
 		}
 	};
+
+	private String initWithMessage(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
+		boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+		MessagesDTO messages = getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req), hideProcCatania);
+		req.setAttribute("messages", messages.getMessages());
+		req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+		setWebsiteTitle(req, "Forum dei troll");
+		setNavigationMessage(req, message);
+		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		return "messages.jsp";
+	}
+	
 }

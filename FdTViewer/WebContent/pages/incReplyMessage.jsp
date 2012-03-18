@@ -56,9 +56,9 @@
 			<input style="display:none;float:right" tabindex="5" type="button" name="edit" value="Edit" onClick="edit(${message.parentId})"/>&nbsp;
 		</div>
 	</div>
-	<c:if test="${isNewThread || isEdit}">
+	<c:if test="${isNewThread || isEdit || isReply}">
 		<label for="subject">Oggetto:</label><br /> 
-		<input tabindex="1" name="subject" id="subject" maxlength="40" size="40" class="msgReplyObj" value="${message.subject}"/>
+		<input tabindex="1" name="subject" id="subject" maxlength="<%=Messages.MAX_SUBJECT_LENGTH %>" size="<%=Messages.MAX_SUBJECT_LENGTH %>" class="msgReplyObj" value="${message.subject}"/>
 	</c:if>
 	<c:if test="${not empty message.forum}">
 		Forum <i>${message.forum}</i>
