@@ -208,7 +208,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			if (forum.equals("")) {
 				ps = conn.prepareStatement("SELECT * FROM messages WHERE forum IS NULL AND id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
 			} else {
-				ps = conn.prepareStatement("SELECT * FORM messages WHERE forum = ? AND id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
+				ps = conn.prepareStatement("SELECT * FROM messages WHERE forum = ? AND id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
 				ps.setString(i++, forum);
 			}
 			ps.setInt(i++, limit);
