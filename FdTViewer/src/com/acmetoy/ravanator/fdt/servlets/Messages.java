@@ -558,7 +558,7 @@ public class Messages extends MainServlet {
 	public static Map<String, String[]> getEmoMap() {
 		return new HashMap<String, String[]>(EMO_MAP);
 	}
-	
+
 	private void addSpecificParam(HttpServletRequest req, String key, String value) {
 		Map<String, String> specificParams = (Map<String, String>)req.getAttribute("specificParams");
 		if (specificParams == null) {
@@ -567,7 +567,7 @@ public class Messages extends MainServlet {
 		}
 		specificParams.put(key, value);
 	}
-	
+
 	protected GiamboAction pedonizeThreadTree = new GiamboAction("pedonizeThreadTree", ONGET) {
 		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -579,14 +579,14 @@ public class Messages extends MainServlet {
 			if (! isAdmin) {
 				return initWithMessage(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
 			}
-			
+
 			final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
 			final String inToken = req.getParameter("token");
 
 			if ((token == null) || (inToken == null) || !token.equals(inToken)) {
 				return initWithMessage(req, res, NavigationMessage.error("Verifica token fallita"));
 			}
-			
+
 			getPersistence().pedonizeThreadTree(Long.parseLong(req.getParameter("rootMessageId")));
 			setNavigationMessage(req, NavigationMessage.info("Pedonization completed."));
 			res.sendRedirect("Threads");
@@ -610,10 +610,14 @@ public class Messages extends MainServlet {
 		MessagesDTO messages = getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req), hideProcCatania);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+
+		req.setAttribute("navType", "crono");
+		req.setAttribute("navForum", "");
+
 		setWebsiteTitle(req, "Forum dei troll");
 		setNavigationMessage(req, message);
 		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 		return "messages.jsp";
 	}
-	
+
 }
