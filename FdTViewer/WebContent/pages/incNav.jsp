@@ -52,8 +52,10 @@
 			</li>
 			<li>|</li>
 		</c:if>
-		<li><a href="Messages?action=newMessage&amp;forum=${param.forum}">Nuovo messaggio</a></li>
-		<li>|</li>
+		<c:if test="${navForum != null }">
+			<li><a href="Messages?action=newMessage&amp;forum=${param.forum}">Nuovo messaggio</a></li>
+			<li>|</li>
+		</c:if>
 		<c:choose>
 			<c:when test="${not empty loggedUser}">
 				<c:url value="Threads" var="tuoiThreadURL">
