@@ -82,7 +82,9 @@
 			</c:choose>
 
 			<li><a href="${cronoUrl}">Cronologia</a></li>
+			<li>|</li>
 			<li><a href="${nthreadUrl}">Thread nuovi</a></li>
+			<li>|</li>
 			<li><a href="${cthreadUrl}">Thread aggiornati</a></li>
 			<li>|</li>
 		</c:if>
