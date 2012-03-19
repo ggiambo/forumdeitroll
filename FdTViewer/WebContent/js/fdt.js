@@ -179,12 +179,14 @@ jQuery("document").ready(function(){
 			);
 	SyntaxHighlighter.defaults['toolbar'] = false;
 	SyntaxHighlighter.all();
+	/*
 	if ("checked" == enableAutoRefresh) {
 		// ricarica la pagina ogni 2 minuti
 		setInterval(function() {
 			location.reload();
 		}, 2000*60);
 	}
+	 */
 });
 
 // tasto 'j' per saltare al prossimo messaggio
