@@ -18,7 +18,7 @@ import com.acmetoy.ravanator.fdt.servlets.User;
 public class MessageTag extends BodyTagSupport {
 	private static final long serialVersionUID = -4382505626768797422L;
 	private static final Logger LOG = Logger.getLogger(MessageTag.class);
-	
+
 	// ----- BodyTagSupport -----
 	private String search;
 	private AuthorDTO author;
@@ -34,7 +34,7 @@ public class MessageTag extends BodyTagSupport {
 	public AuthorDTO getAuthor() {
 		return author;
 	}
-	
+
 	public int doAfterBody() throws JspTagException {
 		try {
 			AuthorDTO loggedUser = (AuthorDTO) pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
@@ -46,9 +46,9 @@ public class MessageTag extends BodyTagSupport {
 		}
 		return SKIP_BODY;
 	}
-	
+
 	// ----- message parsing -----
-	
+
 	// per la preview
 	public static String getMessage(String body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
 		MessageTag messageTag = new MessageTag();
@@ -60,8 +60,8 @@ public class MessageTag extends BodyTagSupport {
 			throw new JspTagException(e);
 		}
 	}
-	
-	
+
+
 	private char[] body;
 	private char[] ibody;
 	private int p;
@@ -71,7 +71,14 @@ public class MessageTag extends BodyTagSupport {
 	int open_b = 0, open_i = 0, open_s = 0, open_u = 0;
 	private String collapseQuotes;
 	private boolean multiLineQuoteStarted;
-	
+
+	private static final int MAX_EMOTICONS = 100;
+	private static final int MAX_EMBED = 5;
+
+	private int emotiCount = 0;
+	private int embedCount = 0;
+
+
 	private StringBuilder getMessage(char[] body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
 		this.body = body;
 		ibody = new String(body).toLowerCase().toCharArray();
@@ -82,12 +89,15 @@ public class MessageTag extends BodyTagSupport {
 		open_b = 0; open_i = 0; open_s = 0; open_u = 0;
 		p = -1;
 		multiLineQuoteStarted = false;
-		
+
+		emotiCount = 0;
+		embedCount = 0;
+
 		collapseQuotes = loggedUser != null ?loggedUser.getPreferences().get(User.PREF_COLLAPSE_QUOTES) : null;
-		
+
 		while (++p < body.length) {
 			char c = body[p];
-			
+
 			if (ifound(TAG_B)) {
 				on_tag(TAG_B);
 			} else if (ifound(TAG_B_END)) {
@@ -131,17 +141,17 @@ public class MessageTag extends BodyTagSupport {
 				word.append(c);
 			}
 		}
-		
+
 		on_line();
-		
+
 		for (int i=0;i<open_b;++i) out.append(TAG_B_END);
 		for (int i=0;i<open_i;++i) out.append(TAG_I_END);
 		for (int i=0;i<open_s;++i) out.append(TAG_S_END);
 		for (int i=0;i<open_u;++i) out.append(TAG_U_END);
-		
+
 		return out;
 	}
-	
+
 	private void on_tag(char[] tag) {
 		on_word();
 		switch (tag[1]){
@@ -172,7 +182,7 @@ public class MessageTag extends BodyTagSupport {
 		line.append(tag);
 		p += tag.length - 1;
 	}
-	
+
 	private void on_word() {
 		if (!emoticons()) {
 			if (!link()) {
@@ -182,7 +192,7 @@ public class MessageTag extends BodyTagSupport {
 		line.append(word);
 		word.setLength(0);
 	}
-	
+
 	private void on_line() {
 		on_word();
 		color_collapse_quote();
@@ -226,8 +236,8 @@ public class MessageTag extends BodyTagSupport {
 		word.insert(0, ' ');
 		int wlen = word.length();
 		for (Emo emo: emos) {
-			simpleReplaceAll(word, emo.sequence, emo.replacement);
-			simpleReplaceAll(word, emo.sequenceToUpper, emo.replacement);
+			simpleReplaceAllEmoticons(word, emo.sequence, emo.replacement);
+			simpleReplaceAllEmoticons(word, emo.sequenceToUpper, emo.replacement);
 		}
 		if (wlen != word.length()) {
 			return true;
@@ -400,7 +410,7 @@ public class MessageTag extends BodyTagSupport {
 		if (loggedUser != null) {
 			embeddYt = loggedUser.getPreferences().get(User.PREF_EMBEDDYT);
 		}
-		if (StringUtils.isEmpty(embeddYt)) {
+		if (StringUtils.isEmpty(embeddYt) || (embedCount > MAX_EMBED)) {
 			long myYtCounter = 0l;
 			if (ytCounter == Long.MAX_VALUE) {
 				ytCounter = 0l;
@@ -413,8 +423,8 @@ public class MessageTag extends BodyTagSupport {
 			line.append("onmouseover='YTgetInfo_").append(myYtCounter).append("= YTgetInfo(\"");
 			line.append(myYtCounter).append("\",\"").append(youcode).append("\")'>");
 			line.append("<img src='http://img.youtube.com/vi/").append(youcode).append("/2.jpg'></a>");
-			
-			
+
+
 			/*
 			line.append("<a href=\"http://www.youtube.com/watch?v=").append(youcode).append("\" ");
 			line.append("id=\"yt_").append(myYtCounter).append("\">");
@@ -432,6 +442,7 @@ public class MessageTag extends BodyTagSupport {
 			line.append("<iframe class='youtube-player' type='text/html' width='400' height='329' src='http://www.youtube.com/embed/");
 			line.append(youcode);
 			line.append("' frameborder='0'></iframe>");
+			++embedCount;
 //			line.append("<object height='329' width='400'>");
 //			line.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>");
 //			line.append("<param value='transparent' name='wmode'>");
@@ -530,6 +541,18 @@ public class MessageTag extends BodyTagSupport {
 		return src.length() != len;
 	}
 
+	private boolean simpleReplaceAllEmoticons(StringBuilder src, String search, String replacement) {
+		if (search == null || search.length() == 0) return false;
+		int i = 0;
+		int len = src.length();
+		while ((i = src.indexOf(search, i)) != -1) {
+			if (emotiCount++ > MAX_EMOTICONS) break;
+			src.replace(i, i + search.length(), replacement);
+			i += replacement.length();
+		}
+		return src.length() != len;
+	}
+
 	/* never used ?
 	private static void simpleReplaceFirst(StringBuilder src, String search, String replacement) {
 		if (search == null || search.length() == 0) return;
@@ -560,26 +583,26 @@ public class MessageTag extends BodyTagSupport {
 	private static final char[] TAG_S_END = "</s>".toCharArray();
 	private static final char[] TAG_U_END = "</u>".toCharArray();
 	private static final char[] PRE_TAG_END = "</pre>".toCharArray();
-	
+
 	private static final char[] TAG_BR = "<br>".toCharArray();
-	
+
 	private static final char[] CODE = "[code".toCharArray();
 	private static final char[] CODE_END = "[/code]".toCharArray();
-	
+
 	private static final char[] IMG = "[img]".toCharArray();
 	private static final char[] IMG_END = "[/img]".toCharArray();
-	
+
 	private static final char[] YT = "[yt]".toCharArray();
 	private static final char[] YT_END = "[/yt]".toCharArray();
-	
+
 	private static final char[] COLOR = "[color ".toCharArray();
 	private static final char[] COLOR_END = "[/color]".toCharArray();
-	
+
 	private static final String QUOTE = "&gt;";
 	private static final String SP_QUOTE = " &gt;";
-	
+
 	//----- test -----
-	
+
 	// injection varie
 	// http://localhost:8080/fdtduezero/Threads?action=getByThread&threadId=2658737
 	// [code]
