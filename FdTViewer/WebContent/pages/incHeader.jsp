@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page trimDirectiveWhitespaces="true" %>
+<%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <%! static final long bootTime = System.currentTimeMillis(); %>
 <img id="headerimg" alt="" src="./images/2.0.png" />
 <div id="header">
@@ -14,3 +15,6 @@
 		</p>
 	</c:if>
 </div>
+<fdt:delayedScript dump="false">
+	var enableAutoRefresh = '${enableAutoRefresh}';
+</fdt:delayedScript>

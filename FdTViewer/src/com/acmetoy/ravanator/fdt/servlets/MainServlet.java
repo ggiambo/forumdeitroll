@@ -340,4 +340,15 @@ public abstract class MainServlet extends HttpServlet {
 			}
 		}
 	}
+	
+	/**
+	 * Se e' il caso, abilita l'auto refresh (F5 o melaqualcosa) di questa pagina
+	 * @param req
+	 */
+	void enableAutoRefresh(HttpServletRequest req) {
+		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+		if (loggedUser != null && loggedUser.isValid()) {
+			req.setAttribute("enableAutoRefresh", loggedUser.getPreferences().get("enableAutoRefresh"));
+		}
+	}
 }

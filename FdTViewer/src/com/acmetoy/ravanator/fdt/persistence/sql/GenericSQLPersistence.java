@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -950,8 +951,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public ConcurrentHashMap<String, String> getPreferences(AuthorDTO user) {
-		final ConcurrentHashMap<String, String> r = new ConcurrentHashMap<String, String>();
+	public Map<String, String> getPreferences(AuthorDTO user) {
+		final Map<String, String> r = new ConcurrentHashMap<String, String>();
 		if (user == null || !user.isValid()) {
 			return r;
 		}
@@ -1007,7 +1008,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public ConcurrentHashMap<String, String> setPreference(AuthorDTO user, String key, String value) {
+	public Map<String, String> setPreference(AuthorDTO user, String key, String value) {
 		if (!getPreferences(user).keySet().contains(key)) {
 			insertPreference(user, key, value);
 		} else {

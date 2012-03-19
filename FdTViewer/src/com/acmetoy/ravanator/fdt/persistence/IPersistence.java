@@ -2,8 +2,8 @@ package com.acmetoy.ravanator.fdt.persistence;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 public interface IPersistence extends Serializable {
 
@@ -74,9 +74,9 @@ public interface IPersistence extends Serializable {
 
 	public PrivateMsgDTO getPvtDetails(long pvt_id, AuthorDTO user);
 
-	public ConcurrentHashMap<String, String> getPreferences(AuthorDTO user);
+	public Map<String, String> getPreferences(AuthorDTO user);
 
-	public ConcurrentHashMap<String, String> setPreference(AuthorDTO user, String key, String value);
+	public Map<String, String> setPreference(AuthorDTO user, String key, String value);
 
 	public List<String> searchAuthor(String searchString);
 

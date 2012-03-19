@@ -83,6 +83,10 @@ public class Messages extends MainServlet {
 
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			// se non ci sono parametri (/Messages), allora abilitiamo l'autoRefresh
+			if (req.getParameterMap().isEmpty()) {
+				enableAutoRefresh(req);
+			}
 			setWebsiteTitle(req, "Forum dei troll");
 			return getByPage.action(req, res);
 		}

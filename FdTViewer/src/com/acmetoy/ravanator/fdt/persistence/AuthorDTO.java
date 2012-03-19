@@ -37,7 +37,7 @@ public class AuthorDTO implements Serializable {
 
 	protected String salt = null, hash = null;
 
-	private ConcurrentHashMap<String, String> preferences = new ConcurrentHashMap<String, String>();
+	private Map<String, String> preferences = new ConcurrentHashMap<String, String>();
 
 	public String getNick() {
 		return nick;
@@ -87,8 +87,9 @@ public class AuthorDTO implements Serializable {
 		return preferences;
 	}
 
-	public void setPreferences(final ConcurrentHashMap<String, String> preferences) {
-		this.preferences = preferences;
+	public void setPreferences(final Map<String, String> preferences) {
+		this.preferences.clear();
+		this.preferences.putAll(preferences);
 	}
 
 	public void changePassword(final String password) {

@@ -104,6 +104,15 @@
 								</div>
 								<div style="clear: both;"></div>
 							</div>
+							<div>
+								<div class="inputUserPanel">
+									<input type="checkbox" name="<%=User.PREF_ENABLE_AUTO_REFRESH%>" id="<%=User.PREF_ENABLE_AUTO_REFRESH%>" ${loggedUser.preferences['enableAutoRefresh']} />
+								</div>
+								<div class="lblUserPanel">
+									<label for="<%=User.PREF_ENABLE_AUTO_REFRESH%>" class="lbl">Refresh ogni 2 minuti</label>
+								</div>
+								<div style="clear: both;"></div>
+							</div>
 							<input type="submit" value="Modifica" class="sendUserPanel" />
 						</form>
 						<div style="clear: both;"></div>

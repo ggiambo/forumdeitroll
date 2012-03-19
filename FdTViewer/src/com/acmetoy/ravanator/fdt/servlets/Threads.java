@@ -70,6 +70,10 @@ public class Threads extends MainServlet {
 	 */
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			// se non ci sono parametri (/Threads), allora abilitiamo l'autoRefresh
+			if (req.getParameterMap().isEmpty()) {
+				enableAutoRefresh(req);
+			}
 			return initWithMessage(req, res, NavigationMessage.info("Thread nuovi"));
 		}
 	};
