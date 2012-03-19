@@ -20,6 +20,7 @@
 				${navigationMessage.content}
 				</div>
 			</li>
+			<span style="float: right"><a href="/faqs.html">FAQ</a></span>
 		</c:if>
 		<c:if test="${navForum != null}">
 			<c:choose>
