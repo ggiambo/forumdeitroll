@@ -5,45 +5,84 @@
 	<ul>
 		<c:if test="${navigationMessage != ''}">
 			<li>
-				<div class="navigationMessage${navigationMessage.type}">${navigationMessage.content}</div>
+				<div class="navigationMessage${navigationMessage.type}">
+
+				<c:choose>
+					<c:when test="${navForum == ''}">
+						Tutto il forum &mdash;
+					</c:when>
+					<c:when test="${navForum == null}">
+					</c:when>
+					<c:otherwise>
+						<c:out value="${navForum}"/> &mdash;
+					</c:otherwise>
+				</c:choose>
+				${navigationMessage.content}
+				</div>
 			</li>
 		</c:if>
 		<c:if test="${navForum != null}">
-			<li>
-				FdT/<c:out value="${navForum}"/>, visualizza:
-				<select id='navSelect' onchange='javascript:navchange("${navForum}")'>
-					<c:if test="${navType == ''}">
-						<option value="nothing" selected>---</option>
-					</c:if>
+			<c:choose>
+				<c:when test="${navForum == 'Principale'}">
+					<c:url value="Messages" var="cronoUrl">
+						<c:param name="action" value="getByForum"></c:param>
+						<c:param name="forum" value=""></c:param>
+					</c:url>
+				</c:when>
+				<c:when test="${navForum != ''}">
+					<c:url value="Messages" var="cronoUrl">
+						<c:param name="action" value="getByForum"></c:param>
+						<c:param name="forum" value="${navForum}"></c:param>
+					</c:url>
+				</c:when>
+				<c:otherwise>
+					<c:url value="Messages" var="cronoUrl">
+					</c:url>
+				</c:otherwise>
+			</c:choose>
 
-					<c:choose>
-						<c:when test="${navType == 'crono'}">
-							<option value="crono" selected>Cronologia messaggi</option>
-						</c:when>
-						<c:otherwise>
-							<option value="crono">Cronologia messaggi</option>
-						</c:otherwise>
-					</c:choose>
+			<c:choose>
+				<c:when test="${navForum == 'Principale'}">
+					<c:url value="Threads" var="nthreadUrl">
+						<c:param name="action" value="init"></c:param>
+						<c:param name="forum" value=""></c:param>
+					</c:url>
+				</c:when>
+				<c:when test="${navForum != ''}">
+					<c:url value="Threads" var="nthreadUrl">
+						<c:param name="action" value="init"></c:param>
+						<c:param name="forum" value="${navForum}"></c:param>
+					</c:url>
+				</c:when>
+				<c:otherwise>
+					<c:url value="Threads" var="nthreadUrl">
+					</c:url>
+				</c:otherwise>
+			</c:choose>
 
-					<c:choose>
-						<c:when test="${navType == 'nthread'}">
-							<option value="nthread" selected>Thread nuovi</option>
-						</c:when>
-						<c:otherwise>
-							<option value="nthread">Thread nuovi</option>
-						</c:otherwise>
-					</c:choose>
+			<c:choose>
+				<c:when test="${navForum == 'Principale'}">
+					<c:url value="Threads" var="cthreadUrl">
+						<c:param name="action" value="getThreadsByLastPost"></c:param>
+						<c:param name="forum" value=""></c:param>
+					</c:url>
+				</c:when>
+				<c:when test="${navForum != ''}">
+					<c:url value="Threads" var="cthreadUrl">
+						<c:param name="action" value="getThreadsByLastPost"></c:param>
+						<c:param name="forum" value="${navForum}"></c:param>
+					</c:url>
+				</c:when>
+				<c:otherwise>
+					<c:url value="Threads" var="cthreadUrl">
+						<c:param name="action" value="getThreadsByLastPost"></c:param>
+					</c:url>
+				</c:otherwise>
+			</c:choose>
 
-					<c:choose>
-						<c:when test="${navType == 'cthread'}">
-							<option value="cthread" selected>Thread aggiornati</option>
-						</c:when>
-						<c:otherwise>
-							<option value="cthread">Thread aggiornati</option>
-						</c:otherwise>
-					</c:choose>
-				</select>
-			</li>
+			<li><a href="${cronoUrl}">Cronologia</a></li>
+			<li><a href="${nthreadUrl}">Thread nuovi</a></li>
+			<li><a href="${cthreadUrl}">Thread aggiornati</a></li>
 			<li>|</li>
 		</c:if>
 		<c:if test="${navForum == null}">

@@ -305,7 +305,6 @@ public abstract class MainServlet extends HttpServlet {
 		public String getType() {
 			return type.name();
 		}
-
 	}
 
 	/**

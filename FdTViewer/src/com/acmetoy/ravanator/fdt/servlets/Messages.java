@@ -97,7 +97,7 @@ public class Messages extends MainServlet {
 	 */
 	protected GiamboAction getByPage = new GiamboAction("getByPage", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			return initWithMessage(req, res, NavigationMessage.info("Ordinati cronologicamente"));
+			return initWithMessage(req, res, NavigationMessage.info("Cronologia messaggi"));
 		}
 	};
 
@@ -140,7 +140,7 @@ public class Messages extends MainServlet {
 			}
 
 			addSpecificParam(req, "forum", forum);
-			setNavigationMessage(req, NavigationMessage.info("Forum <i>" + forum + "</i>"));
+			setNavigationMessage(req, NavigationMessage.info("Cronologia messaggi"));
 			MessagesDTO messages = getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req));
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());

@@ -70,7 +70,7 @@ public class Threads extends MainServlet {
 	 */
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			return initWithMessage(req, res, NavigationMessage.info("Ordinati per data inizio discussione"));
+			return initWithMessage(req, res, NavigationMessage.info("Thread nuovi"));
 		}
 	};
 
@@ -98,7 +98,7 @@ public class Threads extends MainServlet {
 
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
-			setNavigationMessage(req, NavigationMessage.info("Ordinati per ultimo post"));
+			setNavigationMessage(req, NavigationMessage.info("Thread aggiornati"));
 			return "threadsByLastPost.jsp";
 		}
 	};

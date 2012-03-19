@@ -28,14 +28,57 @@
 		<input type="submit" value="Cerca"/>
 	</form>
 	<ul>
-		<li><a href="Messages">Forum dei Troll / Tutto</a></li>
-		<li><a href="Messages?action=getByForum&forum=">Forum dei Troll / Principale</a></li>
+		<c:choose>
+			<c:when test="${navType == 'nthread'}">
+				<c:url value="Threads" var="allUrl">
+				</c:url>
+				<c:url value="Threads" var="mainUrl">
+					<c:param name="forum" value=""></c:param>
+				</c:url>
+			</c:when>
+			<c:when test="${navType == 'cthread'}">
+				<c:url value="Threads" var="allUrl">
+					<c:param name="action" value="getThreadsByLastPost"></c:param>
+				</c:url>
+				<c:url value="Threads" var="mainUrl">
+					<c:param name="action" value="getThreadsByLastPost"></c:param>
+					<c:param name="forum" value=""></c:param>
+				</c:url>
+			</c:when>
+			<c:otherwise>
+				<c:url value="Messages" var="allUrl">
+				</c:url>
+				<c:url value="Messages" var="mainUrl">
+					<c:param name="action" value="getByForum"></c:param>
+					<c:param name="forum" value=""></c:param>
+				</c:url>
+			</c:otherwise>
+		</c:choose>
+		<li><a href="${allUrl}">Forum dei Troll / Tutto</a></li>
+		<li><a href="${mainUrl}">Forum dei Troll / Principale</a></li>
 		<c:forEach items="${forums}" var="forum">
 			<li>
-				<c:url value="Messages" var="forumUrl">
-					<c:param name="action" value="getByForum"></c:param>
-					<c:param name="forum" value="${forum}"></c:param>
-				</c:url>
+				<c:choose>
+					<c:when test="${navType == 'nthread'}">
+						<c:url value="Threads" var="forumUrl">
+							<c:param name="action" value="init"></c:param>
+							<c:param name="forum" value="${forum}"></c:param>
+						</c:url>
+					</c:when>
+					<c:when test="${navType == 'cthread'}">
+						<c:url value="Threads" var="forumUrl">
+							<c:param name="action" value="getThreadsByLastPost"></c:param>
+							<c:param name="forum" value="${forum}"></c:param>
+						</c:url>
+					</c:when>
+					<c:otherwise>
+						<c:url value="Messages" var="forumUrl">
+							<c:param name="action" value="getByForum"></c:param>
+							<c:param name="forum" value="${forum}"></c:param>
+						</c:url>
+					</c:otherwise>
+				</c:choose>
+
 				<a href="<c:out value="${forumUrl}" escapeXml="true"/>">${forum}</a>
 			</li>
 		</c:forEach>
