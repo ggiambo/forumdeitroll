@@ -18,11 +18,13 @@ function showSidebar() {
 }
 
 function showReplyDiv(type, parentId) {
+	$("#buttons_" + parentId).hide();
+	$("body").css("cursor", "progress");
 	$.get("Messages?action=showReplyDiv&type=" + type + "&parentId=" + parentId,
 		function(data) {
 			$("#msg" + parentId).append($(data));
-			$("#buttons_" + parentId).hide();
 			$("#reply_" + parentId + " :input[name='text']").focus();
+			$("body").css("cursor", "auto");
 	});
 }
 
