@@ -248,11 +248,17 @@ public class MessageTag extends BodyTagSupport {
 	}
 
 	private boolean link() {
-		if (word.indexOf("http://") == 0 || word.indexOf("https://") == 0 ||
-				word.indexOf("www.") == 0 || word.indexOf("ftp://") == 0 || word.indexOf("mailto:") == 0) {
+		boolean isLink =
+				word.indexOf("http://") == 0 ||
+				word.indexOf("https://") == 0 ||
+				word.indexOf("www.") == 0 ||
+				word.indexOf("ftp://") == 0 ||
+				word.indexOf("mailto:") == 0 ||
+				word.indexOf("/") == word.indexOf(".com/") + 4;
+		if (isLink) {
 			String url = escape(word);
 			String desc = word.toString();
-			if (url.startsWith("www.")) {
+			if (url.startsWith("www.") || word.indexOf("/") == word.indexOf(".com/") + 4) {
 				url = "http://" + url;
 			}
 			if (desc.length() > 50) {
