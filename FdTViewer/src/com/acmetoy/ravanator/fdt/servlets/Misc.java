@@ -108,6 +108,7 @@ public class Misc extends HttpServlet {
 	 */
 	private void getAvatar(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String nick = req.getParameter("nick");
+		res.setHeader("Cache-Control", "max-age=3600");
 		AuthorDTO author = persistence.getAuthor(nick);
 		if (author.isValid()) {
 			if (author.getAvatar() != null) {
