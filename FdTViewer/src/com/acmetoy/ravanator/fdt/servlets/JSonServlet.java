@@ -253,7 +253,9 @@ public class JSonServlet extends HttpServlet {
 		
 		writer.beginArray();
 		for (AuthorDTO authorDTO : result) {
+			writer.beginObject();
 			encodeAuthor(authorDTO, writer);
+			writer.endObject();
 		}
 		writer.endArray();
 		
@@ -334,7 +336,6 @@ public class JSonServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	private void encodeAuthor(AuthorDTO author, JsonWriter writer) throws IOException {
-		writer.beginObject();
 		writer.name("author");
 		writer.beginObject();
 		writer.name("nick").value(author.getNick());
@@ -344,7 +345,6 @@ public class JSonServlet extends HttpServlet {
 			writer.name("avatar").value(new BASE64Encoder().encode(author.getAvatar()));
 		}
 		encodeQuotes(persistence.getQuotes(author), writer);
-		writer.endObject();
 		writer.endObject();
 	}
 	
