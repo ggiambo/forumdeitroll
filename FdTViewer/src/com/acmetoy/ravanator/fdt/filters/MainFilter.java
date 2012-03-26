@@ -47,7 +47,7 @@ public class MainFilter implements Filter {
 		// mostrare il disclaimer ?
 		if (req.getSession(false) == null) {
 			if (!"OK".equals(req.getParameter("disclaimer"))) {
-				String originalURL = req.getRequestURL().toString();
+				String originalURL = req.getRequestURI();
 				if (req.getQueryString() != null) {
 					originalURL += "?" + req.getQueryString();
 				}
