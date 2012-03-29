@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <div class="userPanelSection">
 	<c:if test="${from == 'inbox' }">
@@ -52,7 +53,7 @@
 							<a href="Pvt?action=show&amp;id=${pvt.id}">${pvt.subject}</a>
 						</td>
 						<td class="pvtDate">
-							<a href="Pvt?action=show&amp;id=${pvt.id}"><fmt:formatDate value="${pvt.date}" pattern="dd/MM/yyyy"/></a>
+							<a href="Pvt?action=show&amp;id=${pvt.id}"><fmt:formatDate value="${pvt.date}" pattern="dd.MM.yyyy"/>&nbsp;<fmt:formatDate value="${pvt.date}" pattern="HH:mm"/></a>
 						</td>
 						<td class="pvtAction">
 							<a href="Pvt?action=delete&amp;id=${pvt.id}&amp;from=${from}" title="Cancella messaggio"><img src="images/delete.png" alt="Cancella" /></a>

@@ -672,7 +672,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 					msg.setId(pvt_id);
 					//msg.setFromNick(user.getNick());
 					msg.setFromNick(rs.getString("sender"));
-					msg.setDate(rs.getDate("senddate"));
+					msg.setDate(rs.getTimestamp("senddate"));
 					msg.setReplyTo(rs.getLong("replyTo"));
 					msg.setText(rs.getString("content"));
 					msg.setSubject(rs.getString("subject"));
@@ -710,7 +710,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				ps2.setLong(1, id);
 				rs2 = ps2.executeQuery();
 				rs2.next();
-				msg.setDate(rs2.getDate("senddate"));
+				msg.setDate(rs2.getTimestamp("senddate"));
 				msg.setSubject(rs2.getString("subject"));
 				msg.setFromNick(rs2.getString("sender"));
 				close(rs2, ps2, null);
@@ -890,7 +890,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				msg.setRead(true); // se l'ho mandato io...
 				msg.setId(rs.getLong("id"));
 				msg.setSubject(rs.getString("subject"));
-				msg.setDate(rs.getDate("senddate"));
+				msg.setDate(rs.getTimestamp("senddate"));
 				ps2 = conn.prepareStatement("SELECT recipient FROM pvt_recipient WHERE pvt_id = ?");
 				ps2.setLong(1, msg.getId());
 				rs2 = ps2.executeQuery();
@@ -993,7 +993,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<String> res = new ArrayList<String>();
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick LIKE ? AND hash IS NOT NULL");
+			ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick LIKE ? AND hash IS NOT NULL ORDER BY nick ASC");
 			ps.setString(1, searchString + "%");
 			rs = ps.executeQuery();
 			while (rs.next()) {
