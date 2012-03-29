@@ -24,6 +24,7 @@
 	</div>
 	<c:if test="${pvtdetail.fromNick != loggedUser.nick}">
 		<a href="Pvt?action=reply&amp;id=${pvtdetail.id}" class="pvtRispondiBtn">Rispondi</a>
+		<a href="Pvt?action=replyAll&amp;id=${pvtdetail.id}" class="pvtRispondiBtn">Rispondi a tutti</a>
 		<div style="clear: both;"></div>
 	</c:if>
 </div>

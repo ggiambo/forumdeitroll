@@ -845,6 +845,7 @@ div.userPanelSection form.pvtSendMessage input.sendPvt {
 
 div.userPanelSection table.pvtMessages {
 	width: 100%;
+	margin-bottom: 8px;
 }
 
 div.userPanelSection table.pvtMessages tr {
@@ -921,6 +922,7 @@ div.userPanelSection a.pvtRispondiBtn {
 	background-color: white;
 	text-align: center;
 	margin-top: 0.2em;
+	margin-right: 0.5em;
 }
 
 div.userPanelSection a.pvtRispondiBtn:hover {
@@ -962,26 +964,29 @@ input.counter {
 #recipientsDiv span {
 	display:block; 
 	margin:0 3px 3px 0; 
-	padding:3px 20px 4px 8px;
+	padding:1px 20px 1px 5px;
 	position:relative; 
 	float:left; 
 	background-color:#eee;
 	border:1px solid #333; 
-	-moz-border-radius:7px;
-	-webkit-border-radius:7px; 
-	border-radius:7px; color:#333;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px; 
+	border-radius:4px; color:#333;
 }
+
 #recipientsDiv span a {
 	position:absolute; 
 	right:8px; 
 	top:2px; 
-	color:#666;
+	color:#7BAAE7;
 	font:bold 12px Verdana, Sans-serif; 
 	text-decoration:none;
 }
+
 #recipientsDiv span a:hover { 
 	color:#ff0000; 
 }
+
 /* Sovrascriviamo il CSS di default che IMHO fa cacare */
 .ui-menu .ui-menu-item { 
 	white-space:nowrap; 
@@ -993,12 +998,25 @@ input.counter {
 .ui-corner-all .ui-state-hover {
 	background: white;
    	/*border: 1px solid #0A78FF;*/
-   	color: black;
-   	font-weight: bold;font-family: Arial,Helvetica,Sans,"Nimbus Sans",sans-serif;
+   	border: none;
+   	color: #0A78FF;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: bold;
+    cursor: pointer;
 }
+
+.ui-state-focus {
+	font:bold 12px Verdana, Sans-serif; 
+}
+
 .ui-widget-content {
 	padding: 3px;
 	box-shadow: 0 0 8px #0A78FF;
 	background: white;
-	font-family: Arial,Helvetica,Sans,"Nimbus Sans",sans-serif;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
 }

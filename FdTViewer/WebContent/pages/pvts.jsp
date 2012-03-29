@@ -21,9 +21,6 @@
 					<c:if test="${from == 'sendNew' }">
 						<jsp:include page="incPvtSendNew.jsp"/>
 					</c:if>
-					<c:if test="${from == 'sendNew2' }">
-						<jsp:include page="incPvtSendNew2.jsp"/>
-					</c:if>
 					
 					<c:if test="${from == 'show' }">
 						<jsp:include page="incPvtShow.jsp"/>
