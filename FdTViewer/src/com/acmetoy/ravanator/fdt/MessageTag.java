@@ -267,7 +267,7 @@ public class MessageTag extends BodyTagSupport {
 			for (String s : searches) {
 				int p = 0;
 				while ((p = desc.indexOf(s, p)) != -1) {
-					String hilight = String.format("<span style='color: yellow'>%s</span>", s);
+					String hilight = String.format("<span style='background-color: yellow'>%s</span>", s);
 					desc = desc.substring(0, p) + hilight+ desc.substring(p + s.length(), desc.length());
 					p += hilight.length();
 				}
@@ -280,7 +280,7 @@ public class MessageTag extends BodyTagSupport {
 
 	private void search() {
 		for (String s : searches) {
-			simpleReplaceAll(word, s, String.format("<span style='color: yellow'>%s</span>", s));
+			simpleReplaceAll(word, s, String.format("<span style='background-color: yellow'>%s</span>", s));
 		}
 	}
 
