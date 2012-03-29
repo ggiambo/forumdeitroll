@@ -137,7 +137,7 @@ function openThreadTree(threadId) {
 			$("#threadTree_" + threadId + " .threadTreeEntries").html(data);
 			$("#plus_" + threadId).hide();
 			$("#minus_" + threadId).show();
-		},
+		}
 	});
 }
 
@@ -187,6 +187,17 @@ jQuery("document").ready(function(){
 		}, 2000*60);
 	}
 	 */
+	
+	// collassa quotes
+	$('.quote-container').live('click', function() {
+		$(this).removeClass('quote-container');
+		$(this).addClass('quote-closer');
+	});
+	$('.quote-closer').live('click', function() {
+		$(this).removeClass('quote-closer');
+		$(this).addClass('quote-container');
+	});
+	
 });
 
 // tasto 'j' per saltare al prossimo messaggio
@@ -241,14 +252,6 @@ var update_counter = function(messageId, limit) {
 
 	} catch (e) {alert(e.message);}
 };
-
-document.addEventListener('click', function(evt) {
-	if (/quote\-container/.test(evt.target.className)) {
-		evt.target.className = 'quote-closer';
-	} else if (/quote\-closer/.test(evt.target.className)) {
-		evt.target.className = 'quote-container';
-	}
-});
 
 var getRandomQuote = function() {
 	jQuery.ajax("Messages?action=getRandomQuote", {
