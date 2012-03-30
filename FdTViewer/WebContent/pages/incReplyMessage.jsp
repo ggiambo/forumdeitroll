@@ -58,7 +58,7 @@
 	</div>
 	<c:if test="${isNewThread || isEdit || isReply}">
 		<label for="subject">Oggetto:</label><br /> 
-		<input tabindex="1" name="subject" id="subject" maxlength="<%=Messages.MAX_SUBJECT_LENGTH %>" size="<%=Messages.MAX_SUBJECT_LENGTH %>" class="msgReplyObj" value="${message.subject}"/>
+		<input tabindex="1" name="subject" id="subject" maxlength="<%=Messages.MAX_SUBJECT_LENGTH %>" size="<%=Messages.MAX_SUBJECT_LENGTH %>" class="msgReplyObj" value="<c:out value="${message.subject}" escapeXml="true"/>"/>
 	</c:if>
 	<c:if test="${not empty message.forum}">
 		Forum <i>${message.forum}</i>
