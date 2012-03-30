@@ -95,7 +95,7 @@
 			<li>|</li>
 		</c:if>
 		<c:if test="${navForum != null }">
-			<li><a href="Messages?action=newMessage&amp;forum=${param.forum}">Nuovo messaggio</a></li>
+			<li><a href="Messages?action=newMessage&amp;forum=${navForum}">Nuovo messaggio</a></li>
 			<li>|</li>
 		</c:if>
 		<c:choose>
