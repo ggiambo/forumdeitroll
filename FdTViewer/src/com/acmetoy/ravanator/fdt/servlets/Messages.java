@@ -42,7 +42,7 @@ public class Messages extends MainServlet {
 		EMO_MAP.put("1", new String[] {" :)", "Sorride" });
 		EMO_MAP.put("2", new String[] {" :d", "A bocca aperta"});
 		EMO_MAP.put("3", new String[] {" ;)", "Occhiolino"});
-		EMO_MAP.put("4", new String[] {" :o", "Sorpressa"});
+		EMO_MAP.put("4", new String[] {" :o", "Sorpresa"});
 		EMO_MAP.put("5", new String[] {" :p", "Con la lingua fuori"});
 		EMO_MAP.put("6", new String[] {" :\\", "A bocca storta"});
 		EMO_MAP.put("7", new String[] {" :@", "Arrabbiato"});
