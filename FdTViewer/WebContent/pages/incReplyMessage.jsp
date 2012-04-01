@@ -57,21 +57,21 @@
 		</div>
 	</div>
 	<c:if test="${isNewThread || isEdit || isReply}">
-		<label for="subject">Oggetto:</label><br /> 
+		<label for="subject">Oggetto:</label><br />
 		<input tabindex="1" name="subject" id="subject" maxlength="<%=Messages.MAX_SUBJECT_LENGTH %>" size="<%=Messages.MAX_SUBJECT_LENGTH %>" class="msgReplyObj" value="<c:out value="${message.subject}" escapeXml="true"/>"/>
 	</c:if>
 	<c:if test="${not empty message.forum}">
 		Forum <i>${message.forum}</i>
 	</c:if>
-	
+
 	<%-- input area --%>
-	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt" id="text_${message.id}" 
-	onkeyup="update_counter(${message.id},<%=Messages.MAX_MESSAGE_LENGTH%>)" 
+	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt" id="text_${message.id}"
+	onkeyup="update_counter(${message.id},<%=Messages.MAX_MESSAGE_LENGTH%>)"
 	onchange="update_counter(${message.id},<%=Messages.MAX_MESSAGE_LENGTH%>)">${message.text}</textarea>
-	
+
 	<%-- preview area --%>
 	<div id="preview_${message.parentId}" class="msgReplyTxt"></div>
-	
+
 	<input type="hidden" name="forum" value="${message.forum }"/>
 	<input type="hidden" name="id" value="${message.id }"/>
 	<div class="msgAnonBox">
@@ -82,8 +82,18 @@
 		<input tabindex="2" name="nick" id="nick" size="10" value="${loggedUser.nick }"/>&nbsp;&nbsp;
 		<label for="password">Password:&nbsp;</label>
 		<input tabindex="3" type="password" id="password" name="pass" size="10"/>
+		<c:if test="${loggedUser != null}">(inserisci soltanto se vuoi postare con un utente diverso da quello con cui sei loggato)</c:if>
 		<div class="msgCaptcha">
-			<div><img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" /></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">Copia qui il testo dell'immagine</div></div>
+			<div><img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" /></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">
+			<c:choose>
+				<c:when test="${loggedUser != null}">
+					Cancella il tuo nickname e copia qui il testo dell'immagine per postare come Non Autenticato.
+				</c:when>
+				<c:otherwise>
+					Copia qui il testo dell'immagine
+				</c:otherwise>
+			</c:choose>
+			</div></div>
 			<div style="clear: both;"></div>
 		</div>
 	</div>
@@ -91,6 +101,6 @@
 	<div style="clear: both;"></div>
 </div>
 <fdt:delayedScript dump="true">
-questa jsp non è inclusa in altre jsp, quindi gli script delayed
+questa jsp non Ã¨ inclusa in altre jsp, quindi gli script delayed
 vanno piazzati qua
 </fdt:delayedScript>

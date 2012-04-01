@@ -422,7 +422,7 @@ public class Messages extends MainServlet {
 			writer.close();
 			return null;
 		}
-		
+
 		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
 		AuthorDTO author = null;
 		String nick = req.getParameter("nick");
@@ -445,7 +445,7 @@ public class Messages extends MainServlet {
 				author = new AuthorDTO();
 			}
 		}
-		
+
 		if (author == null) {
 			//autenticazione fallita
 			JsonWriter writer = new JsonWriter(res.getWriter());
@@ -572,6 +572,18 @@ public class Messages extends MainServlet {
 		specificParams.put(key, value);
 	}
 
+	protected void forShame(final AuthorDTO author, final String shameTitle, final String shameMessage) {
+		final MessageDTO msg = new MessageDTO();
+		msg.setAuthor(author);
+		msg.setParentId(-1);
+		msg.setDate(new Date());
+		msg.setText(shameMessage);
+		msg.setSubject(shameTitle);
+		msg.setForum("FreeBan");
+		msg.setThreadId(-1);
+		getPersistence().insertMessage(msg);
+	}
+
 	protected GiamboAction pedonizeThreadTree = new GiamboAction("pedonizeThreadTree", ONGET) {
 		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -591,7 +603,15 @@ public class Messages extends MainServlet {
 				return initWithMessage(req, res, NavigationMessage.error("Verifica token fallita"));
 			}
 
-			getPersistence().pedonizeThreadTree(Long.parseLong(req.getParameter("rootMessageId")));
+			final long rootMessageId = Long.parseLong(req.getParameter("rootMessageId"));
+
+			getPersistence().pedonizeThreadTree(rootMessageId);
+
+			{ // moderator shaming block
+				final MessageDTO movedMessage = getPersistence().getMessage(rootMessageId);
+				forShame(loggedUser, "Pe: " + movedMessage.getSubject(), "" + loggedUser.getNick() + " ha spostato in procura il thread " + movedMessage.getSubject() + " http://forumdeitroll.com/Threads?action=getByThread&threadId=" + rootMessageId);
+			}
+
 			setNavigationMessage(req, NavigationMessage.info("Pedonization completed."));
 			res.sendRedirect("Threads");
 			return null;
