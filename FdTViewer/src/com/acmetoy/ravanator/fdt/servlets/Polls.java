@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
@@ -223,7 +224,13 @@ public class Polls extends MainServlet {
 	protected GiamboAction getPollContent = new GiamboAction("getPollContent", ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			long pollId = Long.parseLong(req.getParameter("pollId"));
-			req.setAttribute("poll", getPersistence().getPoll(pollId));
+			PollDTO poll = getPersistence().getPoll(pollId);
+			req.setAttribute("poll", poll);
+			
+			// sanitized pollText
+			String pollText = StringEscapeUtils.escapeXml(poll.getText()).replaceAll("\n", "<br/>");
+			req.setAttribute("pollText", pollText);
+			
 			return "pollContent.jsp";
 		}
 	};

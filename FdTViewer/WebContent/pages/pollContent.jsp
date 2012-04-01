@@ -8,7 +8,9 @@
 <div id="main">
 
 	<div class="userPanel">
-		<div class="userPanelCaption">${poll.title}</div>
+		<div class="userPanelCaption">
+			<c:out value="${poll.title}" escapeXml="true" />
+		</div>
 		
 		<%-- Mostra la chart se almeno una persona ha votato --%>
 		<c:set var="votes" value="0" />
@@ -22,7 +24,7 @@
 		</c:if>
 		
 		<div class="userPanelSection">
-			${poll.text}
+			${pollText}
 		</div>
 		
 		<%-- Mostra la possibilita' di votare solo ai registrati che non hanno ancora votato--%>
@@ -41,7 +43,8 @@
 								<input type="hidden" name="action" value="answerPoll"/>
 								<input type="hidden" name="pollId" value="${poll.id}"/>
 								<c:forEach items="${poll.pollQuestions}" var="question" varStatus="index">
-									<input type="radio" name="pollSequence" value="${index.index}">&nbsp;${question.text}<br/>
+									<input type="radio" name="pollSequence" value="${index.index}">
+									&nbsp;<c:out value="${question.text}" escapeXml="true" /><br/>
 								</c:forEach>
 								<input type="submit" value="Vota !"/>
 								<div style="clear: both;"></div>
