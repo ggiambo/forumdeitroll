@@ -214,7 +214,7 @@ public class PagerTag extends TagSupport  {
 			@Override
 			public int getMaxPages(PageContext pageContext) {
 				List<MessageDTO> messages = (List<MessageDTO>) pageContext.getRequest().getAttribute("messages");
-				if (messages.size() < MainServlet.PAGE_SIZE)
+				if (messages != null && messages.size() < MainServlet.PAGE_SIZE)
 					return getCurrentPage(pageContext);
 				else {
 					ServletRequest req = pageContext.getRequest();

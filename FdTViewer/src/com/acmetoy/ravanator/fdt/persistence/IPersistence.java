@@ -81,5 +81,15 @@ public interface IPersistence extends Serializable {
 	public List<String> searchAuthor(String searchString);
 
 	public void pedonizeThreadTree(long rootMessageId);
+	
+	public void createPoll(PollDTO pollDTO);
+	
+	public boolean updatePollQuestion(PollQuestion pollQuestion, AuthorDTO user);
+	
+	public PollsDTO getPollsByDate(int limit, int page);
+	
+	public PollsDTO getPollsByLastVote(int limit, int page);
+
+	public PollDTO getPoll(long pollId);
 
 }

@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -24,6 +25,9 @@ import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
+import com.acmetoy.ravanator.fdt.persistence.PollDTO;
+import com.acmetoy.ravanator.fdt.persistence.PollQuestion;
+import com.acmetoy.ravanator.fdt.persistence.PollsDTO;
 import com.acmetoy.ravanator.fdt.persistence.PrivateMsgDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
@@ -334,7 +338,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(i++, message.getSubject());
 			ps.setString(i++, message.getAuthor().getNick());
 			ps.setString(i++, message.getForum());
-			ps.setTimestamp(i++, new java.sql.Timestamp(message.getDate().getTime()));
+			ps.setTimestamp(i++, new Timestamp(message.getDate().getTime()));
 			ps.execute();
 			// update count
 			increaseNumberOfMessages(message.getForum(), false);
@@ -364,7 +368,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(i++, message.getSubject());
 			ps.setString(i++, message.getAuthor().getNick());
 			ps.setString(i++, message.getForum());
-			ps.setTimestamp(i++, new java.sql.Timestamp(message.getDate().getTime()));
+			ps.setTimestamp(i++, new Timestamp(message.getDate().getTime()));
 			ps.execute();
 			// update count
 			increaseNumberOfMessages(message.getForum(), true);
@@ -1016,6 +1020,162 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return getPreferences(user);
 	}
+	
+	@Override
+	public void createPoll(PollDTO pollDTO) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			Timestamp now = new Timestamp(System.currentTimeMillis());
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			ps = conn.prepareStatement("INSERT INTO poll (title, author, text, creationDate, updateDate) VALUES (?, ?, ?, ?, ?)", 
+					Statement.RETURN_GENERATED_KEYS);
+			ps.setString(1, pollDTO.getTitle());
+			ps.setString(2, pollDTO.getAuthor());
+			ps.setString(3, pollDTO.getText());
+			ps.setTimestamp(4, now);
+			ps.setTimestamp(5, now);
+			ps.execute();
+			// get generated id
+			rs = ps.getGeneratedKeys();
+			rs.next();
+			long pollId = rs.getLong(1);
+			// insert poll questions
+			for (PollQuestion question : pollDTO.getPollQuestions()) {
+				ps = conn.prepareStatement("INSERT INTO poll_question (pollId, sequence, text, votes) VALUES (?, ?, ?, ?)");
+				ps.setLong(1, pollId);
+				ps.setInt(2, question.getSequence());
+				ps.setString(3, question.getText());
+				ps.setInt(4, 0);
+				ps.execute();
+			}
+			conn.commit();
+		} catch (SQLException e) {
+			LOG.error("Cannot create poll " + pollDTO, e);
+		} finally {
+			close(null, ps, conn);
+		}
+	}
+	
+	@Override
+	public boolean updatePollQuestion(PollQuestion pollQuestion, AuthorDTO user) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			// check se ha gia' votato
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT COUNT(*) AS cnt FROM poll_user WHERE pollId = ? AND nick = ?");
+			ps.setLong(1, pollQuestion.getPollId());
+			ps.setString(2, user.getNick());
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				if (rs.getInt("cnt") != 0) {
+					return false;
+				}
+			}
+			// update
+			conn.setAutoCommit(false);
+			ps = conn.prepareStatement("UPDATE poll_question SET votes = votes + 1 WHERE pollId = ? and sequence = ?");
+			ps.setLong(1, pollQuestion.getPollId());
+			ps.setInt(2, pollQuestion.getSequence());
+			ps.execute();
+			// update update date :)
+			ps = conn.prepareStatement("UPDATE poll SET updateDate = ? WHERE id = ?");
+			ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+			ps.setLong(2, pollQuestion.getPollId());
+			ps.execute();
+			// 1 troll, i vote
+			ps = conn.prepareStatement("INSERT INTO poll_user (nick, pollId) VALUES (?, ?)");
+			ps.setString(1, user.getNick());
+			ps.setLong(2, pollQuestion.getPollId());
+			ps.execute();
+			conn.commit();
+		} catch (SQLException e) {
+			LOG.error("Cannot update pollQuestion " + pollQuestion, e);
+		} finally {
+			close(null, ps, conn);
+		}
+		return true;
+	}
+	
+	@Override
+	public PollsDTO getPollsByDate(int limit, int page) {
+		return  getPollsBy("creationDate", limit, page);
+	}
+	
+	@Override
+	public PollsDTO getPollsByLastVote(int limit, int page) {
+		return  getPollsBy("updateDate", limit, page);
+	}
+	
+	public PollsDTO getPollsBy(String by, int limit, int page) {
+		List<PollDTO> res = new ArrayList<PollDTO>();
+		int nrOfPolls = 0;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT * FROM poll ORDER BY " + by + " DESC LIMIT ? OFFSET ?");
+			ps.setInt(1, limit);
+			ps.setInt(2, limit*page);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				res.add(getPoll(conn, rs));
+			}
+			rs = conn.prepareStatement("SELECT COUNT(*) AS cnt FROM poll").executeQuery();
+			if (rs.next()) {
+				nrOfPolls = rs.getInt("cnt");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get polls with limit" + limit + " and page " + page, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return new PollsDTO(res, nrOfPolls);
+	}
+	
+	@Override
+	public PollDTO getPoll(long pollId) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT * FROM poll WHERE id = ?");
+			ps.setLong(1, pollId);
+			rs = ps.executeQuery();
+			rs.next();
+			return getPoll(conn, rs);
+		} catch (SQLException e) {
+			LOG.error("Cannot get polls with id" + pollId, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return null;
+	}
+	
+	private List<String> getPollVoterNicks(Connection conn, long pollId) {
+		List<String> ret = new ArrayList<String>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT nick FROM poll_user WHERE pollId = ?");
+			ps.setLong(1, pollId);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				ret.add(rs.getString("nick"));
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get polls with id" + pollId, e);
+		} finally {
+			close(rs, ps, null);
+		}
+		return ret;
+	}
 
 	private void insertPreference(AuthorDTO user, String key, String value) {
 		Connection conn = null;
@@ -1346,6 +1506,42 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} finally {
 			close(rs, ps, conn);
 		}
+	}
+	
+	private PollDTO getPoll(Connection conn, ResultSet rs) throws SQLException {
+		PollDTO pollDTO = new PollDTO();
+		pollDTO.setId(rs.getLong("id"));
+		pollDTO.setTitle(rs.getString("title"));
+		pollDTO.setAuthor(rs.getString("author"));
+		pollDTO.setText(rs.getString("text"));
+		pollDTO.setCreationDate(rs.getTimestamp("creationDate"));
+		pollDTO.setUpdateDate(rs.getTimestamp("updateDate"));
+		pollDTO.setPollQuestions(getPollQuestion(conn, pollDTO.getId()));
+		pollDTO.setVoterNicks(getPollVoterNicks(conn, pollDTO.getId()));
+		return pollDTO;
+	}
+	
+	private List<PollQuestion> getPollQuestion(Connection conn, long pollId) throws SQLException {
+		List<PollQuestion> res = new ArrayList<PollQuestion>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT * FROM poll_question WHERE pollId = ? ORDER BY sequence ASC");
+			ps.setLong(1, pollId);
+			rs = ps.executeQuery();
+			PollQuestion question;
+			while (rs.next()) {
+				question = new PollQuestion();
+				question.setPollId(pollId);
+				question.setSequence(rs.getInt("sequence"));
+				question.setText(rs.getString("text"));
+				question.setVotes(rs.getInt("votes"));
+				res.add(question);
+			}
+		} finally {
+			close(rs, ps, null);
+		}
+		return res;
 	}
 
 	protected final void close(ResultSet rs, Statement stmt, Connection conn) {

@@ -41,13 +41,21 @@
     <servlet-name>Misc</servlet-name>
     <url-pattern>/Misc</url-pattern>
   </servlet-mapping>
-    <servlet>
+   <servlet>
     <servlet-name>JSon</servlet-name>
     <servlet-class>com.acmetoy.ravanator.fdt.servlets.JSonServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>JSon</servlet-name>
     <url-pattern>/JSon</url-pattern>
+  </servlet-mapping>
+    <servlet>
+    <servlet-name>Polls</servlet-name>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Polls</servlet-class>
+  </servlet>
+   <servlet-mapping>
+    <servlet-name>Polls</servlet-name>
+    <url-pattern>/Polls</url-pattern>
   </servlet-mapping>
   <jsp-config>
     <taglib>
@@ -96,5 +104,6 @@
   	<url-pattern>/Threads/*</url-pattern>
   	<url-pattern>/User/*</url-pattern>
   	<url-pattern>/Pvt/*</url-pattern>
+  	<url-pattern>/Polls/*</url-pattern>
   </filter-mapping>
 </web-app>

@@ -87,6 +87,8 @@
 			<li>|</li>
 			<li><a href="${cthreadUrl}">Thread aggiornati</a></li>
 			<li>|</li>
+			<li><a href="Polls">Sondaggi</a></li>
+			<li>|</li>
 		</c:if>
 		<c:if test="${navForum == null}">
 			<li>
@@ -104,7 +106,15 @@
 						<c:param name="action" value="getAuthorThreadsByLastPost"/>
 						<c:param name="author" value="${loggedUser.nick}"/>
 				</c:url>
-				<li>Loggato come <a href="User">${loggedUser.nick}</a> | <fdt:pvt/> | <a href="<c:out value="${tuoiThreadURL}" escapeXml="true" />">Tuoi thread</a> |  [<a href="Misc?action=logoutAction">Logout</a>]</li>
+				<li>Loggato come <a href="User">${loggedUser.nick}</a></li>
+				 <li>|</li>
+				 <li><fdt:pvt/></li>
+				 <li>|</li>
+				 <li><a href="<c:out value="${tuoiThreadURL}" escapeXml="true" />">Tuoi thread</a></li>
+				 <li>|</li>
+				 <li><a href="Polls?action=createNewPoll">Nuovo sondaggio</a></li>
+				 <li>|</li>
+				 <li>[<a href="Misc?action=logoutAction">Logout</a>]</li>
 			</c:when>
 			<c:otherwise>
 				<li><a href="User?action=loginAction">Login</a></li>
