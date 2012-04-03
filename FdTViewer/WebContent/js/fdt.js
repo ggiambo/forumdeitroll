@@ -129,6 +129,37 @@ function insert(openTag, closeTag, parentId) {
 	}
 }
 
+var urlInput = function(parentId) {
+	var element = $("#reply_" + parentId + " :input[name='text']").get(0);
+	var url = prompt('Inserisci l\'url','');
+	if (!url) {
+		return;
+	}
+	var desc = prompt('Inserisci il testo da visualizzare','');
+	if (desc == null) {
+		return;
+	}
+	var html = '';
+	if (desc === '') {
+		html = '[url]' + url + '[/url]';
+	} else {
+		html = '[url=' + url + ']' + desc + '[/url]';	
+	}
+	//IE
+	if (document.selection) {
+		element.focus();
+		var sel  = doucment.selection.createRange();
+		sel.moveStart('character', -element.value.length);
+		var pos = sel.text.length;
+		element.value = element.value.substring(0, pos) + html + element.value.substring(pos, element.value.length);
+	}
+	//FF
+	else if (element.selectionStart || element.selectionStart == '0') {
+		var pos = element.selectionStart;
+		element.value = element.value.substring(0, pos) + html + element.value.substring(pos, element.value.length);
+	}
+};
+
 function openThreadTree(threadId) {
 	jQuery.ajax({
 		type: "GET",
