@@ -117,6 +117,9 @@ public class MessageTag extends BodyTagSupport {
 			} else if (found(CODE)) {
 				on_word();
 				code();
+			} else if (found(URL)) {
+				on_word();
+				url();
 			} else if (found(IMG)) {
 				on_word();
 				img(loggedUser);
@@ -247,20 +250,29 @@ public class MessageTag extends BodyTagSupport {
 		}
 	}
 
+	private static boolean isLink(StringBuilder candidate) {
+		return candidate.indexOf("http://") == 0 ||
+				candidate.indexOf("https://") == 0 ||
+				candidate.indexOf("www.") == 0 ||
+				candidate.indexOf("ftp://") == 0 ||
+				candidate.indexOf("mailto:") == 0 ||
+				(candidate.indexOf(".com/") != -1 && candidate.indexOf("/") == candidate.indexOf(".com/") + 4) ||
+				(candidate.indexOf(".it/") != -1 && candidate.indexOf("/") == candidate.indexOf(".it/") + 3);
+	}
+	private static String addHttpProtocol(String url) {
+		if (url.startsWith("www.")
+			|| url.indexOf("/") == url.indexOf(".com/") + 4
+			|| url.indexOf("/") == url.indexOf(".it/") + 3) {
+			return "http://" + url;
+		} else {
+			return url;
+		}
+	}
 	private boolean link() {
-		boolean isLink =
-				word.indexOf("http://") == 0 ||
-				word.indexOf("https://") == 0 ||
-				word.indexOf("www.") == 0 ||
-				word.indexOf("ftp://") == 0 ||
-				word.indexOf("mailto:") == 0 ||
-				word.indexOf("/") == word.indexOf(".com/") + 4;
-		if (isLink) {
+		if (isLink(word)) {
 			String url = escape(word);
 			String desc = word.toString();
-			if (url.startsWith("www.") || word.indexOf("/") == word.indexOf(".com/") + 4) {
-				url = "http://" + url;
-			}
+			url = addHttpProtocol(url);
 			if (desc.length() > 50) {
 				desc = desc.substring(0, 50) + "...";
 			}
@@ -274,6 +286,7 @@ public class MessageTag extends BodyTagSupport {
 			}
 			word.setLength(0);
 			word.append(String.format("<a href=\"%s\" target='_blank'>%s</a>", url, desc));
+			return true;
 		}
 		return false;
 	}
@@ -308,7 +321,77 @@ public class MessageTag extends BodyTagSupport {
 			}
 		}
 	}
-
+	
+	private void url() {
+		switch (body[p + URL.length]) {
+		case ']': {
+			int p_end = scanFor(URL_END);
+			int p_sp = scanFor(' ');
+			int p_br = iscanFor(TAG_BR, Messages.MAX_MESSAGE_LENGTH);
+			boolean broken = p_sp != -1 ? p_sp < p_end : p_br != -1 ? p_br < p_end : false;
+			if (p_end != -1 && !broken) {
+				// [url]...[/url]
+				word.append(body, p + URL.length + 1, p_end - (p + URL.length + 1));
+				if (!link()) {
+					word.insert(0, URL);
+					word.insert(URL.length, ']');
+					word.append(URL_END);
+				}
+				line.append(word);
+				word.setLength(0);
+				p = p_end + URL_END.length - 1;
+			} else {
+				// [url]...... senza [/url]
+				line.append(URL).append(']');
+				p += URL.length;
+			}
+			break;
+		}
+		case '=': {
+			int p_url_end = scanFor(']');
+			int p_sp = scanFor(' ');
+			int p_br = iscanFor(TAG_BR, Messages.MAX_MESSAGE_LENGTH);
+			boolean broken = p_sp != -1 ? p_sp < p_url_end : p_br != -1 ? p_br < p_url_end : false;
+			if (p_url_end != -1 && !broken) {
+				p += URL.length + 1;
+				int p_end = scanFor(URL_END);
+				p_br = iscanFor(TAG_BR, Messages.MAX_MESSAGE_LENGTH);
+				broken = p_br != -1 ? p_br < p_end : false;
+				if (p_end != -1 && !broken) {
+					// [url=...] ... [/url]
+					StringBuilder url = new StringBuilder().append(body, p, p_url_end - p);
+					if (isLink(url)) {
+						p -= URL.length + 1;
+						String normalized_url = escape(addHttpProtocol(url.toString()));
+						String desc = new StringBuilder()
+							.append(body, p_url_end + 1, p_end - (p_url_end + 1))
+							.toString();
+						line.append(String.format("<a href=\"%s\" target='_blank'>%s</a>", normalized_url, desc));
+						p = p_end + URL_END.length - 1;
+					} else {
+						// [url=non_url]...[/url]
+						p -= URL.length + 1;
+						line.append(body, p, (p_end - p) + URL_END.length);
+						p = p_end + URL_END.length - 1;
+					}
+				} else {
+					//[url=...]... senza [/url]
+					line.append(URL).append('=').append(body, p, p_url_end - (p-1));
+					p += (p_url_end - p);
+				}
+			} else {
+				// [url=.... senza ] o separato da spazi
+				line.append(URL).append('=');
+				p += URL.length;
+			}
+			break;
+		}
+		default:
+			line.append(URL);
+			p += URL.length - 1;
+		}
+	}
+	
 	private void code() {
 		if (']' == body[p + CODE.length]) {
 			p += CODE.length;
@@ -603,6 +686,9 @@ public class MessageTag extends BodyTagSupport {
 
 	private static final char[] COLOR = "[color ".toCharArray();
 	private static final char[] COLOR_END = "[/color]".toCharArray();
+	
+	private static final char[] URL = "[url".toCharArray();
+	private static final char[] URL_END = "[/url]".toCharArray();
 
 	private static final String QUOTE = "&gt;";
 	private static final String SP_QUOTE = " &gt;";
