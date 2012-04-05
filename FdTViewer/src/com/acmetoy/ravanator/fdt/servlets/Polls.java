@@ -210,7 +210,9 @@ public class Polls extends MainServlet {
 	        
 	        // write chart
 			res.setContentType("image/png");
-			res.setHeader("Cache-Control:", "max-age=0");
+			res.setHeader("Cache-Control", "no-cache");
+			res.setHeader("Pragma", "no-cache");
+			res.setHeader("Expires", "-1");
 			OutputStream outputStream = res.getOutputStream();
 			ChartUtilities.writeChartAsPNG(outputStream, chart, CHART_WIDTH, 300);
 
