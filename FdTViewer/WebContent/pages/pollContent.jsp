@@ -2,7 +2,6 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <jsp:include page="incTop.jsp" />
 <div id="main">
@@ -13,11 +12,7 @@
 		</div>
 		
 		<%-- Mostra la chart se almeno una persona ha votato --%>
-		<c:set var="votes" value="0" />
-		<c:forEach items="${poll.pollQuestions}" var="question">
-			<c:set var="votes" value="${votes + question.votes}"/>
-		</c:forEach>
-		<c:if test="${votes > 0}">
+		<c:if test="${not empty poll.voterNicks}">
 			<div class="userPanelSection">
 				<img class="pollPie" src="Polls?action=getChart&pollId=${poll.id}"/>
 			</div>
@@ -27,7 +22,7 @@
 			${pollText}
 		</div>
 		
-		<%-- Mostra la possibilita' di votare solo ai registrati che non hanno ancora votato--%>
+		<%-- Mostra la possibilita' di votare solo ai registrati che non hanno ancora votato --%>
 		<div class="userPanelSection">
 			<c:choose>
 				<c:when test="${not empty loggedUser}">

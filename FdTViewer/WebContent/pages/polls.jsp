@@ -20,7 +20,17 @@
 			<span class="pollTitle">
 				<a href="Polls?action=getPollContent&pollId=${poll.id}">${poll.title}</a>
 			</span>
-			(${fn:length(poll.pollQuestions)} domande)
+			- ${fn:length(poll.pollQuestions)} domande, 
+			<c:set var="votes" value="${fn:length(poll.voterNicks)}" />
+			${votes} 
+			<c:choose>
+				<c:when test="${votes == 1}">
+					voto
+				</c:when>
+				<c:otherwise>
+					voti
+				</c:otherwise>
+			</c:choose>
 			<div class="pollDetail">
 			Iniziato da ${poll.author}
 			il <fmt:formatDate value="${poll.creationDate}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${poll.creationDate}" pattern="HH:mm"/>
