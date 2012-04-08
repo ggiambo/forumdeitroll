@@ -285,7 +285,7 @@ public class MessageTag extends BodyTagSupport {
 				}
 			}
 			word.setLength(0);
-			word.append(String.format("<a href=\"%s\" target='_blank'>%s</a>", url, desc));
+			word.append(String.format("<a href=\"%s\" target='_blank' rel='nofollow noreferrer'>%s</a>", url, desc));
 			return true;
 		}
 		return false;
@@ -362,11 +362,12 @@ public class MessageTag extends BodyTagSupport {
 					StringBuilder url = new StringBuilder().append(body, p, p_url_end - p);
 					if (isLink(url)) {
 						p -= URL.length + 1;
-						String normalized_url = escape(addHttpProtocol(url.toString()));
+						String unescaped_url = addHttpProtocol(url.toString());
+						String normalized_url = escape(unescaped_url);
 						String desc = new StringBuilder()
 							.append(body, p_url_end + 1, p_end - (p_url_end + 1))
 							.toString();
-						line.append(String.format("<a href=\"%s\" target='_blank'>%s</a>", normalized_url, desc));
+						line.append(String.format("<a href=\"%s\" target='_blank' rel='nofollow noreferrer' title=\"%s\">%s</a>", normalized_url, normalized_url, desc));
 						p = p_end + URL_END.length - 1;
 					} else {
 						// [url=non_url]...[/url]
