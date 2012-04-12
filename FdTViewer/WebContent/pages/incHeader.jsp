@@ -15,6 +15,3 @@
 		</p>
 	</c:if>
 </div>
-<fdt:delayedScript dump="false">
-	var enableAutoRefresh = '${enableAutoRefresh}';
-</fdt:delayedScript>

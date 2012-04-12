@@ -1,7 +1,6 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -14,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -54,12 +54,17 @@ public class JSonServlet extends HttpServlet {
 		String action = req.getParameter("action");
 		try {
 			long time = System.currentTimeMillis();
-			StringWriter writer = new StringWriter();
+			StringBuilderWriter writer = new StringBuilderWriter();
 			Method m = this.getClass().getDeclaredMethod(action, JsonWriter.class, Map.class);
 			JsonWriter jsw = initWriter(ResultCode.OK, writer);
 			m.invoke(this, jsw, Collections.unmodifiableMap(req.getParameterMap()));
 			closeWriter(jsw, time);
-			res.getWriter().write(writer.getBuffer().toString());
+			res.setContentType("application/json");
+			String callback = req.getParameter("callback");
+			if (callback != null) {
+				writer.getBuilder().insert(0, callback + "(").append(")");
+			}
+			res.getWriter().write(writer.getBuilder().toString());
 		} catch (Exception e) {
 			handleException(e, res);
 			return;

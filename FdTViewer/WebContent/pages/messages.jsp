@@ -11,7 +11,7 @@
 	<c:forEach items="${messages}" var="msg" varStatus="index">
 		<div class="messagesBox">
 			<c:set var="msg" value="${msg}" scope="request"/>
-			<c:set var="index" value="${index}" scope="request"/>
+			<c:set var="index" value="${index.count}" scope="request"/>
 			<jsp:include page="incMessage.jsp"/>
 		</div>
 	</c:forEach> 

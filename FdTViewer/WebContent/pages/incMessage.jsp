@@ -3,7 +3,7 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
 <c:choose>
-	<c:when test="${index.count % 2 == 0}">
+	<c:when test="${index % 2 == 0}">
 		<c:set var="class" value="msgEven"/>
 	</c:when>
 	<c:otherwise>

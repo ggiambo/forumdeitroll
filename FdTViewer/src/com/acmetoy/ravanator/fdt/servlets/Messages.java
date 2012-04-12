@@ -83,10 +83,6 @@ public class Messages extends MainServlet {
 
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			// se non ci sono parametri (/Messages), allora abilitiamo l'autoRefresh
-			if (req.getParameterMap().isEmpty()) {
-				enableAutoRefresh(req);
-			}
 			setWebsiteTitle(req, "Forum dei troll");
 			return getByPage.action(req, res);
 		}
@@ -352,7 +348,6 @@ public class Messages extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	
 	protected GiamboAction getMessagePreview = new GiamboAction("getMessagePreview", ONPOST) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String text = req.getParameter("text");
@@ -370,6 +365,25 @@ public class Messages extends MainServlet {
 				text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
 			}
 			writer.name("content").value(MessageTag.getMessage(text, null, author, null));
+			writer.endObject();
+			writer.flush();
+			writer.close();
+			return null;
+		}
+	};
+	
+	/**
+	 * 
+	 */
+	protected GiamboAction getSingleMessageContent = new GiamboAction("getSingleMessageContent", ONGET) {
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+			String msgId = req.getParameter("msgId");
+			MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
+			// crea la preview del messaggio
+			JsonWriter writer = new JsonWriter(res.getWriter());
+			writer.beginObject();
+			writer.name("resultCode").value("OK");
+			writer.name("content").value(MessageTag.getMessage(msg.getText(), null, msg.getAuthor(), null));
 			writer.endObject();
 			writer.flush();
 			writer.close();

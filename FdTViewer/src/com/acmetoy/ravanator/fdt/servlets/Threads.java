@@ -1,6 +1,5 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.acmetoy.ravanator.fdt.IndentMessageDTO;
 import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.ThreadTree;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
@@ -31,11 +29,7 @@ public class Threads extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			Long threadId = Long.parseLong(req.getParameter("threadId"));
 			List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
-			List<IndentMessageDTO> indentMsg = new ArrayList<IndentMessageDTO>(msgs.size());
-			for (MessageDTO dto : msgs) {
-				indentMsg.add(new IndentMessageDTO(dto));
-			}
-			req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
+			req.setAttribute("root", new ThreadTree(msgs).getRoot());
 			setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
 			setNavigationMessage(req, NavigationMessage.info("Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>"));
 
@@ -55,11 +49,7 @@ public class Threads extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			Long threadId = Long.parseLong(req.getParameter("threadId"));
 			List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
-			List<IndentMessageDTO> indentMsg = new ArrayList<IndentMessageDTO>(msgs.size());
-			for (MessageDTO dto : msgs) {
-				indentMsg.add(new IndentMessageDTO(dto));
-			}
-			req.setAttribute("messages", new ThreadTree(indentMsg, threadId).asList());
+			req.setAttribute("msg", new ThreadTree(msgs).getRoot());
 
 			return "threadTree.jsp";
 		}
@@ -70,10 +60,6 @@ public class Threads extends MainServlet {
 	 */
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			// se non ci sono parametri (/Threads), allora abilitiamo l'autoRefresh
-			if (req.getParameterMap().isEmpty()) {
-				enableAutoRefresh(req);
-			}
 			return initWithMessage(req, res, NavigationMessage.info("Thread nuovi"));
 		}
 	};

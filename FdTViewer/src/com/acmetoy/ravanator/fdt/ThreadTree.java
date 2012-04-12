@@ -8,27 +8,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ThreadTree {
+import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 
-	private List<IndentMessageDTO> list;
+public class ThreadTree {
 	
-	public ThreadTree(List<IndentMessageDTO> msgs, Long threadId) {
+	private TreeNode rootNode;
+
+	public ThreadTree(List<MessageDTO> msgs) {
 		// importante: ordinati per id !
-		/*
-		Collections.sort(msgs, new Comparator<IndentMessageDTO>() {
-			public int compare(IndentMessageDTO nc1, IndentMessageDTO nc2) {
+		Collections.sort(msgs, new Comparator<MessageDTO>() {
+			public int compare(MessageDTO nc1, MessageDTO nc2) {
 				return (int) (nc1.getId() - nc2.getId());
 			}
 		});
-		*/
 		
 		Map<Long, TreeNode> tempMap = new HashMap<Long, TreeNode>();
-		TreeNode rootNode = null;
+		rootNode = null;
 
 		// build the tree
-		for (IndentMessageDTO node : msgs) {
+		for (MessageDTO node : msgs) {
 			if (node.getId() == node.getThreadId()) {
-				rootNode = new TreeNode(node, 0);
+				rootNode = new TreeNode(node);
 				tempMap.put(node.getId(), rootNode);
 				continue;
 			}
@@ -37,50 +37,27 @@ public class ThreadTree {
 				// fallback: BUG nel set del parentId :( ...
 				parent = tempMap.get(node.getThreadId());
 			}
-			TreeNode treeNode = new TreeNode(node, parent.getContent().getIndent() + 1);
+			TreeNode treeNode = new TreeNode(node);
 			tempMap.put(node.getId(), treeNode);
 			parent.addChild(treeNode);
 		}
-
-		// traversa il tree
-		list = flatternTree(rootNode);
 	}
 	
-	public List<IndentMessageDTO> asList() {
-		return list;
+	public TreeNode getRoot() {
+		return rootNode;
 	}
-
-	private List<IndentMessageDTO> flatternTree(TreeNode parent) {
-		List<IndentMessageDTO> result = new ArrayList<IndentMessageDTO>();
-
-		if (parent == null) {
-			return result;
-		}
-		
-		result.add(parent.getContent());
-		if (parent.getChildren() != null) {
-			for (TreeNode node : parent.getChildren()) {
-				result.addAll(flatternTree(node));
-			}
-		}
-
-		return result;
-
-	}
-
+	
 	public static class TreeNode {
-		private IndentMessageDTO content;
-		// private TreeNode parent;
+		private MessageDTO content;
 		private List<TreeNode> children;
 		private boolean orderedChldren;
 
-		public TreeNode(IndentMessageDTO content, int level) {
+		public TreeNode(MessageDTO content) {
 			this.content = content;
-			this.content.setIndent(level);
 			this.children = new ArrayList<TreeNode>();
 		}
 
-		public IndentMessageDTO getContent() {
+		public MessageDTO getContent() {
 			return content;
 		}
 

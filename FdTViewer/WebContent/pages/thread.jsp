@@ -9,13 +9,9 @@
 		var token = "${anti_xss_token}";
 	</fdt:delayedScript>
 
-	<c:forEach items="${messages}" var="msg" varStatus="index">
-		<c:set var="margin" value="${msg.indent * 15}"/>
-		<div style="margin-left:${margin}px;" class="messagesBox">
-			<c:set var="msg" value="${msg}" scope="request"/>
-			<c:set var="index" value="${index}" scope="request"/>
-			<jsp:include page="incMessage.jsp"/>
-		</div>
-	</c:forEach>
+	<c:set var="message" value="${root}" scope="request"/>
+	<c:set var="index" value="1" scope="request"/>
+	<jsp:include page="incThread.jsp"/>
+
 </div>
 <jsp:include page="incBottom.jsp" />

@@ -1096,3 +1096,16 @@ p.pollTitle {
 	margin: 5px;
 	text-align: center;
 }
+
+img.threadMessageClosed {
+}
+
+img.threadMessageOpen {
+	display: none;
+}
+
+div.threadMessage {
+	margin: .3em .3em .3em 1.4em; 
+	padding: 0.4em; 
+	border: 1px dotted;
+}
