@@ -89,7 +89,7 @@ public abstract class MainServlet extends HttpServlet {
 
 	public final void doDo(HttpServletRequest req, HttpServletResponse res, final Map<String, GiamboAction> map) throws IOException {
 
-		req.setAttribute("servlet", this.getClass().getName());
+		req.setAttribute("servlet", this.getClass().getSimpleName());
 
 		// forums
 		req.setAttribute("forums", cachedForums.get());
@@ -244,13 +244,12 @@ public abstract class MainServlet extends HttpServlet {
 	 * @return
 	 */
 	protected int getPageNr(HttpServletRequest req) {
-		// pageNr
-		String pageNr = req.getParameter("pageNr");
-		if (pageNr == null) {
-			pageNr = "0";
+		String page = req.getParameter("page");
+		if (page == null) {
+			page = "0";
 		}
-		req.setAttribute("pageNr", pageNr);
-		return Integer.parseInt(pageNr);
+		req.setAttribute("page", page);
+		return Integer.parseInt(page);
 	}
 
 	/**
@@ -338,6 +337,17 @@ public abstract class MainServlet extends HttpServlet {
 			for (StackTraceElement elem : e1.getStackTrace()) {
 				res.getWriter().write(elem + "<br/>");
 			}
+		}
+	}
+	
+	void addSpecificParam(HttpServletRequest req, String key, String value) {
+		Map<String, String> specificParams = (Map<String, String>)req.getAttribute("specificParams");
+		if (specificParams == null) {
+			specificParams = new HashMap<String, String>();
+			req.setAttribute("specificParams", specificParams);
+		}
+		if (value != null) {
+			specificParams.put(key, value);
 		}
 	}
 	

@@ -41,7 +41,7 @@ public class Pvt extends MainServlet {
 			}
 			req.setAttribute("pvts", getPersistence().getInbox(author, PVT_PER_PAGE, npage));
 			req.setAttribute("from", "inbox");
-			req.setAttribute("maxNrOfMessages", getPersistence().getInboxPages(author));
+			req.setAttribute("totalSize", getPersistence().getInboxPages(author));
 			return "pvts.jsp";
 		}
 	};
@@ -162,7 +162,7 @@ public class Pvt extends MainServlet {
 				List<PrivateMsgDTO> pvts = getPersistence().getSentPvts(login(req), PVT_PER_PAGE, npage);
 				req.setAttribute("pvts", pvts);
 				req.setAttribute("from", "outbox");
-				req.setAttribute("maxNrOfMessages", getPersistence().getOutboxPages(author));
+				req.setAttribute("totalSize", getPersistence().getOutboxPages(author));
 				return "pvts.jsp";
 			}
 			return null; //TODO pagina user non auth

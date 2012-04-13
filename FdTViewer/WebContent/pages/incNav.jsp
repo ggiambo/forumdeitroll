@@ -2,117 +2,78 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <%@ page trimDirectiveWhitespaces="true" %>
 <div id="nav">
+
+	<c:set var="forum" value="${specificParams['forum']}" />
 	<ul>
-		<c:if test="${navigationMessage != ''}">
+		<%-- navigation message --%>
+		<c:if test="${navigationMessage != null}">
 			<li>
 				<div class="navigationMessage${navigationMessage.type}">
-
 				<c:choose>
-					<c:when test="${navForum == ''}">
+					<c:when test="${forum == null}">
 						Tutto il forum &mdash;
 					</c:when>
-					<c:when test="${navForum == null}">
+					<c:when test="${forum != ''}">
+						<c:out value="${forum}"/> &mdash;
 					</c:when>
-					<c:otherwise>
-						<c:out value="${navForum}"/> &mdash;
-					</c:otherwise>
 				</c:choose>
 				${navigationMessage.content}
 				</div>
 			</li>
-			<span style="float: right"><a href="/faqs.html">FAQ</a></span>
 		</c:if>
-		<c:if test="${navForum != null}">
-			<c:choose>
-				<c:when test="${navForum == 'Principale'}">
-					<c:url value="Messages" var="cronoUrl">
-						<c:param name="action" value="getByForum"></c:param>
-						<c:param name="forum" value=""></c:param>
-					</c:url>
-				</c:when>
-				<c:when test="${navForum != ''}">
-					<c:url value="Messages" var="cronoUrl">
-						<c:param name="action" value="getByForum"></c:param>
-						<c:param name="forum" value="${navForum}"></c:param>
-					</c:url>
-				</c:when>
-				<c:otherwise>
-					<c:url value="Messages" var="cronoUrl">
-					</c:url>
-				</c:otherwise>
-			</c:choose>
+		
+		<li>
+			<a href="/faqs.html" title="FAQ"><img src="images/info_icon.png" alt="FAQ" /></a>
+		</li>
 
-			<c:choose>
-				<c:when test="${navForum == 'Principale'}">
-					<c:url value="Threads" var="nthreadUrl">
-						<c:param name="action" value="init"></c:param>
-						<c:param name="forum" value=""></c:param>
-					</c:url>
-				</c:when>
-				<c:when test="${navForum != ''}">
-					<c:url value="Threads" var="nthreadUrl">
-						<c:param name="action" value="init"></c:param>
-						<c:param name="forum" value="${navForum}"></c:param>
-					</c:url>
-				</c:when>
-				<c:otherwise>
-					<c:url value="Threads" var="nthreadUrl">
-					</c:url>
-				</c:otherwise>
-			</c:choose>
+		<%-- "Cronologia" --%>
+		<c:url value="Messages" var="getMessages">
+			<c:param name="action" value="getMessages"></c:param>
+			<c:if test="${forum != null}">
+				<c:param name="forum" value="${forum}"></c:param>
+			</c:if>
+		</c:url>
 
-			<c:choose>
-				<c:when test="${navForum == 'Principale'}">
-					<c:url value="Threads" var="cthreadUrl">
-						<c:param name="action" value="getThreadsByLastPost"></c:param>
-						<c:param name="forum" value=""></c:param>
-					</c:url>
-				</c:when>
-				<c:when test="${navForum != ''}">
-					<c:url value="Threads" var="cthreadUrl">
-						<c:param name="action" value="getThreadsByLastPost"></c:param>
-						<c:param name="forum" value="${navForum}"></c:param>
-					</c:url>
-				</c:when>
-				<c:otherwise>
-					<c:url value="Threads" var="cthreadUrl">
-						<c:param name="action" value="getThreadsByLastPost"></c:param>
-					</c:url>
-				</c:otherwise>
-			</c:choose>
+		<%-- "Discussioni: nuove" --%>
+		<c:url value="Threads" var="getThreads">
+			<c:param name="action" value="getThreads"></c:param>
+			<c:if test="${forum != null}">
+				<c:param name="forum" value="${forum}"></c:param>
+			</c:if>
+		</c:url>
 
-			<li><a href="${cronoUrl}">Cronologia</a></li>
+		<%-- "Discussioni: aggiornate" --%>
+		<c:url value="Threads" var="getThreadsByLastPost">
+			<c:param name="action" value="getThreadsByLastPost"></c:param>
+			<c:if test="${forum != null}">
+				<c:param name="forum" value="${forum}"></c:param>
+			</c:if>
+		</c:url>
+		
+		<li><a href="${getMessages}">Cronologia</a></li>
+		<li>|</li>
+		<li>Discussioni: 
+			<a href="${getThreads}">Nuove</a>&nbsp;
+			<a href="${getThreadsByLastPost}">Aggiornate</a>
+			<c:if test="${not empty loggedUser}">
+				&nbsp;<a href="Threads?action=getAuthorThreadsByLastPost">Tue</a>
+			</c:if>
+		</li>
+		<li>|</li>
+		<li><a href="Polls">Sondaggi</a></li>
+		<c:if test="${not empty loggedUser}">
 			<li>|</li>
-			<li><a href="${nthreadUrl}">Thread nuovi</a></li>
-			<li>|</li>
-			<li><a href="${cthreadUrl}">Thread aggiornati</a></li>
-			<li>|</li>
-			<li><a href="Polls">Sondaggi</a></li>
-			<li>|</li>
+			<li><a href="Polls?action=createNewPoll">Nuovo sondaggio</a></li>
 		</c:if>
-		<c:if test="${navForum == null}">
-			<li>
-				<a href="Messages">Torna ai messaggi</a>
-			</li>
-			<li>|</li>
-		</c:if>
-		<c:if test="${navForum != null }">
-			<li><a href="Messages?action=newMessage&amp;forum=${navForum}">Nuovo messaggio</a></li>
-			<li>|</li>
-		</c:if>
+		<li>|</li>
+		<li><a href="Messages?action=newMessage&amp;forum=${forum}">Nuovo messaggio</a></li>
+
+		<li>|</li>
 		<c:choose>
 			<c:when test="${not empty loggedUser}">
-				<c:url value="Threads" var="tuoiThreadURL">
-						<c:param name="action" value="getAuthorThreadsByLastPost"/>
-						<c:param name="author" value="${loggedUser.nick}"/>
-				</c:url>
 				<li>Loggato come <a href="User">${loggedUser.nick}</a></li>
 				 <li>|</li>
 				 <li><fdt:pvt/></li>
-				 <li>|</li>
-				 <li><a href="<c:out value="${tuoiThreadURL}" escapeXml="true" />">Tuoi thread</a></li>
-				 <li>|</li>
-				 <li><a href="Polls?action=createNewPoll">Nuovo sondaggio</a></li>
 				 <li>|</li>
 				 <li>[<a href="Misc?action=logoutAction">Logout</a>]</li>
 			</c:when>
@@ -122,7 +83,10 @@
 				<li><a href="User?action=registerAction">Registrati</a></li>
 			</c:otherwise>
 		</c:choose>
-		<li>|</li>
-		<li><jsp:include page="incPrevNext.jsp"/></li>
+		
+		<c:if test="${!empty page}">
+			<li>|</li>
+			<li><fdt:pager handler="Messages"></fdt:pager></li>
+		</c:if>
 	</ul>
 </div>

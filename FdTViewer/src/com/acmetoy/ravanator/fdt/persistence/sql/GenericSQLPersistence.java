@@ -67,30 +67,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public MessagesDTO getMessagesByDate(int limit, int page, boolean hideProcCatania) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			conn = getConnection();
-			StringBuilder query = new StringBuilder("SELECT * FROM messages ");
-			if (hideProcCatania) {
-				query.append("WHERE (forum IS NULL OR forum != 'Proc di Catania') ");
-			}
-			query.append("ORDER BY id DESC LIMIT ? OFFSET ?");
-			ps = conn.prepareStatement(query.toString());
-			ps.setInt(1, limit);
-			ps.setInt(2, limit*page);
-			return new MessagesDTO(getMessages(ps.executeQuery(), false), countMessages(conn));
-		} catch (SQLException e) {
-			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return new MessagesDTO();
-	}
-
-	@Override
 	public MessagesDTO getMessagesByAuthor(String author, int limit, int page) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -111,22 +87,37 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public MessagesDTO getMessagesByForum(String forum, int limit, int page) {
+	public MessagesDTO getMessages(String forum, int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
+			StringBuilder query = new StringBuilder("SELECT * FROM messages");
 			int i = 1;
-			if (forum.equals("")) {
-				ps = conn.prepareStatement("SELECT * FROM messages WHERE forum IS NULL ORDER BY id DESC LIMIT ? OFFSET ?");
+			if ("".equals(forum)) {
+				query.append(" WHERE forum IS NULL");
+			} else if (forum == null) {
+				if (hideProcCatania) {
+					query.append(" WHERE (forum IS NULL OR forum != 'Proc di Catania') ");
+				}
 			} else {
-				ps = conn.prepareStatement("SELECT * FROM messages where forum = ? ORDER BY id DESC LIMIT ? OFFSET ?");
+				query.append(" WHERE forum = ?");
+			}
+			query.append(" ORDER BY id DESC LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement(query.toString());
+			if (StringUtils.isNotEmpty(forum)) {
 				ps.setString(i++, forum);
 			}
 			ps.setInt(i++, limit);
 			ps.setInt(i++, limit*page);
-			return new MessagesDTO(getMessages(ps.executeQuery(), false), countMessagesByForum(forum, conn));
+
+			int messagesCount = countMessages(forum, conn);
+			if (hideProcCatania) {
+				messagesCount -= countThreads("Proc di Catania", conn);
+			}
+
+			return new MessagesDTO(getMessages(ps.executeQuery(), false), messagesCount);
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
@@ -136,21 +127,31 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public ThreadsDTO getThreads(int limit, int page, boolean hideProcCatania) {
+	public ThreadsDTO getThreads(String forum, int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			StringBuilder query = new StringBuilder("SELECT * FROM messages WHERE id = threadid ");
-			if (hideProcCatania) {
-				query.append("AND (forum IS NULL OR forum != 'Proc di Catania') ");
+			StringBuilder query = new StringBuilder("SELECT * FROM messages WHERE id = threadId");
+			int i = 1;
+			if ("".equals(forum)) {
+				query.append(" AND forum IS NULL");
+			} else if (forum == null) {
+				if (hideProcCatania) {
+					query.append(" AND (forum IS NULL OR forum != 'Proc di Catania') ");
+				}
+			} else {
+				query.append(" AND forum = ?");
 			}
-			query.append("ORDER BY id DESC LIMIT ? OFFSET ?");
+			query.append(" ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps = conn.prepareStatement(query.toString());
-			ps.setInt(1, limit);
-			ps.setInt(2, limit*page);
-			return new ThreadsDTO(getThreads(ps.executeQuery()), countThreads(conn));
+			if (StringUtils.isNotEmpty(forum)) {
+				ps.setString(i++, forum);
+			}
+			ps.setInt(i++, limit);
+			ps.setInt(i++, limit*page);
+			return new ThreadsDTO(getThreads(ps.executeQuery()), countThreads(forum, conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads", e);
 		} finally {
@@ -160,75 +161,27 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public ThreadsDTO getThreadsByForum(String forum, int limit, int page) {
-			Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			conn = getConnection();
-			int i = 1;
-			if (forum.equals("")) {
-				ps = conn.prepareStatement("SELECT * FROM messages WHERE forum IS NULL AND id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
-			} else {
-				ps = conn.prepareStatement("SELECT * FROM messages WHERE forum = ? AND id = threadid ORDER BY id DESC LIMIT ? OFFSET ?");
-				ps.setString(i++, forum);
-			}
-			ps.setInt(i++, limit);
-			ps.setInt(i++, limit*page);
-			return new ThreadsDTO(getThreads(ps.executeQuery()), countThreadsByForum(forum, conn));
-		} catch (SQLException e) {
-			LOG.error("Cannot get threads", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return new ThreadsDTO();
-	}
-
-	@Override
-	public ThreadsDTO getThreadsByLastPost(int limit, int page, boolean hideProcCatania) {
+	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
 			conn = getConnection();
-			StringBuilder query = new StringBuilder("SELECT MAX(id) AS mid FROM messages ");
-			if (hideProcCatania) {
-				query.append("WHERE (forum IS NULL OR forum != 'Proc di Catania') ");
+			StringBuilder query = new StringBuilder("SELECT MAX(id) AS mid FROM messages");
+			int i = 1;
+			if ("".equals(forum)) {
+				query.append(" WHERE forum IS NULL");
+			} else if (forum == null) {
+				if (hideProcCatania) {
+					query.append(" WHERE (forum IS NULL OR forum != 'Proc di Catania')");
+				}
+			} else {
+				query.append(" WHERE forum = ?");
 			}
-			query.append("GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
+			query.append(" GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
 			ps = conn.prepareStatement(query.toString());
-			ps.setInt(1, limit);
-			ps.setInt(2, limit*page);
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				result.add(getMessage(rs.getLong(1)));
-			}
-			int threadsCount = countThreads(conn);
-			if (hideProcCatania) {
-				threadsCount -= countThreadsByForum("Proc di Catania", conn);
-			}
-			return new ThreadsDTO(result, threadsCount);
-		} catch (SQLException e) {
-			LOG.error("Cannot get threads by last post", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return new ThreadsDTO();
-	}
-
-	public ThreadsDTO getForumThreadsByLastPost(String forum, int limit, int page) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
-		try {
-			conn = getConnection();
-			int i = 1;
-			if (forum.equals("")) {
-				ps = conn.prepareStatement("SELECT MAX(id) AS mid FROM messages WHERE forum IS NULL GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
-			} else {
-				ps = conn.prepareStatement("SELECT MAX(id) AS mid FROM messages WHERE forum = ? GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
+			if (StringUtils.isNotEmpty(forum)) {
 				ps.setString(i++, forum);
 			}
 			ps.setInt(i++, limit);
@@ -237,7 +190,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			while (rs.next()) {
 				result.add(getMessage(rs.getLong(1)));
 			}
-			return new ThreadsDTO(result, countThreadsByForum(forum, conn));
+			return new ThreadsDTO(result, countThreads(forum, conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads by last post", e);
 		} finally {
@@ -1294,30 +1247,16 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return messages;
 	}
 	
-	private int countMessages(Connection conn) {
+	private int countMessages(String forum, Connection conn) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = 'messages.total'");
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getInt("value");
+			if (forum == null) {
+				ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = 'messages.total'");
+			} else {
+				ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = ?");
+				ps.setString(1, "messages.forum." + forum);
 			}
-		} catch (SQLException e) {
-			LOG.error("Cannot count messages", e);
-		} finally {
-			close(rs, ps, null);
-		}
-		return -1;
-	}
-
-	private int countMessagesByForum(String forum, Connection conn) {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		forum = forum == null ? "" : forum;
-		try {
-			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = ?");
-			ps.setString(1, "messages.forum." + forum);
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				return rs.getInt("value");
@@ -1330,36 +1269,22 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return -1;
 	}
 	
-	private int countThreadsByForum(String forum, Connection conn) {
+	private int countThreads(String forum, Connection conn) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		forum = forum == null ? "" : forum;
 		try {
-			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = ?");
-			ps.setString(1, "threads.forum." + forum);
+			if (forum == null) {
+				ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = 'threads.total'");
+			} else {
+				ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = ?");
+				ps.setString(1, "threads.forum." + forum);
+			}
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				return rs.getInt("value");
 			}
 		} catch (SQLException e) {
-			LOG.error("Cannot count messages", e);
-		} finally {
-			close(rs, ps, null);
-		}
-		return -1;
-	}
-	
-	private int countThreads(Connection conn) {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = 'threads.total'");
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getInt("value");
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot count messages", e);
+			LOG.error("Cannot count threads", e);
 		} finally {
 			close(rs, ps, null);
 		}

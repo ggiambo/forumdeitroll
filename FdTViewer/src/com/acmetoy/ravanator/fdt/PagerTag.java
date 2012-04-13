@@ -6,10 +6,10 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
@@ -18,7 +18,6 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
-import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.servlets.MainServlet;
 
 public class PagerTag extends TagSupport  {
@@ -105,6 +104,7 @@ public class PagerTag extends TagSupport  {
 	private static void renderPager(LinkedList<PagerElem> pager, PageContext pageContext, PagerHandler handler) throws IOException {
 		JspWriter out = pageContext.getOut();
 		out.write("<ul class='pager'>");
+		HttpServletRequest req = (HttpServletRequest)pageContext.getRequest();
 		for (Iterator<PagerElem> pagerIterator = pager.iterator(); pagerIterator.hasNext();) {
 			PagerElem page = pagerIterator.next();
 			if (page.type == PagerType.CURRENT) {
@@ -125,7 +125,7 @@ public class PagerTag extends TagSupport  {
 				case PAGE:
 					out.write("page'><a href=\"");break;
 				}
-				out.write(handler.getLink(page.n, pageContext)); //visualizza 1, usa 0 e cosi' via
+				out.write(handler.getLink(page.n, req)); //visualizza 1, usa 0 e cosi' via
 				switch (page.type) {
 				case FIRST:
 					out.write("\">&#171;</a></li>");break;
@@ -147,9 +147,9 @@ public class PagerTag extends TagSupport  {
 	public int doEndTag() throws JspException {
 		try {
 			PagerHandler pagerHandler = handlers.get(handler);
-
-			int cur = pagerHandler.getCurrentPage(pageContext);
-			int max = pagerHandler.getMaxPages(pageContext);
+			HttpServletRequest req = (HttpServletRequest)pageContext.getRequest();
+			int cur = pagerHandler.getCurrentPage(req);
+			int max = pagerHandler.getMaxPages(req);
 
 			/*{
 				// fuzzy pager per test
@@ -178,98 +178,61 @@ public class PagerTag extends TagSupport  {
 		put("pvt", new PagerHandler() {
 
 			@Override
-			public int getMaxPages(PageContext pageContext) {
+			public int getMaxPages(HttpServletRequest req) {
 				//se vedi la lista dei pvt sei loggato per forza
-				AuthorDTO author = (AuthorDTO) pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+				AuthorDTO author = (AuthorDTO) req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
 				if (author != null) {
-					Integer maxNrOfMessages = (Integer)pageContext.getRequest().getAttribute("maxNrOfMessages");
-					return maxNrOfMessages == null ? -1 : maxNrOfMessages;
+					Integer totalSize = (Integer)req.getAttribute("totalSize");
+					return totalSize == null ? -1 : totalSize;
 				}
 				return -1; //furmigamento
 			}
 
 			@Override
-			public int getCurrentPage(PageContext pageContext) {
-				try {
-					return Integer.parseInt(pageContext.getRequest().getParameter("page"));
-				} catch (Exception e) {
-					return 0; //default
-				}
-			}
-
-			@Override
-			public String getLink(int pageNumber, PageContext pageContext) {
-				return "Pvt?action=" + pageContext.getRequest().getAttribute("from") + "&amp;page=" + pageNumber;
+			public String getLink(int pageNumber, HttpServletRequest req) {
+				String servlet = (String) req.getAttribute("servlet");
+				return servlet + "?action=" +req.getAttribute("from") + "&amp;page=" + pageNumber;
 			}
 		});
 
 		put("Messages", new PagerHandler() {
-			// test Messages?action=init (default) ok
-			// test Messages?action=getByForum ok
-			// test Messages?action=getByPage INCOGNITA: non viene chiamato direttamente dalle pagine, ma la GiamboAction e' usata altrove
-			// test Threads?action=getAuthorThreadsByLastPost FIXATO a mano, ma non dovrebbe essere cosi'
-			// test Threads?action=init (default) ok
-			// test Threads?action=getThreadsByLastPost ok
-			// test Messages?action=getByAuthor ok
 			@Override
-			public int getMaxPages(PageContext pageContext) {
-				List<MessageDTO> messages = (List<MessageDTO>) pageContext.getRequest().getAttribute("messages");
-				if (messages != null && messages.size() < MainServlet.PAGE_SIZE)
-					return getCurrentPage(pageContext);
-				else {
-					ServletRequest req = pageContext.getRequest();
-					Integer maxNrOfMessages = (Integer)req.getAttribute("maxNrOfMessages");
-					if (maxNrOfMessages == null) {
+			public int getMaxPages(HttpServletRequest req) {
+				Integer resultSize = (Integer)req.getAttribute("resultSize");
+				if (resultSize != null && resultSize < MainServlet.PAGE_SIZE) {
+					return getCurrentPage(req);
+				} else {
+					Integer totalSize = (Integer)req.getAttribute("totalSize");
+					if (totalSize == null) {
 						// vabbeh, io ci ho provato :$ ...
-						maxNrOfMessages = Integer.MAX_VALUE;
+						totalSize = Integer.MAX_VALUE;
 					}
-					return ((maxNrOfMessages - 1) / MainServlet.PAGE_SIZE);
+					return ((totalSize - 1) / MainServlet.PAGE_SIZE);
 				}
 			}
-			/* never used ?
-			private Class[] servlets = new Class[] {
-				Messages.class,
-				Threads.class
-			};
-			*/
 			@Override
-			public String getLink(int pageNumber, PageContext pageContext) {
-				String action = (String) pageContext.getRequest().getAttribute("action");
-				String servlet = (String) pageContext.getRequest().getAttribute("servlet");
-				servlet = servlet.substring(servlet.lastIndexOf('.') + 1);
+			public String getLink(int pageNumber, HttpServletRequest req) {
+				String action = (String) req.getAttribute("action");
+				String servlet = (String) req.getAttribute("servlet");
 
 				StringBuilder link = new StringBuilder(servlet)
 					.append("?action=").append(action)
-					.append("&amp;pageNr=").append(pageNumber);
-				if (pageContext.getRequest().getAttribute("specificParams") != null) {
-					Map<String, String> specificParams =
-							(Map<String, String>) pageContext.getRequest().getAttribute("specificParams");
+					.append("&amp;page=").append(pageNumber);
+				if (req.getAttribute("specificParams") != null) {
+					Map<String, String> specificParams = (Map<String, String>) req.getAttribute("specificParams");
 					for (Map.Entry<String, String> entry: specificParams.entrySet()) {
+						if (entry.getValue() == null) {
+							continue;
+						}
 						try {
-							link.append("&amp;").append(entry.getKey())
-								.append("=").append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+							link.append("&amp;").append(entry.getKey());
+							link.append("=").append(URLEncoder.encode(entry.getValue(), "UTF-8"));
 						} catch (UnsupportedEncodingException e) {
 							// ignore
 						}
 					}
 				}
-				if ("getAuthorThreadsByLastPost".equals(action) && pageContext.getRequest().getParameter("author") != null) {
-					try {
-						link.append("&amp;author=").append(URLEncoder.encode(pageContext.getRequest().getParameter("author"), "UTF-8"));
-					} catch (UnsupportedEncodingException e) {
-						// ignore
-					}
-				}
 				return link.toString();
-			}
-
-			@Override
-			public int getCurrentPage(PageContext pageContext) {
-				try {
-					return Integer.parseInt(pageContext.getRequest().getParameter("pageNr"));
-				} catch (Exception e) {
-					return 0; //default
-				}
 			}
 		});
 	}};
@@ -282,9 +245,15 @@ public class PagerTag extends TagSupport  {
 		this.handler = handler;
 	}
 
-	private static interface PagerHandler {
-		public int getCurrentPage(PageContext pageContext);
-		public int getMaxPages(PageContext pageContext);
-		public String getLink(int pageNumber, PageContext pageContext);
+	private static abstract class PagerHandler {
+		public final int getCurrentPage(HttpServletRequest req) {
+			try {
+				return Integer.parseInt(req.getParameter("page"));
+			} catch (Exception e) {
+				return 0; //default
+			}
+		}
+		public abstract int getMaxPages(HttpServletRequest req);
+		public abstract String getLink(int pageNumber, HttpServletRequest req);
 	}
 }

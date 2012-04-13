@@ -13,28 +13,43 @@ public interface IPersistence extends Serializable {
 
 	public List<String> getForums();
 
-	public ThreadsDTO getThreads(int limit, int page, boolean hideProcCatania);
+	/**
+	 * 
+	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
+	 * @param limit
+	 * @param page
+	 * @param hideProcCatania
+	 * @return
+	 */
+	public ThreadsDTO getThreads(String forum, int limit, int page, boolean hideProcCatania);
 
-	public ThreadsDTO getThreadsByForum(String forum, int limit, int page);
-
-	public ThreadsDTO getThreadsByLastPost(int limit, int page, boolean hideProcCatania);
-
-	public ThreadsDTO getForumThreadsByLastPost(String forum, int limit, int page);
+	/**
+	 * 
+	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
+	 * @param limit
+	 * @param page
+	 * @param hideProcCatania
+	 * @return
+	 */
+	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, boolean hideProcCatania);
 
 	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page, boolean hideProcCatania);
 
 	public MessageDTO getMessage(long id);
 
-	public MessagesDTO getMessagesByDate(int limit, int page, boolean hideProcCatania);
+	/**
+	 * 
+	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
+	 * @param limit
+	 * @param page
+	 * @param hideProcCatania
+	 * @return
+	 */
+	public MessagesDTO getMessages(String forum, int limit, int page, boolean hideProcCatania);
 
 	public List<MessageDTO> getMessagesByThread(long threadId);
 
 	public MessagesDTO getMessagesByAuthor(String author, int pageSize, int page);
-
-	/*
-	Se forum e` la string vuota restituisce i messaggi che hanno il campo forum NULL
-	*/
-	public MessagesDTO getMessagesByForum(String forum, int pageSize, int page);
 
 	public AuthorDTO getAuthor(String nick);
 	

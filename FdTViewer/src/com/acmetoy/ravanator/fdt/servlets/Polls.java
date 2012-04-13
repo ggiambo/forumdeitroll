@@ -68,7 +68,7 @@ public class Polls extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			PollsDTO polls = getPersistence().getPollsByDate(PAGE_SIZE, getPageNr(req));
 			req.setAttribute("polls", polls.getPolls());
-			req.setAttribute("maxNrOfMessages", polls.getMaxNrOfPolls()); // TODO
+			req.setAttribute("totalSize", polls.getMaxNrOfPolls()); // TODO
 			setWebsiteTitle(req, "Sondaggi @ Forum dei Troll");
 			return "polls.jsp";
 		}
@@ -85,7 +85,7 @@ public class Polls extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			PollsDTO polls = getPersistence().getPollsByLastVote(PAGE_SIZE, getPageNr(req));
 			req.setAttribute("polls", polls.getPolls());
-			req.setAttribute("maxNrOfMessages", polls.getMaxNrOfPolls()); // TODO
+			req.setAttribute("totalSize", polls.getMaxNrOfPolls()); // TODO
 			setWebsiteTitle(req, "Sondaggi @ Forum dei Troll");
 			return "polls.jsp";
 		}

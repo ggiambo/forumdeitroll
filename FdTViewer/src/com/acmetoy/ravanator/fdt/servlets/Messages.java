@@ -83,8 +83,8 @@ public class Messages extends MainServlet {
 
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			setWebsiteTitle(req, "Forum dei troll");
-			return getByPage.action(req, res);
+			res.sendRedirect("Messages?action=getMessages");
+			return null;
 		}
 	};
 
@@ -95,9 +95,9 @@ public class Messages extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected GiamboAction getByPage = new GiamboAction("getByPage", ONPOST|ONGET) {
+	protected GiamboAction getMessages = new GiamboAction("getMessages", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			return initWithMessage(req, res, NavigationMessage.info("Cronologia messaggi"));
+			return getMessages(req, res, NavigationMessage.info("Cronologia messaggi"));
 		}
 	};
 
@@ -116,7 +116,8 @@ public class Messages extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + author + "</i>"));
 			MessagesDTO messages = getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req));
 			req.setAttribute("messages", messages.getMessages());
-			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+			req.setAttribute("resultSize", messages.getMessages().size());
+			req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
@@ -129,21 +130,18 @@ public class Messages extends MainServlet {
 	protected GiamboAction getByForum = new GiamboAction("getByForum", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String forum = req.getParameter("forum");
-			req.setAttribute("navType", "crono");
 			if (StringUtils.isEmpty(forum)) {
 				setWebsiteTitle(req, "Forum Principale @ Forum dei Troll");
-				forum = "";
-				req.setAttribute("navForum", "Principale");
 			} else {
 				setWebsiteTitle(req, forum + " @ Forum dei Troll");
-				req.setAttribute("navForum", forum);
 			}
 
 			addSpecificParam(req, "forum", forum);
 			setNavigationMessage(req, NavigationMessage.info("Cronologia messaggi"));
-			MessagesDTO messages = getPersistence().getMessagesByForum(forum, PAGE_SIZE, getPageNr(req));
+			MessagesDTO messages = getPersistence().getMessages(forum, PAGE_SIZE, getPageNr(req), false);
 			req.setAttribute("messages", messages.getMessages());
-			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+			req.setAttribute("resultSize", messages.getMessages().size());
+			req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
@@ -162,7 +160,8 @@ public class Messages extends MainServlet {
 			setWebsiteTitle(req, "Singolo messaggio @ Forum dei Troll");
 			List<MessageDTO> messages = new ArrayList<MessageDTO>();
 			messages.add(getPersistence().getMessage(msgId));
-			req.setAttribute("messages",messages);
+			req.setAttribute("messages", messages);
+			req.setAttribute("resultSize", messages.size());
 			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
@@ -185,7 +184,9 @@ public class Messages extends MainServlet {
 
 			setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
 
-			req.setAttribute("messages", getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req)));
+			List<MessageDTO> messages = getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req));
+			req.setAttribute("messages", messages);
+			req.setAttribute("resultSize", messages.size());
 			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "messages.jsp";
 		}
@@ -324,7 +325,7 @@ public class Messages extends MainServlet {
 			String msgId = req.getParameter("msgId");
 			MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
 			if (!user.isValid() || !user.getNick().equals(msg.getAuthor().getNick())) {
-				return initWithMessage(req, res, NavigationMessage.error("Non puoi editare un messaggio non tuo !"));
+				return getMessages(req, res, NavigationMessage.error("Non puoi editare un messaggio non tuo !"));
 			}
 
 			// cleanup
@@ -373,7 +374,7 @@ public class Messages extends MainServlet {
 	};
 	
 	/**
-	 * 
+	 * contenuto di un singolo messaggio
 	 */
 	protected GiamboAction getSingleMessageContent = new GiamboAction("getSingleMessageContent", ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -393,10 +394,6 @@ public class Messages extends MainServlet {
 
 	/**
 	 * Inserisce un messaggio nuovo o editato
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	protected GiamboAction insertMessage = new GiamboAction("insertMessage", ONPOST) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -422,8 +419,10 @@ public class Messages extends MainServlet {
 		}
 	};
 
+	/**
+	 * Inserisce un messaggio nuovo o editato
+	 */
 	private String insertMessageAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
-
 		// se c'e' un'errore, mostralo
 		String validationMessage = validateInsertMessage(req);
 		if (validationMessage != null) {
@@ -577,15 +576,6 @@ public class Messages extends MainServlet {
 		return new HashMap<String, String[]>(EMO_MAP);
 	}
 
-	private void addSpecificParam(HttpServletRequest req, String key, String value) {
-		Map<String, String> specificParams = (Map<String, String>)req.getAttribute("specificParams");
-		if (specificParams == null) {
-			specificParams = new HashMap<String, String>();
-			req.setAttribute("specificParams", specificParams);
-		}
-		specificParams.put(key, value);
-	}
-
 	protected void forShame(final AuthorDTO author, final String shameTitle, final String shameMessage) {
 		final MessageDTO msg = new MessageDTO();
 		msg.setAuthor(author);
@@ -598,23 +588,26 @@ public class Messages extends MainServlet {
 		getPersistence().insertMessage(msg);
 	}
 
+	/**
+	 * Riassegnaa questo messaggio e tutti i suoi figli il forum "Proc di Catania"
+	 */
 	protected GiamboAction pedonizeThreadTree = new GiamboAction("pedonizeThreadTree", ONGET) {
 		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
 			if (loggedUser == null) {
-				return initWithMessage(req, res, NavigationMessage.error("Non furmigare !"));
+				return getMessages(req, res, NavigationMessage.error("Non furmigare !"));
 			}
 			boolean isAdmin = "yes".equals(getPersistence().getPreferences(loggedUser).get("pedonizeThread"));
 			if (! isAdmin) {
-				return initWithMessage(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
+				return getMessages(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
 			}
 
 			final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
 			final String inToken = req.getParameter("token");
 
 			if ((token == null) || (inToken == null) || !token.equals(inToken)) {
-				return initWithMessage(req, res, NavigationMessage.error("Verifica token fallita"));
+				return getMessages(req, res, NavigationMessage.error("Verifica token fallita"));
 			}
 
 			final long rootMessageId = Long.parseLong(req.getParameter("rootMessageId"));
@@ -632,6 +625,9 @@ public class Messages extends MainServlet {
 		}
 	};
 
+	/**
+	 * Ritorna una frase celebre a caso
+	 */
 	protected GiamboAction getRandomQuote = new GiamboAction("getRandomQuote", ONGET) {
 		@Override
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -643,16 +639,19 @@ public class Messages extends MainServlet {
 		}
 	};
 
-	private String initWithMessage(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
+	private String getMessages(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
 		boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
-		MessagesDTO messages = getPersistence().getMessagesByDate(PAGE_SIZE, getPageNr(req), hideProcCatania);
+		String forum = req.getParameter("forum");
+		MessagesDTO messages = getPersistence().getMessages(forum, PAGE_SIZE, getPageNr(req), hideProcCatania);
 		req.setAttribute("messages", messages.getMessages());
-		req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
-
-		req.setAttribute("navType", "crono");
-		req.setAttribute("navForum", "");
-
-		setWebsiteTitle(req, "Forum dei troll");
+		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
+		req.setAttribute("resultSize", messages.getMessages().size());
+		addSpecificParam(req, "forum", forum);
+		if (forum == null) {
+			setWebsiteTitle(req, "Forum dei troll");
+		} else {
+			setWebsiteTitle(req, forum.equals("") ? "Forum principale @ Forum dei troll" : (forum + " @ Forum dei troll"));
+		}
 		setNavigationMessage(req, message);
 		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 		return "messages.jsp";

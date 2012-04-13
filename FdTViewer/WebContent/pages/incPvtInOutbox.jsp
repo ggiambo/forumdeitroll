@@ -15,14 +15,10 @@
 		<table class="pvtMessages">
 			<tbody>
 				<c:forEach items="${pvts}" var="pvt" varStatus="index">
-					<c:choose>
-						<c:when test="${pvt.read}">
-							<tr class="pvtRead">
-						</c:when>
-						<c:otherwise>
-							<tr>
-						</c:otherwise>
-					</c:choose>
+					<c:if test="${pvt.read}">
+						<c:set var="pvtTrClass" value="pvtRead" />
+					</c:if>
+					<tr class="${pvtTrClass}">
 						<td class="pvtStatus">
 							<c:choose>
 								<c:when test="${pvt.read}">
