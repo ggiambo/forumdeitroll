@@ -9,13 +9,13 @@
 	<c:forEach items="${messages}" var="thread" varStatus="index">
 		<c:choose>
 			<c:when test="${index.count % 2 == 0}">
-				<c:set var="class" value="msgEven"/>
+				<c:set var="rowclass" value="msgEven"/>
 			</c:when>
 			<c:otherwise>
-				<c:set var="class" value="msgOdd"/>
+				<c:set var="rowclass" value="msgOdd"/>
 			</c:otherwise>
 		</c:choose>
-		<div id="threadTree_${thread.id}" class="${class} threadBox">
+		<div id="threadTree_${thread.id}" class="${rowclass} threadBox">
 			<span class="threadTitle"><fdt:threadprettyurl subject="${thread.subject}" threadId="${thread.id}" msgId="${thread.id}"/></span>
 			 (${thread.numberOfMessages}
 			<c:choose>
