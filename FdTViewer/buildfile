@@ -13,8 +13,10 @@ define 'FdTViewer' do
 	compile.with transitive("commons-dbcp:commons-dbcp:jar:1.4")
 	compile.with transitive("com.google.code.gson:gson:jar:2.1");
 	compile.with transitive("org.bouncycastle:bcprov-jdk16:jar:1.46");
+	compile.with transitive('commons-io:commons-io:jar:2.2');
+	compile.with transitive("jfree:jfreechart:jar:1.0.13");
 
-	compile.with "deps/simplecaptcha-1.2.1.jar"
+	compile.with "deps/simplecaptcha-1.2.1.jar";
 
 	package(:war).include _("WebContent/WEB-INF/tlds/"), :path => "WEB-INF/"
 	package(:war).include _("WebContent/WEB-INF/web.xml"), :path => "WEB-INF/"
