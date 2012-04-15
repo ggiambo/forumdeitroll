@@ -97,7 +97,16 @@
 			<li>|</li>
 		</c:if>
 		<c:if test="${navForum != null }">
-			<li><a href="Messages?action=newMessage&amp;forum=${navForum}">Nuovo messaggio</a></li>
+			<li>
+				<c:choose>
+					<c:when test="${navForum == 'Principale'}">
+						<a href="Messages?action=newMessage">Nuovo messaggio</a>
+					</c:when>
+					<c:otherwise>
+						<a href="Messages?action=newMessage&amp;forum=${navForum}">Nuovo messaggio</a>
+					</c:otherwise>
+				</c:choose>
+			</li>
 			<li>|</li>
 		</c:if>
 		<c:choose>
