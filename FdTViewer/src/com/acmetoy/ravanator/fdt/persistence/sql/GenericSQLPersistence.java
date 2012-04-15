@@ -216,7 +216,22 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return new ThreadsDTO();
 	}
-
+	private static final String GET_FORUM_THREADS_BY_LAST_POST =
+				"SELECT MAX(`id`) AS mid " +
+				"FROM messages JOIN ( " +
+					"SELECT DISTINCT `threadId` " +
+					"FROM messages " +
+					"WHERE forum XXXX " +
+					"ORDER BY `id` DESC " +
+					"LIMIT ? OFFSET ? " +
+				") AS threadIds " +
+				"ON (threadIds.threadId = messages.threadId) " +
+				"GROUP BY messages.threadId " +
+				"ORDER BY mid DESC";
+	private static final String GET_FORUM_THREADS_BY_LAST_POST_PRINCIPALE =
+			GET_FORUM_THREADS_BY_LAST_POST.replace("XXXX", "IS NULL");
+	private static final String GET_FORUM_THREADS_BY_LAST_POST_ALTRI_FORI =
+			GET_FORUM_THREADS_BY_LAST_POST.replace("XXXX", "= ?");
 	public ThreadsDTO getForumThreadsByLastPost(String forum, int limit, int page) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -225,10 +240,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		try {
 			conn = getConnection();
 			int i = 1;
+			
 			if (forum.equals("")) {
-				ps = conn.prepareStatement("SELECT MAX(id) AS mid FROM messages WHERE forum IS NULL GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
+				ps = conn.prepareStatement(GET_FORUM_THREADS_BY_LAST_POST_PRINCIPALE);
 			} else {
-				ps = conn.prepareStatement("SELECT MAX(id) AS mid FROM messages WHERE forum = ? GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
+				ps = conn.prepareStatement(GET_FORUM_THREADS_BY_LAST_POST_ALTRI_FORI);
 				ps.setString(i++, forum);
 			}
 			ps.setInt(i++, limit);
