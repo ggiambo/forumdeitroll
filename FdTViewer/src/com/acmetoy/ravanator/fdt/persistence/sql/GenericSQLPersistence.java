@@ -184,6 +184,22 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return new ThreadsDTO();
 	}
 
+	private static final String GET_THREADS_BY_LAST_POST =
+			"SELECT MAX(`id`) AS mid " +
+			"FROM messages JOIN ( " +
+				"SELECT DISTINCT `threadId` " +
+				"FROM messages " +
+				" XXXX " +
+				"ORDER BY `id` DESC " +
+				"LIMIT ? OFFSET ? " +
+			") AS threadIds " +
+			"ON (threadIds.threadId = messages.threadId) " +
+			"GROUP BY messages.threadId " +
+			"ORDER BY mid DESC";
+	private static final String GET_THREADS_BY_LAST_POST_TUTTI =
+			GET_THREADS_BY_LAST_POST.replace("XXXX", "");
+	private static final String GET_THREADS_BY_LAST_POST_NO_PROCURA =
+			GET_THREADS_BY_LAST_POST.replace("XXXX", "WHERE (forum IS NULL OR forum != 'Proc di Catania')");
 	@Override
 	public ThreadsDTO getThreadsByLastPost(int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
@@ -198,6 +214,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			}
 			query.append("GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
 			ps = conn.prepareStatement(query.toString());
+			if (hideProcCatania) {
+				ps = conn.prepareStatement(GET_THREADS_BY_LAST_POST_NO_PROCURA);
+			} else {
+				ps = conn.prepareStatement(GET_THREADS_BY_LAST_POST_TUTTI);
+			}
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
 			rs = ps.executeQuery();
@@ -217,17 +238,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return new ThreadsDTO();
 	}
 	private static final String GET_FORUM_THREADS_BY_LAST_POST =
-				"SELECT MAX(`id`) AS mid " +
-				"FROM messages JOIN ( " +
-					"SELECT DISTINCT `threadId` " +
-					"FROM messages " +
-					"WHERE forum XXXX " +
-					"ORDER BY `id` DESC " +
-					"LIMIT ? OFFSET ? " +
-				") AS threadIds " +
-				"ON (threadIds.threadId = messages.threadId) " +
-				"GROUP BY messages.threadId " +
-				"ORDER BY mid DESC";
+			GET_THREADS_BY_LAST_POST.replace("XXXX", "WHERE FORUM XXXX ");
 	private static final String GET_FORUM_THREADS_BY_LAST_POST_PRINCIPALE =
 			GET_FORUM_THREADS_BY_LAST_POST.replace("XXXX", "IS NULL");
 	private static final String GET_FORUM_THREADS_BY_LAST_POST_ALTRI_FORI =
