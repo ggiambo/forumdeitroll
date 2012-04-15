@@ -208,12 +208,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
 			conn = getConnection();
-			StringBuilder query = new StringBuilder("SELECT MAX(id) AS mid FROM messages ");
-			if (hideProcCatania) {
-				query.append("WHERE (forum IS NULL OR forum != 'Proc di Catania') ");
-			}
-			query.append("GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
-			ps = conn.prepareStatement(query.toString());
 			if (hideProcCatania) {
 				ps = conn.prepareStatement(GET_THREADS_BY_LAST_POST_NO_PROCURA);
 			} else {
