@@ -83,10 +83,19 @@ h1 {
 }
 
 #nav li a {
-	color: Blue;
+	color: #007BDF;
 }
 
 #nav li a:visited {
+	color: #007BDF;
+}
+
+#nav li a:hover {
+	color: Blue;
+}
+
+#nav li a.selected {
+	font-weight: bold;
 	color: Blue;
 }
 

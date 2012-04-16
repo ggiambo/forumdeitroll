@@ -1,6 +1,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <%@ page trimDirectiveWhitespaces="true" %>
+
+<fdt:delayedScript dump="false">
+	$(document).ready(function() {
+		$('#${servlet}_${param.action}').addClass('selected');
+	});
+</fdt:delayedScript>
+
 <div id="nav">
 
 	<c:set var="forum" value="${specificParams['forum']}" />
@@ -50,23 +57,31 @@
 			</c:if>
 		</c:url>
 		
-		<li><a href="${getMessages}">Cronologia</a></li>
+		<%-- "Nuovo Messaggio" --%>
+		<c:url value="Messages" var="newMessage">
+			<c:param name="action" value="newMessage"></c:param>
+			<c:if test="${forum != null}">
+				<c:param name="forum" value="${forum}"></c:param>
+			</c:if>
+		</c:url>
+		
+		<li><a id="Messages_getMessages" href="${getMessages}">Cronologia</a></li>
 		<li>|</li>
 		<li>Discussioni: 
-			<a href="${getThreads}">Nuove</a>&nbsp;
-			<a href="${getThreadsByLastPost}">Aggiornate</a>
+			<a id="Threads_getThreads" href="${getThreads}">Nuove</a>&nbsp;
+			<a id="Threads_getThreadsByLastPost" href="${getThreadsByLastPost}">Aggiornate</a>
 			<c:if test="${not empty loggedUser}">
-				&nbsp;<a href="Threads?action=getAuthorThreadsByLastPost">Tue</a>
+				&nbsp;<a id="Threads_getAuthorThreadsByLastPost" href="Threads?action=getAuthorThreadsByLastPost">Tue</a>
 			</c:if>
 		</li>
 		<li>|</li>
-		<li><a href="Polls">Sondaggi</a></li>
+		<li><a id="Polls_" href="Polls">Sondaggi</a></li>
 		<c:if test="${not empty loggedUser}">
 			<li>|</li>
-			<li><a href="Polls?action=createNewPoll">Nuovo sondaggio</a></li>
+			<li><a id="Polls_createNewPoll" href="Polls?action=createNewPoll">Nuovo sondaggio</a></li>
 		</c:if>
 		<li>|</li>
-		<li><a href="Messages?action=newMessage&amp;forum=${forum}">Nuovo messaggio</a></li>
+		<li><a id="Messages_newMessage" href="${newMessage}">Nuovo messaggio</a></li>
 
 		<li>|</li>
 		<c:choose>
