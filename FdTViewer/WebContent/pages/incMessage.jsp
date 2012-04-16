@@ -4,16 +4,16 @@
 
 <c:choose>
 	<c:when test="${index % 2 == 0}">
-		<c:set var="class" value="msgEven"/>
+		<c:set var="rowclass" value="msgEven"/>
 	</c:when>
 	<c:otherwise>
-		<c:set var="class" value="msgOdd"/>
+		<c:set var="rowclass" value="msgOdd"/>
 	</c:otherwise>
 </c:choose>
 
 <a href="#msg${msg.id}"></a>
 
-<div class="${class}" id="msg${msg.id}">
+<div class="${rowclass}" id="msg${msg.id}">
 
 	<div class="msgInfo">
 		<div>

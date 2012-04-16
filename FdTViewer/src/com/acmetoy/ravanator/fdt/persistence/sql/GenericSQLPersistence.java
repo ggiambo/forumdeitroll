@@ -41,7 +41,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	private BasicDataSource dataSource;
 
 	private static final Logger LOG = Logger.getLogger(GenericSQLPersistence.class);
-
+	
 	void setupDataSource(String connectURI, String user, String password) {
 		dataSource = new BasicDataSource();
 		dataSource.setMaxActive(15);
@@ -159,7 +159,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return new ThreadsDTO();
 	}
-
+	
 	@Override
 	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
@@ -168,7 +168,9 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
 			conn = getConnection();
-			StringBuilder query = new StringBuilder("SELECT MAX(id) AS mid FROM messages");
+			StringBuilder query = new StringBuilder();
+			query.append("SELECT MAX(`id`) AS mid FROM messages JOIN (");
+			query.append("    SELECT DISTINCT `threadId` FROM messages" );
 			int i = 1;
 			if ("".equals(forum)) {
 				query.append(" WHERE forum IS NULL");
@@ -179,7 +181,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			} else {
 				query.append(" WHERE forum = ?");
 			}
-			query.append(" GROUP BY threadid ORDER BY mid DESC LIMIT ? OFFSET ?");
+			query.append("    ORDER BY `id` DESC ");
+			query.append("    LIMIT ? OFFSET ? ");
+			query.append(") AS threadIds ");
+			query.append(" ON (threadIds.threadId = messages.threadId) ");
+			query.append(" GROUP BY messages.threadId ");
+			query.append(" ORDER BY mid DESC");
 			ps = conn.prepareStatement(query.toString());
 			if (StringUtils.isNotEmpty(forum)) {
 				ps.setString(i++, forum);
