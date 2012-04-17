@@ -104,6 +104,15 @@
 								</div>
 								<div style="clear: both;"></div>
 							</div>
+							<div>
+								<div class="inputUserPanel">
+									<input type="checkbox" name="<%=User.PREF_HIDE_BANNERONE%>" id="<%=User.PREF_HIDE_BANNERONE%>" ${loggedUser.preferences['hideBannerone']} />
+								</div>
+								<div class="lblUserPanel">
+									<label for="<%=User.PREF_HIDE_BANNERONE%>" class="lbl">Nascondi bannerone tette&culi</label>
+								</div>
+								<div style="clear: both;"></div>
+							</div>
 							<input type="submit" value="Modifica" class="sendUserPanel" />
 						</form>
 						<div style="clear: both;"></div>
