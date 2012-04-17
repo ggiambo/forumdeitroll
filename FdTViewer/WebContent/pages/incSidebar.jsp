@@ -27,6 +27,11 @@
 		</div>
 		<input type="submit" value="Cerca"/>
 	</form>
+	
+	<label for="getById">Per id:</label>
+	<input type="text" name="getById" id="getById" onkeyup="searchById(event)" size="7" value="${msgId}"/>
+	<br/><br/>
+	
 	<ul>
 		<%-- navigazione fa senso solo per Messages e Threads --%>
 		<c:set var="urlServlet" value="${servlet}" />
@@ -37,8 +42,11 @@
 		</c:if>
 
 		<%-- casi speciali --%>
-		<c:if test="${action == 'getAuthorThreadsByLastPost' }">
+		<c:if test="${action == 'getAuthorThreadsByLastPost'}">
 			<c:set var="action" value="getThreads" />
+		</c:if>
+		<c:if test="${action == 'getById'}">
+			<c:set var="action" value="getMessages" />
 		</c:if>
 	
 		<c:url value="${urlServlet}" var="allUrl" >
