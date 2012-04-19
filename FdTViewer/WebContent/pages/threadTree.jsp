@@ -12,8 +12,8 @@
 	</c:if>
 	<li style="${liStyle}">	
 		<div>
-			<img class="threadMessageClosed" src="images/triangle_closed.png" onClick="showMessageInThread('${msg.id}', this)" onMouseOver="this.style.cursor='pointer'"/>
-			<img class="threadMessageOpen" src="images/triangle_open.png" onClick="hideMessageInThread('${msg.id}', this)" onMouseOver="this.style.cursor='pointer'"/>
+			<img class="threadMessageClosed" src="images/plus_sign.gif" onClick="showMessageInThread('${msg.id}', this)" onMouseOver="this.style.cursor='pointer'"/>
+			<img class="threadMessageOpen" src="images/minus_sign.gif" onClick="hideMessageInThread('${msg.id}', this)" onMouseOver="this.style.cursor='pointer'"/>
 			<a href="Threads?action=getByThread&amp;threadId=${msg.threadId}#msg${msg.id}">
 				<c:choose>
 					<c:when test="${empty msg.author.nick}">
