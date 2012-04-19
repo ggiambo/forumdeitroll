@@ -50,6 +50,9 @@
 						<c:url value="Messages" var="messagesUrl">
 							<c:param name="action" value="getByAuthor"/>
 							<c:param name="author" value="${msg.author.nick}"/>
+							<c:if test="${specificParams['forum'] != null}">
+								<c:param name="forum" value="${specificParams['forum']}"/>
+							</c:if>
 						</c:url>
 						<a href="<c:out value="${messagesUrl}" escapeXml="true" />">${msg.author.nick}</a>
 					</c:otherwise>

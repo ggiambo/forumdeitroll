@@ -112,9 +112,11 @@ public class Messages extends MainServlet {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
 			String author = req.getParameter("author");
 			addSpecificParam(req, "author", author);
+			String forum = req.getParameter("forum");
+			addSpecificParam(req, "forum", forum);
 			setWebsiteTitle(req, "Messaggi di " + author + " @ Forum dei Troll");
 			setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + author + "</i>"));
-			MessagesDTO messages = getPersistence().getMessagesByAuthor(author, PAGE_SIZE, getPageNr(req));
+			MessagesDTO messages = getPersistence().getMessagesByAuthor(author, forum, PAGE_SIZE, getPageNr(req));
 			req.setAttribute("messages", messages.getMessages());
 			req.setAttribute("resultSize", messages.getMessages().size());
 			req.setAttribute("totalSize", messages.getMaxNrOfMessages());

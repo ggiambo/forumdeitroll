@@ -45,7 +45,7 @@
 		<c:if test="${action == 'getAuthorThreadsByLastPost'}">
 			<c:set var="action" value="getThreads" />
 		</c:if>
-		<c:if test="${action == 'getById'}">
+		<c:if test="${action == 'getById' || action == 'getByAuthor'}">
 			<c:set var="action" value="getMessages" />
 		</c:if>
 	

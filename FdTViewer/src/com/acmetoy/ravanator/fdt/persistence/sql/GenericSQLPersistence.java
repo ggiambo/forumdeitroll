@@ -67,17 +67,28 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public MessagesDTO getMessagesByAuthor(String author, int limit, int page) {
+	public MessagesDTO getMessagesByAuthor(String author, String forum, int limit, int page) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT * FROM messages where author = ? ORDER BY id DESC LIMIT ? OFFSET ?");
-			ps.setString(1, author);
-			ps.setInt(2, limit);
-			ps.setInt(3, limit*page);
-			return new MessagesDTO(getMessages(ps.executeQuery(), false), countMessagesByAuthor(author, conn));
+			StringBuilder query = new StringBuilder("SELECT * FROM messages WHERE author = ?");
+			int i = 1;
+			if ("".equals(forum)) {
+				query.append(" AND forum IS NULL");
+			} else if (forum != null) {
+				query.append(" AND forum = ?");
+			}
+			query.append(" ORDER BY id DESC LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(i++, author);
+			if (StringUtils.isNotEmpty(forum)) {
+				ps.setString(i++, forum);
+			}
+			ps.setInt(i++, limit);
+			ps.setInt(i++, limit*page);
+			return new MessagesDTO(getMessages(ps.executeQuery(), false), countMessagesByAuthor(author, forum, conn));
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
 		} finally {
@@ -1298,12 +1309,22 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return -1;
 	}
 
-	private int countMessagesByAuthor(String author, Connection conn) {
+	private int countMessagesByAuthor(String author, String forum, Connection conn) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT count(id) AS nr FROM messages where author = ?");
-			ps.setString(1, author);
+			StringBuilder query = new StringBuilder("SELECT count(id) AS nr FROM messages WHERE author = ?");
+			int i = 1;
+			if ("".equals(forum)) {
+				query.append(" AND forum IS NULL");
+			} else if (forum != null) {
+				query.append(" AND forum = ?");
+			}
+			ps = conn.prepareStatement(query.toString());
+			ps.setString(i++, author);
+			if (StringUtils.isNotEmpty(forum)) {
+				ps.setString(i++, forum);
+			}
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				return rs.getInt("nr");
