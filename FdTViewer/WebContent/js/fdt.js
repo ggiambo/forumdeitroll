@@ -328,3 +328,17 @@ function hideMessageInThread(msgId, element) {
 	triangleOpen.hide();
 	triangleOpen.parent().children("img.threadMessageClosed").show();
 }
+
+function searchById(event) {
+	if (event.which == 13) {
+		var msgId = parseFloat($(event.target).val());
+		if (isNaN(msgId)) {
+		  alert($(event.target).val() + " non è un id valido");
+		  return;
+		}
+		var wl = window.location;
+		var newUrl = wl.protocol + "//" + wl.host + wl.pathname.substr(0, wl.pathname.lastIndexOf("/"));
+		newUrl += "/Messages?action=getById&msgId=" + msgId;
+		window.location.assign(newUrl);
+	}
+}

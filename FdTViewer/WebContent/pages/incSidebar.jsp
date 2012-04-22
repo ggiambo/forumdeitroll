@@ -27,6 +27,11 @@
 		</div>
 		<input type="submit" value="Cerca"/>
 	</form>
+	
+	<label for="getById">Per id:</label>
+	<input type="text" name="getById" id="getById" onkeyup="searchById(event)" size="7" value="${msgId}"/>
+	<br/><br/>
+	
 	<ul>
 		<c:choose>
 			<c:when test="${navType == 'nthread'}">
