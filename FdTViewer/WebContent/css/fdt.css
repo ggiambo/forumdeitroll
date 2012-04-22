@@ -1,4 +1,4 @@
- /* RESET.CSS serve a rimuovere tutte le personalizzazioni CSS dei vari browser di modo che le pagine 
+p /* RESET.CSS serve a rimuovere tutte le personalizzazioni CSS dei vari browser di modo che le pagine 
     del sito appaiano allo stesso modo su tutti i client. Ogni browser, infatti, ha i suoi margini,
     padding, ecc. per ogni elemento HTML che spesso sono diverso fra loro. Con reset.css tutto
     questo viene azzerato. */
@@ -1034,7 +1034,7 @@ form#poll input {
 	font-size: 16px;
 	margin-bottom: 5px;
 	padding: 0 5px;
-	width: 98%;
+	width: auto;
 }
 
 form#poll textarea {
