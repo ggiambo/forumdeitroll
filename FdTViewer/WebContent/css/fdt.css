@@ -1107,5 +1107,6 @@ img.threadMessageOpen {
 div.threadMessage {
 	margin: .3em .3em .3em 1.4em; 
 	padding: 0.4em; 
-	border: 1px dotted;
+	border: 1px solid lightgray;
+	border-radius: 5px 5px 5px 5px;
 }
