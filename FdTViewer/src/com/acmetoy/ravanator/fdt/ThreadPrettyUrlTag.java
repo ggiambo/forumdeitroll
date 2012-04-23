@@ -44,7 +44,7 @@ public class ThreadPrettyUrlTag extends TagSupport {
 			out.write(prettySubject);
 			
 			*/
-			out.write("/Threads?action=getByThread&threadId=");
+			out.write("/Threads?action=getByThread&amp;threadId=");
 			out.write(this.threadId);
 			
 			out.write("#msg");

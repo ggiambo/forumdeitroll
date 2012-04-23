@@ -1110,3 +1110,15 @@ div.threadMessage {
 	border: 1px solid lightgray;
 	border-radius: 5px 5px 5px 5px;
 }
+
+ul.threadlist {
+	list-style: none;
+	border: 0;
+	border-left: 1px dotted gray;
+	padding: 0;
+}
+
+ul.threadlist li {
+	padding: 0;
+	padding-left: 10px;
+}
