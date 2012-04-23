@@ -524,6 +524,7 @@ public class Messages extends MainServlet {
 				}
 				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
 				msg.setText(text);
+				msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 			} else {
 				// reply
 				MessageDTO replyMsg = getPersistence().getMessage(parentId);
