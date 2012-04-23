@@ -123,6 +123,8 @@ h2 {
 #sidebar ul {
 	list-style-image: url(../images/forum.gif);
 	list-style-position : inside;
+	margin: 0;
+	padding: 0;
 }
 
 #sidebar ul li {
