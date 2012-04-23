@@ -1122,3 +1122,13 @@ ul.threadlist li {
 	padding: 0;
 	padding-left: 10px;
 }
+
+div.threadTreeEntries ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+div.threadTreeEntries ul li {
+	padding-left: 10px;
+}

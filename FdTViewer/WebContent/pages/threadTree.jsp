@@ -10,7 +10,7 @@
 	<c:if test="${indent != true}">
 		<c:set var="liStyle" value="" />
 	</c:if>
-	<li style="${liStyle}">	
+	<li>	
 		<div>
 			<img class="threadMessageClosed" src="images/plus_sign.gif" onClick="showMessageInThread('${msg.id}', this)" onMouseOver="this.style.cursor='pointer'"/>
 			<img class="threadMessageOpen" src="images/minus_sign.gif" onClick="hideMessageInThread('${msg.id}', this)" onMouseOver="this.style.cursor='pointer'"/>
