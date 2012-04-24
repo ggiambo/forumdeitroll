@@ -340,5 +340,16 @@ public abstract class MainServlet extends HttpServlet {
 			}
 		}
 	}
-	
+
+	/**
+	AFAIK questo e` usato soltanto per passare argomenti extra al codice che visualizza i numerini di paginazione
+	*/
+	protected void addSpecificParam(HttpServletRequest req, String key, String value) {
+		Map<String, String> specificParams = (Map<String, String>)req.getAttribute("specificParams");
+		if (specificParams == null) {
+			specificParams = new HashMap<String, String>();
+			req.setAttribute("specificParams", specificParams);
+		}
+		specificParams.put(key, value);
+	}
 }

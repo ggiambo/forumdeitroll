@@ -578,15 +578,6 @@ public class Messages extends MainServlet {
 		return new HashMap<String, String[]>(EMO_MAP);
 	}
 
-	private void addSpecificParam(HttpServletRequest req, String key, String value) {
-		Map<String, String> specificParams = (Map<String, String>)req.getAttribute("specificParams");
-		if (specificParams == null) {
-			specificParams = new HashMap<String, String>();
-			req.setAttribute("specificParams", specificParams);
-		}
-		specificParams.put(key, value);
-	}
-
 	protected void forShame(final AuthorDTO author, final String shameTitle, final String shameMessage) {
 		final MessageDTO msg = new MessageDTO();
 		msg.setAuthor(author);

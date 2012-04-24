@@ -57,10 +57,34 @@ public class Threads extends MainServlet {
 
 	/**
 	 * Ordinati per thread / data iniziale
+	  Se il parametro forum non e` presente restituisce i thread di tutti i forum, se e` presente ma contiene la stringa vuota restituisce i thread del forum principale, altrimenti restituisce i thread del forum specificato
 	 */
 	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			return initWithMessage(req, res, NavigationMessage.info("Thread nuovi"));
+			boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+
+			String forum = req.getParameter("forum");
+			ThreadsDTO messages;
+
+			req.setAttribute("navType", "nthread");
+
+			if (forum == null) {
+				messages = getPersistence().getThreads(PAGE_SIZE, getPageNr(req), hideProcCatania);
+				setWebsiteTitle(req, "Forum dei troll");
+				req.setAttribute("navForum", "");
+			} else {
+				messages = getPersistence().getThreadsByForum(forum, PAGE_SIZE, getPageNr(req));
+				setWebsiteTitle(req, forum.equals("") ?
+					"Forum principale @ Forum dei troll"
+					: (forum + " @ Forum dei troll"));
+				req.setAttribute("navForum", forum.equals("") ? "Principale" : forum);
+			}
+
+			req.setAttribute("messages", messages.getMessages());
+			req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
+			setNavigationMessage(req, NavigationMessage.info("Thread nuovi"));
+
+			return "threads.jsp";
 		}
 	};
 
@@ -102,34 +126,4 @@ public class Threads extends MainServlet {
 			return "threadsByLastPost.jsp";
 		}
 	};
-
-	/*
-	Se il parametro forum non e` presente restituisce i thread di tutti i forum, se e` presente ma contiene la stringa vuota restituisce i thread del forum principale, altrimenti restituisce i thread del forum specificato
-	*/
-	private String initWithMessage(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
-		boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
-
-		String forum = req.getParameter("forum");
-		ThreadsDTO messages;
-
-		req.setAttribute("navType", "nthread");
-
-		if (forum == null) {
-			messages = getPersistence().getThreads(PAGE_SIZE, getPageNr(req), hideProcCatania);
-			setWebsiteTitle(req, "Forum dei troll");
-			req.setAttribute("navForum", "");
-		} else {
-			messages = getPersistence().getThreadsByForum(forum, PAGE_SIZE, getPageNr(req));
-			setWebsiteTitle(req, forum.equals("") ?
-				"Forum principale @ Forum dei troll"
-				: (forum + " @ Forum dei troll"));
-			req.setAttribute("navForum", forum.equals("") ? "Principale" : forum);
-		}
-
-		req.setAttribute("messages", messages.getMessages());
-		req.setAttribute("maxNrOfMessages", messages.getMaxNrOfMessages());
-		setNavigationMessage(req, message);
-
-		return "threads.jsp";
-	}
 }
