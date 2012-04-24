@@ -1116,36 +1116,36 @@ div.threadMessage {
 ul.threadlist {
 	list-style: none;
 	border: 0;
-	border-left: 1px dotted gray;
+	border-left: 1px dashed gray;
 	padding: 0;
 }
 
-ul.threadlist3 {
-	list-style: none;
-	border: 0;
-	border-left: 1px solid #AF6F00;
-	padding-left: 5px;
+ul.dl0 {
+	border-color: Red;
 }
 
-ul.threadlist2 {
-	list-style: none;
-	border: 0;
-	border-left: 1px solid #9A00EF;
-	padding-left: 5px;
+ul.dl1 {
+	border-color: Blue;
 }
 
-ul.threadlist1 {
-	list-style: none;
-	border: 0;
-	border-left: 1px solid #00AF59;
-	padding-left: 5px;
+ul.dl2 {
+	border-color: Orange;
 }
 
-ul.threadlist0 {
-	list-style: none;
-	border: 0;
-	border-left: 1px solid #007BDF;
-	padding-left: 5px;
+ul.dl3 {
+	border-color: Green;
+}
+
+ul.dl4 {
+	border-color: DarkOrchid;
+}
+
+ul.dl5 {
+	border-color: DarkCyan;
+}
+
+ul.dl6 {
+	border-color: RoyalBlue;
 }
 
 ul.threadlist li {
