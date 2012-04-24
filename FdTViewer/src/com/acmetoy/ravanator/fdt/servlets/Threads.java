@@ -64,15 +64,15 @@ public class Threads extends MainServlet {
 			boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
 
 			String forum = req.getParameter("forum");
-			ThreadsDTO messages;
-
 			req.setAttribute("navType", "nthread");
 
+			ThreadsDTO messages;
 			if (forum == null) {
 				messages = getPersistence().getThreads(PAGE_SIZE, getPageNr(req), hideProcCatania);
 				setWebsiteTitle(req, "Forum dei troll");
 				req.setAttribute("navForum", "");
 			} else {
+				addSpecificParam(req, "forum", forum);
 				messages = getPersistence().getThreadsByForum(forum, PAGE_SIZE, getPageNr(req));
 				setWebsiteTitle(req, forum.equals("") ?
 					"Forum principale @ Forum dei troll"
@@ -103,6 +103,7 @@ public class Threads extends MainServlet {
 				setWebsiteTitle(req, "Forum dei troll");
 				req.setAttribute("navForum", "");
 			} else {
+				addSpecificParam(req, "forum", forum);
 				messages = getPersistence().getForumThreadsByLastPost(forum, PAGE_SIZE, getPageNr(req));
 				setWebsiteTitle(req, forum.equals("") ?
 					"Forum principale @ Forum dei troll"
