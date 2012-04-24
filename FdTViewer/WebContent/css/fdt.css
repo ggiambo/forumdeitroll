@@ -1120,6 +1120,34 @@ ul.threadlist {
 	padding: 0;
 }
 
+ul.threadlist3 {
+	list-style: none;
+	border: 0;
+	border-left: 1px solid #AF6F00;
+	padding-left: 5px;
+}
+
+ul.threadlist2 {
+	list-style: none;
+	border: 0;
+	border-left: 1px solid #9A00EF;
+	padding-left: 5px;
+}
+
+ul.threadlist1 {
+	list-style: none;
+	border: 0;
+	border-left: 1px solid #00AF59;
+	padding-left: 5px;
+}
+
+ul.threadlist0 {
+	list-style: none;
+	border: 0;
+	border-left: 1px solid #007BDF;
+	padding-left: 5px;
+}
+
 ul.threadlist li {
 	padding: 0;
 	padding-left: 10px;
