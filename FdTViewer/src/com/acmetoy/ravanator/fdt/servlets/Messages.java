@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -340,7 +342,7 @@ public class Messages extends MainServlet {
 			return "newMessage.jsp";
 		}
 	};
-	
+
 	/**
 	 * Crea la preview del messaggio
 	 * @param req
@@ -371,9 +373,9 @@ public class Messages extends MainServlet {
 			return null;
 		}
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	protected GiamboAction getSingleMessageContent = new GiamboAction("getSingleMessageContent", ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -423,7 +425,6 @@ public class Messages extends MainServlet {
 	};
 
 	private String insertMessageAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
-
 		// se c'e' un'errore, mostralo
 		String validationMessage = validateInsertMessage(req);
 		if (validationMessage != null) {
@@ -560,11 +561,46 @@ public class Messages extends MainServlet {
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
 		StringBuilder content = new StringBuilder();
-		if (req.getServletPath().endsWith("/Threads")) {
-			content.append("/Threads?action=getByThread&threadId=").append(msg.getThreadId());
-		} else {
+
+		/*
+		Costruiamo l'url di destinazione a partire dall'url da cui e` stato effettuato il submit -- sarrusofono
+		*/
+
+		final String submitLocation = req.getParameter("submitLocation");
+		System.out.println("submitLocation [" + submitLocation + "]");
+		URI submitURI = null;
+		try {
+			submitURI = new URI(submitLocation);
+		} catch (URISyntaxException e) {
 			content.append("/Messages?action=init");
 		}
+
+		if (submitURI != null) {
+			if (submitURI.getPath().endsWith("/Threads")) {
+				content.append("/Threads?action=getByThread&threadId=").append(msg.getThreadId());
+			} else if (submitURI.getPath().endsWith("/Messages")) {
+				final String rawQuery = submitURI.getQuery();
+				String navForum = null;
+				if (rawQuery != null) {
+					final String[] query = rawQuery.split("&");
+					for (final String argval: query) {
+						if (argval.startsWith("forum=")) {
+							navForum = argval;
+							break;
+						}
+					}
+				}
+
+				if (navForum == null) {
+					content.append("/Messages?action=init");
+				} else {
+					content.append("/Messages?action=getByForum&" + navForum);
+				}
+			} else {
+				content.append("/Messages?action=init");
+			}
+		}
+
 		content.append("&rnd=").append(System.currentTimeMillis());
 		content.append("#msg").append(msg.getId());
 		writer.name("content").value(content.toString());

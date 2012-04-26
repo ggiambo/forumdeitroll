@@ -83,7 +83,7 @@ function edit(parentId) {
 function send(parentId) {
 	$("#reply_" + parentId + " :input[type='button']").attr("disabled", "disabled");
 	$("body").css("cursor", "progress");
-	var data = { parentId: parentId };
+	var data = { parentId: parentId, submitLocation:  "" + window.location };
 	$("#reply_" + parentId + " :input").each(function() {
 		var val = $(this);
 		data[val.attr("name")] = val.val();
@@ -143,7 +143,7 @@ var urlInput = function(parentId) {
 	if (desc === '') {
 		html = '[url]' + url + '[/url]';
 	} else {
-		html = '[url=' + url + ']' + desc + '[/url]';	
+		html = '[url=' + url + ']' + desc + '[/url]';
 	}
 	//IE
 	if (document.selection) {
@@ -210,7 +210,7 @@ jQuery("document").ready(function(){
 			);
 	SyntaxHighlighter.defaults['toolbar'] = false;
 	SyntaxHighlighter.all();
-	
+
 	// collassa quotes
 	$('.quote-container').live('click', function() {
 		$(this).removeClass('quote-container');
@@ -220,7 +220,7 @@ jQuery("document").ready(function(){
 		$(this).removeClass('quote-closer');
 		$(this).addClass('quote-container');
 	});
-	
+
 });
 
 // tasto 'j' per saltare al prossimo messaggio
