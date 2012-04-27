@@ -42,7 +42,7 @@
 		</c:if>
 
 		<%-- casi speciali --%>
-		<c:if test="${action == 'getAuthorThreadsByLastPost'}">
+		<c:if test="${action == 'getAuthorThreadsByLastPost' || action == 'getByThread'}">
 			<c:set var="action" value="getThreads" />
 		</c:if>
 		<c:if test="${action == 'getById' || action == 'getByAuthor'}">

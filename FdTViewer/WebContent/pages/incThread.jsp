@@ -3,12 +3,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
-<ul>
-	<c:set var="liStyle" value="margin-left:15px" />
-	<c:if test="${index == 1}">
-		<c:set var="liStyle" value="" />
-	</c:if>
-	<li style="${liStyle}">	
+<c:choose>
+	<c:when test="${depth > 15}">
+		<c:set var="level" value="0"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="level" value="${depth mod 16}"/>
+	</c:otherwise>
+</c:choose>
+
+<ul class="threadlist dl${level}">
+<c:set var="depth" value="${depth + 1}" scope="request"/>
+	<li>
 		<div class="messagesBox">
 			<c:set var="msg" value="${message.content}" scope="request"/>
 			<jsp:include page="incMessage.jsp"/>
@@ -16,9 +22,9 @@
 		<c:if test="${not empty message.children}">
 			<c:forEach items="${message.children}" var="child">
 				<c:set var="message" value="${child}" scope="request"/>
-				<c:set var="index" value="${index + 1}" scope="request"/>
 				<jsp:include page="incThread.jsp"/>
 			</c:forEach>
 		</c:if>
+		<c:set var="depth" value="${depth - 1}" scope="request"/>
 	</li>
 </ul>

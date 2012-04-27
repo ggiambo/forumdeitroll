@@ -8,14 +8,16 @@
 	<c:forEach items="${messages}" var="msg" varStatus="index">
 		<c:choose>
 			<c:when test="${index.count % 2 == 0}">
-				<c:set var="class" value="msgEven"/>
+				<c:set var="rowclass" value="msgEven"/>
 			</c:when>
 			<c:otherwise>
-				<c:set var="class" value="msgOdd"/>
+				<c:set var="rowclass" value="msgOdd"/>
 			</c:otherwise>
 		</c:choose>
-		<div class="${class} threadBox">
-			<span class="threadTitle"><fdt:threadprettyurl subject="${msg.subject}" threadId="${msg.threadId}" msgId="${msg.id}"/></span>
+		<div class="${rowclass} threadBox">
+			<span class="threadTitle">
+				<a href="Threads?action=getByThread&threadId=${msg.threadId}#msgId=${msg.id}">${msg.subject}</a>
+			</span>
 			<c:if test="${!empty msg.forum}">
 				<span class="tagForum">${msg.forum}</span>
 			</c:if>

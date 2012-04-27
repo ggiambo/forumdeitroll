@@ -74,7 +74,7 @@
 
 	<span style="width:100%; margin:5px;">
 		<b>
-			<fdt:threadprettyurl subject="${msg.subject}" threadId="${msg.threadId}" msgId="${msg.id}"/>
+			<a href="Threads?action=getByThread&threadId=${msg.threadId}#msgId=${msg.id}">${msg.subject}</a>
 		</b>
 	</span>
 

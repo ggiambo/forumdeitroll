@@ -6,11 +6,7 @@
 <c:set var="message" value="${msg}" scope="request"/>
 <ul>
 	<c:set var="msg" value="${message.content}" scope="request"/>
-	<c:set var="liStyle" value="margin-left:10px" />
-	<c:if test="${indent != true}">
-		<c:set var="liStyle" value="" />
-	</c:if>
-	<li style="${liStyle}">	
+	<li>	
 		<div>
 			<img class="threadMessageClosed" src="images/plus_sign.gif" onClick="showMessageInThread('${msg.id}', this)" onMouseOver="this.style.cursor='pointer'"/>
 			<img class="threadMessageOpen" src="images/minus_sign.gif" onClick="hideMessageInThread('${msg.id}', this)" onMouseOver="this.style.cursor='pointer'"/>
@@ -29,7 +25,6 @@
 		<c:if test="${not empty message.children}">
 			<c:forEach items="${message.children}" var="msg">
 				<c:set var="msg" value="${msg}" scope="request"/>
-				<c:set var="indent" value="true" scope="request"/>
 				<jsp:include page="threadTree.jsp"/>
 			</c:forEach>
 		</c:if>

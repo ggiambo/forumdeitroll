@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -525,6 +527,7 @@ public class Messages extends MainServlet {
 				}
 				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
 				msg.setText(text);
+				msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
 			} else {
 				// reply
 				MessageDTO replyMsg = getPersistence().getMessage(parentId);
@@ -560,11 +563,46 @@ public class Messages extends MainServlet {
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
 		StringBuilder content = new StringBuilder();
-		if (req.getServletPath().endsWith("/Threads")) {
-			content.append("/Threads?action=getByThread&threadId=").append(msg.getThreadId());
-		} else {
+
+		/*
+		Costruiamo l'url di destinazione a partire dall'url da cui e` stato effettuato il submit -- sarrusofono
+		*/
+
+		final String submitLocation = req.getParameter("submitLocation");
+		System.out.println("submitLocation [" + submitLocation + "]");
+		URI submitURI = null;
+		try {
+			submitURI = new URI(submitLocation);
+		} catch (URISyntaxException e) {
 			content.append("/Messages?action=init");
 		}
+
+		if (submitURI != null) {
+			if (submitURI.getPath().endsWith("/Threads")) {
+				content.append("/Threads?action=getByThread&threadId=").append(msg.getThreadId());
+			} else if (submitURI.getPath().endsWith("/Messages")) {
+				final String rawQuery = submitURI.getQuery();
+				String navForum = null;
+				if (rawQuery != null) {
+					final String[] query = rawQuery.split("&");
+					for (final String argval: query) {
+						if (argval.startsWith("forum=")) {
+							navForum = argval;
+							break;
+						}
+					}
+				}
+
+				if (navForum == null) {
+					content.append("/Messages?action=init");
+				} else {
+					content.append("/Messages?action=getByForum&" + navForum);
+				}
+			} else {
+				content.append("/Messages?action=init");
+			}
+		}
+
 		content.append("&rnd=").append(System.currentTimeMillis());
 		content.append("#msg").append(msg.getId());
 		writer.name("content").value(content.toString());

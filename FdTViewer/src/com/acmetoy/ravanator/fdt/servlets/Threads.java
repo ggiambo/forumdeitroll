@@ -39,15 +39,13 @@ public class Threads extends MainServlet {
 			if (StringUtils.isEmpty(stringThreadId)) {
 				return init.action(req, res);
 			}
+			String forum = req.getParameter("forum");
+			addSpecificParam(req, "forum",  forum);
 			Long threadId = Long.parseLong(stringThreadId);
 			List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
 			req.setAttribute("root", new ThreadTree(msgs).getRoot());
 			setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
 			setNavigationMessage(req, NavigationMessage.info("Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>"));
-
-			if (msgs.size() > 0) {
-				addSpecificParam(req, "forum",  msgs.get(0).getForum());
-			}
 
 			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 

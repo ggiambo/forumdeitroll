@@ -10,13 +10,13 @@
 	<c:forEach items="${polls}" var="poll" varStatus="index">
 		<c:choose>
 			<c:when test="${index.count % 2 == 0}">
-				<c:set var="class" value="pollEven"/>
+				<c:set var="rowclass" value="pollEven"/>
 			</c:when>
 			<c:otherwise>
-				<c:set var="class" value="pollOdd"/>
+				<c:set var="rowclass" value="pollOdd"/>
 			</c:otherwise>
 		</c:choose>
-		<div id="poll_${poll.id}" class="${class} pollBox">
+		<div id="poll_${poll.id}" class="${rowclass} pollBox">
 			<span class="pollTitle">
 				<a href="Polls?action=getPollContent&pollId=${poll.id}">${poll.title}</a>
 			</span>
