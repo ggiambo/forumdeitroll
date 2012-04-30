@@ -64,7 +64,16 @@
 					<c:param name="action" value="${action}"></c:param>
 					<c:param name="forum" value="${forum}"></c:param>
 				</c:url>
-				<a href="<c:out value="${forumUrl}" escapeXml="true"/>">${forum}</a>
+				<a href="<c:out value="${forumUrl}" escapeXml="true"/>">
+					<c:choose>
+						<c:when test="${specificParams['forum'] == forum}">
+							<b>${forum}</b>
+						</c:when>
+						<c:otherwise>
+							${forum}
+						</c:otherwise>
+					</c:choose>
+				</a>
 			</li>
 		</c:forEach>
 	</ul>

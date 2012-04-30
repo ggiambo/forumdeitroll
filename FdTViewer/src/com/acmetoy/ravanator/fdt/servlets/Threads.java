@@ -71,7 +71,7 @@ public class Threads extends MainServlet {
 	 */
 	protected GiamboAction getThreads = new GiamboAction("getThreads", ONPOST|ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			return getThreads(req, res, NavigationMessage.info("Thread nuovi"));
+			return getThreads(req, res, NavigationMessage.info("Nuove discussioni"));
 		}
 	};
 
@@ -92,7 +92,7 @@ public class Threads extends MainServlet {
 			} else {
 				setWebsiteTitle(req, forum.equals("") ? "Forum principale @ Forum dei troll" : (forum + " @ Forum dei troll"));
 			}
-			setNavigationMessage(req, NavigationMessage.info("Thread aggiornati"));
+			setNavigationMessage(req, NavigationMessage.info("Discussioni aggiornate"));
 			req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 			return "threadsByLastPost.jsp";
 		}
@@ -111,6 +111,7 @@ public class Threads extends MainServlet {
 			List<ThreadDTO> messages = getPersistence().getAuthorThreadsByLastPost(author.getNick(), PAGE_SIZE, getPageNr(req), hideProcCatania);
 			req.setAttribute("messages", messages);
 			req.setAttribute("resultSize", messages.size());
+			setNavigationMessage(req, NavigationMessage.info("Discussioni nelle quali hai partecipato"));
 			return "threadsByLastPost.jsp";
 		}
 	};

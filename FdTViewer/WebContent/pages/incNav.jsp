@@ -16,14 +16,19 @@
 		<c:if test="${navigationMessage != null}">
 			<li>
 				<div class="navigationMessage${navigationMessage.type}">
-				<c:choose>
-					<c:when test="${forum == null}">
-						Tutto il forum &mdash;
-					</c:when>
-					<c:when test="${forum != ''}">
-						<c:out value="${forum}"/> &mdash;
-					</c:when>
-				</c:choose>
+				<span style="color:darkred">
+					<c:choose>
+						<c:when test="${forum == null}">
+							Tutto il forum
+						</c:when>
+						<c:when test="${forum != ''}">
+							<c:out value="${forum}"/> 
+						</c:when>
+					</c:choose>
+				</span>
+				<c:if test="${forum == null or forum != ''}">
+					&mdash;
+				</c:if>
 				${navigationMessage.content}
 				</div>
 			</li>
