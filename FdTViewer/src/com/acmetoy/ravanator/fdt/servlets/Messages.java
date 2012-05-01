@@ -20,9 +20,11 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.RandomPool;
+import com.acmetoy.ravanator.fdt.SingleValueCache;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
+import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.acmetoy.ravanator.fdt.servlets.Action.Method;
@@ -83,6 +85,16 @@ public class Messages extends MainServlet {
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 40;
+	
+	private static SingleValueCache<List<String[]>> cachedExtendedEmo = new SingleValueCache<List<String[]>>(60 * 60 * 1000) {
+		@Override protected List<String[]> update() {
+			try {
+				return PersistenceFactory.getInstance().getExtendedEmo();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	};
 
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -205,8 +217,8 @@ public class Messages extends MainServlet {
 		req.setAttribute("message", msg);
 		setWebsiteTitle(req, "Nuovo messaggio @ Forum dei Troll");
 		// faccine - ordinate per key
-		TreeMap<String, String[]> emoMap = new TreeMap<String, String[]>(EMO_MAP);
-		req.setAttribute("emoMap", emoMap);
+		req.setAttribute("emoMap", new TreeMap<String, String[]>(EMO_MAP));
+		req.setAttribute("extendedEmos", cachedExtendedEmo.get());
 		return "newMessage.jsp";
 	}
 
@@ -256,8 +268,8 @@ public class Messages extends MainServlet {
 		req.setAttribute("message", newMsg);
 
 		// faccine - ordinate per key
-		TreeMap<String, String[]> emoMap = new TreeMap<String, String[]>(EMO_MAP);
-		req.setAttribute("emoMap", emoMap);
+		req.setAttribute("emoMap", new TreeMap<String, String[]>(EMO_MAP));
+		req.setAttribute("extendedEmos", cachedExtendedEmo.get());
 
 		//jstl non accede ai campi stitici
 		req.setAttribute("MAX_MESSAGE_LENGTH", MAX_MESSAGE_LENGTH);
@@ -330,8 +342,8 @@ public class Messages extends MainServlet {
 		req.setAttribute("message", msg);
 
 		// faccine - ordinate per key
-		TreeMap<String, String[]> emoMap = new TreeMap<String, String[]>(EMO_MAP);
-		req.setAttribute("emoMap", emoMap);
+		req.setAttribute("emoMap", new TreeMap<String, String[]>(EMO_MAP));
+		req.setAttribute("extendedEmos", cachedExtendedEmo.get());
 
 		req.setAttribute("isEdit", true);
 
@@ -361,7 +373,7 @@ public class Messages extends MainServlet {
 			text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
 			text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
 		}
-		writer.name("content").value(MessageTag.getMessage(text, null, author, null));
+		writer.name("content").value(MessageTag.getMessageStatic(text, null, author, null));
 		writer.endObject();
 		writer.flush();
 		writer.close();
@@ -379,7 +391,7 @@ public class Messages extends MainServlet {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
-		writer.name("content").value(MessageTag.getMessage(msg.getText(), null, msg.getAuthor(), null));
+		writer.name("content").value(MessageTag.getMessageStatic(msg.getText(), null, msg.getAuthor(), null));
 		writer.endObject();
 		writer.flush();
 		writer.close();
@@ -603,6 +615,10 @@ public class Messages extends MainServlet {
 
 	public static Map<String, String[]> getEmoMap() {
 		return new HashMap<String, String[]>(EMO_MAP);
+	}
+	
+	public static List<String[]> getExtendedEmo() {
+		return cachedExtendedEmo.get();
 	}
 
 	protected void forShame(final AuthorDTO author, final String shameTitle, final String shameMessage) {

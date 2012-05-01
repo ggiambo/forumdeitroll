@@ -1,6 +1,7 @@
 package com.acmetoy.ravanator.fdt;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.jsp.JspTagException;
@@ -37,8 +38,9 @@ public class MessageTag extends BodyTagSupport {
 
 	public int doAfterBody() throws JspTagException {
 		try {
-			AuthorDTO loggedUser = (AuthorDTO) pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			getBodyContent().getEnclosingWriter().write(getMessage(getBodyContent().getString().toCharArray(), search, author, loggedUser).toString());
+			loggedUser = (AuthorDTO) pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			body = getBodyContent().getString().toCharArray();
+			getBodyContent().getEnclosingWriter().write(getMessage().toString());
 		} catch (Exception e) {
 			LOG.error("Errore durante il rendering del post "+e.getMessage(), e);
 			LOG.error("BODY:\n"+getBodyContent().getString());
@@ -50,10 +52,14 @@ public class MessageTag extends BodyTagSupport {
 	// ----- message parsing -----
 
 	// per la preview
-	public static String getMessage(String body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
+	public static String getMessageStatic(String body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
 		MessageTag messageTag = new MessageTag();
+		messageTag.setSearch(search);
+		messageTag.setAuthor(author);
+		messageTag.body = body.toCharArray();
+		messageTag.loggedUser = loggedUser;
 		try {
-			return messageTag.getMessage(body.toCharArray(),search, author, loggedUser).toString();
+			return messageTag.getMessage().toString();
 		} catch (Exception e) {
 			LOG.error("Errore durante il rendering del post "+e.getMessage(), e);
 			LOG.error("BODY:\n"+new String(messageTag.body));
@@ -61,7 +67,7 @@ public class MessageTag extends BodyTagSupport {
 		}
 	}
 
-
+	private AuthorDTO loggedUser;
 	private char[] body;
 	private char[] ibody;
 	private int p;
@@ -78,9 +84,7 @@ public class MessageTag extends BodyTagSupport {
 	private int emotiCount = 0;
 	private int embedCount = 0;
 
-
-	private StringBuilder getMessage(char[] body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
-		this.body = body;
+	private StringBuilder getMessage() throws Exception {
 		ibody = new String(body).toLowerCase().toCharArray();
 		out = new StringBuilder((int) (body.length * 1.3));
 		word = new StringBuilder();
@@ -122,10 +126,10 @@ public class MessageTag extends BodyTagSupport {
 				url();
 			} else if (found(IMG)) {
 				on_word();
-				img(loggedUser);
+				img();
 			} else if (found(YT)) {
 				on_word();
-				youtube(loggedUser);
+				youtube();
 			} else if (found(COLOR)) {
 				on_word();
 				start_color();
@@ -187,7 +191,7 @@ public class MessageTag extends BodyTagSupport {
 	}
 
 	private void on_word() {
-		if (!emoticons()) {
+		if (!emoticons() && !extendedEmoticons()) {
 			if (!link()) {
 				search();
 			}
@@ -241,6 +245,21 @@ public class MessageTag extends BodyTagSupport {
 		for (Emo emo: emos) {
 			simpleReplaceAllEmoticons(word, emo.sequence, emo.replacement);
 			simpleReplaceAllEmoticons(word, emo.sequenceToUpper, emo.replacement);
+		}
+		if (wlen != word.length()) {
+			return true;
+		} else {
+			word.delete(0, 1);
+			return false;
+		}
+	}
+	
+	private boolean extendedEmoticons() {
+		word.insert(0, ' ');
+		int wlen = word.length();
+		for (String[] emo: Messages.getExtendedEmo()) {
+			String replace = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emoextended/%s.gif'>", emo[1], emo[1], emo[0]);
+			simpleReplaceAllEmoticons(word, "$[" + emo[0] + "]", replace);
 		}
 		if (wlen != word.length()) {
 			return true;
@@ -453,7 +472,7 @@ public class MessageTag extends BodyTagSupport {
 		}
 	}
 
-	private void img(AuthorDTO loggedUser) {
+	private void img() {
 		p += IMG.length;
 		int img_end = scanFor(IMG_END);
 		if (img_end == -1) {
@@ -481,7 +500,7 @@ public class MessageTag extends BodyTagSupport {
 	}
 
 	Long ytCounter = 0l;
-	private void youtube(AuthorDTO loggedUser) {
+	private void youtube() {
 		p += YT.length;
 		int yt_end = scanFor(YT_END);
 		if (yt_end == -1) {

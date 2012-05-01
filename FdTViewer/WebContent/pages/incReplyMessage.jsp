@@ -18,6 +18,25 @@
 		});
 		jscolor.init()
 	});
+	
+	function showEmotiboxClassic() {
+		var emotiboxes = $("#reply_${message.parentId} .emotibox .emo");
+		$(emotiboxes[1]).hide();
+		$(emotiboxes[0]).show();
+		var tabs = $("#reply_${message.parentId} ul li");
+		$(tabs[1]).removeClass("selectedTab")
+		$(tabs[0]).addClass("selectedTab")
+	}
+	
+	function showEmotiboxExtended() {
+		var emotiboxes = $("#reply_${message.parentId} .emotibox .emo");
+		$(emotiboxes[0]).hide();
+		$(emotiboxes[1]).show();
+		var tabs = $("#reply_${message.parentId} ul li");
+		$(tabs[0]).removeClass("selectedTab")
+		$(tabs[1]).addClass("selectedTab")
+	}
+	
 </fdt:delayedScript>
 
 <c:set var="isReply" value="${!isEdit && message.parentId > 0}"/>
@@ -30,19 +49,31 @@
 
 	<c:if test="${isReply}">
 		<c:set var="class" value="border:1px solid black; padding:2px; margin:2px;"/>
-		<a style="float: right; padding: 5px;" onClick="closeReplyDiv('${message.parentId}')"><img src="images/close.jpeg"></a>
+		<a style="float: right;" onClick="closeReplyDiv('${message.parentId}')"><img src="images/close.jpeg"></a>
 	</c:if>
 
+	<ul class="tabs">
+		<li class="selectedTab" onClick="showEmotiboxClassic()"><a href="#">Serie classica</a></li>
+		<li><a href="#" onClick="showEmotiboxExtended()">Serie estesa</a></li>
+	</ul>
+
 	<div class="emotibox">
-		<c:forEach items="${emoMap}" var="emo" varStatus="index">
-			 <%-- caso speciale per la faccina :\  --%>
-			<c:set var="emoValue" value="${fn:replace(emo.value[0], '\\\\', '\\\\\\\\')}"/>
-			 <%-- caso speciale per la faccina :'(  --%>
-			<c:set var="emoValue" value="${fn:replace(emoValue, '\\'', '\\\\\\'')}"/>
-			<img onmousedown="insert('${emoValue}', '', '${message.parentId}')" title="${emoValue}" src="images/emo/${emo.key}.gif" style="cursor: pointer;"/>
-			<c:if test="${index.count % 13 == 0}"><br/></c:if>
-		</c:forEach>
-		<br/>
+		<div class="emo">
+			<c:forEach items="${emoMap}" var="emo" varStatus="index">
+				 <%-- caso speciale per la faccina :\  --%>
+				<c:set var="emoValue" value="${fn:replace(emo.value[0], '\\\\', '\\\\\\\\')}"/>
+				 <%-- caso speciale per la faccina :'(  --%>
+				<c:set var="emoValue" value="${fn:replace(emoValue, '\\'', '\\\\\\'')}"/>
+				<img onmousedown="insert('${emoValue}', '', '${message.parentId}')" title="${emoValue}" src="images/emo/${emo.key}.gif" style="cursor: pointer;"/>
+				<c:if test="${index.count % 13 == 0}"><br/></c:if>
+			</c:forEach>
+		</div>
+		<div style="display:none" class="emo">
+			<c:forEach items="${extendedEmos}" var="emo" varStatus="index">
+				<img onmousedown="insert('$[${emo[0]}]', '', '${message.parentId}')" title="${emo[1]}" src="images/emoextended/${emo[0]}.gif" style="cursor: pointer;"/>
+				<c:if test="${index.count % 13 == 0}"><br/></c:if>
+			</c:forEach>
+		</div>
 		<div style="margin:3px 0px 3px 0px ">
 			<span onmousedown="insert('<b>', '</b>', '${message.parentId}')" class="msgButton btnBold" title="Grassetto (ma meno di Lich)">B</span>&nbsp;
 			<span onmousedown="insert('<i>', '</i>', '${message.parentId}')" class="msgButton btnItalic" title="Corsivo">I</span>&nbsp;
@@ -57,6 +88,7 @@
 			<input style="display:none;float:right" tabindex="5" type="button" name="edit" value="Edit" onClick="edit(${message.parentId})"/>&nbsp;
 		</div>
 	</div>
+	
 	<c:if test="${isNewThread || isEdit || isReply}">
 		<label for="subject">Oggetto:</label><br />
 		<input tabindex="1" name="subject" id="subject" maxlength="<%=Messages.MAX_SUBJECT_LENGTH %>" size="<%=Messages.MAX_SUBJECT_LENGTH %>" class="msgReplyObj" value="<c:out value="${message.subject}" escapeXml="true"/>"/>
@@ -101,7 +133,9 @@
 	<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />
 	<div style="clear: both;"></div>
 </div>
-<fdt:delayedScript dump="true">
-questa jsp non è inclusa in altre jsp, quindi gli script delayed
-vanno piazzati qua
-</fdt:delayedScript>
+<c:if test="${param.action != 'newMessage'}">
+	<fdt:delayedScript dump="true">
+	questa jsp non è inclusa in altre jsp, quindi gli script delayed
+	vanno piazzati qua
+	</fdt:delayedScript>
+</c:if>
