@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
+import com.acmetoy.ravanator.fdt.servlets.Action.Method;
 
 public class User extends MainServlet {
 
@@ -34,17 +35,16 @@ public class User extends MainServlet {
 
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
-	protected GiamboAction init = new GiamboAction("init", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO loggedUser = login(req);
-			setWebsiteTitle(req, "Forum dei troll");
-			if (loggedUser != null && loggedUser.isValid()) {
-				return "user.jsp";
-			}
-			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
-			return loginAction.action(req,  res);
+	@Action
+	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = login(req);
+		setWebsiteTitle(req, "Forum dei troll");
+		if (loggedUser != null && loggedUser.isValid()) {
+			return "user.jsp";
 		}
-	};
+		setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+		return loginAction(req,  res);
+	}
 
 	/**
 	 * Mostra la pagina di login
@@ -52,60 +52,58 @@ public class User extends MainServlet {
 	 * @param res
 	 * @return
 	 */
-	protected GiamboAction loginAction = new GiamboAction("loginAction", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			setWebsiteTitle(req, "Login @ Forum dei Troll");
-			return "login.jsp";
-		}
-	};
-
+	@Action
+	public String loginAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		setWebsiteTitle(req, "Login @ Forum dei Troll");
+		return "login.jsp";
+	}
+	
 	/**
 	 * Update della password
 	 * @param req
 	 * @param res
 	 * @return
 	 */
-	protected GiamboAction updatePass = new GiamboAction("updatePass", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			if (loggedUser == null || !loggedUser.isValid()) {
-				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
-				return loginAction.action(req,  res);
-			}
+	@Action
+	public String updatePass(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+			return loginAction(req,  res);
+		}
 
-			// user loggato, check pass
-			String actualPass = req.getParameter("actualPass");
-			if (StringUtils.isEmpty(actualPass)) {
-				setNavigationMessage(req, NavigationMessage.warn("Inserisci la password attuale"));
-				return "user.jsp";
-			}
-
-			if (!loggedUser.passwordIs(actualPass)) {
-				setNavigationMessage(req, NavigationMessage.warn("Password attuale sbagliata, non fare il furmiga"));
-				return "user.jsp";
-			}
-
-			String pass1 = req.getParameter("pass1");
-			String pass2 = req.getParameter("pass2");
-
-			if (StringUtils.isEmpty(pass1) || StringUtils.isEmpty(pass2)) {
-				setNavigationMessage(req, NavigationMessage.warn("Inserisci una password"));
-				return "user.jsp";
-			}
-			if (!pass1.equals(pass2)) {
-				setNavigationMessage(req, NavigationMessage.warn("Le due password non sono uguali"));
-				return "user.jsp";
-			}
-
-			if (!getPersistence().updateAuthorPassword(loggedUser, pass1)) {
-				setNavigationMessage(req, NavigationMessage.error("Errore in User.updatePass / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :("));
-				return "user.jsp";
-			}
-
-			setNavigationMessage(req, NavigationMessage.info("Password modificata con successo !"));
+		// user loggato, check pass
+		String actualPass = req.getParameter("actualPass");
+		if (StringUtils.isEmpty(actualPass)) {
+			setNavigationMessage(req, NavigationMessage.warn("Inserisci la password attuale"));
 			return "user.jsp";
 		}
-	};
+
+		if (!loggedUser.passwordIs(actualPass)) {
+			setNavigationMessage(req, NavigationMessage.warn("Password attuale sbagliata, non fare il furmiga"));
+			return "user.jsp";
+		}
+
+		String pass1 = req.getParameter("pass1");
+		String pass2 = req.getParameter("pass2");
+
+		if (StringUtils.isEmpty(pass1) || StringUtils.isEmpty(pass2)) {
+			setNavigationMessage(req, NavigationMessage.warn("Inserisci una password"));
+			return "user.jsp";
+		}
+		if (!pass1.equals(pass2)) {
+			setNavigationMessage(req, NavigationMessage.warn("Le due password non sono uguali"));
+			return "user.jsp";
+		}
+
+		if (!getPersistence().updateAuthorPassword(loggedUser, pass1)) {
+			setNavigationMessage(req, NavigationMessage.error("Errore in User.updatePass / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :("));
+			return "user.jsp";
+		}
+
+		setNavigationMessage(req, NavigationMessage.info("Password modificata con successo !"));
+		return "user.jsp";
+	}
 
 	/**
 	 * Update avatar
@@ -113,52 +111,51 @@ public class User extends MainServlet {
 	 * @param res
 	 * @return
 	 */
-	protected GiamboAction updateAvatar = new GiamboAction("updateAvatar", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			if (loggedUser == null || !loggedUser.isValid()) {
-				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
-				return loginAction.action(req,  res);
-			}
+	@Action
+	public String updateAvatar(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+			return loginAction(req,  res);
+		}
 
-			if (!ServletFileUpload.isMultipartContent(req)) {
-				setNavigationMessage(req, NavigationMessage.warn("Nessun avatar caricato"));
-				return "user.jsp";
-			}
-
-			// piglia l'immagine dal multipart request
-			DiskFileItemFactory  fileItemFactory = new DiskFileItemFactory ();
-			fileItemFactory.setSizeThreshold(MAX_SIZE_AVATAR_BYTES); // grandezza massima 512Kbytes
-			fileItemFactory.setRepository(new File(System.getProperty("java.io.tmpdir")));
-			ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
-			Iterator<FileItem> it = uploadHandler.parseRequest(req).iterator();
-			if (it.hasNext()) {
-				FileItem avatar = it.next();
-				if (avatar.getSize() > MAX_SIZE_AVATAR_BYTES) {
-					setNavigationMessage(req, NavigationMessage.warn("Megalomane, avatar troppo grande, al massimo 512K !"));
-					return "user.jsp";
-				}
-				// carica l'immagine
-				BufferedImage image = ImageIO.read(avatar.getInputStream());
-				int w = image.getWidth();
-				int h = image.getHeight();
-				if (w > MAX_SIZE_AVATAR_WIDTH || h > MAX_SIZE_AVATAR_HEIGHT) {
-					setNavigationMessage(req, NavigationMessage.warn("Dimensione massima consentita: 100x100px"));
-					return "user.jsp";
-				}
-				// modifica loggedUser
-				loggedUser.setAvatar(avatar.get());
-				getPersistence().updateAuthor(loggedUser);
-			} else {
-				setNavigationMessage(req, NavigationMessage.warn("Nessun Avatar ?"));
-				return "user.jsp";
-			}
-
-			// fuck yeah 8) !
-			setNavigationMessage(req, NavigationMessage.info("Avatar modificato con successo !"));
+		if (!ServletFileUpload.isMultipartContent(req)) {
+			setNavigationMessage(req, NavigationMessage.warn("Nessun avatar caricato"));
 			return "user.jsp";
 		}
-	};
+
+		// piglia l'immagine dal multipart request
+		DiskFileItemFactory  fileItemFactory = new DiskFileItemFactory ();
+		fileItemFactory.setSizeThreshold(MAX_SIZE_AVATAR_BYTES); // grandezza massima 512Kbytes
+		fileItemFactory.setRepository(new File(System.getProperty("java.io.tmpdir")));
+		ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
+		Iterator<FileItem> it = uploadHandler.parseRequest(req).iterator();
+		if (it.hasNext()) {
+			FileItem avatar = it.next();
+			if (avatar.getSize() > MAX_SIZE_AVATAR_BYTES) {
+				setNavigationMessage(req, NavigationMessage.warn("Megalomane, avatar troppo grande, al massimo 512K !"));
+				return "user.jsp";
+			}
+			// carica l'immagine
+			BufferedImage image = ImageIO.read(avatar.getInputStream());
+			int w = image.getWidth();
+			int h = image.getHeight();
+			if (w > MAX_SIZE_AVATAR_WIDTH || h > MAX_SIZE_AVATAR_HEIGHT) {
+				setNavigationMessage(req, NavigationMessage.warn("Dimensione massima consentita: 100x100px"));
+				return "user.jsp";
+			}
+			// modifica loggedUser
+			loggedUser.setAvatar(avatar.get());
+			getPersistence().updateAuthor(loggedUser);
+		} else {
+			setNavigationMessage(req, NavigationMessage.warn("Nessun Avatar ?"));
+			return "user.jsp";
+		}
+
+		// fuck yeah 8) !
+		setNavigationMessage(req, NavigationMessage.info("Avatar modificato con successo !"));
+		return "user.jsp";
+	}
 
 	/**
 	 * Pagina per registrare un nuovo user
@@ -167,14 +164,13 @@ public class User extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected GiamboAction registerAction = new GiamboAction("registerAction", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
-			setWebsiteTitle(req, "Registrazione @ Forum dei Troll");
-			return "register.jsp";
-		}
-	};
-
+	@Action
+	public String registerAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
+		setWebsiteTitle(req, "Registrazione @ Forum dei Troll");
+		return "register.jsp";
+	}
+	
 	/**
 	 * Registra nuovo user
 	 * @param req
@@ -182,38 +178,37 @@ public class User extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected GiamboAction registerNewUser = new GiamboAction("registerNewUser", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			String nick = req.getParameter("nick");
-			req.setAttribute("nick", nick);
-			// check del captcha
-			String captcha = req.getParameter("captcha");
-			String correctAnswer = (String)req.getSession().getAttribute("captcha");
-			if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
-				setNavigationMessage(req, NavigationMessage.warn("Captcha non corretto"));
-				return "register.jsp";
-			}
-			// registra il nick
-			if (StringUtils.isEmpty(nick) || nick.length() > 40) {
-				setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick: Troppo lungo o troppo corto"));
-				return "register.jsp";
-			}
-			String pass = req.getParameter("pass");
-			if (StringUtils.isEmpty(pass) || pass.length() > 20) {
-				setNavigationMessage(req, NavigationMessage.warn("Scegli una password migliore, giovane jedi ..."));
-				return "register.jsp";
-			}
-			AuthorDTO loggedUser = getPersistence().registerUser(nick, pass);
-			if (!loggedUser.isValid()) {
-				setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick, probabilmente gia' esiste"));
-				return "register.jsp";
-			}
-			// login
-			login(req);
-			req.setAttribute("loggedUser", loggedUser);
-			return "user.jsp";
+	@Action
+	public String registerNewUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String nick = req.getParameter("nick");
+		req.setAttribute("nick", nick);
+		// check del captcha
+		String captcha = req.getParameter("captcha");
+		String correctAnswer = (String)req.getSession().getAttribute("captcha");
+		if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
+			setNavigationMessage(req, NavigationMessage.warn("Captcha non corretto"));
+			return "register.jsp";
 		}
-	};
+		// registra il nick
+		if (StringUtils.isEmpty(nick) || nick.length() > 40) {
+			setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick: Troppo lungo o troppo corto"));
+			return "register.jsp";
+		}
+		String pass = req.getParameter("pass");
+		if (StringUtils.isEmpty(pass) || pass.length() > 20) {
+			setNavigationMessage(req, NavigationMessage.warn("Scegli una password migliore, giovane jedi ..."));
+			return "register.jsp";
+		}
+		AuthorDTO loggedUser = getPersistence().registerUser(nick, pass);
+		if (!loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick, probabilmente gia' esiste"));
+			return "register.jsp";
+		}
+		// login
+		login(req);
+		req.setAttribute("loggedUser", loggedUser);
+		return "user.jsp";
+	}
 
 	/**
 	 * Carica le frasi celebri dal database
@@ -222,28 +217,27 @@ public class User extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected GiamboAction getQuotes = new GiamboAction("getQuotes", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			if (loggedUser == null || !loggedUser.isValid()) {
-				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
-				return loginAction.action(req,  res);
-			}
-
-			List<QuoteDTO> list = getPersistence().getQuotes(loggedUser);
-			int size = list.size();
-			if (size < 5) {
-				for (int i = 0; i < 5 - size; i++) {
-					QuoteDTO dto = new QuoteDTO();
-					dto.setId(-i);
-					list.add(dto);
-				}
-			}
-
-			req.setAttribute("quote", list);
-			return "quote.jsp";
+	@Action
+	public String getQuotes(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+			return loginAction(req,  res);
 		}
-	};
+
+		List<QuoteDTO> list = getPersistence().getQuotes(loggedUser);
+		int size = list.size();
+		if (size < 5) {
+			for (int i = 0; i < 5 - size; i++) {
+				QuoteDTO dto = new QuoteDTO();
+				dto.setId(-i);
+				list.add(dto);
+			}
+		}
+
+		req.setAttribute("quote", list);
+		return "quote.jsp";
+	}
 
 	/**
 	 * Update di una frase celebre
@@ -252,30 +246,29 @@ public class User extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected GiamboAction updateQuote = new GiamboAction("updateQuote", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			if (loggedUser == null || !loggedUser.isValid()) {
-				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
-				return loginAction.action(req,  res);
-			}
-
-			Long quoteId = Long.parseLong(req.getParameter("quoteId"));
-			String content = req.getParameter("quote_" + quoteId);
-			if (StringUtils.isEmpty(content) || content.length() < 3 || content.length() > 100) {
-				setNavigationMessage(req, NavigationMessage.warn("Minimo 3 caratteri, massimo 100"));
-				return getQuotes.action(req, res);
-			}
-
-			QuoteDTO quote = new QuoteDTO();
-			quote.setContent(content);
-			quote.setId(quoteId);
-			quote.setNick(loggedUser.getNick());
-
-			getPersistence().insertUpdateQuote(quote);
-			return getQuotes.action(req, res);
+	@Action
+	public String updateQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+			return loginAction(req,  res);
 		}
-	};
+
+		Long quoteId = Long.parseLong(req.getParameter("quoteId"));
+		String content = req.getParameter("quote_" + quoteId);
+		if (StringUtils.isEmpty(content) || content.length() < 3 || content.length() > 100) {
+			setNavigationMessage(req, NavigationMessage.warn("Minimo 3 caratteri, massimo 100"));
+			return getQuotes(req,  res);
+		}
+
+		QuoteDTO quote = new QuoteDTO();
+		quote.setContent(content);
+		quote.setId(quoteId);
+		quote.setNick(loggedUser.getNick());
+
+		getPersistence().insertUpdateQuote(quote);
+		return getQuotes(req,  res);
+	}
 
 	/**
 	 * Cancella una quote
@@ -284,23 +277,22 @@ public class User extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected GiamboAction removeQuote = new GiamboAction("removeQuote", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			if (loggedUser == null || !loggedUser.isValid()) {
-				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
-				return loginAction.action(req,  res);
-			}
-
-			Long quoteId = Long.parseLong(req.getParameter("quoteId"));
-			QuoteDTO quote = new QuoteDTO();
-			quote.setNick(loggedUser.getNick());
-			quote.setId(quoteId);
-
-			getPersistence().removeQuote(quote);
-			return getQuotes.action(req, res);
+	@Action
+	public String removeQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+			return loginAction(req,  res);
 		}
-	};
+
+		Long quoteId = Long.parseLong(req.getParameter("quoteId"));
+		QuoteDTO quote = new QuoteDTO();
+		quote.setNick(loggedUser.getNick());
+		quote.setId(quoteId);
+
+		getPersistence().removeQuote(quote);
+		return getQuotes(req,  res);
+	}
 
 	/**
 	 * Tutte le informazioni dell'utente
@@ -309,108 +301,105 @@ public class User extends MainServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected GiamboAction getUserInfo =  new GiamboAction("getUserInfo", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			String nick = req.getParameter("nick");
-			AuthorDTO author = getPersistence().getAuthor(nick);
-			req.setAttribute("author", author);
-			req.setAttribute("quotes", getPersistence().getQuotes(author));
+	@Action
+	public String getUserInfo(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String nick = req.getParameter("nick");
+		AuthorDTO author = getPersistence().getAuthor(nick);
+		req.setAttribute("author", author);
+		req.setAttribute("quotes", getPersistence().getQuotes(author));
 
-			final AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		final AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
 
-			if ((loggedUser != null) && "yes".equals(loggedUser.getPreferences().get("super"))) {
-				final String token = RandomPool.getString(3);
-				req.getSession().setAttribute(ANTI_XSS_TOKEN, token);
-				req.setAttribute("token", token);
-			}
-
-			return "userInfo.jsp";
+		if ((loggedUser != null) && "yes".equals(loggedUser.getPreferences().get("super"))) {
+			final String token = RandomPool.getString(3);
+			req.getSession().setAttribute(ANTI_XSS_TOKEN, token);
+			req.setAttribute("token", token);
 		}
-	};
 
-	protected GiamboAction editUser = new GiamboAction("edit", ONPOST) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			if (loggedUser == null || !loggedUser.isValid()) {
-				setNavigationMessage(req, NavigationMessage.warn("Non sei loggato !"));
-				return loginAction.action(req,  res);
-			}
+		return "userInfo.jsp";
+	}
 
-			if (!("yes".equals(loggedUser.getPreferences().get("super")))) {
-				setNavigationMessage(req, NavigationMessage.warn("Non sei superutente, non puoi fare questa cosa!"));
-				return loginAction.action(req, res);
-			}
-
-			final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
-			final String inToken = req.getParameter("token");
-
-			if ((token == null) || (inToken == null) || !token.equals(inToken)) {
-				setNavigationMessage(req, NavigationMessage.warn("Verifica token fallita"));
-				return getUserInfo.action(req, res);
-			}
-
-			final String nick = req.getParameter("nick");
-
-			if (nick == null) {
-				setNavigationMessage(req, NavigationMessage.warn("Nessun nickname specificato"));
-				return init.action(req, res);
-			}
-
-			final String pass = req.getParameter("pass");
-			final String pass2 = req.getParameter("pass2");
-
-			final AuthorDTO author = getPersistence().getAuthor(nick);
-
-			if ((author == null) || !author.isValid()) {
-				setNavigationMessage(req, NavigationMessage.warn("Il nickname è sparito!?"));
-				return getUserInfo.action(req, res);
-			}
-
-			if (!StringUtils.isEmpty(pass)) {
-				if (StringUtils.isEmpty(pass2) || !pass2.equals(pass)) {
-					setNavigationMessage(req, NavigationMessage.warn("Password sbagliata"));
-					return getUserInfo.action(req, res);
-				}
-
-				if (!getPersistence().updateAuthorPassword(author, pass)) {
-					setNavigationMessage(req, NavigationMessage.error("Errore in User.editUser / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :("));
-					return getUserInfo.action(req, res);
-				}
-			}
-
-			final String pedonizeThread = req.getParameter("pedonizeThread");
-			if (!StringUtils.isEmpty(pedonizeThread)) {
-				author.setPreferences(getPersistence().setPreference(author, "pedonizeThread", pedonizeThread));
-			}
-
-			return getUserInfo.action(req, res);
+	@Action(method=Method.POST)
+	public String edit(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Non sei loggato !"));
+			return loginAction(req,  res);
 		}
-	};
+
+		if (!("yes".equals(loggedUser.getPreferences().get("super")))) {
+			setNavigationMessage(req, NavigationMessage.warn("Non sei superutente, non puoi fare questa cosa!"));
+			return loginAction(req,  res);
+		}
+
+		final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
+		final String inToken = req.getParameter("token");
+
+		if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+			setNavigationMessage(req, NavigationMessage.warn("Verifica token fallita"));
+			return getUserInfo(req,  res);
+		}
+
+		final String nick = req.getParameter("nick");
+
+		if (nick == null) {
+			setNavigationMessage(req, NavigationMessage.warn("Nessun nickname specificato"));
+			return init(req,  res);
+		}
+
+		final String pass = req.getParameter("pass");
+		final String pass2 = req.getParameter("pass2");
+
+		final AuthorDTO author = getPersistence().getAuthor(nick);
+
+		if ((author == null) || !author.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Il nickname è sparito!?"));
+			return getUserInfo(req,  res);
+		}
+
+		if (!StringUtils.isEmpty(pass)) {
+			if (StringUtils.isEmpty(pass2) || !pass2.equals(pass)) {
+				setNavigationMessage(req, NavigationMessage.warn("Password sbagliata"));
+				return getUserInfo(req,  res);
+			}
+
+			if (!getPersistence().updateAuthorPassword(author, pass)) {
+				setNavigationMessage(req, NavigationMessage.error("Errore in User.editUser / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :("));
+				return getUserInfo(req,  res);
+			}
+		}
+
+		final String pedonizeThread = req.getParameter("pedonizeThread");
+		if (!StringUtils.isEmpty(pedonizeThread)) {
+			author.setPreferences(getPersistence().setPreference(author, "pedonizeThread", pedonizeThread));
+		}
+
+		return getUserInfo(req,  res);
+	}
 
 	/**
 	 * Cambia le preferences
 	 */
-	protected GiamboAction updatePreferences =  new GiamboAction("updatePreferences", ONPOST|ONGET) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			if (loggedUser == null || !loggedUser.isValid()) {
-				setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
-				return loginAction.action(req,  res);
-			}
-
-			// setta le preferences
-			for (String key : new String[] {PREF_SHOWANONIMG, PREF_EMBEDDYT, PREF_COLLAPSE_QUOTES, PREF_HIDE_PROC_CATANIA, PREF_HIDE_BANNERONE}) {
-				String value = req.getParameter(key);
-				if (StringUtils.isNotEmpty(value)) {
-					loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, "checked"));
-				} else {
-					loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, ""));
-				}
-
-			}
-
-			return "user.jsp";
+	@Action
+	public String updatePreferences(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+			return loginAction(req,  res);
 		}
-	};
+
+		// setta le preferences
+		for (String key : new String[] {PREF_SHOWANONIMG, PREF_EMBEDDYT, PREF_COLLAPSE_QUOTES, PREF_HIDE_PROC_CATANIA, PREF_HIDE_BANNERONE}) {
+			String value = req.getParameter(key);
+			if (StringUtils.isNotEmpty(value)) {
+				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, "checked"));
+			} else {
+				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, ""));
+			}
+
+		}
+
+		return "user.jsp";
+	}
 
 }

@@ -1,7 +1,7 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
@@ -38,35 +38,11 @@ public abstract class MainServlet extends HttpServlet {
 
 	private IPersistence persistence;
 
-	protected final Map<String, GiamboAction> mapGet = new HashMap<String, GiamboAction>();
-	protected final Map<String, GiamboAction> mapPost = new HashMap<String, GiamboAction>();
-
-	protected static final int ONGET = 0x01;
-	protected static final int ONPOST = 0x02;
-
 	protected SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
 			return getPersistence().getForums();
 		}
 	};
-
-	protected abstract class GiamboAction implements Serializable {
-
-		private static final long serialVersionUID = 1L;
-
-		public GiamboAction(final String name, final int when) {
-			if ((when & ONGET) != 0) {
-				mapGet.put(name, this);
-			}
-
-			if ((when & ONPOST) != 0) {
-				mapPost.put(name, this);
-			}
-		}
-
-		public abstract String action(HttpServletRequest req, HttpServletResponse res) throws Exception;
-	}
-
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -80,14 +56,14 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	public final void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		doDo(req, res, mapGet);
+		doDo(req, res, Action.Method.GET);
 	}
 
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		doDo(req, res, mapPost);
+		doDo(req, res, Action.Method.POST);
 	}
 
-	public final void doDo(HttpServletRequest req, HttpServletResponse res, final Map<String, GiamboAction> map) throws IOException {
+	public final void doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws IOException {
 
 		req.setAttribute("servlet", this.getClass().getSimpleName());
 
@@ -95,7 +71,7 @@ public abstract class MainServlet extends HttpServlet {
 		req.setAttribute("forums", cachedForums.get());
 
 		// random quote
-		req.setAttribute("randomQuote", getRandomQuote(req, res));
+		req.setAttribute("randomQuote", getRandomQuoteDTO(req, res));
 
 		// user
 		HttpSession session = req.getSession();
@@ -129,14 +105,22 @@ public abstract class MainServlet extends HttpServlet {
 		// execute action
 		String action = (String)req.getAttribute("action");
 		try {
-			GiamboAction giamboAction = map.get(action);
-			if (giamboAction == null) {
+			Method methodAction = this.getClass().getDeclaredMethod(action, new Class[] {HttpServletRequest.class, HttpServletResponse.class});
+			if (methodAction == null) {
 				throw new IllegalArgumentException("Azione sconosciuta: " + action);
 			} else {
-				String pageForward = giamboAction.action(req, res);
-				// forward
-				if (pageForward != null) {
-					getServletContext().getRequestDispatcher("/pages/" + pageForward).forward(req, res);
+				Action a = methodAction.getAnnotation(Action.class);
+				if (a == null) {
+					throw new IllegalArgumentException("L'action " + action + " non e' definita");
+				}
+				if (a.method() == Action.Method.GETPOST || a.method() == method) {
+					String pageForward = (String)methodAction.invoke(this, new Object[] {req, res});
+					// forward
+					if (pageForward != null) {
+						getServletContext().getRequestDispatcher("/pages/" + pageForward).forward(req, res);
+					}
+				} else {
+					throw new IllegalArgumentException("Azione " + action + " non permette il metodo " + method);
 				}
 			}
 		} catch (Exception e) {
@@ -155,11 +139,10 @@ public abstract class MainServlet extends HttpServlet {
 	/**
 	 * Mostra il disclaimer
 	 */
-	protected GiamboAction getDisclaimer = new GiamboAction("getDisclaimer", ONGET|ONPOST) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			return "disclaimer.jsp";
-		}
-	};
+	@Action
+	String getDisclaimer(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		return "disclaimer.jsp";
+	}
 
 	/**
 	 * Tenta un login: Ritorna AuthorDTO valido se OK, AuthorDTO invalido se e'
@@ -212,31 +195,30 @@ public abstract class MainServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected GiamboAction updateSidebarStatus = new GiamboAction("updateSidebarStatus", ONGET|ONPOST) {
-		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
-			String sidebarStatus = req.getParameter("sidebarStatus");
-			if (StringUtils.isEmpty(sidebarStatus)) {
-				return null;
-			}
-			AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
-			if (loggedUser != null && loggedUser.isValid()) {
-				// settiamo nelle preferences dell'utente
-				getPersistence().setPreference(loggedUser, "sidebarStatus", sidebarStatus);
-				loggedUser.getPreferences().put("sidebarStatus", sidebarStatus);
-			} else {
-				// settiamo nel cookie
-				if (req.getCookies() != null) {
-					for (Cookie cookie : req.getCookies()) {
-						if ("sidebarStatus".equals(cookie.getName())) {
-							cookie.setValue(sidebarStatus);
-							res.addCookie(new Cookie("sidebarStatus", sidebarStatus));
-						}
+	@Action
+	String updateSidebarStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String sidebarStatus = req.getParameter("sidebarStatus");
+		if (StringUtils.isEmpty(sidebarStatus)) {
+			return null;
+		}
+		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		if (loggedUser != null && loggedUser.isValid()) {
+			// settiamo nelle preferences dell'utente
+			getPersistence().setPreference(loggedUser, "sidebarStatus", sidebarStatus);
+			loggedUser.getPreferences().put("sidebarStatus", sidebarStatus);
+		} else {
+			// settiamo nel cookie
+			if (req.getCookies() != null) {
+				for (Cookie cookie : req.getCookies()) {
+					if ("sidebarStatus".equals(cookie.getName())) {
+						cookie.setValue(sidebarStatus);
+						res.addCookie(new Cookie("sidebarStatus", sidebarStatus));
 					}
 				}
 			}
-			return null;
 		}
-	};
+		return null;
+	}
 
 	/**
 	 * Ritorna la pagina attuale se definita come req param, altrimenti 0. Setta il valore come req attr.
@@ -313,7 +295,7 @@ public abstract class MainServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public QuoteDTO getRandomQuote(HttpServletRequest req, HttpServletResponse res) {
+	QuoteDTO getRandomQuoteDTO(HttpServletRequest req, HttpServletResponse res) {
 		QuoteDTO quote = getPersistence().getRandomQuote();
 		quote.setContent(StringEscapeUtils.escapeHtml4(quote.getContent()));
 		return quote;
