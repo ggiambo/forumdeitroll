@@ -56,6 +56,7 @@ public class Threads extends MainServlet {
 	/**
 	 * Chiamato via ajax, apre il thread tree
 	 */
+	@Action
 	String openThreadTree(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		Long threadId = Long.parseLong(req.getParameter("threadId"));
 		List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
