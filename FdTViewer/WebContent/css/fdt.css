@@ -497,12 +497,11 @@ div.messagesBox {
 }
 
 div.messagesBoxInvisible {
-	border: 1px solid red; 
-	margin: 8px 5px;
-	width: 600px;
-	box-shadow: 2px 2px 3px darkred;
+    margin: 8px 5px;
+    width: 600px;
+	box-shadow: 3px 3px 5px darkred;
 	height: auto !important;
-	overflow: hidden;
+    overflow: hidden;
 }
 
 pre.code, div.code {
