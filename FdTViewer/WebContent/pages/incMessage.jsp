@@ -94,7 +94,7 @@
 				</div>
 				<div id="msgWarning${msg.id}">
 					Questo messaggio e' stato catalogato come "Exiled Nigerian princess".<br/>
-					Clicka <a href="#" onClick="showHIddenMessage(${msg.id})">qui</a> per vederlo, e che Dio onnipotente possa aver piet&agrave; della tua anima.</a>
+					Clicka <a href="#" onClick="showHIddenMessage(${msg.id});return false;">qui</a> per vederlo, e che Dio onnipotente possa aver piet&agrave; della tua anima.
 				</div>
 			</c:otherwise>
 		</c:choose>
