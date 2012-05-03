@@ -10,6 +10,7 @@ public class ThreadDTO {
 	private AuthorDTO author = new AuthorDTO();
 	private String forum = null;
 	private int setNumberOfMessages = -1;
+	private boolean isVisible = true;
 	
 	public boolean isValid() {
 		boolean valid = true;
@@ -64,6 +65,14 @@ public class ThreadDTO {
 	
 	public void setNumberOfMessages(int setNumberOfMessages) {
 		this.setNumberOfMessages = setNumberOfMessages;
+	}
+	
+	public boolean isVisible() {
+		return isVisible;
+	}
+	
+	public void setIsVisible(boolean isVisible) {
+		this.isVisible = isVisible;
 	}
 	
 	@Override

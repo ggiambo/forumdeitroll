@@ -92,4 +92,6 @@ public interface IPersistence extends Serializable {
 
 	public PollDTO getPoll(long pollId);
 
+	public void restoreOrHideMessage(long msgId, boolean visible);
+
 }

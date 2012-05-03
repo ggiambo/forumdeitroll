@@ -342,3 +342,20 @@ function searchById(event) {
 		window.location.assign(newUrl);
 	}
 }
+
+function hideMessage(msgId) {
+	if (confirm("Vuoi rendere questo messaggio invisibile ?")) {
+		window.location.assign("Messages?action=hideMessage&msgId=" + msgId + "&token=" + token);
+	}
+}
+
+function restoreHiddenMessage(msgId) {
+	if (confirm("Vuoi di nuovo rendere questo messaggio visibile ?")) {
+		window.location.assign("Messages?action=restoreHiddenMessage&msgId=" + msgId + "&token=" + token);
+	}
+}
+
+function showHIddenMessage(msgId) {
+	$("#msgContent" + msgId).show();
+	$("#msgWarning" + msgId).hide();
+}

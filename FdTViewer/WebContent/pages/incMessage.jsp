@@ -82,7 +82,22 @@
 	</c:if>
 
 	<div style="padding: 10px;" class="message">
-		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
+		<c:choose>
+			<c:when test="${msg.visible}">
+				<div id="msgContent${msg.id}" style="display:block:">
+					<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
+				</div>
+			</c:when>
+			<c:otherwise>
+				<div id="msgContent${msg.id}" style="display:none">
+					<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
+				</div>
+				<div id="msgWarning${msg.id}">
+					Questo messaggio e' stato catalogato come "Exiled Nigerian princess".<br/>
+					Clicka <a href="#" onClick="showHIddenMessage(${msg.id})">qui</a> per vederlo, e che Dio onnipotente possa aver piet&agrave; della tua anima.</a>
+				</div>
+			</c:otherwise>
+		</c:choose>
 	</div>
 
 	<div id="buttons_${msg.id}" class="messagesButtonBar">
@@ -90,6 +105,16 @@
 			<c:if test="${msg.forum != 'Proc di Catania'}">
 				<a href="#" onClick="pedonizeThreadTree('${msg.id}');return false;"><img alt="Pedonize!" style="vertical-align: middle;" src="images/pedonize.png" /></a>
 			</c:if>
+		</c:if>
+		<c:if test="${not empty loggedUser && loggedUser.preferences['hideMessages'] == 'yes'}">
+			<c:choose>
+				<c:when test="${msg.visible}">
+					<a href="#" onClick="hideMessage('${msg.id}');return false;"><img alt="Nascondi messaggio" style="vertical-align: middle;" src="images/hideMessage.png" /></a>
+				</c:when>
+				<c:otherwise>
+					<a href="#" onClick="restoreHiddenMessage('${msg.id}');return false;"><img alt="Rendi messaggio visibile" style="vertical-align: middle;" src="images/restoreHiddenMessage.png" /></a>
+				</c:otherwise>
+			</c:choose>
 		</c:if>
 		<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img alt="Rispondi" style="vertical-align: middle;" src="images/rispondi.gif" /></a>
 		<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img alt="Quota" style="vertical-align: middle;" src="images/quota.gif" /></a>

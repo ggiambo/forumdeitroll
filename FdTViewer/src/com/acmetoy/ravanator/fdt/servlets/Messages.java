@@ -659,6 +659,46 @@ public class Messages extends MainServlet {
 			return null;
 		}
 	};
+	
+	protected GiamboAction hideMessage = new GiamboAction("hideMessage", ONGET) {
+		@Override
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	    	final long msgId = Long.parseLong(req.getParameter("msgId"));
+	    	return restoreOrHideMessage(req, res, msgId, false);
+		}
+	};
+	
+	protected GiamboAction restoreHiddenMessage = new GiamboAction("restoreHiddenMessage", ONGET) {
+		@Override
+		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	    	final long msgId = Long.parseLong(req.getParameter("msgId"));
+	    	return restoreOrHideMessage(req, res, msgId, true);
+		}
+	};
+	
+	private String restoreOrHideMessage(HttpServletRequest req, HttpServletResponse res, long msgId, boolean visible)  throws Exception {
+    	AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+    	if (loggedUser == null) {
+    		return initWithMessage(req, res, NavigationMessage.error("Non furmigare !"));
+    	}
+    	boolean isAdmin = "yes".equals(getPersistence().getPreferences(loggedUser).get("hideMessages"));
+    	if (! isAdmin) {
+    		return initWithMessage(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
+    	}
+    
+    	final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
+    	final String inToken = req.getParameter("token");
+    
+    	if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+    		return initWithMessage(req, res, NavigationMessage.error("Verifica token fallita"));
+    	}
+    
+    	getPersistence().restoreOrHideMessage(msgId, visible);
+    	
+    	setNavigationMessage(req, NavigationMessage.info("Messaggio infernale nascosto agli occhi dei giovini troll."));
+    	res.sendRedirect("Threads");
+    	return null;
+	}
 
 	protected GiamboAction getRandomQuote = new GiamboAction("getRandomQuote", ONGET) {
 		@Override
