@@ -513,32 +513,12 @@ public class MessageTag extends BodyTagSupport {
 			line.append("onmouseover='YTgetInfo_").append(myYtCounter).append("= YTgetInfo(\"");
 			line.append(myYtCounter).append("\",\"").append(youcode).append("\")'>");
 			line.append("<img src='http://img.youtube.com/vi/").append(youcode).append("/2.jpg'></a>");
-
-
-			/*
-			line.append("<a href=\"http://www.youtube.com/watch?v=").append(youcode).append("\" ");
-			line.append("id=\"yt_").append(myYtCounter).append("\">");
-			line.append("http://www.youtube.com/watch?v=").append(youcode).append("</a>");
-			line.append("<script type='text/javascript'>YTgetInfo_");
-			line.append(myYtCounter).append("= YTgetInfo('");
-			line.append(myYtCounter).append("')</script>");
-			line.append("<script type='text/javascript' src=\"");
-			line.append("http://gdata.youtube.com/feeds/api/videos/").append(youcode);
-			line.append("?v=2&amp;alt=json-in-script&amp;callback=YTgetInfo_");
-			line.append(myYtCounter).append("\"></script>");
-			*/
 		} else {
 			// un glande classico: l'embed
 			line.append("<iframe class='youtube-player' type='text/html' width='400' height='329' src='http://www.youtube.com/embed/");
 			line.append(youcode);
 			line.append("' frameborder='0'></iframe>");
 			++embedCount;
-//			line.append("<object height='329' width='400'>");
-//			line.append("<param value='http://www.youtube.com/v/").append(youcode).append("' name='movie'>");
-//			line.append("<param value='transparent' name='wmode'>");
-//			line.append("<embed height='329' width='400' wmode='transparent' ");
-//			line.append("type='application/x-shockwave-flash' ");
-//			line.append("src='http://www.youtube.com/v/").append(youcode).append("'></object>");
 		}
 		p = yt_end + (YT_END.length - 1);
 	}
