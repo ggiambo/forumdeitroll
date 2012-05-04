@@ -72,11 +72,13 @@ public class MessageTag extends BodyTagSupport {
 	private String collapseQuotes;
 	private boolean multiLineQuoteStarted;
 
-	private static final int MAX_EMOTICONS = 100;
-	private static final int MAX_EMBED = 5;
+	private static final int MAX_EMOTICONS = 200;
+	private static final int MAX_EMBED = 10;
+	private static final int MAX_IMMYS = 15;
 
 	private int emotiCount = 0;
 	private int embedCount = 0;
+	private int immysCount = 0;
 
 
 	private StringBuilder getMessage(char[] body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
@@ -92,6 +94,7 @@ public class MessageTag extends BodyTagSupport {
 
 		emotiCount = 0;
 		embedCount = 0;
+		immysCount = 0;
 
 		collapseQuotes = loggedUser != null ?loggedUser.getPreferences().get(User.PREF_COLLAPSE_QUOTES) : null;
 
@@ -468,14 +471,21 @@ public class MessageTag extends BodyTagSupport {
 			return;
 		}
 		String url = escape(new String(body, p, img_end - p));
+		if (!isLink(new StringBuilder(url))) {
+			line.append(IMG);
+			p--;
+			return;
+		}
+		url = addHttpProtocol(url);
 		String showAnonImg = "yes";
 		if (loggedUser != null) {
 			showAnonImg = loggedUser.getPreferences().get(User.PREF_SHOWANONIMG);
 		}
-		if (author != null && StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) {
+		if ((author != null && StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) || immysCount > MAX_IMMYS) {
 			line.append(String.format("<a href=\"%s\">Immagine postata da ANOnimo</a>", url));
 		} else {
 			line.append(String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src=\"%s\"></a>", url, url));
+			immysCount++;
 		}
 		p = img_end + (IMG_END.length - 1);
 	}
