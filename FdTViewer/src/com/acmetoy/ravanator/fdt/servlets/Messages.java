@@ -667,6 +667,44 @@ public class Messages extends MainServlet {
 		res.sendRedirect("Threads");
 		return null;
 	}
+	
+	/**
+	 * Nascondi questo orrifico messaggio agli occhi dei poveri troll.
+	 */
+	@Action(method=Method.GET)
+	String hideMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    	return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), false);
+	}
+	
+	/**
+	 * Abilita alla visione questo angelico messaggio
+	 */
+	@Action(method=Method.GET)
+	String restoreHiddenMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
+    	return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), true);
+	}
+	
+	private String restoreOrHideMessage(HttpServletRequest req, HttpServletResponse res, long msgId, boolean visible)  throws Exception {
+    	AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+    	if (loggedUser == null) {
+    		return getMessages(req, res, NavigationMessage.error("Non furmigare !"));
+    	}
+    	boolean isAdmin = "yes".equals(getPersistence().getPreferences(loggedUser).get("hideMessages"));
+    	if (! isAdmin) {
+    		return getMessages(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
+    	}
+    
+    	final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
+    	final String inToken = req.getParameter("token");
+    
+    	if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+    		return getMessages(req, res, NavigationMessage.error("Verifica token fallita"));
+    	}
+    
+    	getPersistence().restoreOrHideMessage(msgId, visible);
+    	
+    	return getMessages(req, res, NavigationMessage.info("Messaggio infernale nascosto agli occhi dei giovini troll."));
+	}
 
 	/**
 	 * Ritorna una frase celebre a caso

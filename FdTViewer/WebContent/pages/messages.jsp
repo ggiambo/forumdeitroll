@@ -9,7 +9,15 @@
 	</fdt:delayedScript>
 	
 	<c:forEach items="${messages}" var="msg" varStatus="index">
-		<div class="messagesBox">
+		<c:choose>
+			<c:when test="${msg.visible}">
+				<c:set var="messagesBoxClass" value="messagesBox"/>
+			</c:when>
+			<c:otherwise>
+				<c:set var="messagesBoxClass" value="messagesBoxInvisible"/>
+			</c:otherwise>
+		</c:choose>
+		<div class="${messagesBoxClass}">
 			<c:set var="msg" value="${msg}" scope="request"/>
 			<c:set var="index" value="${index.count}" scope="request"/>
 			<jsp:include page="incMessage.jsp"/>

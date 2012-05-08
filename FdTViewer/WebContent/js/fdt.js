@@ -22,6 +22,7 @@ function showReplyDiv(type, parentId) {
 	$("body").css("cursor", "progress");
 	$.get("Messages?action=showReplyDiv&type=" + type + "&parentId=" + parentId,
 		function(data) {
+			$("#msg" + parentId).removeClass("msgOptMaxHeight");
 			$("#msg" + parentId).append($(data));
 			$("#reply_" + parentId + " :input[name='text']").focus();
 			$("body").css("cursor", "auto");
@@ -114,18 +115,41 @@ function send(parentId) {
 }
 
 function insert(openTag, closeTag, parentId) {
-	var element = $("#reply_" + parentId + " :input[name='text']").get(0);
-	if (document.selection) {
-		element.focus();
-		sel = document.selection.createRange();
-		sel.text = openTag + sel.text + closeTag;
-	} else if (element.selectionStart || element.selectionStart == '0') {
-		element.focus();
-		var startPos = element.selectionStart;
-		var endPos = element.selectionEnd;
-		element.value = element.value.substring(0, startPos) + openTag + element.value.substring(startPos, endPos) + closeTag + element.value.substring(endPos, element.value.length);
-	} else {
-		element.value += openTag + closeTag;
+	var t = $("#reply_" + parentId + " :input[name='text']").get(0);
+	if (t.createTextRange) {
+		t.focus(t.caretPos);
+		t.caretPos = document.selection.createRange().duplicate();
+		if (t.caretPos.text.length > 0) {
+			var sel = t.caretPos.text;
+			var fin = '';
+			while (sel.substring(sel.length-1, sel.length) == ' ') {
+				sel = sel.substring(0, sel.length-1)
+				fin += ' ';
+			}
+			t.caretPos.text = sel + fin + openTag + closeTag;
+		} else {
+			t.caretPos.text = openTag + closeTag;
+		}
+	} else 	{
+		//MOZILLA/NETSCAPE support
+		if (t.selectionStart || t.selectionStart == "0") {
+			var startPos = t.selectionStart;
+			var endPos = t.selectionEnd;
+
+			if (startPos != endPos) {
+				if(openTag.length > 0) {
+					t.value = t.value.substring(0, startPos) + openTag + t.value.substring(startPos, endPos) + closeTag + t.value.substring(endPos, t.value.length);
+				} else {
+					t.value = t.value.substring(0, endPos) + closeTag + t.value.substring(endPos, t.value.length);
+				}
+			} else {
+				t.value = t.value.substring(0, startPos) + openTag + t.value.substring(endPos, t.value.length);
+				t.selectionStart = (t.value.substring(0, startPos) + openTag).length;
+				t.selectionEnd = (t.value.substring(0, startPos) + openTag).length;
+			}
+		} else {
+			t.value += openTag + closeTag;
+		}
 	}
 }
 
@@ -341,4 +365,21 @@ function searchById(event) {
 		newUrl += "/Messages?action=getById&msgId=" + msgId;
 		window.location.assign(newUrl);
 	}
+}
+
+function hideMessage(msgId) {
+	if (confirm("Vuoi rendere questo messaggio invisibile ?")) {
+		window.location.assign("Messages?action=hideMessage&msgId=" + msgId + "&token=" + token);
+	}
+}
+
+function restoreHiddenMessage(msgId) {
+	if (confirm("Vuoi di nuovo rendere questo messaggio visibile ?")) {
+		window.location.assign("Messages?action=restoreHiddenMessage&msgId=" + msgId + "&token=" + token);
+	}
+}
+
+function showHIddenMessage(msgId) {
+	$("#msg" + msgId).show();
+	$("#msgWarning" + msgId).hide();
 }

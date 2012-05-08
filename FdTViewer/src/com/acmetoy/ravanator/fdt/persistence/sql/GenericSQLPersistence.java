@@ -1262,6 +1262,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			message.setAuthor(getAuthor(rs.getString("author")));
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
+			message.setIsVisible(rs.getBoolean("visible"));
 
 			if (search) {
 				message.setSearchRelevance(rs.getDouble("relevance"));
@@ -1283,6 +1284,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
 			message.setNumberOfMessages(getNumberOfMessages(message.getId()));
+			message.setIsVisible(rs.getBoolean("visible"));
 			messages.add(message);
 		}
 		return messages;
@@ -1449,6 +1451,23 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn.commit();
 		} catch (SQLException e) {
 			LOG.error("Pedonize failed!", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	public void restoreOrHideMessage(long msgId, boolean visible) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("UPDATE messages SET visible = ? WHERE id = ?");
+			ps.setBoolean(1, visible);
+			ps.setLong(2, msgId);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			LOG.error("Cannot hide/restore message " + msgId, e);
 		} finally {
 			close(rs, ps, conn);
 		}

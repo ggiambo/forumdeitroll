@@ -4,16 +4,30 @@
 
 <c:choose>
 	<c:when test="${index % 2 == 0}">
-		<c:set var="rowclass" value="msgEven"/>
+		<c:set var="rowclass" value="msgEven msgOptMaxHeight"/>
 	</c:when>
 	<c:otherwise>
-		<c:set var="rowclass" value="msgOdd"/>
+		<c:set var="rowclass" value="msgOdd msgOptMaxHeight"/>
 	</c:otherwise>
 </c:choose>
 
 <a href="#msg${msg.id}"></a>
 
-<div class="${rowclass}" id="msg${msg.id}">
+<c:choose>
+	<c:when test="${msg.visible}">
+		<c:set var="msgStyle" value="display:block"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="msgStyle" value="display:none"/>
+		<div id="msgWarning${msg.id}" style="padding:5px;">
+			<img src="images/warning.png" style="float:right; margin-right:10px"/>
+			Questo messaggio e' stato catalogato come "Exiled Nigerian princess".<br/>
+			Clicka <a href="#" onClick="showHIddenMessage(${msg.id});return false;">qui</a> per vederlo, e che Dio onnipotente possa aver piet&agrave; della tua anima.
+		</div>
+	</c:otherwise>
+</c:choose>
+
+<div class="${rowclass}" id="msg${msg.id}" style="${msgStyle}">
 
 	<div class="msgInfo">
 		<div>
@@ -74,7 +88,7 @@
 
 	<span style="width:100%; margin:5px;">
 		<b>
-			<a href="Threads?action=getByThread&threadId=${msg.threadId}#msgId=${msg.id}">${msg.subject}</a>
+			<a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a>
 		</b>
 	</span>
 
@@ -88,13 +102,23 @@
 		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
 
-	<div id="buttons_${msg.id}" class="messagesButtonBar">
-		<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
-			<c:if test="${msg.forum != 'Proc di Catania'}">
-				<a href="#" onClick="pedonizeThreadTree('${msg.id}');return false;"><img alt="Pedonize!" style="vertical-align: middle;" src="images/pedonize.png" /></a>
-			</c:if>
+</div>
+<div id="buttons_${msg.id}" class="messagesButtonBar">
+	<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
+		<c:if test="${msg.forum != 'Proc di Catania'}">
+			<a href="#" onClick="pedonizeThreadTree('${msg.id}');return false;"><img alt="Pedonize!" style="vertical-align: middle;" src="images/pedonize.png" /></a>
 		</c:if>
-		<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img alt="Rispondi" style="vertical-align: middle;" src="images/rispondi.gif" /></a>
-		<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img alt="Quota" style="vertical-align: middle;" src="images/quota.gif" /></a>
-	</div>
+	</c:if>
+	<c:if test="${not empty loggedUser && loggedUser.preferences['hideMessages'] == 'yes'}">
+		<c:choose>
+			<c:when test="${msg.visible}">
+				<a href="#" onClick="hideMessage('${msg.id}');return false;"><img alt="Nascondi messaggio" style="vertical-align: middle;" src="images/hideMessage.png" /></a>
+			</c:when>
+			<c:otherwise>
+				<a href="#" onClick="restoreHiddenMessage('${msg.id}');return false;"><img alt="Rendi messaggio visibile" style="vertical-align: middle;" src="images/restoreHiddenMessage.png" /></a>
+			</c:otherwise>
+		</c:choose>
+	</c:if>
+	<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img alt="Rispondi" style="vertical-align: middle;" src="images/rispondi.gif" /></a>
+	<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img alt="Quota" style="vertical-align: middle;" src="images/quota.gif" /></a>
 </div>

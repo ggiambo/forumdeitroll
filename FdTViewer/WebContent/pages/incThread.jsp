@@ -15,7 +15,15 @@
 <ul class="threadlist dl${level}">
 <c:set var="depth" value="${depth + 1}" scope="request"/>
 	<li>
-		<div class="messagesBox">
+		<c:choose>
+			<c:when test="${message.content.visible}">
+				<c:set var="messagesBoxClass" value="messagesBox"/>
+			</c:when>
+			<c:otherwise>
+				<c:set var="messagesBoxClass" value="messagesBoxInvisible"/>
+			</c:otherwise>
+		</c:choose>
+		<div class="${messagesBoxClass}">
 			<c:set var="msg" value="${message.content}" scope="request"/>
 			<jsp:include page="incMessage.jsp"/>
 		</div>
