@@ -13,7 +13,21 @@
 
 <a href="#msg${msg.id}"></a>
 
-<div class="${rowclass}" id="msg${msg.id}">
+<c:choose>
+	<c:when test="${msg.visible}">
+		<c:set var="msgStyle" value="display:block"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="msgStyle" value="display:none"/>
+		<div id="msgWarning${msg.id}" style="padding:5px;">
+			<img src="images/warning.png" style="float:right; margin-right:10px"/>
+			Questo messaggio e' stato catalogato come "Exiled Nigerian princess".<br/>
+			Clicka <a href="#" onClick="showHIddenMessage(${msg.id});return false;">qui</a> per vederlo, e che Dio onnipotente possa aver piet&agrave; della tua anima.
+		</div>
+	</c:otherwise>
+</c:choose>
+
+<div class="${rowclass}" id="msg${msg.id}" style="${msgStyle}">
 
 	<div class="msgInfo">
 		<div>
@@ -82,22 +96,7 @@
 	</c:if>
 
 	<div style="padding: 10px;" class="message">
-		<c:choose>
-			<c:when test="${msg.visible}">
-				<div id="msgContent${msg.id}" style="display:block:">
-					<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
-				</div>
-			</c:when>
-			<c:otherwise>
-				<div id="msgContent${msg.id}" style="display:none">
-					<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
-				</div>
-				<div id="msgWarning${msg.id}">
-					Questo messaggio e' stato catalogato come "Exiled Nigerian princess".<br/>
-					Clicka <a href="#" onClick="showHIddenMessage(${msg.id});return false;">qui</a> per vederlo, e che Dio onnipotente possa aver piet&agrave; della tua anima.
-				</div>
-			</c:otherwise>
-		</c:choose>
+		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
 
 	<div id="buttons_${msg.id}" class="messagesButtonBar">

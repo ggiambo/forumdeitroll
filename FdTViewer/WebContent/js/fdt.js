@@ -152,7 +152,6 @@ function insert(openTag, closeTag, parentId) {
 	}
 }
 
-
 var urlInput = function(parentId) {
 	var element = $("#reply_" + parentId + " :input[name='text']").get(0);
 	var url = prompt('Inserisci l\'url','');
@@ -380,6 +379,6 @@ function restoreHiddenMessage(msgId) {
 }
 
 function showHIddenMessage(msgId) {
-	$("#msgContent" + msgId).show();
+	$("#msg" + msgId).show();
 	$("#msgWarning" + msgId).hide();
 }
