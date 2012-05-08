@@ -84,6 +84,7 @@ public class ThreadDTO {
 		sb.append("author:").append(author).append(",");
 		sb.append("forum:").append(forum).append(",");
 		sb.append("setNumberOfMessages:").append(setNumberOfMessages).append(",");
+		sb.append("isVisible:").append(isVisible).append(",");
 		return sb.toString();
 	}
 
