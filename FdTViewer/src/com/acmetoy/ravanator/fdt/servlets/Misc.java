@@ -7,6 +7,7 @@ import java.io.InputStream;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -110,15 +111,18 @@ public class Misc extends HttpServlet {
 		String nick = req.getParameter("nick");
 		res.setHeader("Cache-Control", "max-age=3600");
 		AuthorDTO author = persistence.getAuthor(nick);
+		ServletOutputStream out = res.getOutputStream();
 		if (author.isValid()) {
 			if (author.getAvatar() != null) {
-				res.getOutputStream().write(author.getAvatar());
+				out.write(author.getAvatar());
 			} else {
-				res.getOutputStream().write(noAvatar);
+				out.write(noAvatar);
 			}
 		} else {
-			res.getOutputStream().write(notAuthenticated);
+			out.write(notAuthenticated);
 		}
+		out.flush();
+		out.close();
 	}
 
 	/**
