@@ -11,6 +11,7 @@
 
 	<c:set var="message" value="${root}" scope="request"/>
 	<c:set var="depth" value="0" scope="request"/>
+	<c:set var="index" value="0" scope="request"/>
 	<jsp:include page="incThread.jsp"/>
 
 </div>

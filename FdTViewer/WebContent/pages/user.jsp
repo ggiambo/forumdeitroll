@@ -113,6 +113,15 @@
 								</div>
 								<div style="clear: both;"></div>
 							</div>
+							<div>
+								<div class="inputUserPanel">
+									<input type="checkbox" name="<%=User.PREF_MSG_MAX_HEIGHT%>" id="<%=User.PREF_MSG_MAX_HEIGHT%>" ${loggedUser.preferences['msgMaxHeight']} />
+								</div>
+								<div class="lblUserPanel">
+									<label for="<%=User.PREF_MSG_MAX_HEIGHT%>" class="lbl">Messaggi con altezza massima</label>
+								</div>
+								<div style="clear: both;"></div>
+							</div>
 							<input type="submit" value="Modifica" class="sendUserPanel" />
 						</form>
 						<div style="clear: both;"></div>

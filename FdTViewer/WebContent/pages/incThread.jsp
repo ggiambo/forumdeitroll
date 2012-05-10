@@ -30,6 +30,7 @@
 		<c:if test="${not empty message.children}">
 			<c:forEach items="${message.children}" var="child">
 				<c:set var="message" value="${child}" scope="request"/>
+				<c:set var="index" value="${index + 1}" scope="request"/>
 				<jsp:include page="incThread.jsp"/>
 			</c:forEach>
 		</c:if>
