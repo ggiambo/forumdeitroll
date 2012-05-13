@@ -1254,3 +1254,7 @@ div.msgReply ul.tabs li a {
     text-decoration: none;
     text-shadow: none;
 }
+
+div#questionsDiv label {
+	display:block;
+}

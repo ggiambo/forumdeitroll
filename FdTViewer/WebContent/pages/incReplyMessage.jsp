@@ -54,7 +54,8 @@
 
 	<ul class="tabs">
 		<li class="selectedTab" onClick="showEmotiboxClassic()"><a href="#">Serie classica</a></li>
-		<li><a href="#" onClick="showEmotiboxExtended()">Serie estesa</a></li>
+		<!-- da togliere quando ci saranno le emos -->
+		<li style="display:none"><a href="#" onClick="showEmotiboxExtended()">Serie estesa</a></li>
 	</ul>
 
 	<div class="emotibox">
