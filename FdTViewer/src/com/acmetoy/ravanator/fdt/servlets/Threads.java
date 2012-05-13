@@ -27,7 +27,9 @@ public class Threads extends MainServlet {
 	
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		res.sendRedirect("Threads?action=getThreads");
+		// redirect
+		res.setHeader("Location", "Threads?action=getThreads");
+		res.sendError(301);
 		return null;
 	}
 	

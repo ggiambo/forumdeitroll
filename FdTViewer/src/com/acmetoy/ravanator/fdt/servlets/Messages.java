@@ -98,7 +98,9 @@ public class Messages extends MainServlet {
 
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		res.sendRedirect("Messages?action=getMessages");
+		// redirect
+		res.setHeader("Location", "Messages?action=getMessages");
+		res.sendError(301);
 		return null;
 	}
 
@@ -664,7 +666,9 @@ public class Messages extends MainServlet {
 		}
 
 		setNavigationMessage(req, NavigationMessage.info("Pedonization completed."));
-		res.sendRedirect("Threads");
+		// redirect
+		res.setHeader("Location", "Threads");
+		res.sendError(301);
 		return null;
 	}
 	
