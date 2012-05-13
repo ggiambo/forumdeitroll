@@ -17,7 +17,7 @@
 		</c:choose>
 		<div id="threadTree_${thread.id}" class="${rowclass} threadBox">
 			<span class="threadTitle">
-			<a href="Threads?action=getByThread&threadId=${thread.id}#msgId=${thread.id}">${thread.subject}</a>
+			<a href="Threads?action=getByThread&threadId=${thread.id}#msg${thread.id}">${thread.subject}</a>
 			</span>
 			 (${thread.numberOfMessages}
 			<c:choose>

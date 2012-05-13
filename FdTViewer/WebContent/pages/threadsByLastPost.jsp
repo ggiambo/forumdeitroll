@@ -16,7 +16,7 @@
 		</c:choose>
 		<div class="${rowclass} threadBox">
 			<span class="threadTitle">
-				<a href="Threads?action=getByThread&threadId=${msg.threadId}#msgId=${msg.id}">${msg.subject}</a>
+				<a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a>
 			</span>
 			<c:if test="${!empty msg.forum}">
 				<span class="tagForum">${msg.forum}</span>
