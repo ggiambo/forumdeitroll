@@ -11,6 +11,11 @@
 	</c:otherwise>
 </c:choose>
 
+
+<c:if test="${not empty loggedUser && loggedUser.preferences['msgMaxHeight'] == 'checked'}">
+	<c:set var="rowclass" value="${rowclass} msgOptMaxHeight"/>
+</c:if>
+
 <a href="#msg${msg.id}"></a>
 
 <c:choose>
@@ -27,7 +32,7 @@
 	</c:otherwise>
 </c:choose>
 
-<div class="${rowclass}" id="msg${msg.id}" style="${msgStyle}">
+<div class="${rowclass}" id="msg${msg.id}" style="${msgStyle}; min-height: 170px;">
 
 	<div class="msgInfo">
 		<div>
@@ -64,6 +69,9 @@
 						<c:url value="Messages" var="messagesUrl">
 							<c:param name="action" value="getByAuthor"/>
 							<c:param name="author" value="${msg.author.nick}"/>
+							<c:if test="${specificParams['forum'] != null}">
+								<c:param name="forum" value="${specificParams['forum']}"/>
+							</c:if>
 						</c:url>
 						<a href="<c:out value="${messagesUrl}" escapeXml="true" />">${msg.author.nick}</a>
 					</c:otherwise>
@@ -85,7 +93,7 @@
 
 	<span style="width:100%; margin:5px;">
 		<b>
-			<fdt:threadprettyurl subject="${msg.subject}" threadId="${msg.threadId}" msgId="${msg.id}"/>
+			<a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a>
 		</b>
 	</span>
 
@@ -99,23 +107,23 @@
 		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
 
-	<div id="buttons_${msg.id}" class="messagesButtonBar">
-		<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
-			<c:if test="${msg.forum != 'Proc di Catania'}">
-				<a href="#" onClick="pedonizeThreadTree('${msg.id}');return false;"><img alt="Pedonize!" style="vertical-align: middle;" src="images/pedonize.png" /></a>
-			</c:if>
+</div>
+<div id="buttons_${msg.id}" class="messagesButtonBar">
+	<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
+		<c:if test="${msg.forum != 'Proc di Catania'}">
+			<a href="#" onClick="pedonizeThreadTree('${msg.id}');return false;"><img alt="Pedonize!" style="vertical-align: middle;" src="images/pedonize.png" /></a>
 		</c:if>
-		<c:if test="${not empty loggedUser && loggedUser.preferences['hideMessages'] == 'yes'}">
-			<c:choose>
-				<c:when test="${msg.visible}">
-					<a href="#" onClick="hideMessage('${msg.id}');return false;"><img alt="Nascondi messaggio" style="vertical-align: middle;" src="images/hideMessage.png" /></a>
-				</c:when>
-				<c:otherwise>
-					<a href="#" onClick="restoreHiddenMessage('${msg.id}');return false;"><img alt="Rendi messaggio visibile" style="vertical-align: middle;" src="images/restoreHiddenMessage.png" /></a>
-				</c:otherwise>
-			</c:choose>
-		</c:if>
-		<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img alt="Rispondi" style="vertical-align: middle;" src="images/rispondi.gif" /></a>
-		<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img alt="Quota" style="vertical-align: middle;" src="images/quota.gif" /></a>
-	</div>
+	</c:if>
+	<c:if test="${not empty loggedUser && loggedUser.preferences['hideMessages'] == 'yes'}">
+		<c:choose>
+			<c:when test="${msg.visible}">
+				<a href="#" onClick="hideMessage('${msg.id}');return false;"><img alt="Nascondi messaggio" style="vertical-align: middle;" src="images/hideMessage.png" /></a>
+			</c:when>
+			<c:otherwise>
+				<a href="#" onClick="restoreHiddenMessage('${msg.id}');return false;"><img alt="Rendi messaggio visibile" style="vertical-align: middle;" src="images/restoreHiddenMessage.png" /></a>
+			</c:otherwise>
+		</c:choose>
+	</c:if>
+	<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img alt="Rispondi" style="vertical-align: middle;" src="images/rispondi.gif" /></a>
+	<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img alt="Quota" style="vertical-align: middle;" src="images/quota.gif" /></a>
 </div>

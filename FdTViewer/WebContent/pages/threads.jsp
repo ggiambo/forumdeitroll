@@ -16,7 +16,9 @@
 			</c:otherwise>
 		</c:choose>
 		<div id="threadTree_${thread.id}" class="${rowclass} threadBox">
-			<span class="threadTitle"><fdt:threadprettyurl subject="${thread.subject}" threadId="${thread.id}" msgId="${thread.id}"/></span>
+			<span class="threadTitle">
+			<a href="Threads?action=getByThread&threadId=${thread.id}#msgId=${thread.id}">${thread.subject}</a>
+			</span>
 			 (${thread.numberOfMessages}
 			<c:choose>
 				<c:when test="${thread.numberOfMessages > 1}">
@@ -63,6 +65,8 @@
 </div>
 
 <div id="footer">
-	<jsp:include page="incPrevNext.jsp" />
+	<c:if test="${!empty page}">
+		<fdt:pager handler="Messages"></fdt:pager>
+	</c:if>
 </div>
 <jsp:include page="incBottom.jsp" />

@@ -36,6 +36,8 @@
 		</div> <%-- /Main --%>
 
 		<div id="footer">
-			<jsp:include page="incPrevNext.jsp" />
+			<c:if test="${!empty page}">
+				<fdt:pager handler="Messages"></fdt:pager>
+			</c:if>
 		</div>
 <jsp:include page="incBottom.jsp" />

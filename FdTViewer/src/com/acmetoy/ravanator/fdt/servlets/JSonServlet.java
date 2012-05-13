@@ -117,7 +117,7 @@ public class JSonServlet extends HttpServlet {
 			pageSize = Math.min(MAX_PAGE_SIZE, Integer.parseInt(paramPageSize[0]));
 		}
 		
-		ThreadsDTO result = persistence.getThreads(pageSize, page, false);
+		ThreadsDTO result = persistence.getThreads(null, pageSize, page, false);
 		
 		writer.beginObject();
 		writer.name("page").value(page);
@@ -154,7 +154,7 @@ public class JSonServlet extends HttpServlet {
 			pageSize = Math.min(MAX_PAGE_SIZE, Integer.parseInt(paramPageSize[0]));
 		}
 		
-		MessagesDTO result = persistence.getMessagesByDate(pageSize, page, false);
+		MessagesDTO result = persistence.getMessages(null, pageSize, page, false);
 		
 		writer.beginObject();
 		writer.name("page").value(page);

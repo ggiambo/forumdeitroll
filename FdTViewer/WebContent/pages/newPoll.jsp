@@ -15,7 +15,7 @@
 			var text = "question_" + questions;
 			var newInput = $("#questionsDiv input:last").clone();
 			newInput.val("").attr("name", text).attr("id", text);
-			var newLabel = $("<label>").attr("for", text).html("Domanda " + (questions + 1) + ":");
+			var newLabel = $("<label></label>").attr("for", text).html("Domanda " + (questions + 1) + ":");
 			$("#questionsDiv").append(newLabel);
 			$("#questionsDiv").append(newInput);
 		});
@@ -33,7 +33,7 @@
 				<br/>
 				<input tabindex="1" name="title" id="title" maxlength="<%=Polls.MAX_TITLE_LENGTH %>" size="<%=Polls.MAX_TITLE_LENGTH %>" value="<c:out value="${title}" escapeXml="true"/>"/>
 				<br/>
-				<textarea name="text" id="text" maxlength="<%=Polls.MAX_TEXT_LENGTH %>" rows="10">${text}</textarea>
+				<textarea name="text" id="text" rows="10">${text}</textarea>
 			
 				<div id="questionsDiv">
 					<c:forEach items="${questions}" var="question" varStatus="index" >
@@ -51,6 +51,8 @@
 </div>
 
 <div id="footer">
-	<jsp:include page="incPrevNext.jsp" />
+	<c:if test="${!empty page}">
+		<fdt:pager handler="Messages"></fdt:pager>
+	</c:if>
 </div>
 <jsp:include page="incBottom.jsp" />
