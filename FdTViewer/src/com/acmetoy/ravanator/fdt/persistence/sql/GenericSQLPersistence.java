@@ -225,22 +225,18 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		final List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
 			conn = getConnection();
-			StringBuilder query = new StringBuilder("SELECT last_global.threadid ");
-			query.append("FROM ");
-			query.append("(SELECT threadid, max(id) AS mid FROM messages ");
+			StringBuilder query = new StringBuilder();
+			query.append("SELECT DISTINCT threadId ")
+				.append("FROM messages ")
+				.append("WHERE author = ? ");
 			if (hideProcCatania) {
-				query.append("WHERE (forum IS NULL OR forum != 'Proc di Catania') ");
+				query.append("AND (forum IS NULL OR forum != 'Proc di Catania') ");
 			}
-			query.append("GROUP BY threadid ORDER BY mid DESC LIMIT 512) ");
-			query.append("AS last_global, ");
-			query.append("(SELECT threadid FROM messages ");
-			query.append("WHERE author = ? ");
-			query.append("GROUP BY threadid ORDER BY max(id) DESC LIMIT 512) ");
-			query.append("AS last_author ");
-			query.append("WHERE last_author.threadid = last_global.threadid ");
-			query.append("ORDER BY last_global.mid DESC LIMIT ? OFFSET ?;");
+			query.append("ORDER BY `id` DESC ")
+				.append("LIMIT ? OFFSET ?");
+			
+			
 			ps = conn.prepareStatement(query.toString());
-
 			int i = 1;
 			ps.setString(i++, author);
 			ps.setInt(i++, limit);
