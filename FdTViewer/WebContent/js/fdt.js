@@ -22,6 +22,7 @@ function showReplyDiv(type, parentId) {
 	$("body").css("cursor", "progress");
 	$.get("Messages?action=showReplyDiv&type=" + type + "&parentId=" + parentId,
 		function(data) {
+			$("#msg" + parentId).removeClass("msgOptMaxHeight");
 			$("#msg" + parentId).append($(data));
 			$("#reply_" + parentId + " :input[name='text']").focus();
 			$("body").css("cursor", "auto");

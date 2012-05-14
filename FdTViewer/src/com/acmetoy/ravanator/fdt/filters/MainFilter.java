@@ -71,7 +71,6 @@ public class MainFilter implements Filter {
 			return;
 		}
 		
-		// action --> stessa cosa in PrettyUrlFilter!
 		String action = req.getParameter("action");
 		if (action == null || action.trim().length() == 0) {
 			action = "init";

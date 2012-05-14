@@ -59,28 +59,6 @@
   </tag>
 
 	<tag>
-		<description>genera url carini per i thread</description>
-		<name>threadprettyurl</name>
-		<tag-class>com.acmetoy.ravanator.fdt.ThreadPrettyUrlTag</tag-class>
-		<body-content>empty</body-content>
-		<attribute>
-	  		<name>threadId</name>
-	  		<required>true</required>
-	  		<rtexprvalue>true</rtexprvalue>
-  		</attribute>
-  		<attribute>
-	  		<name>subject</name>
-	  		<required>true</required>
-	  		<rtexprvalue>true</rtexprvalue>
-  		</attribute>
-		<attribute>
-	  		<name>msgId</name>
-	  		<required>true</required>
-	  		<rtexprvalue>true</rtexprvalue>
-  		</attribute>
-	</tag>
-	
-	<tag>
 		<description>accumula scripts da renderizzare successivamente</description>
 		<name>delayedScript</name>
 		<tag-class>com.acmetoy.ravanator.fdt.DelayedScriptTag</tag-class>

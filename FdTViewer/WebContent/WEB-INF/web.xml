@@ -85,15 +85,6 @@
   </welcome-file-list>
   
   <filter>
-  	<description>url rewriter</description>
-  	<filter-name>PrettyUrl</filter-name>
-  	<filter-class>com.acmetoy.ravanator.fdt.filters.PrettyUrlFilter</filter-class>
-  </filter>
-  <filter-mapping>
-  	<filter-name>PrettyUrl</filter-name>
-  	<url-pattern>/thread/*</url-pattern>
-  </filter-mapping>
-  <filter>
   	<description>Main filter</description>
   	<filter-name>MainFilter</filter-name>
   	<filter-class>com.acmetoy.ravanator.fdt.filters.MainFilter</filter-class>

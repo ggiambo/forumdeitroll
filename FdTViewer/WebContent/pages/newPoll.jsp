@@ -31,14 +31,14 @@
 				<input type="hidden" name="action" value="insertPoll"/>
 				<label for="title">Titolo:</label>
 				<br/>
-				<input tabindex="1" name="title" id="title" maxlength="<%=Polls.MAX_TITLE_LENGTH %>" size="<%=Polls.MAX_TITLE_LENGTH %>" value="<c:out value="${title}" escapeXml="true"/>"/>
+				<input tabindex="1" name="title" id="title" maxlength="<%=Polls.MAX_TITLE_LENGTH %>" value="<c:out value="${title}" escapeXml="true"/>"/>
 				<br/>
 				<textarea name="text" id="text" rows="10">${text}</textarea>
 			
 				<div id="questionsDiv">
 					<c:forEach items="${questions}" var="question" varStatus="index" >
 						<label for="question_${index.index}">Domanda ${index.count}:</label>
-						<input name="question_${index.index}" id="question_${index.index}" maxlength="<%=Polls.MAX_QUESTION_LENGTH %>" size="<%=Polls.MAX_QUESTION_LENGTH %>" value="<c:out value="${question.text}" escapeXml="true"/>"/>
+						<input name="question_${index.index}" id="question_${index.index}" maxlength="<%=Polls.MAX_QUESTION_LENGTH %>" value="<c:out value="${question.text}" escapeXml="true"/>"/>
 					</c:forEach>
 				</div>
 				<input type="submit" value="Invia"/>
@@ -51,6 +51,8 @@
 </div>
 
 <div id="footer">
-	<jsp:include page="incPrevNext.jsp" />
+	<c:if test="${!empty page}">
+		<fdt:pager handler="Messages"></fdt:pager>
+	</c:if>
 </div>
 <jsp:include page="incBottom.jsp" />

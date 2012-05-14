@@ -83,10 +83,19 @@ h1 {
 }
 
 #nav li a {
-	color: Blue;
+	color: #007BDF;
 }
 
 #nav li a:visited {
+	color: #007BDF;
+}
+
+#nav li a:hover {
+	color: Blue;
+}
+
+#nav li a.selected {
+	font-weight: bold;
 	color: Blue;
 }
 
@@ -171,6 +180,11 @@ div.msgEven {
 div.msgOdd {
 	padding: 5px; 
 	background-color: #F6F6F6;
+}
+
+div.msgOptMaxHeight {
+   max-height: 500px;
+   overflow: auto;
 }
 
 div.msgInfo {
@@ -264,8 +278,8 @@ div.message {
 	height: 21px;
 	display: box;
 	vertical-align: middle; 
-	width: 100%;
-	padding: 0px 0px 2px 2px;
+	width: auto;
+	padding: 0px 5px 0px 1px;
 	text-align: right;
 	clear: both;
 }
@@ -1212,4 +1226,35 @@ div.threadTreeEntries ul {
 
 div.threadTreeEntries ul li {
 	padding-left: 10px;
+}
+
+div.msgReply ul.tabs {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+	
+div.msgReply ul.tabs li {
+	display: inline;
+	border: 1px solid #7BAAE7;
+	border-radius: 2px 2px 2px 2px;
+	border-bottom-width: 0;
+	margin: 0 0.3em 0 0;
+	background-color: #F6F6F6;
+}
+	
+div.msgReply ul.tabs li.selectedTab {
+	padding-bottom: 1px;
+	background: white;
+}
+	
+div.msgReply ul.tabs li a {
+	padding: 0 1em;
+    font-weight: normal;
+    text-decoration: none;
+    text-shadow: none;
+}
+
+div#questionsDiv label {
+	display:block;
 }

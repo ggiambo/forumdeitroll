@@ -15,7 +15,9 @@
 			</c:otherwise>
 		</c:choose>
 		<div class="${rowclass} threadBox">
-			<span class="threadTitle"><fdt:threadprettyurl subject="${msg.subject}" threadId="${msg.threadId}" msgId="${msg.id}"/></span>
+			<span class="threadTitle">
+				<a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a>
+			</span>
 			<c:if test="${!empty msg.forum}">
 				<span class="tagForum">${msg.forum}</span>
 			</c:if>
@@ -43,6 +45,8 @@
 </div>
 
 <div id="footer">
-	<jsp:include page="incPrevNext.jsp" />
+	<c:if test="${!empty page}">
+		<fdt:pager handler="Messages"></fdt:pager>
+	</c:if>
 </div>
 <jsp:include page="incBottom.jsp" />

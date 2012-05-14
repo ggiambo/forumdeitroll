@@ -22,7 +22,7 @@
 			<select name="sort" id="sort">
 				<option value="date">pi&ugrave; recente</option>
 				<option value="rdate">meno recente</option>
-				<option value="rank" default>pi&ugrave; rilevante</option>
+				<option value="rank" selected>pi&ugrave; rilevante</option>
 			</select>
 		</div>
 		<input type="submit" value="Cerca"/>
@@ -33,58 +33,47 @@
 	<br/><br/>
 	
 	<ul>
-		<c:choose>
-			<c:when test="${navType == 'nthread'}">
-				<c:url value="Threads" var="allUrl">
-				</c:url>
-				<c:url value="Threads" var="mainUrl">
-					<c:param name="forum" value=""></c:param>
-				</c:url>
-			</c:when>
-			<c:when test="${navType == 'cthread'}">
-				<c:url value="Threads" var="allUrl">
-					<c:param name="action" value="getThreadsByLastPost"></c:param>
-				</c:url>
-				<c:url value="Threads" var="mainUrl">
-					<c:param name="action" value="getThreadsByLastPost"></c:param>
-					<c:param name="forum" value=""></c:param>
-				</c:url>
-			</c:when>
-			<c:otherwise>
-				<c:url value="Messages" var="allUrl">
-				</c:url>
-				<c:url value="Messages" var="mainUrl">
-					<c:param name="action" value="getByForum"></c:param>
-					<c:param name="forum" value=""></c:param>
-				</c:url>
-			</c:otherwise>
-		</c:choose>
+		<%-- navigazione fa senso solo per Messages e Threads --%>
+		<c:set var="urlServlet" value="${servlet}" />
+		<c:set var="action" value="${param.action}" />
+		<c:if test="${urlServlet != 'Messages' and  urlServlet != 'Threads'}">
+			<c:set var="urlServlet" value="Messages" />
+			<c:set var="action" value="getMessages" />
+		</c:if>
+
+		<%-- casi speciali --%>
+		<c:if test="${action == 'getAuthorThreadsByLastPost' || action == 'getByThread'}">
+			<c:set var="action" value="getThreads" />
+		</c:if>
+		<c:if test="${action == 'getById' || action == 'getByAuthor'}">
+			<c:set var="action" value="getMessages" />
+		</c:if>
+	
+		<c:url value="${urlServlet}" var="allUrl" >
+			<c:param name="action" value="${action}" />
+		</c:url>
+		<c:url value="${urlServlet}" var="mainUrl">
+			<c:param name="action" value="${action}" />
+			<c:param name="forum" value="" />
+		</c:url>
 		<li><a href="${allUrl}">Forum dei Troll / Tutto</a></li>
 		<li><a href="${mainUrl}">Forum dei Troll / Principale</a></li>
 		<c:forEach items="${forums}" var="forum">
 			<li>
-				<c:choose>
-					<c:when test="${navType == 'nthread'}">
-						<c:url value="Threads" var="forumUrl">
-							<c:param name="action" value="init"></c:param>
-							<c:param name="forum" value="${forum}"></c:param>
-						</c:url>
-					</c:when>
-					<c:when test="${navType == 'cthread'}">
-						<c:url value="Threads" var="forumUrl">
-							<c:param name="action" value="getThreadsByLastPost"></c:param>
-							<c:param name="forum" value="${forum}"></c:param>
-						</c:url>
-					</c:when>
-					<c:otherwise>
-						<c:url value="Messages" var="forumUrl">
-							<c:param name="action" value="getByForum"></c:param>
-							<c:param name="forum" value="${forum}"></c:param>
-						</c:url>
-					</c:otherwise>
-				</c:choose>
-
-				<a href="<c:out value="${forumUrl}" escapeXml="true"/>">${forum}</a>
+				<c:url value="${urlServlet}" var="forumUrl">
+					<c:param name="action" value="${action}"></c:param>
+					<c:param name="forum" value="${forum}"></c:param>
+				</c:url>
+				<a href="<c:out value="${forumUrl}" escapeXml="true"/>">
+					<c:choose>
+						<c:when test="${specificParams['forum'] == forum}">
+							<b>${forum}</b>
+						</c:when>
+						<c:otherwise>
+							${forum}
+						</c:otherwise>
+					</c:choose>
+				</a>
 			</li>
 		</c:forEach>
 	</ul>

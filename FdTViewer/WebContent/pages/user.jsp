@@ -109,7 +109,16 @@
 									<input type="checkbox" name="<%=User.PREF_HIDE_BANNERONE%>" id="<%=User.PREF_HIDE_BANNERONE%>" ${loggedUser.preferences['hideBannerone']} />
 								</div>
 								<div class="lblUserPanel">
-									<label for="<%=User.PREF_HIDE_BANNERONE%>" class="lbl">Nascondi bannerone tette&culi</label>
+									<label for="<%=User.PREF_HIDE_BANNERONE%>" class="lbl">Nascondi bannerone tette&amp;culi</label>
+								</div>
+								<div style="clear: both;"></div>
+							</div>
+							<div>
+								<div class="inputUserPanel">
+									<input type="checkbox" name="<%=User.PREF_MSG_MAX_HEIGHT%>" id="<%=User.PREF_MSG_MAX_HEIGHT%>" ${loggedUser.preferences['msgMaxHeight']} />
+								</div>
+								<div class="lblUserPanel">
+									<label for="<%=User.PREF_MSG_MAX_HEIGHT%>" class="lbl">Messaggi con altezza massima</label>
 								</div>
 								<div style="clear: both;"></div>
 							</div>
