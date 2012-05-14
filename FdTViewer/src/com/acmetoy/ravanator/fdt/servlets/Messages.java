@@ -375,7 +375,7 @@ public class Messages extends MainServlet {
 	};
 
 	/**
-	 *
+	 * contenuto di un singolo messaggio
 	 */
 	protected GiamboAction getSingleMessageContent = new GiamboAction("getSingleMessageContent", ONGET) {
 		public String action(HttpServletRequest req, HttpServletResponse res) throws Exception {
