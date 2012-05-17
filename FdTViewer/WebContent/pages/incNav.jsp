@@ -54,7 +54,7 @@
 			</c:if>
 		</c:url>
 
-		<%-- "Discussioni: aggiornate" --%>
+		<%-- "Discussioni: Ultime" --%>
 		<c:url value="Threads" var="getThreadsByLastPost">
 			<c:param name="action" value="getThreadsByLastPost"></c:param>
 			<c:if test="${forum != null}">
@@ -74,7 +74,7 @@
 		<li>|</li>
 		<li>Discussioni: 
 			<a id="Threads_getThreads" href="${getThreads}">Nuove</a>&nbsp;
-			<a id="Threads_getThreadsByLastPost" href="${getThreadsByLastPost}">Aggiornate</a>
+			<a id="Threads_getThreadsByLastPost" href="${getThreadsByLastPost}">Ultime</a>
 			<c:if test="${not empty loggedUser}">
 				&nbsp;<a id="Threads_getAuthorThreadsByLastPost" href="Threads?action=getAuthorThreadsByLastPost">Tue</a>
 			</c:if>
