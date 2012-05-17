@@ -80,13 +80,13 @@
 			</c:if>
 		</li>
 		<li>|</li>
+		<li><a id="Messages_newMessage" href="${newMessage}">Nuovo messaggio</a></li>
+		<li>|</li>
 		<li><a id="Polls_" href="Polls">Sondaggi</a></li>
 		<c:if test="${not empty loggedUser}">
 			<li>|</li>
 			<li><a id="Polls_createNewPoll" href="Polls?action=createNewPoll">Nuovo sondaggio</a></li>
 		</c:if>
-		<li>|</li>
-		<li><a id="Messages_newMessage" href="${newMessage}">Nuovo messaggio</a></li>
 
 		<li>|</li>
 		<c:choose>
