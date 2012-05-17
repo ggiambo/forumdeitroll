@@ -226,6 +226,7 @@ public class MessageTag extends BodyTagSupport {
 		}
 	}
 	private static final Emo[] emos = load_emos();
+	private static final Emo[] emosExt = load_emosExt();
 	private static Emo[] load_emos() {
 		Map<String, String[]> emoMap = Messages.getEmoMap();
 		Emo[] emos = new Emo[emoMap.size()];
@@ -235,6 +236,20 @@ public class MessageTag extends BodyTagSupport {
 			String emoSequence = entry.getValue()[0];
 			String altText = entry.getValue()[1];
 			String emoReplacement = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emo/%s.gif'>", altText, altText, imgName);
+			emos[i++] = new Emo(emoSequence, emoReplacement);
+		}
+		Arrays.sort(emos);
+		return emos;
+	}
+	private static Emo[] load_emosExt() {
+		Map<String, String[]> emoMap = Messages.getEmoExtendedMap();
+		Emo[] emos = new Emo[emoMap.size()];
+		int i = 0;
+		for (Map.Entry<String, String[]> entry : emoMap.entrySet()) {
+			String imgName = entry.getKey();
+			String emoSequence = entry.getValue()[0];
+			String altText = entry.getValue()[1];
+			String emoReplacement = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emoextended/%s.gif'>", altText, altText, imgName);
 			emos[i++] = new Emo(emoSequence, emoReplacement);
 		}
 		Arrays.sort(emos);
@@ -259,9 +274,9 @@ public class MessageTag extends BodyTagSupport {
 	private boolean extendedEmoticons() {
 		word.insert(0, ' ');
 		int wlen = word.length();
-		for (String[] emo: Messages.getExtendedEmo()) {
-			String replace = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emoextended/%s.gif'>", emo[1], emo[1], emo[0]);
-			simpleReplaceAllEmoticons(word, "$[" + emo[0] + "]", replace);
+		for (Emo emo: emosExt) {
+			simpleReplaceAllEmoticons(word, emo.sequence, emo.replacement);
+			simpleReplaceAllEmoticons(word, emo.sequenceToUpper, emo.replacement);
 		}
 		if (wlen != word.length()) {
 			return true;

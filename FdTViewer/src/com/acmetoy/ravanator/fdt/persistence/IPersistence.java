@@ -115,8 +115,6 @@ public interface IPersistence extends Serializable {
 
 	public PollDTO getPoll(long pollId);
 
-	public List<String[]> getExtendedEmo();
-	
 	public void restoreOrHideMessage(long msgId, boolean visible);
 
 }

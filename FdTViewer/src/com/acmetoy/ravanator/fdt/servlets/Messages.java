@@ -82,20 +82,17 @@ public class Messages extends MainServlet {
 		EMO_MAP.put("troll4", new String[] {"(troll4)", "Troll di tutti i colori"});
 		EMO_MAP.put("troll", new String[] {"(troll)", "Troll"});
 	}
+	// emo extended
+	private static final Map<String, String[]> EMO_EXT_MAP = new HashMap<String, String[]>();
+	static {
+		EMO_EXT_MAP.put("keroppi", new String[] {" $[keroppi]", "Keroppi" });
+		EMO_EXT_MAP.put("lich", new String[] {" $[lich]", "Licchione"});
+		EMO_EXT_MAP.put("ranona", new String[] {" $[ranona]", "Ranona"});
+	}
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 40;
 	
-	private static SingleValueCache<List<String[]>> cachedExtendedEmo = new SingleValueCache<List<String[]>>(60 * 60 * 1000) {
-		@Override protected List<String[]> update() {
-			try {
-				return PersistenceFactory.getInstance().getExtendedEmo();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-	};
-
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// redirect
@@ -220,7 +217,7 @@ public class Messages extends MainServlet {
 		setWebsiteTitle(req, "Nuovo messaggio @ Forum dei Troll");
 		// faccine - ordinate per key
 		req.setAttribute("emoMap", new TreeMap<String, String[]>(EMO_MAP));
-		req.setAttribute("extendedEmos", cachedExtendedEmo.get());
+		req.setAttribute("extendedEmos", new TreeMap<String, String[]>(EMO_EXT_MAP));
 		return "newMessage.jsp";
 	}
 
@@ -271,7 +268,7 @@ public class Messages extends MainServlet {
 
 		// faccine - ordinate per key
 		req.setAttribute("emoMap", new TreeMap<String, String[]>(EMO_MAP));
-		req.setAttribute("extendedEmos", cachedExtendedEmo.get());
+		req.setAttribute("extendedEmos", new TreeMap<String, String[]>(EMO_EXT_MAP));
 
 		//jstl non accede ai campi stitici
 		req.setAttribute("MAX_MESSAGE_LENGTH", MAX_MESSAGE_LENGTH);
@@ -345,7 +342,7 @@ public class Messages extends MainServlet {
 
 		// faccine - ordinate per key
 		req.setAttribute("emoMap", new TreeMap<String, String[]>(EMO_MAP));
-		req.setAttribute("extendedEmos", cachedExtendedEmo.get());
+		req.setAttribute("extendedEmos", new TreeMap<String, String[]>(EMO_EXT_MAP));
 
 		req.setAttribute("isEdit", true);
 
@@ -619,8 +616,8 @@ public class Messages extends MainServlet {
 		return new HashMap<String, String[]>(EMO_MAP);
 	}
 	
-	public static List<String[]> getExtendedEmo() {
-		return cachedExtendedEmo.get();
+	public static Map<String, String[]> getEmoExtendedMap() {
+		return new HashMap<String, String[]>(EMO_EXT_MAP);
 	}
 
 	protected void forShame(final AuthorDTO author, final String shameTitle, final String shameMessage) {

@@ -1124,29 +1124,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return null;
 	}
-
-	@Override
-	public List<String[]> getExtendedEmo() {
-		List<String[]> res = new ArrayList<String[]>();
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			conn = getConnection();
-			ps = conn.prepareStatement("SELECT `key`, value FROM sysinfo WHERE `key` like 'extendedEmo.%'");
-			rs = ps.executeQuery();
-			while (rs.next()) {
-				String key = rs.getString("key");
-				key = key.substring(key.indexOf('.') + 1);
-				res.add(new String[] { key, rs.getString("value") });
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot get key extended emos from table sysinfo", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return res;
-	}
 	
 	private List<String> getPollVoterNicks(Connection conn, long pollId) {
 		List<String> ret = new ArrayList<String>();

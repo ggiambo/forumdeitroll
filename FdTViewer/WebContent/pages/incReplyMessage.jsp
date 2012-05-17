@@ -71,7 +71,7 @@
 		</div>
 		<div style="display:none" class="emo">
 			<c:forEach items="${extendedEmos}" var="emo" varStatus="index">
-				<img onmousedown="insert('$[${emo[0]}]', '', '${message.parentId}')" title="${emo[1]}" src="images/emoextended/${emo[0]}.gif" style="cursor: pointer;"/>
+				<img onmousedown="insert('${emo.value[0]}', '', '${message.parentId}')" title="${emo.value[1]}" src="images/emoextended/${emo.key}.gif" style="cursor: pointer;"/>
 				<c:if test="${index.count % 13 == 0}"><br/></c:if>
 			</c:forEach>
 		</div>
