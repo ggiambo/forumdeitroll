@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
 
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
+import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.PollDTO;
 import com.acmetoy.ravanator.fdt.persistence.PollQuestion;
 import com.acmetoy.ravanator.fdt.persistence.PollsDTO;
@@ -169,7 +171,23 @@ public class Polls extends MainServlet {
 		pollDTO.setText(text);
 		pollDTO.setPollQuestions(questions);
 		
-		getPersistence().createPoll(pollDTO);
+		long pollId = getPersistence().createPoll(pollDTO);
+		
+		// comunichiamo al mondo l'esistenza di un nuovo poll =) !
+		MessageDTO msg = new MessageDTO();
+		msg.setDate(new Date());
+		msg.setForum("Sondaggi trolleschi");
+		msg.setSubject("Nuovo sondaggio proposto da " + user.getNick()) ;
+		StringBuilder msgText = new StringBuilder();
+		msgText.append(user.getNick()).append(" ha creato un nuovo sondaggio dal titolo '").append(title);
+		msgText.append("', clicka [url=");
+		msgText.append("http://");
+		msgText.append(req.getServerName());
+		msgText.append(req.getContextPath()).append("/");
+		msgText.append("Polls?action=getPollContent&pollId=").append(pollId);
+		msgText.append("]qui[/url] per visualizzarlo");
+		msg.setText(msgText.toString());
+		getPersistence().insertMessage(msg);
 		
 		return getByPage(req, res);
 	}

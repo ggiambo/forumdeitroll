@@ -989,7 +989,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 	
 	@Override
-	public void createPoll(PollDTO pollDTO) {
+	public long createPoll(PollDTO pollDTO) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1019,11 +1019,13 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				ps.execute();
 			}
 			conn.commit();
+			return pollId;
 		} catch (SQLException e) {
 			LOG.error("Cannot create poll " + pollDTO, e);
 		} finally {
 			close(null, ps, conn);
 		}
+		return -1;
 	}
 	
 	@Override

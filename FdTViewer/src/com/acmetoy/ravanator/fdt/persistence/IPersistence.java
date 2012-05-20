@@ -105,7 +105,7 @@ public interface IPersistence extends Serializable {
 
 	public void pedonizeThreadTree(long rootMessageId);
 	
-	public void createPoll(PollDTO pollDTO);
+	public long createPoll(PollDTO pollDTO);
 	
 	public boolean updatePollQuestion(PollQuestion pollQuestion, AuthorDTO user);
 	
