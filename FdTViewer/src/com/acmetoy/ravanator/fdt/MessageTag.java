@@ -287,13 +287,15 @@ public class MessageTag extends BodyTagSupport {
 	}
 
 	private static boolean isLink(StringBuilder candidate) {
-		return candidate.indexOf("http://") == 0 ||
+		return candidate.length() > 5 &&
+				(candidate.indexOf("http://") == 0 ||
 				candidate.indexOf("https://") == 0 ||
 				candidate.indexOf("www.") == 0 ||
 				candidate.indexOf("ftp://") == 0 ||
 				candidate.indexOf("mailto:") == 0 ||
 				(candidate.indexOf(".com/") != -1 && candidate.indexOf("/") == candidate.indexOf(".com/") + 4) ||
-				(candidate.indexOf(".it/") != -1 && candidate.indexOf("/") == candidate.indexOf(".it/") + 3);
+				(candidate.indexOf(".it/") != -1 && candidate.indexOf("/") == candidate.indexOf(".it/") + 3) ||
+				candidate.indexOf("Threads?action=getByThread&threadId=") == 0);
 	}
 	private static String addHttpProtocol(String url) {
 		if (url.startsWith("www.")
