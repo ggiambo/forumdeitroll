@@ -295,7 +295,8 @@ public class MessageTag extends BodyTagSupport {
 				candidate.indexOf("mailto:") == 0 ||
 				(candidate.indexOf(".com/") != -1 && candidate.indexOf("/") == candidate.indexOf(".com/") + 4) ||
 				(candidate.indexOf(".it/") != -1 && candidate.indexOf("/") == candidate.indexOf(".it/") + 3) ||
-				candidate.indexOf("Threads?action=getByThread&threadId=") == 0);
+				candidate.indexOf("Threads?action=getByThread&threadId=") == 0 ||
+				candidate.indexOf("Polls?action=getPollContent&pollId=") == 0);
 	}
 	private static String addHttpProtocol(String url) {
 		if (url.startsWith("www.")

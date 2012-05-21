@@ -659,7 +659,11 @@ public class Messages extends MainServlet {
 
 		{ // moderator shaming block
 			final MessageDTO movedMessage = getPersistence().getMessage(rootMessageId);
-			forShame(loggedUser, "Pe: " + movedMessage.getSubject(), "" + loggedUser.getNick() + " ha spostato in procura il thread " + movedMessage.getSubject() + " http://forumdeitroll.com/Threads?action=getByThread&threadId=" + rootMessageId);
+			StringBuilder msg = new StringBuilder(loggedUser.getNick());
+			msg.append(" ha spostato in procura questo [url=");
+			msg.append("Threads?action=getByThread&threadId=").append(rootMessageId);
+			msg.append("]thread[/url]");
+			forShame(loggedUser, "Pe: " + movedMessage.getSubject(), msg.toString());
 		}
 
 		setNavigationMessage(req, NavigationMessage.info("Pedonization completed."));

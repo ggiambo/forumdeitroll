@@ -181,9 +181,6 @@ public class Polls extends MainServlet {
 		StringBuilder msgText = new StringBuilder();
 		msgText.append(user.getNick()).append(" ha creato un nuovo sondaggio dal titolo '").append(title);
 		msgText.append("', clicka [url=");
-		msgText.append("http://");
-		msgText.append(req.getServerName());
-		msgText.append(req.getContextPath()).append("/");
 		msgText.append("Polls?action=getPollContent&pollId=").append(pollId);
 		msgText.append("]qui[/url] per visualizzarlo");
 		msg.setText(msgText.toString());
