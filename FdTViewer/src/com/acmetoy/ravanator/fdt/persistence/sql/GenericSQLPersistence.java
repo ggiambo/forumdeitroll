@@ -1360,7 +1360,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	@Override
 	public void pedonizeThreadTree(long rootMessageId) {
 		// forum originale
-		String forum = getMessage(rootMessageId).getForum();
+		MessageDTO msg = getMessage(rootMessageId);
+		String forum = msg.getForum();
 		forum = forum == null ? "" : forum;
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1420,9 +1421,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setInt(1, -1 * res);
 			ps.setString(2, "messages.forum." + forum);
 			ps.execute();
-			ps.setInt(1, - 1);
-			ps.setString(2, "threads.forum." + forum);
-			ps.execute();
+			if (msg.getId() == msg.getThreadId()) {
+				// spostato tutto il thread
+				ps.setInt(1, -1);
+				ps.setString(2, "threads.forum." + forum);
+				ps.execute();
+			}
 			conn.commit();
 		} catch (SQLException e) {
 			LOG.error("Pedonize failed!", e);
