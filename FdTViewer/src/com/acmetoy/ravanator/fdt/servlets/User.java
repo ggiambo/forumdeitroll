@@ -257,8 +257,8 @@ public class User extends MainServlet {
 
 		Long quoteId = Long.parseLong(req.getParameter("quoteId"));
 		String content = req.getParameter("quote_" + quoteId);
-		if (StringUtils.isEmpty(content) || content.length() < 3 || content.length() > 100) {
-			setNavigationMessage(req, NavigationMessage.warn("Minimo 3 caratteri, massimo 100"));
+		if (StringUtils.isEmpty(content) || content.length() < 3 || content.length() > 150) {
+			setNavigationMessage(req, NavigationMessage.warn("Minimo 3 caratteri, massimo 150"));
 			return getQuotes(req,  res);
 		}
 
