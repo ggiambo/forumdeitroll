@@ -247,11 +247,11 @@ jQuery("document").ready(function(){
 
 });
 
-// tasto 'j' per saltare al prossimo messaggio
+// tasto 'j' per saltare al prossimo messaggio, 'k' per quello precedente
 $("body").live("keypress", function(e) {
-	if (e.charCode == 106) {
-		var target = $(e.target);
-		if (!target.is("input") && !target.is("textarea")) {
+	var target = $(e.target);
+	if (!target.is("input") && !target.is("textarea")) {
+		if (e.charCode == 106) {
 			var scrollToMsgIndex = $.data(document.body, "scrollToMsgIndex");
 			if (scrollToMsgIndex == undefined) {
 				scrollToMsgIndex = -1;
@@ -259,7 +259,17 @@ $("body").live("keypress", function(e) {
 			$.data(document.body, "scrollToMsgIndex", ++scrollToMsgIndex);
 			$("html, body").animate({
 				scrollTop: $('div[id^="msg"]').eq(scrollToMsgIndex).offset().top
-			}, 500);
+			}, 200);
+		}
+		if (e.charCode == 107) {
+			var scrollToMsgIndex = $.data(document.body, "scrollToMsgIndex");
+			if (scrollToMsgIndex == undefined) {
+				scrollToMsgIndex = $('div[id^="msg"]').length;
+			}
+			$.data(document.body, "scrollToMsgIndex", --scrollToMsgIndex);
+			$("html, body").animate({
+				scrollTop: $('div[id^="msg"]').eq(scrollToMsgIndex).offset().top
+			}, 200);
 		}
 	}
 });
