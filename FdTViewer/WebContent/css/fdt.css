@@ -173,14 +173,23 @@ span.openCloseSidebar {
 }
 
 div.msgEven {
-	padding: 5px; 
 	background-color: #FFFFFF;
 }
 
 div.msgOdd {
-	padding: 5px; 
 	background-color: #F6F6F6;
 }
+
+div.msgVisible {
+	display:block;
+	padding: 5px;
+}
+
+div.msgInvisible {
+	padding: 5px;
+	display:none;
+}
+
 
 div.msgOptMaxHeight {
    max-height: 500px;

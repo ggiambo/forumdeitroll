@@ -390,6 +390,7 @@ function restoreHiddenMessage(msgId) {
 }
 
 function showHIddenMessage(msgId) {
-	$("#msg" + msgId).show();
+	$("#msg" + msgId).removeClass("msgInvisible");
+	$("#msg" + msgId).addClass("msgVisible");
 	$("#msgWarning" + msgId).hide();
 }

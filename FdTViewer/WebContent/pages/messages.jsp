@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <jsp:include page="incTop.jsp" />
@@ -10,6 +9,14 @@
 	
 	<c:forEach items="${messages}" var="msg" varStatus="index">
 		<c:choose>
+			<c:when test="${index.index % 2 == 0}">
+				<c:set var="rowclass" value="msgEven"/>
+			</c:when>
+			<c:otherwise>
+				<c:set var="rowclass" value="msgOdd"/>
+			</c:otherwise>
+		</c:choose>
+		<c:choose>
 			<c:when test="${msg.visible}">
 				<c:set var="messagesBoxClass" value="messagesBox"/>
 			</c:when>
@@ -17,7 +24,7 @@
 				<c:set var="messagesBoxClass" value="messagesBoxInvisible"/>
 			</c:otherwise>
 		</c:choose>
-		<div class="${messagesBoxClass}">
+		<div class="${messagesBoxClass} ${rowclass}">
 			<c:set var="msg" value="${msg}" scope="request"/>
 			<c:set var="index" value="${index.count}" scope="request"/>
 			<jsp:include page="incMessage.jsp"/>

@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
@@ -23,7 +22,15 @@
 				<c:set var="messagesBoxClass" value="messagesBoxInvisible"/>
 			</c:otherwise>
 		</c:choose>
-		<div class="${messagesBoxClass}">
+		<c:choose>
+			<c:when test="${index % 2 == 0}">
+				<c:set var="rowclass" value="msgEven"/>
+			</c:when>
+			<c:otherwise>
+				<c:set var="rowclass" value="msgOdd"/>
+			</c:otherwise>
+		</c:choose>
+		<div class="${messagesBoxClass} ${rowclass}">
 			<c:set var="msg" value="${message.content}" scope="request"/>
 			<jsp:include page="incMessage.jsp"/>
 		</div>

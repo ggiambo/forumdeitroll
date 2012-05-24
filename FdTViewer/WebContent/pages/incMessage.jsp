@@ -3,27 +3,11 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
 <c:choose>
-	<c:when test="${index % 2 == 0}">
-		<c:set var="rowclass" value="msgEven"/>
-	</c:when>
-	<c:otherwise>
-		<c:set var="rowclass" value="msgOdd"/>
-	</c:otherwise>
-</c:choose>
-
-
-<c:if test="${not empty loggedUser && loggedUser.preferences['msgMaxHeight'] == 'checked'}">
-	<c:set var="rowclass" value="${rowclass} msgOptMaxHeight"/>
-</c:if>
-
-<a href="#msg${msg.id}"></a>
-
-<c:choose>
 	<c:when test="${msg.visible}">
-		<c:set var="msgStyle" value="display:block"/>
+		<c:set var="rowclass" value="msgVisible"/>
 	</c:when>
 	<c:otherwise>
-		<c:set var="msgStyle" value="display:none"/>
+		<c:set var="rowclass" value="msgInvisible"/>
 		<div id="msgWarning${msg.id}" style="padding:5px;">
 			<img src="images/warning.png" style="float:right; margin-right:10px"/>
 			Questo messaggio e' stato catalogato come "Exiled Nigerian princess".<br/>
@@ -32,7 +16,13 @@
 	</c:otherwise>
 </c:choose>
 
-<div class="${rowclass}" id="msg${msg.id}" style="${msgStyle}; min-height: 170px;">
+<c:if test="${not empty loggedUser && loggedUser.preferences['msgMaxHeight'] == 'checked'}">
+	<c:set var="rowclass" value="${rowclass} msgOptMaxHeight"/>
+</c:if>
+
+<a href="#msg${msg.id}"></a>
+
+<div class="${rowclass}" id="msg${msg.id}">
 
 	<div class="msgInfo">
 		<div>
