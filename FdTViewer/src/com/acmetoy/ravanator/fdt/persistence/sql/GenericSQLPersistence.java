@@ -110,7 +110,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				query.append(" WHERE forum IS NULL");
 			} else if (forum == null) {
 				if (hideProcCatania) {
-					query.append(" WHERE (forum IS NULL OR forum != 'Proc di Catania') ");
+					query.append(" WHERE (forum IS NULL OR forum != '").append(FORUM_PROC).append("') ");
 				}
 			} else {
 				query.append(" WHERE forum = ?");
@@ -124,8 +124,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setInt(i++, limit*page);
 
 			int messagesCount = countMessages(forum, conn);
-			if (hideProcCatania) {
-				messagesCount -= countThreads("Proc di Catania", conn);
+			if (hideProcCatania && forum == null) {
+				messagesCount -= countMessages(FORUM_PROC, conn);
 			}
 
 			return new MessagesDTO(getMessages(ps.executeQuery(), false), messagesCount);
@@ -150,7 +150,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				query.append(" AND forum IS NULL");
 			} else if (forum == null) {
 				if (hideProcCatania) {
-					query.append(" AND (forum IS NULL OR forum != 'Proc di Catania') ");
+					query.append(" AND (forum IS NULL OR forum != '").append(FORUM_PROC).append("') ");
 				}
 			} else {
 				query.append(" AND forum = ?");
@@ -162,7 +162,13 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			}
 			ps.setInt(i++, limit);
 			ps.setInt(i++, limit*page);
-			return new ThreadsDTO(getThreads(ps.executeQuery()), countThreads(forum, conn));
+			
+			int threadsCount = countThreads(forum, conn);
+			if (hideProcCatania && forum == null) {
+				threadsCount -= countThreads(FORUM_PROC, conn);
+			}
+			
+			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount);
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads", e);
 		} finally {
@@ -187,7 +193,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				query.append(" WHERE forum IS NULL");
 			} else if (forum == null) {
 				if (hideProcCatania) {
-					query.append(" WHERE (forum IS NULL OR forum != 'Proc di Catania')");
+					query.append(" WHERE (forum IS NULL OR forum != '").append(FORUM_PROC).append("')");
 				}
 			} else {
 				query.append(" WHERE forum = ?");
@@ -230,7 +236,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				.append("FROM messages ")
 				.append("WHERE author = ? ");
 			if (hideProcCatania) {
-				query.append("AND (forum IS NULL OR forum != 'Proc di Catania') ");
+				query.append("AND (forum IS NULL OR forum != '").append(FORUM_PROC).append("') ");
 			}
 			query.append("ORDER BY `id` DESC ")
 				.append("LIMIT ? OFFSET ?");
@@ -1392,7 +1398,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			// setta a tutti i messaggi il threadId = rootMessageId
 			ps.close();
 			sql.setLength(0);
-			sql.append("UPDATE messages SET threadId = ? , forum = 'Proc di Catania' WHERE id IN (");
+			sql.append("UPDATE messages SET threadId = ? , forum = '").append(FORUM_PROC).append("' WHERE id IN (");
 			// sono long, non temo injection io
 			for (Long id : messages) {
 				sql.append(id).append(',');
@@ -1413,10 +1419,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			// update numero di messaggi
 			ps = conn.prepareStatement("UPDATE sysinfo SET value = value + ? WHERE `key` = ?");
 			ps.setInt(1, res);
-			ps.setString(2, "messages.forum.Proc di Catania");
+			ps.setString(2, "messages.forum." + FORUM_PROC);
 			ps.execute();
 			ps.setInt(1, 1);
-			ps.setString(2, "threads.forum.Proc di Catania");
+			ps.setString(2, "threads.forum." + FORUM_PROC);
 			ps.execute(); 
 			ps.setInt(1, -1 * res);
 			ps.setString(2, "messages.forum." + forum);

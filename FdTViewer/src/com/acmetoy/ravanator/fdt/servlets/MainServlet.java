@@ -105,7 +105,16 @@ public abstract class MainServlet extends HttpServlet {
 		// execute action
 		String action = (String)req.getAttribute("action");
 		try {
-			Method methodAction = this.getClass().getDeclaredMethod(action, new Class[] {HttpServletRequest.class, HttpServletResponse.class});
+			Method methodAction = null;
+			Class servletClass = this.getClass();
+			while (methodAction == null && MainServlet.class.isAssignableFrom(servletClass)) {
+				// search action method also in superclasses
+				try {
+					methodAction = servletClass.getDeclaredMethod(action, new Class[] {HttpServletRequest.class, HttpServletResponse.class});
+				} catch (NoSuchMethodException e) {
+					servletClass = servletClass.getSuperclass();
+				}
+			}
 			if (methodAction == null) {
 				throw new IllegalArgumentException("Azione sconosciuta: " + action);
 			} else {

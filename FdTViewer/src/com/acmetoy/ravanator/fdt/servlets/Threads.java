@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.ThreadTree;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
+import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadDTO;
 import com.acmetoy.ravanator.fdt.persistence.ThreadsDTO;
@@ -116,8 +117,13 @@ public class Threads extends MainServlet {
 	}
 
 	private String getThreads(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
-		boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
 		String forum = req.getParameter("forum");
+		boolean hideProcCatania;
+		if (IPersistence.FORUM_PROC.equals(forum)) {
+			hideProcCatania = false; // nascondere la proc quando si consulta la proc :P ?
+		} else {
+			 hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+		}
 		ThreadsDTO messages = getPersistence().getThreads(forum, PAGE_SIZE, getPageNr(req), hideProcCatania);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());

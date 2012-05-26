@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Properties;
 
 public interface IPersistence extends Serializable {
+	
+	public static final String FORUM_PROC = "Proc di Catania";
 
 	public void init(Properties databaseConfig) throws Exception;
 

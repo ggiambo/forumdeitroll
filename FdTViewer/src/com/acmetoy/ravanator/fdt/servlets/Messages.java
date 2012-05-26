@@ -1,5 +1,7 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,8 +11,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,11 +20,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.RandomPool;
-import com.acmetoy.ravanator.fdt.SingleValueCache;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
+import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
-import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.acmetoy.ravanator.fdt.servlets.Action.Method;
@@ -724,8 +723,13 @@ public class Messages extends MainServlet {
 	}
 
 	private String getMessages(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
-		boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
 		String forum = req.getParameter("forum");
+		boolean hideProcCatania;
+		if (IPersistence.FORUM_PROC.equals(forum)) {
+			hideProcCatania = false; // nascondere la proc quando si consulta la proc :P ?
+		} else {
+			 hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+		}
 		MessagesDTO messages = getPersistence().getMessages(forum, PAGE_SIZE, getPageNr(req), hideProcCatania);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
