@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.acmetoy.ravanator.fdt.MessageTag;
+import com.acmetoy.ravanator.fdt.PasswordUtils;
 import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
@@ -93,6 +94,7 @@ public class Messages extends MainServlet {
 	public static final int MAX_SUBJECT_LENGTH = 40;
 	
 	@Action
+	@Override
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// redirect
 		res.setHeader("Location", "Messages?action=getMessages");
@@ -439,7 +441,7 @@ public class Messages extends MainServlet {
 			return null;
 		}
 
-		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
 		AuthorDTO author = null;
 		String nick = req.getParameter("nick");
 		String pass = req.getParameter("pass");
@@ -448,7 +450,7 @@ public class Messages extends MainServlet {
 			author = loggedUser;
 		} else if (StringUtils.isNotEmpty(nick) && StringUtils.isNotEmpty(pass)) {
 			AuthorDTO sockpuppet = getPersistence().getAuthor(nick);
-			if (sockpuppet.passwordIs(pass)) {
+			if (PasswordUtils.hasUserPassword(sockpuppet, pass)) {
 				// posta come altro utente
 				author = sockpuppet;
 			}
@@ -636,7 +638,7 @@ public class Messages extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String pedonizeThreadTree(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null) {
 			return getMessages(req, res, NavigationMessage.error("Non furmigare !"));
 		}
@@ -689,7 +691,7 @@ public class Messages extends MainServlet {
 	}
 	
 	private String restoreOrHideMessage(HttpServletRequest req, HttpServletResponse res, long msgId, boolean visible)  throws Exception {
-    	AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+    	AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
     	if (loggedUser == null) {
     		return getMessages(req, res, NavigationMessage.error("Non furmigare !"));
     	}

@@ -13,13 +13,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
+import com.acmetoy.ravanator.fdt.PasswordUtils;
 import com.acmetoy.ravanator.fdt.SingleValueCache;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
@@ -34,7 +34,9 @@ public abstract class MainServlet extends HttpServlet {
 
 	public static final int PAGE_SIZE = 20;
 
-	public static final String LOGGED_USER_SESSION_ATTR = "loggedUser";
+	public static final String LOGGED_USER_REQ_ATTR = "loggedUser";
+	
+	public static final String LOGGED_USER_SESS_ATTR = "loggedUserNick";
 
 	private IPersistence persistence;
 
@@ -74,15 +76,14 @@ public abstract class MainServlet extends HttpServlet {
 		req.setAttribute("randomQuote", getRandomQuoteDTO(req, res));
 
 		// user
-		HttpSession session = req.getSession();
-		AuthorDTO loggedUser = (AuthorDTO)session.getAttribute(LOGGED_USER_SESSION_ATTR);
-
+		String loggedUserNick = (String)req.getSession().getAttribute(LOGGED_USER_SESS_ATTR);
 		String sidebarStatus = null;
-		if (loggedUser != null && loggedUser.isValid()) {
+		if (!StringUtils.isEmpty(loggedUserNick)) {
+			// update loggedUser in session
+			AuthorDTO loggedUser = persistence.getAuthor(loggedUserNick);
+			req.setAttribute(LOGGED_USER_REQ_ATTR, loggedUser);
 			// pvts ?
 			req.setAttribute("hasPvts", getPersistence().checkForNewPvts(loggedUser));
-			// update loggedUser in session
-			session.setAttribute(LOGGED_USER_SESSION_ATTR,persistence.getAuthor(loggedUser.getNick()));
 			// sidebar status come attributo nel reques
 			sidebarStatus = loggedUser.getPreferences().get("sidebarStatus");
 		} else {
@@ -136,6 +137,16 @@ public abstract class MainServlet extends HttpServlet {
 			handleException(e, req, res);
 		}
 	}
+	
+	/**
+	 * Action chiamata quando nessuna e' definita
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	@Action
+	abstract String init(HttpServletRequest req, HttpServletResponse res) throws Exception;
 
 	/**
 	 * La persistence inizializzata
@@ -166,9 +177,10 @@ public abstract class MainServlet extends HttpServlet {
 		String pass = req.getParameter("pass");
 		if (!StringUtils.isEmpty(nick) && !StringUtils.isEmpty(pass)) {
 			final AuthorDTO author = getPersistence().getAuthor(nick);
-			if (author.passwordIs(pass)) {
-				// ok, ci siamo loggati con successo, salvare nella sessione
-				req.getSession().setAttribute(LOGGED_USER_SESSION_ATTR, author);
+			if (PasswordUtils.hasUserPassword(author, pass)) {
+				// ok, ci siamo loggati con successo, salvare come attributo nel req
+				req.setAttribute(LOGGED_USER_REQ_ATTR, author);
+				req.getSession().setAttribute(LOGGED_USER_SESS_ATTR, nick);
 				if (!author.newAuth()) {
 					// CODICE DI MIGRAZIONE DELLA FUNZIONE DI HASHING DELLE PASSWORD
 					// autenticazione con username e password effettuata con successo ma
@@ -182,13 +194,13 @@ public abstract class MainServlet extends HttpServlet {
 		}
 
 		// se non e` stato specificato nome utente e password tentiamo l'autenticazione tramite sessione
-		final AuthorDTO author = (AuthorDTO)req.getSession().getAttribute(LOGGED_USER_SESSION_ATTR);
+		final AuthorDTO author = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
 		if (author != null) {
 			if (!author.newAuth()) {
 				// CODICE DI MIGRAZIONE DELLA FUNZIONE DI HASHING DELLE PASSWORD
 				// l'utente e` loggato con il cookie ma la password usa sempre l'hashing vecchio, piallare il
 				// cookie in modo che debba rifare il login e aggiornare l'hashing.
-				req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
+				req.removeAttribute(LOGGED_USER_REQ_ATTR);
 			}
 			return author;
 		}
@@ -210,7 +222,7 @@ public abstract class MainServlet extends HttpServlet {
 		if (StringUtils.isEmpty(sidebarStatus)) {
 			return null;
 		}
-		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser != null && loggedUser.isValid()) {
 			// settiamo nelle preferences dell'utente
 			getPersistence().setPreference(loggedUser, "sidebarStatus", sidebarStatus);

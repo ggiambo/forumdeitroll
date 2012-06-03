@@ -55,6 +55,7 @@ public class Polls extends MainServlet {
 		};
 	
 	@Action
+	@Override
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return getByPage(req, res);
 	}
@@ -96,7 +97,7 @@ public class Polls extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String createNewPoll(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO user = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		AuthorDTO user = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (user == null || !user.isValid()) {
 			setNavigationMessage(req, NavigationMessage.error("Solo gli utenti registrati possono creare un sondaggio."));
 			return getByPage(req, res);
@@ -111,7 +112,7 @@ public class Polls extends MainServlet {
 	 */
 	@Action(method=Method.POST)
 	String insertPoll(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO user = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		AuthorDTO user = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (user == null || !user.isValid()) {
 			setNavigationMessage(req, NavigationMessage.error("No registrato ? No sondaggio !"));
 			return getByPage(req, res);
@@ -252,7 +253,7 @@ public class Polls extends MainServlet {
 	@Action(method=Method.POST)
 	String answerPoll(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
-		AuthorDTO author = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		AuthorDTO author = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (author == null || !author.isValid()) {
 			setNavigationMessage(req, NavigationMessage.error("No registrato ? No sondaggio !"));
 			return getPollContent(req, res);

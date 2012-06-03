@@ -25,8 +25,8 @@ public class Threads extends MainServlet {
 	/**
 	 * Ordinati per thread / data iniziale
 	 */
-	
 	@Action
+	@Override
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// redirect
 		res.setHeader("Location", "Threads?action=getThreads");

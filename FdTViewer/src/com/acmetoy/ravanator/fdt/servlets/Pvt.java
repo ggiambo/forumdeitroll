@@ -21,13 +21,14 @@ public class Pvt extends MainServlet {
 	
 	private static int PVT_PER_PAGE = 10;
 	
-	/**
-	 * inbox
-	 * outbox
-	 * sendNew
-	 * sendPvt
-	 * delete
-	 */
+
+	@Override
+	@Action
+	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		return inbox(req, res);
+	}
+	
+
 	@Action(method=Method.GET)
 	String inbox(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO author = login(req);
@@ -220,4 +221,5 @@ public class Pvt extends MainServlet {
 			req.setAttribute("recipients", "'" + StringUtils.join(recipients, "','") + "'");
 		}
 	}
+
 }

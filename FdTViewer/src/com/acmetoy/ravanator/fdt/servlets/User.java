@@ -14,6 +14,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
 
+import com.acmetoy.ravanator.fdt.PasswordUtils;
 import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
@@ -37,7 +38,7 @@ public class User extends MainServlet {
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
 	@Action
-	public String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO loggedUser = login(req);
 		setWebsiteTitle(req, "Forum dei troll");
 		if (loggedUser != null && loggedUser.isValid()) {
@@ -54,7 +55,7 @@ public class User extends MainServlet {
 	 * @return
 	 */
 	@Action
-	public String loginAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String loginAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		setWebsiteTitle(req, "Login @ Forum dei Troll");
 		return "login.jsp";
 	}
@@ -66,8 +67,8 @@ public class User extends MainServlet {
 	 * @return
 	 */
 	@Action
-	public String updatePass(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+	String updatePass(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
@@ -80,7 +81,7 @@ public class User extends MainServlet {
 			return "user.jsp";
 		}
 
-		if (!loggedUser.passwordIs(actualPass)) {
+		if (!PasswordUtils.hasUserPassword(loggedUser, actualPass)) {
 			setNavigationMessage(req, NavigationMessage.warn("Password attuale sbagliata, non fare il furmiga"));
 			return "user.jsp";
 		}
@@ -113,8 +114,8 @@ public class User extends MainServlet {
 	 * @return
 	 */
 	@Action
-	public String updateAvatar(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+	String updateAvatar(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
@@ -166,8 +167,8 @@ public class User extends MainServlet {
 	 * @throws Exception
 	 */
 	@Action
-	public String registerAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.getSession().removeAttribute(LOGGED_USER_SESSION_ATTR);
+	String registerAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		req.removeAttribute(LOGGED_USER_REQ_ATTR);
 		setWebsiteTitle(req, "Registrazione @ Forum dei Troll");
 		return "register.jsp";
 	}
@@ -180,7 +181,7 @@ public class User extends MainServlet {
 	 * @throws Exception
 	 */
 	@Action
-	public String registerNewUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String registerNewUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String nick = req.getParameter("nick");
 		req.setAttribute("nick", nick);
 		// check del captcha
@@ -219,8 +220,8 @@ public class User extends MainServlet {
 	 * @throws Exception
 	 */
 	@Action
-	public String getQuotes(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+	String getQuotes(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
@@ -248,8 +249,8 @@ public class User extends MainServlet {
 	 * @throws Exception
 	 */
 	@Action
-	public String updateQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+	String updateQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
@@ -279,8 +280,8 @@ public class User extends MainServlet {
 	 * @throws Exception
 	 */
 	@Action
-	public String removeQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+	String removeQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
@@ -303,13 +304,13 @@ public class User extends MainServlet {
 	 * @throws Exception
 	 */
 	@Action
-	public String getUserInfo(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getUserInfo(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String nick = req.getParameter("nick");
 		AuthorDTO author = getPersistence().getAuthor(nick);
 		req.setAttribute("author", author);
 		req.setAttribute("quotes", getPersistence().getQuotes(author));
 
-		final AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		final AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 
 		if ((loggedUser != null) && "yes".equals(loggedUser.getPreferences().get("super"))) {
 			final String token = RandomPool.getString(3);
@@ -320,9 +321,16 @@ public class User extends MainServlet {
 		return "userInfo.jsp";
 	}
 
+	/**
+	 * 
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
 	@Action(method=Method.POST)
-	public String edit(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+	String edit(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Non sei loggato !"));
 			return loginAction(req,  res);
@@ -384,8 +392,8 @@ public class User extends MainServlet {
 	 * Cambia le preferences
 	 */
 	@Action
-	public String updatePreferences(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		AuthorDTO loggedUser = (AuthorDTO)req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+	String updatePreferences(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);

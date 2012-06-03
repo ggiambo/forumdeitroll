@@ -26,7 +26,6 @@ import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 
 /**
  * Servlet "speciale" che non necessita di tutto l'ambaradan di MainFilter e MainServlet
- * @author t355241
  *
  */
 public class Misc extends HttpServlet {
@@ -155,7 +154,8 @@ public class Misc extends HttpServlet {
 	 * @throws Exception
 	 */
 	private void logoutAction(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		req.getSession().removeAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		req.removeAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
+		req.getSession().removeAttribute(MainServlet.LOGGED_USER_SESS_ATTR);
 		req.getSession().invalidate();
 		res.setStatus(302);
 		res.setContentType("text/html");

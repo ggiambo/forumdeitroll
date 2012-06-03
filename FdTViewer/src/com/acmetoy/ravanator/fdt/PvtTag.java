@@ -15,7 +15,7 @@ public class PvtTag extends TagSupport {
 	
 	@Override
 	public int doEndTag() throws JspException {
-		AuthorDTO author = (AuthorDTO)pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+		AuthorDTO author = (AuthorDTO)pageContext.getRequest().getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (author != null) {
 			Boolean hasPvts = (Boolean)pageContext.getRequest().getAttribute("hasPvts");
     		try {

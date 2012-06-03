@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.FdTException;
 import com.acmetoy.ravanator.fdt.PagerTag;
+import com.acmetoy.ravanator.fdt.PasswordUtils;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
@@ -484,7 +485,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			}
 
 			final AuthorDTO a = new AuthorDTO();
-			a.changePassword(password);
+			PasswordUtils.changePassword(a, password);
 
 			// inserisci
 			ps = conn.prepareStatement("INSERT INTO authors (nick, password, messages, salt, hash) VALUES (?, ?, ?, ?, ?)");
@@ -550,7 +551,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE authors SET password = ?, salt = ?, hash = ? WHERE nick = ?");
 			int i = 1;
-			author.changePassword(newPassword);
+			PasswordUtils.changePassword(author, newPassword);
 			ps.setString(i++, "");
 			ps.setString(i++, author.getSalt());
 			ps.setString(i++, author.getHash());

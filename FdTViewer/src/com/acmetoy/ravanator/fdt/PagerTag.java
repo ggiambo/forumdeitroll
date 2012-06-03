@@ -179,7 +179,7 @@ public class PagerTag extends TagSupport  {
 			@Override
 			public int getMaxPages(HttpServletRequest req) {
 				//se vedi la lista dei pvt sei loggato per forza
-				AuthorDTO author = (AuthorDTO) req.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+				AuthorDTO author = (AuthorDTO) req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 				if (author != null) {
 					Integer totalSize = (Integer)req.getAttribute("totalSize");
 					return totalSize == null ? -1 : totalSize;

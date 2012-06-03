@@ -37,7 +37,7 @@ public class MessageTag extends BodyTagSupport {
 
 	public int doAfterBody() throws JspTagException {
 		try {
-			loggedUser = (AuthorDTO) pageContext.getSession().getAttribute(MainServlet.LOGGED_USER_SESSION_ATTR);
+			loggedUser = (AuthorDTO) pageContext.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 			body = getBodyContent().getString().toCharArray();
 			getBodyContent().getEnclosingWriter().write(getMessage().toString());
 		} catch (Exception e) {
