@@ -772,7 +772,7 @@ div.userPanelSection > form > div {
 }
 
 div.userPanelSection div.lblUserPanel {
-	width: 16em;
+	width: auto;
 	float: left;
 }
 

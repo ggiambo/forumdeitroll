@@ -54,6 +54,7 @@
 										<div class="inputUserPanel">
 											<input type="password" name="pass" id="pass"/>
 										</div>
+										<div style="clear: both;"></div>
 									</div>
 
 									<div>
@@ -63,6 +64,7 @@
 										<div class="inputUserPanel">
 											<input type="password" name="pass2" id="pass2"/>
 										</div>
+										<div style="clear: both;"></div>
 									</div>
 
 									<div>
@@ -72,6 +74,7 @@
 										<div class="inputUserPanel">
 											<input type="text" name="pedonizeThread" id="pedonizeThread"  value="${author.preferences['pedonizeThread']}"/>
 										</div>
+										<div style="clear: both;"></div>
 									</div>
 
 									<input type="submit" value="Modifica" class="sendUserPanel"/>
