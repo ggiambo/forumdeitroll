@@ -72,7 +72,7 @@
 											<label for="pedonizeThread" class="lbl">pedonizeThread:</label>
 										</div>
 										<div class="inputUserPanel">
-											<input type="text" name="pedonizeThread" id="pedonizeThread"  value="${author.preferences['pedonizeThread']}"/>
+											<input type="checkbox" name="pedonizeThread" value="yes" id="pedonizeThread" ${author.preferences['pedonizeThread'] eq 'yes' ? "checked" : ""} />
 										</div>
 										<div style="clear: both;"></div>
 									</div>

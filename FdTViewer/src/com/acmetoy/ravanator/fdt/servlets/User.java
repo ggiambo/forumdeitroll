@@ -373,6 +373,8 @@ public class User extends MainServlet {
 		final String pedonizeThread = req.getParameter("pedonizeThread");
 		if (!StringUtils.isEmpty(pedonizeThread)) {
 			author.setPreferences(getPersistence().setPreference(author, "pedonizeThread", pedonizeThread));
+		} else {
+			author.setPreferences(getPersistence().setPreference(author, "pedonizeThread", ""));
 		}
 
 		return getUserInfo(req,  res);
