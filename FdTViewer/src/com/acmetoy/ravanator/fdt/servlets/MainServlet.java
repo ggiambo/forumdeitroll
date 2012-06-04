@@ -77,6 +77,8 @@ public abstract class MainServlet extends HttpServlet {
 
 		// user
 		String loggedUserNick = (String)req.getSession().getAttribute(LOGGED_USER_SESS_ATTR);
+		AuthorDTO author = getPersistence().getAuthor(loggedUserNick);
+		req.setAttribute(LOGGED_USER_REQ_ATTR, author);
 		String sidebarStatus = null;
 		if (!StringUtils.isEmpty(loggedUserNick)) {
 			// update loggedUser in session
