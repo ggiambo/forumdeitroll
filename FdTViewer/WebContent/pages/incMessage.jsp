@@ -99,7 +99,9 @@
 		String m_id = Long.toString(((MessageDTO) request.getAttribute("msg")).getId());
 		String ip = IPMemStorage.getIp(m_id);
 		if (ip != null) {
-			%><div class="searchInfo">Postato da: <%= ip%></div><%
+			%><div class="searchInfo"><tt>Postato da: <span style='background-color:black'
+				onmouseover='this.style.backgroundColor="transparent"'
+				onmouseout='this.style.backgroundColor="black"'><%= ip%></span></tt></div><%
 		}
 		%>
 	</c:if>
