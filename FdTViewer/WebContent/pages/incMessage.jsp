@@ -92,6 +92,17 @@
 			<tt><!-- Ciao wakko :-) -->Rilevanza: <fmt:formatNumber value="${msg.searchRelevance}" pattern="#0.00" />. Messaggi nel thread: ${msg.searchCount - 1}</tt>
 		</div>
 	</c:if>
+	<c:if test="${not empty loggedUser && loggedUser.preferences['super'] == 'yes'}">
+		<%@page import="com.acmetoy.ravanator.fdt.persistence.MessageDTO"%>
+		<%@page import="com.acmetoy.ravanator.fdt.util.IPMemStorage"%>
+		<%
+		String m_id = Long.toString(((MessageDTO) request.getAttribute("msg")).getId());
+		String ip = IPMemStorage.getIp(m_id);
+		if (ip != null) {
+			%><div class="searchInfo">Postato da: <%= ip%></div><%
+		}
+		%>
+	</c:if>
 
 	<div style="padding: 10px;" class="message">
 		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>

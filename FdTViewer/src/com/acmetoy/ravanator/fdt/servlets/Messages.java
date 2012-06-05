@@ -28,6 +28,7 @@ import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.acmetoy.ravanator.fdt.servlets.Action.Method;
+import com.acmetoy.ravanator.fdt.util.IPMemStorage;
 import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
@@ -558,6 +559,8 @@ public class Messages extends MainServlet {
 		}
 
 		msg = getPersistence().insertMessage(msg);
+		String m_id = Long.toString(msg.getId());
+		IPMemStorage.store(req, m_id);
 
 		// redirect
 		JsonWriter writer = new JsonWriter(res.getWriter());
