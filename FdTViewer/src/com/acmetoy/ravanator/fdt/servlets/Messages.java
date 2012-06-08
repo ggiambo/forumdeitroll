@@ -1,5 +1,11 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -17,10 +23,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.PasswordUtils;
 import com.acmetoy.ravanator.fdt.RandomPool;
+import com.acmetoy.ravanator.fdt.SingleValueCache;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
@@ -41,6 +49,8 @@ public class Messages extends MainServlet {
 
 	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
+	private static final Logger LOG = Logger.getLogger(Messages.class);
+	
 	// key: filename, value[0]: edit value, value[1]: alt
 	// tutte le emo ora sono in lower case
 	private static final Map<String, String[]> EMO_MAP = new HashMap<String, String[]>();
@@ -93,6 +103,36 @@ public class Messages extends MainServlet {
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 40;
+	
+	protected SingleValueCache<List<String>> cacheTorExitNodes = new SingleValueCache<List<String>>(60 * 60 * 1000) {
+		@Override protected List<String> update() {
+			List<String> res = new ArrayList<String>();
+			try {
+			    InetAddress addr = InetAddress.getByName("torstatus.blutmagie.de");
+			    Socket socket = new Socket(addr, 80);
+			    BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
+			    wr.write("GET /ip_list_exit.php/Tor_ip_list_EXIT.csv HTTP/1.0\r\n");
+			    wr.write("Content-Type: application/x-www-form-urlencoded\r\n");
+			    wr.write("\r\n");
+			    wr.flush();
+			    // get response
+			    BufferedReader rd = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			    String line;
+			    // si si, lo so, non stressatemi :@ !
+			    String simpleIPv4 = "\\d+\\.\\d+\\.\\d+\\.\\d+";
+			    while ((line = rd.readLine()) != null) {
+			    	if (line.matches(simpleIPv4)) {
+			        	res.add(line.trim());
+			        }
+			    }
+			    wr.close();
+			    rd.close();
+			} catch (Exception e) {
+				LOG.error("Cannot read tor exit list ", e);
+			}
+			return res;
+		}
+	};
 	
 	@Action
 	@Override
@@ -429,6 +469,21 @@ public class Messages extends MainServlet {
 	 * Inserisce un messaggio nuovo o editato
 	 */
 	private String insertMessageAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		// check se usa TOR
+		if ("checked".equals(getPersistence().getSysinfoValue("blockTorExitNodes"))) {
+			String remoteAddr = "194.150.168.95";
+			if (cacheTorExitNodes.get().contains(remoteAddr)) {
+				JsonWriter writer = new JsonWriter(res.getWriter());
+				writer.beginObject();
+				writer.name("resultCode").value("MSG");
+				writer.name("content").value("Post per chi usa TOR temporaneamente disabilitato.");
+				writer.endObject();
+				writer.flush();
+				writer.close();
+				return null;
+			}
+		}
+		
 		// se c'e' un'errore, mostralo
 		String validationMessage = validateInsertMessage(req);
 		if (validationMessage != null) {

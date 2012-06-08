@@ -122,6 +122,17 @@
 								</div>
 								<div style="clear: both;"></div>
 							</div>
+							<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
+								<hr/>								
+								<div class="inputUserPanel">
+									<input type="checkbox" name="blockTorExitNodes" id="blockTorExitNodes" ${blockTorExitNodes} />
+								</div>
+								<div class="lblUserPanel">
+									<label for="pedonizeThread" class="lbl">Blocca TOR exit nodes:</label>
+								</div>
+								<div style="clear: both;"></div>
+							</c:if>
+							
 							<input type="submit" value="Modifica" class="sendUserPanel" />
 						</form>
 						<div style="clear: both;"></div>

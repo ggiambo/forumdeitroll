@@ -119,4 +119,8 @@ public interface IPersistence extends Serializable {
 
 	public void restoreOrHideMessage(long msgId, boolean visible);
 
+	void setSysinfoValue(String key, String value);
+
+	String getSysinfoValue(String key);
+
 }

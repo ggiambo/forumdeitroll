@@ -42,6 +42,7 @@ public class User extends MainServlet {
 		AuthorDTO loggedUser = login(req);
 		setWebsiteTitle(req, "Forum dei troll");
 		if (loggedUser != null && loggedUser.isValid()) {
+			req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 			return "user.jsp";
 		}
 		setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
@@ -73,6 +74,8 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
 		}
+		
+		req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 
 		// user loggato, check pass
 		String actualPass = req.getParameter("actualPass");
@@ -120,6 +123,8 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
 		}
+		
+		req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 
 		if (!ServletFileUpload.isMultipartContent(req)) {
 			setNavigationMessage(req, NavigationMessage.warn("Nessun avatar caricato"));
@@ -209,6 +214,7 @@ public class User extends MainServlet {
 		// login
 		login(req);
 		req.setAttribute("loggedUser", loggedUser);
+		req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 		return "user.jsp";
 	}
 
@@ -317,6 +323,10 @@ public class User extends MainServlet {
 			req.getSession().setAttribute(ANTI_XSS_TOKEN, token);
 			req.setAttribute("token", token);
 		}
+		
+		if ("yes".equals(loggedUser.getPreferences().get("super"))) {
+			req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
+		}
 
 		return "userInfo.jsp";
 	}
@@ -408,6 +418,16 @@ public class User extends MainServlet {
 				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, ""));
 			}
 
+		}
+
+		if ((loggedUser != null) && "yes".equals(loggedUser.getPreferences().get("super"))) {
+			String blockTorExitNodes = req.getParameter("blockTorExitNodes");
+			if (!StringUtils.isEmpty(blockTorExitNodes)) {
+				getPersistence().setSysinfoValue("blockTorExitNodes", "checked");
+			} else {
+				getPersistence().setSysinfoValue("blockTorExitNodes", "");
+			}
+			req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 		}
 
 		return "user.jsp";

@@ -1442,6 +1442,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 	}
 	
+	@Override
 	public void restoreOrHideMessage(long msgId, boolean visible) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1454,6 +1455,58 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			LOG.error("Cannot hide/restore message " + msgId, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	@Override
+	public String getSysinfoValue(String key) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			// increase for this forum
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = ?");
+			ps.setString(1, key);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getString("value");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get sysinfo value for " + key, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return null;
+	}
+	
+	@Override
+	public void setSysinfoValue(String key, String value) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String query = null;
+		try {
+			if (getSysinfoValue(key) == null) {
+				// insert
+				query = "INSERT INTO sysinfo (`key`, value) VALUES (?, ?)";
+				conn = getConnection();
+				ps = conn.prepareStatement(query);
+				ps.setString(1, key);
+				ps.setString(2, value);
+			} else {
+				// update
+				query = "UPDATE sysinfo SET value=? WHERE `key`=?";
+				conn = getConnection();
+				ps = conn.prepareStatement(query);
+				ps.setString(1, value);
+				ps.setString(2, key);
+			}
+			ps.execute();
+		} catch (SQLException e) {
+			LOG.error("Cannot set sysinfo value for " + key, e);
 		} finally {
 			close(rs, ps, conn);
 		}
