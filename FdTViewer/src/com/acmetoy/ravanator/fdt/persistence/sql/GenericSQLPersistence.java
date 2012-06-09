@@ -410,7 +410,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public AuthorDTO getAuthor(String nick) {
-		AuthorDTO dto = new AuthorDTO();
+		AuthorDTO dto = new AuthorDTO(null);
 		if (StringUtils.isEmpty(nick)) {
 			return dto;
 		}
@@ -438,7 +438,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public List<AuthorDTO> getAuthors(boolean onlyActive) {
 		List<AuthorDTO> res = new ArrayList<AuthorDTO>();
@@ -455,7 +455,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			rs = ps.executeQuery();
 			AuthorDTO dto;
 			while (rs.next()) {
-				dto = new AuthorDTO();
+				dto = new AuthorDTO(null);
 				dto.setNick(rs.getString("nick"));
 				dto.setAvatar(rs.getBytes("avatar"));
 				dto.setMessages(rs.getInt("messages"));
@@ -481,10 +481,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn = getConnection();
 			// check se esiste gia'. Blah banf transazioni chissenefrega <-- (complimenti a chi ha scritto questo - sarrusofono)
 			if (getAuthor(nick).isValid()) {
-				return new AuthorDTO();
+				return new AuthorDTO(null);
 			}
 
-			final AuthorDTO a = new AuthorDTO();
+			final AuthorDTO a = new AuthorDTO(null);
 			PasswordUtils.changePassword(a, password);
 
 			// inserisci
@@ -499,7 +499,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			return getAuthor(nick);
 		} catch (SQLException e) {
 			LOG.error("Cannot get Author " + nick, e);
-			return new AuthorDTO();
+			return new AuthorDTO(null);
 		} finally {
 			close(rs, ps, conn);
 		}
@@ -717,7 +717,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		long pvt_id = -1;
 		try {
 			conn = getConnection();
-			
+
 			//verifica esistenza dei destinatari
 			for (String recipient: recipients) {
 				if (recipient.equals("")) continue;
@@ -726,8 +726,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				rs = ps.executeQuery();
 				if (!rs.next()) throw new FdTException("Il destinatario "+StringEscapeUtils.escapeHtml4(recipient)+" non esiste.");
 			}
-			
-			
+
+
 			ps = conn.prepareStatement("INSERT INTO pvt_content" +
 										"(sender, content, senddate, subject, replyTo) " +
 										"VALUES  (?,?,sysdate(),?,?)", Statement.RETURN_GENERATED_KEYS);
@@ -736,7 +736,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(3, privateMsg.getSubject());
 			ps.setLong(4, privateMsg.getReplyTo());
 			ps.execute();
-			
+
 			rs = ps.getGeneratedKeys();
 			rs.next();
 			pvt_id = rs.getLong(1);
@@ -766,7 +766,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			LOG.error("Cannot insert into pvt_recipient", e);
 			// prova ad annullare l'insert del messaggio ed eventuali collegati
 			for (int i=0;i<recipients.length;++i) {
-				AuthorDTO rec = new AuthorDTO();
+				AuthorDTO rec = new AuthorDTO(null);
 				rec.setNick(recipients[i]);
 				deletePvt(pvt_id, rec);
 			}

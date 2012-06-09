@@ -189,7 +189,7 @@ public abstract class MainServlet extends HttpServlet {
 				}
 				return author;
 			} else {
-				return new AuthorDTO();
+				return new AuthorDTO(null);
 			}
 		}
 
@@ -206,7 +206,7 @@ public abstract class MainServlet extends HttpServlet {
 		}
 
 		// captcha corretto, restituisce l'Author di default
-		return new AuthorDTO();
+		return new AuthorDTO(null);
 	}
 
 	/**
@@ -342,7 +342,7 @@ public abstract class MainServlet extends HttpServlet {
 			}
 		}
 	}
-	
+
 	void addSpecificParam(HttpServletRequest req, String key, String value) {
 		Map<String, String> specificParams = (Map<String, String>)req.getAttribute("specificParams");
 		if (specificParams == null) {
@@ -353,5 +353,5 @@ public abstract class MainServlet extends HttpServlet {
 			specificParams.put(key, value);
 		}
 	}
-	
+
 }

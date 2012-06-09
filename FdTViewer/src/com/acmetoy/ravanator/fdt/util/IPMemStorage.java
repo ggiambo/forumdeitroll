@@ -1,14 +1,34 @@
 package com.acmetoy.ravanator.fdt.util;
 
+import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import javax.servlet.http.HttpServletRequest;
 
 public class IPMemStorage {
-
 	private static int STORE_SIZE = 1000;
-	private static String[] DATA = new String[STORE_SIZE];
+	private static Record[] DATA = new Record[STORE_SIZE];
 
-	public static void store(String ip, String m_id) {
-		DATA[Integer.parseInt(m_id) % STORE_SIZE] = m_id + "|" + ip;
+	public static class Record {
+		protected final String m_id;
+		protected final String ip;
+		protected final String authorDescription;
+
+		public Record(final String m_id, final String ip, final String authorDescription) {
+			this.m_id = m_id;
+			this.ip = ip;
+			this.authorDescription = authorDescription;
+		}
+
+		public String m_id() { return m_id; }
+		public String ip() { return ip; }
+		public String authorDescription() { return authorDescription; };
+
+		public String toString() {
+			return "" + m_id + ": " + authorDescription + " (" + ip + ")";
+		}
+	}
+
+	public static void store(String ip, String m_id, AuthorDTO author) {
+		DATA[Integer.parseInt(m_id) % STORE_SIZE] = new Record(m_id, ip, author.description());
 	}
 
 	public static String requestToIP(final HttpServletRequest req) {
@@ -16,17 +36,14 @@ public class IPMemStorage {
 		return (forwarded != null) ? forwarded : req.getRemoteAddr();
 	}
 
-	public static void store(HttpServletRequest request, String m_id) {
-		store(requestToIP(request), m_id);
+	public static void store(HttpServletRequest request, String m_id, AuthorDTO author) {
+		store(requestToIP(request), m_id, author);
 	}
 
-	public static String getIp(String m_id) {
-		String value = DATA[ Integer.parseInt(m_id) % STORE_SIZE ];
+	public static Record get(String m_id) {
+		Record value = DATA[ Integer.parseInt(m_id) % STORE_SIZE ];
 		if (value == null) return null;
-		if (m_id.equals(value.substring(0, value.indexOf('|')))) {
-			return value.substring(value.indexOf('|')+1);
-		}
-		return null;
+		return (m_id.equals(value.m_id())) ? value : null;
 	}
 
 	// test
@@ -44,11 +61,11 @@ public class IPMemStorage {
 		for (int i=0;i<10000000;i++) {
 			String ip = getRndIp();
 			String m_id = getRndMid();
-			store(ip, m_id);
-			String ip_retrieved = getIp(m_id);
-			if (!ip_retrieved.equals(ip)) {
+			store(ip, m_id, new AuthorDTO(null));
+			Record retrieved = get(m_id);
+			if (!retrieved.ip().equals(ip)) {
 				System.err.println("m_id: "+m_id+"\tip: "+ip);
-				System.err.println("ip_retrieved: "+ip_retrieved);
+				System.err.println("ip_retrieved: "+retrieved);
 				throw new RuntimeException();
 			}
 		}

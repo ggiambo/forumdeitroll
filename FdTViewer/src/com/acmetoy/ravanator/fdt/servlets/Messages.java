@@ -1,12 +1,6 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -38,6 +32,8 @@ import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.acmetoy.ravanator.fdt.servlets.Action.Method;
 import com.acmetoy.ravanator.fdt.util.IPMemStorage;
+import com.acmetoy.ravanator.fdt.util.ModInfo;
+import com.acmetoy.ravanator.fdt.util.CacheTorExitNodes;
 import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
@@ -104,36 +100,6 @@ public class Messages extends MainServlet {
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 40;
-
-	protected SingleValueCache<List<String>> cacheTorExitNodes = new SingleValueCache<List<String>>(60 * 60 * 1000) {
-		@Override protected List<String> update() {
-			List<String> res = new ArrayList<String>();
-			try {
-			    InetAddress addr = InetAddress.getByName("torstatus.blutmagie.de");
-			    Socket socket = new Socket(addr, 80);
-			    BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF8"));
-			    wr.write("GET /ip_list_exit.php/Tor_ip_list_EXIT.csv HTTP/1.0\r\n");
-			    wr.write("Content-Type: application/x-www-form-urlencoded\r\n");
-			    wr.write("\r\n");
-			    wr.flush();
-			    // get response
-			    BufferedReader rd = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			    String line;
-			    // si si, lo so, non stressatemi :@ !
-			    String simpleIPv4 = "\\d+\\.\\d+\\.\\d+\\.\\d+";
-			    while ((line = rd.readLine()) != null) {
-			    	if (line.matches(simpleIPv4)) {
-			        	res.add(line.trim());
-			        }
-			    }
-			    wr.close();
-			    rd.close();
-			} catch (Exception e) {
-				LOG.error("Cannot read tor exit list ", e);
-			}
-			return res;
-		}
-	};
 
 	@Action
 	@Override
@@ -466,8 +432,28 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
+	@Action
+	String modInfo(final HttpServletRequest req, final HttpServletResponse res) throws Exception {
+		final String m_id = req.getParameter("m_id");
+		final AuthorDTO loggedUser = login(req);
+
+		final boolean isAdmin = (loggedUser != null) && ("yes".equals(getPersistence().getPreferences(loggedUser).get("super")));
+		if (!isAdmin) {
+			return "messages.jsp";
+		}
+
+		setWebsiteTitle(req, "Moderazione " + m_id + " @ Forum dei Troll");
+
+		final IPMemStorage.Record record = IPMemStorage.get(m_id);
+		final ModInfo modInfo = new ModInfo(m_id, record);
+
+		req.setAttribute("modInfo", modInfo);
+
+		return "modinfo.jsp";
+	}
+
 	protected AuthorDTO insertMessageAuthentication(final HttpServletRequest req) throws Exception {
-		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
+		final AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
 		String nick = req.getParameter("nick");
 		String pass = req.getParameter("pass");
 		if (loggedUser != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
@@ -485,7 +471,7 @@ public class Messages extends MainServlet {
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
 			if (StringUtils.isNotEmpty(correctAnswer) && correctAnswer.equals(captcha)) {
 				// posta da anonimo
-				return new AuthorDTO();
+				return new AuthorDTO(loggedUser);
 			}
 		}
 
@@ -509,7 +495,7 @@ public class Messages extends MainServlet {
 
 		// check se usa TOR
 		if ("checked".equals(getPersistence().getSysinfoValue("blockTorExitNodes"))) {
-			if (cacheTorExitNodes.get().contains(IPMemStorage.requestToIP(req))) {
+			if (CacheTorExitNodes.check(IPMemStorage.requestToIP(req))) {
 				return true;
 			}
 		}
@@ -617,7 +603,7 @@ public class Messages extends MainServlet {
 
 		msg = getPersistence().insertMessage(msg);
 		String m_id = Long.toString(msg.getId());
-		IPMemStorage.store(req, m_id);
+		IPMemStorage.store(req, m_id, author);
 
 		// redirect
 		JsonWriter writer = new JsonWriter(res.getWriter());
@@ -733,7 +719,7 @@ public class Messages extends MainServlet {
 		res.sendError(301);
 		return null;
 	}
-	
+
 	/**
 	 * Nascondi questo orrifico messaggio agli occhi dei poveri troll.
 	 */
@@ -741,7 +727,7 @@ public class Messages extends MainServlet {
 	String hideMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
     	return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), false);
 	}
-	
+
 	/**
 	 * Abilita alla visione questo angelico messaggio
 	 */
@@ -749,7 +735,7 @@ public class Messages extends MainServlet {
 	String restoreHiddenMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
     	return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), true);
 	}
-	
+
 	private String restoreOrHideMessage(HttpServletRequest req, HttpServletResponse res, long msgId, boolean visible)  throws Exception {
     	AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
     	if (loggedUser == null) {
@@ -759,16 +745,16 @@ public class Messages extends MainServlet {
     	if (! isAdmin) {
     		return getMessages(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
     	}
-    
+
     	final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
     	final String inToken = req.getParameter("token");
-    
+
     	if ((token == null) || (inToken == null) || !token.equals(inToken)) {
     		return getMessages(req, res, NavigationMessage.error("Verifica token fallita"));
     	}
-    
+
     	getPersistence().restoreOrHideMessage(msgId, visible);
-    	
+
     	return getMessages(req, res, NavigationMessage.info("Messaggio infernale nascosto agli occhi dei giovini troll."));
 	}
 

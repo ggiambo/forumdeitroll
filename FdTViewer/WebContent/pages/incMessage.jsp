@@ -95,15 +95,6 @@
 	<c:if test="${not empty loggedUser && loggedUser.preferences['super'] == 'yes'}">
 		<%@page import="com.acmetoy.ravanator.fdt.persistence.MessageDTO"%>
 		<%@page import="com.acmetoy.ravanator.fdt.util.IPMemStorage"%>
-		<%
-		String m_id = Long.toString(((MessageDTO) request.getAttribute("msg")).getId());
-		String ip = IPMemStorage.getIp(m_id);
-		if (ip != null) {
-			%><div class="searchInfo"><tt>Postato da: <span style='background-color:black'
-				onmouseover='this.style.backgroundColor="transparent"'
-				onmouseout='this.style.backgroundColor="black"'><%= ip%></span></tt></div><%
-		}
-		%>
 	</c:if>
 
 	<div style="padding: 10px;" class="message">
@@ -112,6 +103,13 @@
 
 </div>
 <div id="buttons_${msg.id}" class="messagesButtonBar">
+	<c:if test="${not empty loggedUser && loggedUser.preferences['super'] == 'yes'}">
+		<c:url value="" var="modUrl">
+			<c:param name="action" value="modInfo"/>
+			<c:param name="m_id" value="${msg.id}"/>
+		</c:url>
+		<a href="${modUrl}">Moderazione</a>
+	</c:if>
 	<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
 		<c:if test="${msg.forum != 'Proc di Catania'}">
 			<a href="#" onClick="pedonizeThreadTree('${msg.id}');return false;"><img alt="Pedonize!" style="vertical-align: middle;" src="images/pedonize.png" /></a>

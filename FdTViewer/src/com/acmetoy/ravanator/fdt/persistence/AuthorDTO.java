@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
 
 public class AuthorDTO implements Serializable {
-
 	private static final long serialVersionUID = 2L;
 
 	private int messages = -1;
@@ -21,6 +20,12 @@ public class AuthorDTO implements Serializable {
 	protected String salt = null, hash = null;
 
 	private Map<String, String> preferences = new ConcurrentHashMap<String, String>();
+
+	protected final AuthorDTO shadowAuthor;
+
+	public AuthorDTO(final AuthorDTO shadowAuthor) {
+		this.shadowAuthor = shadowAuthor;
+	}
 
 	public String getNick() {
 		return nick;
@@ -104,5 +109,13 @@ public class AuthorDTO implements Serializable {
 
 	public boolean isBanned() {
 		return false;
+	}
+
+	public String description() {
+		return
+			((nick != null) ? nick : "Non Autenticato") +
+			((shadowAuthor != null) ?
+				(" (" + ((shadowAuthor.getNick() != null) ? shadowAuthor.getNick() : "Non Autenticato") + ")")
+				: "");
 	}
 }
