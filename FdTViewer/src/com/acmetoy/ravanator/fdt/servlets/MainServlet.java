@@ -35,8 +35,8 @@ public abstract class MainServlet extends HttpServlet {
 	public static final int PAGE_SIZE = 20;
 
 	public static final String LOGGED_USER_REQ_ATTR = "loggedUser";
-	
 	public static final String LOGGED_USER_SESS_ATTR = "loggedUserNick";
+	public static final String SESSION_IS_BANNED = "sessionIsBanned";
 
 	private IPersistence persistence;
 
@@ -137,7 +137,7 @@ public abstract class MainServlet extends HttpServlet {
 			handleException(e, req, res);
 		}
 	}
-	
+
 	/**
 	 * Action chiamata quando nessuna e' definita
 	 * @param req

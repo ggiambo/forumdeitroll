@@ -49,7 +49,7 @@ public class AuthorDTO implements Serializable {
 	public String getOldPassword() {
 		return this.oldPassword;
 	}
-	
+
 	public void setOldPassword(final String oldPassword) {
 		this.oldPassword = oldPassword;
 	}
@@ -102,4 +102,7 @@ public class AuthorDTO implements Serializable {
 		return nick != null && messages != -1;
 	}
 
+	public boolean isBanned() {
+		return false;
+	}
 }

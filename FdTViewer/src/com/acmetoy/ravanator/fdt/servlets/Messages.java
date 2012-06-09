@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URI;
@@ -50,7 +51,7 @@ public class Messages extends MainServlet {
 	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
 	private static final Logger LOG = Logger.getLogger(Messages.class);
-	
+
 	// key: filename, value[0]: edit value, value[1]: alt
 	// tutte le emo ora sono in lower case
 	private static final Map<String, String[]> EMO_MAP = new HashMap<String, String[]>();
@@ -103,7 +104,7 @@ public class Messages extends MainServlet {
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 40;
-	
+
 	protected SingleValueCache<List<String>> cacheTorExitNodes = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
 			List<String> res = new ArrayList<String>();
@@ -133,7 +134,7 @@ public class Messages extends MainServlet {
 			return res;
 		}
 	};
-	
+
 	@Action
 	@Override
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -420,7 +421,7 @@ public class Messages extends MainServlet {
 		writer.close();
 		return null;
 	}
-	
+
 	/**
 	 * contenuto di un singolo messaggio
 	 */
@@ -465,50 +466,18 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
-	/**
-	 * Inserisce un messaggio nuovo o editato
-	 */
-	private String insertMessageAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		// check se usa TOR
-		if ("checked".equals(getPersistence().getSysinfoValue("blockTorExitNodes"))) {
-			String remoteAddr = "194.150.168.95";
-			if (cacheTorExitNodes.get().contains(remoteAddr)) {
-				JsonWriter writer = new JsonWriter(res.getWriter());
-				writer.beginObject();
-				writer.name("resultCode").value("MSG");
-				writer.name("content").value("Post per chi usa TOR temporaneamente disabilitato.");
-				writer.endObject();
-				writer.flush();
-				writer.close();
-				return null;
-			}
-		}
-		
-		// se c'e' un'errore, mostralo
-		String validationMessage = validateInsertMessage(req);
-		if (validationMessage != null) {
-			JsonWriter writer = new JsonWriter(res.getWriter());
-			writer.beginObject();
-			writer.name("resultCode").value("MSG");
-			writer.name("content").value(validationMessage);
-			writer.endObject();
-			writer.flush();
-			writer.close();
-			return null;
-		}
-
+	protected AuthorDTO insertMessageAuthentication(final HttpServletRequest req) throws Exception {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
-		AuthorDTO author = null;
 		String nick = req.getParameter("nick");
 		String pass = req.getParameter("pass");
 		if (loggedUser != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
 			// posta come utente loggato
-			author = loggedUser;
+			return loggedUser;
 		} else if (StringUtils.isNotEmpty(nick) && StringUtils.isNotEmpty(pass)) {
 			AuthorDTO sockpuppet = getPersistence().getAuthor(nick);
 			if (PasswordUtils.hasUserPassword(sockpuppet, pass)) {
 				// posta come altro utente
-				author = sockpuppet;
+				return sockpuppet;
 			}
 		} else {
 			// la coppia nome utente/password non e` stata inserita e l'utente non e` loggato, ergo deve inserire il captcha giusto
@@ -516,19 +485,58 @@ public class Messages extends MainServlet {
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
 			if (StringUtils.isNotEmpty(correctAnswer) && correctAnswer.equals(captcha)) {
 				// posta da anonimo
-				author = new AuthorDTO();
+				return new AuthorDTO();
 			}
 		}
 
+		// autenticazione fallita, no utente loggato, no username/password inserita e no captcha corretto
+		return null;
+	}
+
+	protected void insertMessageAjaxFail(final HttpServletResponse res, final String error) throws IOException {
+		JsonWriter writer = new JsonWriter(res.getWriter());
+		writer.beginObject();
+		writer.name("resultCode").value("MSG");
+		writer.name("content").value(error);
+		writer.endObject();
+		writer.flush();
+		writer.close();
+	}
+
+	protected boolean authorIsBanned(final AuthorDTO author, final HttpServletRequest req) {
+		if (author.isBanned()) return true;
+		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) return true;
+
+		// check se usa TOR
+		if ("checked".equals(getPersistence().getSysinfoValue("blockTorExitNodes"))) {
+			if (cacheTorExitNodes.get().contains(IPMemStorage.requestToIP(req))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Inserisce un messaggio nuovo o editato
+	 */
+	private String insertMessageAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		// se c'e' un'errore, mostralo
+		String validationMessage = validateInsertMessage(req);
+		if (validationMessage != null) {
+			insertMessageAjaxFail(res, validationMessage);
+			return null;
+		}
+
+		final AuthorDTO author = insertMessageAuthentication(req);
+
 		if (author == null) {
-			//autenticazione fallita
-			JsonWriter writer = new JsonWriter(res.getWriter());
-			writer.beginObject();
-			writer.name("resultCode").value("MSG");
-			writer.name("content").value("Autenticazione / verifica captcha fallita");
-			writer.endObject();
-			writer.flush();
-			writer.close();
+			insertMessageAjaxFail(res, "Autenticazione / verifica captcha fallita");
+			return null;
+		}
+
+		if (authorIsBanned(author, req)) {
+			insertMessageAjaxFail(res, "Sei stato bannato");
 			return null;
 		}
 
@@ -573,13 +581,7 @@ public class Messages extends MainServlet {
 				// modify
 				msg = getPersistence().getMessage(id);
 				if (msg.getAuthor() == null || !msg.getAuthor().getNick().equals(author.getNick())) {
-					JsonWriter writer = new JsonWriter(res.getWriter());
-					writer.beginObject();
-					writer.name("resultCode").value("MSG");
-					writer.name("content").value("Imbroglione, non puoi modificare questo messaggio !");
-					writer.endObject();
-					writer.flush();
-					writer.close();
+					insertMessageAjaxFail(res, "Imbroglione, non puoi modificare questo messaggio !");
 					return null;
 				}
 				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
@@ -674,7 +676,7 @@ public class Messages extends MainServlet {
 	public static Map<String, String[]> getEmoMap() {
 		return new HashMap<String, String[]>(EMO_MAP);
 	}
-	
+
 	public static Map<String, String[]> getEmoExtendedMap() {
 		return new HashMap<String, String[]>(EMO_EXT_MAP);
 	}
