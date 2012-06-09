@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.PasswordUtils;
-import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.SingleValueCache;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
@@ -32,7 +31,6 @@ import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.acmetoy.ravanator.fdt.servlets.Action.Method;
 import com.acmetoy.ravanator.fdt.util.IPMemStorage;
-import com.acmetoy.ravanator.fdt.util.ModInfo;
 import com.acmetoy.ravanator.fdt.util.CacheTorExitNodes;
 import com.google.gson.stream.JsonWriter;
 
@@ -43,8 +41,6 @@ public class Messages extends MainServlet {
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
 	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
 	private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?(\\S+&)?v=(\\S{7,11})");
-
-	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
 	private static final Logger LOG = Logger.getLogger(Messages.class);
 
@@ -141,7 +137,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		setAntiXssToken(req);
 		return "messages.jsp";
 	}
 
@@ -164,7 +160,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		setAntiXssToken(req);
 		return "messages.jsp";
 	}
 
@@ -183,7 +179,7 @@ public class Messages extends MainServlet {
 		messages.add(getPersistence().getMessage(msgId));
 		req.setAttribute("messages", messages);
 		req.setAttribute("resultSize", messages.size());
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		setAntiXssToken(req);
 		return "messages.jsp";
 	}
 
@@ -207,7 +203,7 @@ public class Messages extends MainServlet {
 		List<MessageDTO> messages = getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req));
 		req.setAttribute("messages", messages);
 		req.setAttribute("resultSize", messages.size());
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		setAntiXssToken(req);
 		return "messages.jsp";
 	}
 
@@ -430,26 +426,6 @@ public class Messages extends MainServlet {
 			writer.close();
 		}
 		return null;
-	}
-
-	@Action
-	String modInfo(final HttpServletRequest req, final HttpServletResponse res) throws Exception {
-		final String m_id = req.getParameter("m_id");
-		final AuthorDTO loggedUser = login(req);
-
-		final boolean isAdmin = (loggedUser != null) && ("yes".equals(getPersistence().getPreferences(loggedUser).get("super")));
-		if (!isAdmin) {
-			return "messages.jsp";
-		}
-
-		setWebsiteTitle(req, "Moderazione " + m_id + " @ Forum dei Troll");
-
-		final IPMemStorage.Record record = IPMemStorage.get(m_id);
-		final ModInfo modInfo = new ModInfo(m_id, record);
-
-		req.setAttribute("modInfo", modInfo);
-
-		return "modinfo.jsp";
 	}
 
 	protected AuthorDTO insertMessageAuthentication(final HttpServletRequest req) throws Exception {
@@ -693,10 +669,7 @@ public class Messages extends MainServlet {
 			return getMessages(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
 		}
 
-		final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
-		final String inToken = req.getParameter("token");
-
-		if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+		if (!antiXssOk(req)) {
 			return getMessages(req, res, NavigationMessage.error("Verifica token fallita"));
 		}
 
@@ -746,10 +719,7 @@ public class Messages extends MainServlet {
     		return getMessages(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
     	}
 
-    	final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
-    	final String inToken = req.getParameter("token");
-
-    	if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+    	if (!antiXssOk(req)) {
     		return getMessages(req, res, NavigationMessage.error("Verifica token fallita"));
     	}
 
@@ -789,7 +759,7 @@ public class Messages extends MainServlet {
 			setWebsiteTitle(req, forum.equals("") ? "Forum principale @ Forum dei troll" : (forum + " @ Forum dei troll"));
 		}
 		setNavigationMessage(req, message);
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		setAntiXssToken(req);
 		return "messages.jsp";
 	}
 

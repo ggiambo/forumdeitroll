@@ -25,6 +25,7 @@ import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
+import com.acmetoy.ravanator.fdt.RandomPool;
 
 public abstract class MainServlet extends HttpServlet {
 
@@ -37,6 +38,8 @@ public abstract class MainServlet extends HttpServlet {
 	public static final String LOGGED_USER_REQ_ATTR = "loggedUser";
 	public static final String LOGGED_USER_SESS_ATTR = "loggedUserNick";
 	public static final String SESSION_IS_BANNED = "sessionIsBanned";
+
+	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
 	private IPersistence persistence;
 
@@ -354,4 +357,14 @@ public abstract class MainServlet extends HttpServlet {
 		}
 	}
 
+	protected void setAntiXssToken(final HttpServletRequest req) {
+		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+	}
+
+	protected boolean antiXssOk(final HttpServletRequest req) {
+		final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
+		final String inToken = req.getParameter("token");
+
+		return (token != null) && (inToken != null) && token.equals(inToken);
+	}
 }

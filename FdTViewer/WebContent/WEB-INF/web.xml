@@ -18,6 +18,14 @@
     <url-pattern>/Threads</url-pattern>
   </servlet-mapping>
   <servlet>
+  	<servlet-name>ModInfoServlet</servlet-name>
+  	<servlet-class>com.acmetoy.ravanator.fdt.servlets.ModInfoServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>ModInfoServlet</servlet-name>
+  	<url-pattern>/ModInfoServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>User</servlet-name>
     <servlet-class>com.acmetoy.ravanator.fdt.servlets.User</servlet-class>
   </servlet>
@@ -49,11 +57,11 @@
     <servlet-name>JSon</servlet-name>
     <url-pattern>/JSon</url-pattern>
   </servlet-mapping>
-    <servlet>
+  <servlet>
     <servlet-name>Polls</servlet-name>
     <servlet-class>com.acmetoy.ravanator.fdt.servlets.Polls</servlet-class>
   </servlet>
-   <servlet-mapping>
+  <servlet-mapping>
     <servlet-name>Polls</servlet-name>
     <url-pattern>/Polls</url-pattern>
   </servlet-mapping>
@@ -83,7 +91,7 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
-  
+
   <filter>
   	<description>Main filter</description>
   	<filter-name>MainFilter</filter-name>
@@ -96,5 +104,6 @@
   	<url-pattern>/User/*</url-pattern>
   	<url-pattern>/Pvt/*</url-pattern>
   	<url-pattern>/Polls/*</url-pattern>
+  	<url-pattern>/ModInfoServlet/*</url-pattern>
   </filter-mapping>
 </web-app>
