@@ -18,12 +18,12 @@
     <url-pattern>/Threads</url-pattern>
   </servlet-mapping>
   <servlet>
-  	<servlet-name>ModInfoServlet</servlet-name>
-  	<servlet-class>com.acmetoy.ravanator.fdt.servlets.ModInfoServlet</servlet-class>
+    <servlet-name>ModInfoServlet</servlet-name>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.ModInfoServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>ModInfoServlet</servlet-name>
-  	<url-pattern>/ModInfoServlet</url-pattern>
+    <servlet-name>ModInfoServlet</servlet-name>
+    <url-pattern>/ModInfoServlet</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>User</servlet-name>
@@ -49,7 +49,7 @@
     <servlet-name>Misc</servlet-name>
     <url-pattern>/Misc</url-pattern>
   </servlet-mapping>
-   <servlet>
+  <servlet>
     <servlet-name>JSon</servlet-name>
     <servlet-class>com.acmetoy.ravanator.fdt.servlets.JSonServlet</servlet-class>
   </servlet>
@@ -64,6 +64,14 @@
   <servlet-mapping>
     <servlet-name>Polls</servlet-name>
     <url-pattern>/Polls</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>UserProfilerServlet</servlet-name>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.UserProfilerServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UserProfilerServlet</servlet-name>
+    <url-pattern>/UserProfiler</url-pattern>
   </servlet-mapping>
   <jsp-config>
     <taglib>
@@ -91,19 +99,18 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
-
   <filter>
-  	<description>Main filter</description>
-  	<filter-name>MainFilter</filter-name>
-  	<filter-class>com.acmetoy.ravanator.fdt.filters.MainFilter</filter-class>
+    <description>Main filter</description>
+    <filter-name>MainFilter</filter-name>
+    <filter-class>com.acmetoy.ravanator.fdt.filters.MainFilter</filter-class>
   </filter>
   <filter-mapping>
-  	<filter-name>MainFilter</filter-name>
-  	<url-pattern>/Messages/*</url-pattern>
-  	<url-pattern>/Threads/*</url-pattern>
-  	<url-pattern>/User/*</url-pattern>
-  	<url-pattern>/Pvt/*</url-pattern>
-  	<url-pattern>/Polls/*</url-pattern>
-  	<url-pattern>/ModInfoServlet/*</url-pattern>
+    <filter-name>MainFilter</filter-name>
+    <url-pattern>/Messages/*</url-pattern>
+    <url-pattern>/Threads/*</url-pattern>
+    <url-pattern>/User/*</url-pattern>
+    <url-pattern>/Pvt/*</url-pattern>
+    <url-pattern>/Polls/*</url-pattern>
+    <url-pattern>/ModInfoServlet/*</url-pattern>
   </filter-mapping>
 </web-app>
