@@ -107,7 +107,7 @@
 		<c:url value="ModInfoServlet" var="modUrl">
 			<c:param name="m_id" value="${msg.id}"/>
 		</c:url>
-		<a href="${modUrl}">Moderazione</a>
+		<a href="${modUrl}"><img alt="Moderazione" style="vertical-align: middle;" src="images/Moderazione.png" /></a>
 	</c:if>
 	<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
 		<c:if test="${msg.forum != 'Proc di Catania'}">
