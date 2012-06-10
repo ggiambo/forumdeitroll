@@ -67,7 +67,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>UserProfilerServlet</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.UserProfilerServlet</servlet-class>
+    <servlet-class>com.acmetoy.ravanator.fdt.servlets.UserProfiler</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>UserProfilerServlet</servlet-name>
@@ -112,5 +112,6 @@
     <url-pattern>/Pvt/*</url-pattern>
     <url-pattern>/Polls/*</url-pattern>
     <url-pattern>/ModInfoServlet/*</url-pattern>
+    <url-pattern>/UserProfiler</url-pattern>
   </filter-mapping>
 </web-app>

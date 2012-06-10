@@ -14,7 +14,7 @@ public class UserProfiler {
 		return me;
 	}
 	
-	private ArrayList<UserProfile> profiles = null;
+	public ArrayList<UserProfile> profiles = null;
 	private UserProfiler() {
 		profiles = UserProfilesStorage.load();
 	}

@@ -90,27 +90,30 @@ function send(parentId) {
 		data[val.attr("name")] = val.val();
 	});
 	// post messagge
-	jQuery.ajax({
-		type: "POST",
-		url: "Messages?action=insertMessage",
-		data: data,
-		success: function(data) {
-			if (data.resultCode == "OK") {
-				var wl = window.location;
-				var newUrl = wl.protocol + "//" + wl.host + wl.pathname.substr(0, wl.pathname.lastIndexOf("/"));
-				window.location.assign(newUrl + data.content);
-			} else if (data.resultCode == "MSG") {
-				alert(data.content);
-			} else if (data.resultCode == "ERROR") {
-				$("html").html(data.content);
-			}
-			$("#reply_" + parentId + " :input[type='button']").removeAttr("disabled");
-			$("body").css("cursor", "auto");
-		},
-		beforeSend : function(jqXhr, settings) {
-			jqXhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-		},
-		dataType: "json"
+	profiler(function(profileData) {
+		data.jsonProfileData = JSON.stringify(profileData);
+		jQuery.ajax({
+			type: "POST",
+			url: "Messages?action=insertMessage",
+			data: data,
+			success: function(data) {
+				if (data.resultCode == "OK") {
+					var wl = window.location;
+					var newUrl = wl.protocol + "//" + wl.host + wl.pathname.substr(0, wl.pathname.lastIndexOf("/"));
+					window.location.assign(newUrl + data.content);
+				} else if (data.resultCode == "MSG") {
+					alert(data.content);
+				} else if (data.resultCode == "ERROR") {
+					$("html").html(data.content);
+				}
+				$("#reply_" + parentId + " :input[type='button']").removeAttr("disabled");
+				$("body").css("cursor", "auto");
+			},
+			beforeSend : function(jqXhr, settings) {
+				jqXhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+			},
+			dataType: "json"
+		});
 	});
 }
 

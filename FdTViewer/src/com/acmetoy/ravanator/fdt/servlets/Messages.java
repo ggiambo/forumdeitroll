@@ -7,11 +7,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.PasswordUtils;
@@ -29,9 +30,12 @@ import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
+import com.acmetoy.ravanator.fdt.profiler.UserProfile;
+import com.acmetoy.ravanator.fdt.profiler.UserProfiler;
 import com.acmetoy.ravanator.fdt.servlets.Action.Method;
 import com.acmetoy.ravanator.fdt.util.CacheTorExitNodes;
 import com.acmetoy.ravanator.fdt.util.IPMemStorage;
+import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
@@ -407,6 +411,14 @@ public class Messages extends MainServlet {
 	@Action(method=Method.POST)
 	String insertMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		try {
+			try {
+				UserProfile profile = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
+				profile.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
+				profile.setNick(login(req).getNick());
+				profile = UserProfiler.getInstance().guess(profile);
+			} catch (Exception e) {
+				Logger.getLogger(Messages.class).error("ERRORE IN PROFILAZIONE!! "+e.getClass().getName() + ": "+e.getMessage(), e);
+			}
 			return insertMessageAjax(req, res);
 		} catch (Exception e) {
 			StringBuilder body = new StringBuilder();

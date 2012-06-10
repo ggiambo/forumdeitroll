@@ -206,6 +206,7 @@ var profiler = function(callback, url) {
 	};
 	$.ajax({
 		url : url ? url : 'UserProfiler?action=prof',
+		method : 'GET',
 		cache : true,
 		complete : function(jqXHR, textStatus) {
 			if (jqXHR.status === 301) {

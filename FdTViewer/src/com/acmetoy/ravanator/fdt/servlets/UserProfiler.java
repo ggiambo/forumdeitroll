@@ -8,10 +8,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.acmetoy.ravanator.fdt.profiler.UserProfile;
-import com.acmetoy.ravanator.fdt.profiler.UserProfiler;
 import com.google.gson.Gson;
 
-public class UserProfilerServlet extends MainServlet {
+public class UserProfiler extends MainServlet {
 	@Override
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return null;
@@ -70,7 +69,7 @@ public class UserProfilerServlet extends MainServlet {
 		UserProfile profile = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
 		profile.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
 		profile.setNick(login(req).getNick());
-		profile = UserProfiler.getInstance().guess(profile);
+		profile = com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance().guess(profile);
 		
 		// TODO controllo banlist qua, un esempio di response attesa dal javascript
 //		if (banlist.contains(profile.getUuid())) {
@@ -78,6 +77,18 @@ public class UserProfilerServlet extends MainServlet {
 //		} else {
 //			response.getWriter().print("false");
 //		}
+		
+		res.getWriter().print("false");
 		return null;
+	}
+	
+	@Action
+	String browse(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
+		if (!isAdmin) {
+			return null;
+		}
+		req.setAttribute("profiles", com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance().profiles);
+		return "userProfiler.jsp";
 	}
 }
