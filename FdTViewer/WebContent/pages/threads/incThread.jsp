@@ -32,7 +32,7 @@
 		</c:choose>
 		<div class="${messagesBoxClass} ${rowclass}">
 			<c:set var="msg" value="${message.content}" scope="request"/>
-			<jsp:include page="incMessage.jsp"/>
+			<jsp:include page="../incMessage.jsp"/>
 		</div>
 		<c:if test="${not empty message.children}">
 			<c:forEach items="${message.children}" var="child">
