@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:include page="../incTop.jsp"/>
 		<div id="main">
-			<div class="userPanelCaption">Pannello Utente - Messaggi Privati</div>
+			<div class="userPanelCaption">Profili utente riconosciuti</div>
 			<c:forEach items="${profiles}" var="profile" varStatus="index">
 				<div class="userPanel">
 					<p>uuid: ${profile.uuid}</p>
@@ -13,7 +13,10 @@
 						<p>userAgents: ${profile.userAgents }</p>
 						<p>resolutions: ${profile.screenResolutions }</p>
 						<p>plugin (hash): ${profile.pluginHashes }</p>
-						<p>ultimo accesso: <script type='text/javascript'>document.write(new Date(${profile.ultimoRiconoscimentoUtente }).toString())</script></p>
+						<p>Ultimi 100 messaggi di questo utente: <c:forEach items="${profile.msgIds }" var="msgId" varStatus="indexMsg">
+								<a href="Messages?action=getById&msgId=${msgId }">${msgId }</a>
+							</c:forEach></p>
+						<p>ultimo riconoscimento: <script type='text/javascript'>document.write(new Date(${profile.ultimoRiconoscimentoUtente }).toString())</script></p>
 					</div>
 				</div>
 			</c:forEach>

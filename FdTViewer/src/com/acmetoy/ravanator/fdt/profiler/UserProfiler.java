@@ -1,6 +1,7 @@
 package com.acmetoy.ravanator.fdt.profiler;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.UUID;
 
@@ -93,6 +94,17 @@ public class UserProfiler {
 		} else {
 			merge(candidate, maybe);
 			return maybe;
+		}
+	}
+	
+	public void bind(UserProfile userProfile, String m_id) {
+		if (userProfile.getMsgIds() == null)
+			userProfile.setMsgIds(new TreeSet<String>());
+		userProfile.getMsgIds().add(m_id);
+		if (userProfile.getMsgIds().size() >= 100) { // max 100 msg per utente
+			Iterator<String> msgIt = userProfile.getMsgIds().iterator();
+			msgIt.next();
+			msgIt.remove();
 		}
 	}
 }

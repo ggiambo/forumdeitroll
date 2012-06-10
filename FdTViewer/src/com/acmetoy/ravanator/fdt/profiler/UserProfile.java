@@ -18,6 +18,7 @@ public class UserProfile implements Serializable {
 	private TreeSet<String> userAgents = null;
 	private TreeSet<String> screenResolutions = null;
 	private TreeSet<String> pluginHashes = null;
+	private TreeSet<String> msgIds = null;
 	// altri dati
 	private long ultimoRiconoscimentoUtente = 0L;
 	
@@ -104,5 +105,11 @@ public class UserProfile implements Serializable {
 	}
 	public void setUltimoRiconoscimentoUtente(long ultimoRiconoscimentoUtente) {
 		this.ultimoRiconoscimentoUtente = ultimoRiconoscimentoUtente;
+	}
+	public TreeSet<String> getMsgIds() {
+		return msgIds;
+	}
+	public void setMsgIds(TreeSet<String> msgIds) {
+		this.msgIds = msgIds;
 	}
 }
