@@ -846,7 +846,7 @@ div.userPanelSection li.fraseCelebreUserPanel {
 	font-style: italic;
 }
 
-a.pvt img {
+a.pvt img, a.faq img {
 	vertical-align: text-bottom;
 }
 
