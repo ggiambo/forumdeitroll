@@ -1,6 +1,7 @@
 package com.acmetoy.ravanator.fdt.profiler;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 import java.util.UUID;
 
 public class UserProfiler {
@@ -24,13 +25,27 @@ public class UserProfiler {
 		to.setEtag(from.getEtag());
 		to.setUltimoRiconoscimentoUtente(System.currentTimeMillis());
 		
+		if (to.getIpAddresses() == null)
+			to.setIpAddresses(new TreeSet<String>());
 		to.getIpAddresses().add(from.getIpAddress());
+		
+		if (to.getNicknames() == null)
+			to.setNicknames(new TreeSet<String>());
 		if (from.getNick() != null)
 			to.getNicknames().add(from.getNick());
+		
+		if (to.getUserAgents() == null)
+			to.setUserAgents(new TreeSet<String>());
 		if (from.getUa() != null)
 			to.getUserAgents().add(from.getUa());
+		
+		if (to.getScreenResolutions() == null)
+			to.setScreenResolutions(new TreeSet<String>());
 		if (from.getScreenres() != null)
 			to.getScreenResolutions().add(from.getScreenres());
+		
+		if (to.getPluginHashes() == null)
+			to.setPluginHashes(new TreeSet<String>());
 		if (from.getPlugins() != null)
 			to.getPluginHashes().add(from.getPlugins());
 	}
