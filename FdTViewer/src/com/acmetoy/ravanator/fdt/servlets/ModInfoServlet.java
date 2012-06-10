@@ -3,6 +3,7 @@ package com.acmetoy.ravanator.fdt.servlets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
+import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.util.IPMemStorage;
 import com.acmetoy.ravanator.fdt.util.CacheTorExitNodes;
 import com.acmetoy.ravanator.fdt.util.ModInfo;
@@ -52,12 +53,38 @@ public class ModInfoServlet extends MainServlet {
 			return show(req, res);
 		}
 
-		req.setAttribute("comm", "Non implementato");
+		String nickname = null;
 
-		//TODO:
-		// - bannare utente
-		// - bannare sessione
-		// -- sarrusofono 2012-06-09
+		final IPMemStorage.Record record = IPMemStorage.get(m_id);
+		if (record != null) {
+			nickname = record.authorNickname();
+		} else {
+			try {
+				final MessageDTO msg = getPersistence().getMessage(Long.parseLong(m_id));
+				if (msg != null) {
+					final AuthorDTO msgAuthor = msg.getAuthor();
+					if ((msgAuthor != null) && msgAuthor.isValid()) {
+						nickname = msgAuthor.getNick();
+					}
+				}
+			} catch (NumberFormatException e) {
+				/* soppressa, qualcuno sta facendo qualcosa di strano ma irrilevante */
+			}
+		}
+
+		if ((nickname == null) || nickname.equals("Non Autenticato")) {
+			req.setAttribute("comm", "Fallito: impossibile bannare 'Non Autenticato' (o impossibile risalire all'utente che ha creato questo post)");
+			return show(req, res);
+		}
+
+		final AuthorDTO target = getPersistence().getAuthor(nickname);
+
+		if (target == null) {
+			req.setAttribute("comm", "Fallito: impossibile trovare l'utente <" + nickname + ">");
+			return show(req, res);
+		}
+
+		getPersistence().updateAuthorPassword(target, null);
 
 		return show(req, res);
 	}

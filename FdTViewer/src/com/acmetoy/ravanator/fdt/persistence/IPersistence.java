@@ -67,6 +67,11 @@ public interface IPersistence extends Serializable {
 
 	public void updateAuthor(AuthorDTO author);
 
+	/*
+	Cambia la password dell'utente e la salva nel database (completo di salting e hashing).
+	Funziona soltanto se l'utente non e` bannato.
+	Se password == null l'utente viene bannato.
+	*/
 	public boolean updateAuthorPassword(AuthorDTO author, String newPassword);
 
 	public List<MessageDTO> searchMessages(String search, SearchMessagesSort sort, int pageSize, int pageNr);

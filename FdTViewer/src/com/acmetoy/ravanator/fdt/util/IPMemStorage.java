@@ -10,25 +10,28 @@ public class IPMemStorage {
 	public static class Record {
 		protected final String m_id;
 		protected final String ip;
-		protected final String authorDescription;
+		protected final String authorAppearance;
+		protected final String authorNickname;
 
-		public Record(final String m_id, final String ip, final String authorDescription) {
+		public Record(final String m_id, final String ip, final String authorAppearance, final String authorNickname) {
 			this.m_id = m_id;
 			this.ip = ip;
-			this.authorDescription = authorDescription;
+			this.authorAppearance = authorAppearance;
+			this.authorNickname = authorNickname;
 		}
 
 		public String m_id() { return m_id; }
 		public String ip() { return ip; }
-		public String authorDescription() { return authorDescription; };
+		public String authorAppearance() { return authorAppearance; }
+		public String authorNickname() { return authorNickname; }
 
 		public String toString() {
-			return "" + m_id + ": " + authorDescription + " (" + ip + ")";
+			return "" + m_id + ": " + authorAppearance + "/" + authorNickname + " (" + ip + ")";
 		}
 	}
 
 	public static void store(String ip, String m_id, AuthorDTO author) {
-		DATA[Integer.parseInt(m_id) % STORE_SIZE] = new Record(m_id, ip, author.description());
+		DATA[Integer.parseInt(m_id) % STORE_SIZE] = new Record(m_id, ip, author.getNick(), author.realNickname());
 	}
 
 	public static String requestToIP(final HttpServletRequest req) {

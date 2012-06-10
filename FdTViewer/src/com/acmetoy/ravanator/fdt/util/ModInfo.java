@@ -9,7 +9,7 @@ public class ModInfo {
 	public ModInfo(final String m_id, final IPMemStorage.Record record) {
 		this.m_id = m_id;
 		if (record != null) {
-			this.authorDescription = record.authorDescription();
+			this.authorDescription = "" + record.authorAppearance() + "/" + record.authorNickname();
 			this.ip = record.ip();
 			this.tor = CacheTorExitNodes.check(ip);
 		} else {

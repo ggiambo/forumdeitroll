@@ -69,7 +69,7 @@ public abstract class MainServlet extends HttpServlet {
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		doDo(req, res, Action.Method.POST);
 	}
-	
+
 	/**
 	 * Called before {@link #doDo(HttpServletRequest, HttpServletResponse, com.acmetoy.ravanator.fdt.servlets.Action.Method)}
 	 * @param req
@@ -78,7 +78,7 @@ public abstract class MainServlet extends HttpServlet {
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		// implement in subclassed
 	}
-	
+
 	/**
 	 * Called after {@link #doDo(HttpServletRequest, HttpServletResponse, com.acmetoy.ravanator.fdt.servlets.Action.Method)}
 	 * @param req
@@ -86,6 +86,22 @@ public abstract class MainServlet extends HttpServlet {
 	 */
 	public void doAfter(HttpServletRequest req, HttpServletResponse res) {
 		// implement in subclassed
+	}
+
+	protected void userSessionBanContagion(final HttpServletRequest req, final AuthorDTO loggedUser) {
+		if (!loggedUser.isValid()) return;
+
+		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) {
+			// sessione bannata contagia utente
+			if (!(loggedUser.isBanned())) {
+				getPersistence().updateAuthorPassword(loggedUser, null);
+			}
+		}
+
+		if (loggedUser.isBanned()) {
+			// utente bannato contagia sessione
+			req.getSession().setAttribute(SESSION_IS_BANNED, "yes");
+		}
 	}
 
 	private final void doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws IOException {
@@ -106,6 +122,9 @@ public abstract class MainServlet extends HttpServlet {
 			// update loggedUser in session
 			AuthorDTO loggedUser = persistence.getAuthor(loggedUserNick);
 			req.setAttribute(LOGGED_USER_REQ_ATTR, loggedUser);
+
+			userSessionBanContagion(req, loggedUser);
+
 			// pvts ?
 			req.setAttribute("hasPvts", getPersistence().checkForNewPvts(loggedUser));
 			// sidebar status come attributo nel reques

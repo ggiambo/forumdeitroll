@@ -15,10 +15,10 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 
 public class PasswordUtils {
-	
-	
+
+
 	private static SecretKeyFactory secretKeyFactory = null;
-	
+
 	// che cosa brutta brutta brutta !
 	static {
 		Security.addProvider(new BouncyCastleProvider());
@@ -28,14 +28,23 @@ public class PasswordUtils {
 			throw new RuntimeException("Algoritmo di hashing non supportato?!", e);
 		}
 	}
-	
+
+	/* Cambia la password dell'utente posto che l'utente non sia bannato.
+	Se password e` null l'utente viene bannato.
+	*/
 	public static void changePassword(AuthorDTO user, final String password) {
-		if (StringUtils.isEmpty(user.getSalt())) {
-			user.setSalt(RandomPool.getString(8));
+		if (user.isBanned()) return;
+		if (password != null) {
+			if (StringUtils.isEmpty(user.getSalt())) {
+				user.setSalt(RandomPool.getString(8));
+			}
+			user.setHash(passwordHash(password, user.getSalt()));
+		} else {
+			user.setSalt(AuthorDTO.BANNED_TAG);
+			user.setHash(AuthorDTO.BANNED_TAG);
 		}
-		user.setHash(passwordHash(password, user.getSalt()));
 	}
-	
+
 	/**
 	 * Restituisce true se la password corretta e` uguale a quella salvata sul db per opportune definizioni di "uguale".
 	 * @param user
@@ -45,6 +54,7 @@ public class PasswordUtils {
 	 */
 	public static boolean hasUserPassword(AuthorDTO user, final String password) throws NoSuchAlgorithmException {
 		if (password == null) return false;
+		if (user.isBanned()) return false;
 		if (!StringUtils.isEmpty(user.getSalt())) {
 			// nuova modalita` di hashing
 			if (user.getHash() == null) return false;
@@ -75,7 +85,7 @@ public class PasswordUtils {
 			throw new RuntimeException("La tua virtual machine non esiste", e);
 		}
 	}
-	
+
 	private static String passwordHash(final String password, final String salt) {
 		final KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 1024, 192);
 		try {

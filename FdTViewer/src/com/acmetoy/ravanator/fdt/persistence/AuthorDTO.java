@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 public class AuthorDTO implements Serializable {
 	private static final long serialVersionUID = 2L;
 
+	public static final String BANNED_TAG = "*BANNED*";
+
 	private int messages = -1;
 
 	private String nick = null;
@@ -108,7 +110,17 @@ public class AuthorDTO implements Serializable {
 	}
 
 	public boolean isBanned() {
-		return false;
+		if (shadowAuthor != null) {
+			if (shadowAuthor.isBanned()) return true;
+		}
+		if (!isValid()) return false;
+		if (getSalt() == null) return false;
+		if (getHash() == null) return false;
+		return getSalt().equals(BANNED_TAG) && getHash().equals(BANNED_TAG);
+	}
+
+	public String realNickname() {
+		return (shadowAuthor != null) ? shadowAuthor.getNick() : nick;
 	}
 
 	public String description() {
