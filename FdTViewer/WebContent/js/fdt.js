@@ -90,8 +90,8 @@ function send(parentId) {
 		data[val.attr("name")] = val.val();
 	});
 	// post messagge
-	profiler(function(profileData) {
-		data.jsonProfileData = JSON.stringify(profileData);
+//	profiler(function(profileData) {
+//		data.jsonProfileData = JSON.stringify(profileData);
 		jQuery.ajax({
 			type: "POST",
 			url: "Messages?action=insertMessage",
@@ -114,7 +114,7 @@ function send(parentId) {
 			},
 			dataType: "json"
 		});
-	});
+//	});
 }
 
 function insert(openTag, closeTag, parentId) {
