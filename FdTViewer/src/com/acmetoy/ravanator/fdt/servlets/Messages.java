@@ -18,11 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
 
 import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.PasswordUtils;
-import com.acmetoy.ravanator.fdt.SingleValueCache;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
@@ -30,8 +28,8 @@ import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.acmetoy.ravanator.fdt.servlets.Action.Method;
-import com.acmetoy.ravanator.fdt.util.IPMemStorage;
 import com.acmetoy.ravanator.fdt.util.CacheTorExitNodes;
+import com.acmetoy.ravanator.fdt.util.IPMemStorage;
 import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
@@ -41,8 +39,6 @@ public class Messages extends MainServlet {
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
 	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
 	private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?(\\S+&)?v=(\\S{7,11})");
-
-	private static final Logger LOG = Logger.getLogger(Messages.class);
 
 	// key: filename, value[0]: edit value, value[1]: alt
 	// tutte le emo ora sono in lower case
@@ -469,10 +465,12 @@ public class Messages extends MainServlet {
 		if (author.isBanned()) return true;
 		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) return true;
 
-		// check se usa TOR
-		if ("checked".equals(getPersistence().getSysinfoValue("blockTorExitNodes"))) {
-			if (CacheTorExitNodes.check(IPMemStorage.requestToIP(req))) {
-				return true;
+		// check se ANOnimo usa TOR
+		if (!author.isValid()) {
+			if ("checked".equals(getPersistence().getSysinfoValue("blockTorExitNodes"))) {
+				if (CacheTorExitNodes.check(IPMemStorage.requestToIP(req))) {
+					return true;
+				}
 			}
 		}
 
