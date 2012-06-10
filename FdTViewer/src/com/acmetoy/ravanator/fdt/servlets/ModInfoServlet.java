@@ -77,11 +77,14 @@ public class ModInfoServlet extends MainServlet {
 			return show(req, res);
 		}
 
-		req.setAttribute("comm", "Non implementato");
+		final IPMemStorage.Record record = IPMemStorage.get(m_id);
 
-		//TODO:
-		// - bannare ip
-		// -- sarrusofono 2012-06-09
+		if (record != null) {
+			Messages.banIP(record.ip());
+			req.setAttribute("comm", "Ok");
+		} else {
+			req.setAttribute("comm", "Non riuscito");
+		}
 
 		return show(req, res);
 	}

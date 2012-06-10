@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +35,6 @@ import com.acmetoy.ravanator.fdt.util.IPMemStorage;
 import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
-
 	private static final long serialVersionUID = 1L;
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
@@ -92,6 +93,8 @@ public class Messages extends MainServlet {
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 40;
+
+	protected static final Set<String> BANNED_IPs = new HashSet<String>();
 
 	@Action
 	@Override
@@ -465,10 +468,14 @@ public class Messages extends MainServlet {
 		if (author.isBanned()) return true;
 		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) return true;
 
+		final String ip = IPMemStorage.requestToIP(req);
+		
+		if (BANNED_IPs.contains(ip)) return true;
+
 		// check se ANOnimo usa TOR
 		if (!author.isValid()) {
 			if (getPersistence().blockTorExitNodes()) {
-				if (CacheTorExitNodes.check(IPMemStorage.requestToIP(req))) {
+				if (CacheTorExitNodes.check(ip)) {
 					return true;
 				}
 			}
@@ -761,4 +768,9 @@ public class Messages extends MainServlet {
 		return "messages.jsp";
 	}
 
+	public static void banIP(final String ip) {
+		synchronized(BANNED_IPs) {
+			BANNED_IPs.add(ip);
+		}
+	}
 }
