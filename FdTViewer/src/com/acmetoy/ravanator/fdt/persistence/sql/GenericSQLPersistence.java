@@ -1481,7 +1481,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public void setSysinfoValue(String key, String value) {
 		Connection conn = null;
@@ -1511,7 +1511,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	private void increaseNumberOfMessages(String forum, boolean isNewThread) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1526,7 +1526,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			// increase total
 			ps.setString(1, "messages.total");
 			ps.execute();
-			// increase threads 
+			// increase threads
 			if (isNewThread) {
 				// increase for this forum
 				ps.setString(1, "threads.forum." + forum);
@@ -1541,7 +1541,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	private PollDTO getPoll(Connection conn, ResultSet rs) throws SQLException {
 		PollDTO pollDTO = new PollDTO();
 		pollDTO.setId(rs.getLong("id"));
@@ -1554,7 +1554,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		pollDTO.setVoterNicks(getPollVoterNicks(conn, pollDTO.getId()));
 		return pollDTO;
 	}
-	
+
 	private List<PollQuestion> getPollQuestion(Connection conn, long pollId) throws SQLException {
 		List<PollQuestion> res = new ArrayList<PollQuestion>();
 		PreparedStatement ps = null;
@@ -1609,4 +1609,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 	}
 
+	public boolean blockTorExitNodes() {
+		return "checked".equals(getSysinfoValue("blockTorExitNodes"));
+	}
 }

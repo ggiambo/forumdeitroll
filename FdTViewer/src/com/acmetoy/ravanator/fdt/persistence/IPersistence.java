@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 
 public interface IPersistence extends Serializable {
-	
+
 	public static final String FORUM_PROC = "Proc di Catania";
 
 	public void init(Properties databaseConfig) throws Exception;
@@ -16,7 +16,7 @@ public interface IPersistence extends Serializable {
 	public List<String> getForums();
 
 	/**
-	 * 
+	 *
 	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
 	 * @param limit
 	 * @param page
@@ -26,7 +26,7 @@ public interface IPersistence extends Serializable {
 	public ThreadsDTO getThreads(String forum, int limit, int page, boolean hideProcCatania);
 
 	/**
-	 * 
+	 *
 	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
 	 * @param limit
 	 * @param page
@@ -40,7 +40,7 @@ public interface IPersistence extends Serializable {
 	public MessageDTO getMessage(long id);
 
 	/**
-	 * 
+	 *
 	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
 	 * @param limit
 	 * @param page
@@ -52,7 +52,7 @@ public interface IPersistence extends Serializable {
 	public List<MessageDTO> getMessagesByThread(long threadId);
 
 	/**
-	 * 
+	 *
 	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
 	 * @param limit
 	 * @param page
@@ -62,7 +62,7 @@ public interface IPersistence extends Serializable {
 	public MessagesDTO getMessagesByAuthor(String author, String forum, int pageSize, int page);
 
 	public AuthorDTO getAuthor(String nick);
-	
+
 	public List<AuthorDTO> getAuthors(boolean onlyActive);
 
 	public void updateAuthor(AuthorDTO author);
@@ -106,13 +106,13 @@ public interface IPersistence extends Serializable {
 	public List<String> searchAuthor(String searchString);
 
 	public void pedonizeThreadTree(long rootMessageId);
-	
+
 	public long createPoll(PollDTO pollDTO);
-	
+
 	public boolean updatePollQuestion(PollQuestion pollQuestion, AuthorDTO user);
-	
+
 	public PollsDTO getPollsByDate(int limit, int page);
-	
+
 	public PollsDTO getPollsByLastVote(int limit, int page);
 
 	public PollDTO getPoll(long pollId);
@@ -123,4 +123,5 @@ public interface IPersistence extends Serializable {
 
 	String getSysinfoValue(String key);
 
+	boolean blockTorExitNodes();
 }

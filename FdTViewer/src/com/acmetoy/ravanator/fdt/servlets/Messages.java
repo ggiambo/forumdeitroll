@@ -470,7 +470,7 @@ public class Messages extends MainServlet {
 		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) return true;
 
 		// check se usa TOR
-		if ("checked".equals(getPersistence().getSysinfoValue("blockTorExitNodes"))) {
+		if (getPersistence().blockTorExitNodes()) {
 			if (CacheTorExitNodes.check(IPMemStorage.requestToIP(req))) {
 				return true;
 			}
