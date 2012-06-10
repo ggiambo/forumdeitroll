@@ -19,6 +19,8 @@ import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.servlets.Action.Method;
+import com.acmetoy.ravanator.fdt.util.IPMemStorage;
+import com.acmetoy.ravanator.fdt.util.CacheTorExitNodes;
 
 public class User extends MainServlet {
 
@@ -42,6 +44,7 @@ public class User extends MainServlet {
 		AuthorDTO loggedUser = login(req);
 		setWebsiteTitle(req, "Forum dei troll");
 		if (loggedUser != null && loggedUser.isValid()) {
+			req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 			return "user.jsp";
 		}
 		setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
@@ -59,7 +62,7 @@ public class User extends MainServlet {
 		setWebsiteTitle(req, "Login @ Forum dei Troll");
 		return "login.jsp";
 	}
-	
+
 	/**
 	 * Update della password
 	 * @param req
@@ -73,6 +76,8 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
 		}
+
+		req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 
 		// user loggato, check pass
 		String actualPass = req.getParameter("actualPass");
@@ -120,6 +125,8 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
 		}
+
+		req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 
 		if (!ServletFileUpload.isMultipartContent(req)) {
 			setNavigationMessage(req, NavigationMessage.warn("Nessun avatar caricato"));
@@ -172,7 +179,7 @@ public class User extends MainServlet {
 		setWebsiteTitle(req, "Registrazione @ Forum dei Troll");
 		return "register.jsp";
 	}
-	
+
 	/**
 	 * Registra nuovo user
 	 * @param req
@@ -182,6 +189,15 @@ public class User extends MainServlet {
 	 */
 	@Action
 	String registerNewUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		if (getPersistence().blockTorExitNodes()) {
+			if (CacheTorExitNodes.check(IPMemStorage.requestToIP(req))) {
+				if (!availableTorRegistrations.available()) {
+					setNavigationMessage(req, NavigationMessage.warn("Iscrizioni tramite TOR sopra il limite orario"));
+					return "register.jsp";
+				}
+			}
+		}
+
 		String nick = req.getParameter("nick");
 		req.setAttribute("nick", nick);
 		// check del captcha
@@ -209,6 +225,7 @@ public class User extends MainServlet {
 		// login
 		login(req);
 		req.setAttribute("loggedUser", loggedUser);
+		req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 		return "user.jsp";
 	}
 
@@ -318,11 +335,15 @@ public class User extends MainServlet {
 			req.setAttribute("token", token);
 		}
 
+		if ("yes".equals(loggedUser.getPreferences().get("super"))) {
+			req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
+		}
+
 		return "userInfo.jsp";
 	}
 
 	/**
-	 * 
+	 *
 	 * @param req
 	 * @param res
 	 * @return
@@ -410,7 +431,51 @@ public class User extends MainServlet {
 
 		}
 
+		if ((loggedUser != null) && "yes".equals(loggedUser.getPreferences().get("super"))) {
+			String blockTorExitNodes = req.getParameter("blockTorExitNodes");
+			if (!StringUtils.isEmpty(blockTorExitNodes)) {
+				getPersistence().setSysinfoValue("blockTorExitNodes", "checked");
+			} else {
+				getPersistence().setSysinfoValue("blockTorExitNodes", "");
+			}
+			req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
+		}
+
 		return "user.jsp";
 	}
 
+	protected static final class AvailableTorRegistrations {
+		protected int available = 1;
+		protected long lastUpdate = System.currentTimeMillis();
+		protected static final double HOURLY_PROBABILITY = 0.2;
+		protected static final int MAX_HOURS = 6;
+
+		public boolean available() {
+			synchronized(this) {
+				if (available > 0) {
+					--available;
+					return true;
+				}
+
+				final long now = System.currentTimeMillis();
+				final long interval = now - lastUpdate;
+
+				long intervalInHours = interval  / (60 * 60 * 1000);
+
+				if (intervalInHours <= 0) return false;
+
+				lastUpdate = now;
+
+				if (intervalInHours > MAX_HOURS) intervalInHours = MAX_HOURS;
+
+				for (int i = 0; i < intervalInHours; ++i) {
+					if (Math.random() < HOURLY_PROBABILITY) ++available;
+				}
+
+				return available();
+			}
+		}
+	}
+
+	protected static AvailableTorRegistrations availableTorRegistrations = new AvailableTorRegistrations();
 }

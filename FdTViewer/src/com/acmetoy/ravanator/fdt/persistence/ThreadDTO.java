@@ -7,11 +7,11 @@ public class ThreadDTO {
 	private long id = -1;
 	private Date date = null;
 	private String subject = null;
-	private AuthorDTO author = new AuthorDTO();
+	private AuthorDTO author = new AuthorDTO(null);
 	private String forum = null;
 	private int setNumberOfMessages = -1;
 	private boolean isVisible = true;
-	
+
 	public boolean isValid() {
 		boolean valid = true;
 		valid &= subject != null;
@@ -58,23 +58,23 @@ public class ThreadDTO {
 	public void setForum(String forum) {
 		this.forum = forum;
 	}
-	
+
 	public int getNumberOfMessages() {
 		return setNumberOfMessages;
 	}
-	
+
 	public void setNumberOfMessages(int setNumberOfMessages) {
 		this.setNumberOfMessages = setNumberOfMessages;
 	}
-	
+
 	public boolean isVisible() {
 		return isVisible;
 	}
-	
+
 	public void setIsVisible(boolean isVisible) {
 		this.isVisible = isVisible;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

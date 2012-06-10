@@ -1,5 +1,6 @@
 package com.acmetoy.ravanator.fdt.servlets;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -20,7 +21,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.acmetoy.ravanator.fdt.MessageTag;
 import com.acmetoy.ravanator.fdt.PasswordUtils;
-import com.acmetoy.ravanator.fdt.RandomPool;
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
@@ -28,6 +28,7 @@ import com.acmetoy.ravanator.fdt.persistence.MessagesDTO;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
 import com.acmetoy.ravanator.fdt.persistence.SearchMessagesSort;
 import com.acmetoy.ravanator.fdt.servlets.Action.Method;
+import com.acmetoy.ravanator.fdt.util.CacheTorExitNodes;
 import com.acmetoy.ravanator.fdt.util.IPMemStorage;
 import com.google.gson.stream.JsonWriter;
 
@@ -38,8 +39,6 @@ public class Messages extends MainServlet {
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
 	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
 	private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?(\\S+&)?v=(\\S{7,11})");
-
-	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
 	// key: filename, value[0]: edit value, value[1]: alt
 	// tutte le emo ora sono in lower case
@@ -93,7 +92,7 @@ public class Messages extends MainServlet {
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 40;
-	
+
 	@Action
 	@Override
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -134,7 +133,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		setAntiXssToken(req);
 		return "messages.jsp";
 	}
 
@@ -157,7 +156,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		setAntiXssToken(req);
 		return "messages.jsp";
 	}
 
@@ -176,7 +175,7 @@ public class Messages extends MainServlet {
 		messages.add(getPersistence().getMessage(msgId));
 		req.setAttribute("messages", messages);
 		req.setAttribute("resultSize", messages.size());
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		setAntiXssToken(req);
 		return "messages.jsp";
 	}
 
@@ -200,7 +199,7 @@ public class Messages extends MainServlet {
 		List<MessageDTO> messages = getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req));
 		req.setAttribute("messages", messages);
 		req.setAttribute("resultSize", messages.size());
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		setAntiXssToken(req);
 		return "messages.jsp";
 	}
 
@@ -380,7 +379,7 @@ public class Messages extends MainServlet {
 		writer.close();
 		return null;
 	}
-	
+
 	/**
 	 * contenuto di un singolo messaggio
 	 */
@@ -425,35 +424,18 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
-	/**
-	 * Inserisce un messaggio nuovo o editato
-	 */
-	private String insertMessageAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		// se c'e' un'errore, mostralo
-		String validationMessage = validateInsertMessage(req);
-		if (validationMessage != null) {
-			JsonWriter writer = new JsonWriter(res.getWriter());
-			writer.beginObject();
-			writer.name("resultCode").value("MSG");
-			writer.name("content").value(validationMessage);
-			writer.endObject();
-			writer.flush();
-			writer.close();
-			return null;
-		}
-
-		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
-		AuthorDTO author = null;
+	protected AuthorDTO insertMessageAuthentication(final HttpServletRequest req) throws Exception {
+		final AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
 		String nick = req.getParameter("nick");
 		String pass = req.getParameter("pass");
 		if (loggedUser != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
 			// posta come utente loggato
-			author = loggedUser;
+			return loggedUser;
 		} else if (StringUtils.isNotEmpty(nick) && StringUtils.isNotEmpty(pass)) {
 			AuthorDTO sockpuppet = getPersistence().getAuthor(nick);
 			if (PasswordUtils.hasUserPassword(sockpuppet, pass)) {
 				// posta come altro utente
-				author = sockpuppet;
+				return sockpuppet;
 			}
 		} else {
 			// la coppia nome utente/password non e` stata inserita e l'utente non e` loggato, ergo deve inserire il captcha giusto
@@ -461,19 +443,60 @@ public class Messages extends MainServlet {
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
 			if (StringUtils.isNotEmpty(correctAnswer) && correctAnswer.equals(captcha)) {
 				// posta da anonimo
-				author = new AuthorDTO();
+				return new AuthorDTO(loggedUser);
 			}
 		}
 
+		// autenticazione fallita, no utente loggato, no username/password inserita e no captcha corretto
+		return null;
+	}
+
+	protected void insertMessageAjaxFail(final HttpServletResponse res, final String error) throws IOException {
+		JsonWriter writer = new JsonWriter(res.getWriter());
+		writer.beginObject();
+		writer.name("resultCode").value("MSG");
+		writer.name("content").value(error);
+		writer.endObject();
+		writer.flush();
+		writer.close();
+	}
+
+	protected boolean authorIsBanned(final AuthorDTO author, final HttpServletRequest req) {
+		if (author.isBanned()) return true;
+		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) return true;
+
+		// check se ANOnimo usa TOR
+		if (!author.isValid()) {
+			if (getPersistence().blockTorExitNodes()) {
+				if (CacheTorExitNodes.check(IPMemStorage.requestToIP(req))) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Inserisce un messaggio nuovo o editato
+	 */
+	private String insertMessageAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		// se c'e' un'errore, mostralo
+		String validationMessage = validateInsertMessage(req);
+		if (validationMessage != null) {
+			insertMessageAjaxFail(res, validationMessage);
+			return null;
+		}
+
+		final AuthorDTO author = insertMessageAuthentication(req);
+
 		if (author == null) {
-			//autenticazione fallita
-			JsonWriter writer = new JsonWriter(res.getWriter());
-			writer.beginObject();
-			writer.name("resultCode").value("MSG");
-			writer.name("content").value("Autenticazione / verifica captcha fallita");
-			writer.endObject();
-			writer.flush();
-			writer.close();
+			insertMessageAjaxFail(res, "Autenticazione / verifica captcha fallita");
+			return null;
+		}
+
+		if (authorIsBanned(author, req)) {
+			insertMessageAjaxFail(res, "Sei stato bannato");
 			return null;
 		}
 
@@ -518,13 +541,7 @@ public class Messages extends MainServlet {
 				// modify
 				msg = getPersistence().getMessage(id);
 				if (msg.getAuthor() == null || !msg.getAuthor().getNick().equals(author.getNick())) {
-					JsonWriter writer = new JsonWriter(res.getWriter());
-					writer.beginObject();
-					writer.name("resultCode").value("MSG");
-					writer.name("content").value("Imbroglione, non puoi modificare questo messaggio !");
-					writer.endObject();
-					writer.flush();
-					writer.close();
+					insertMessageAjaxFail(res, "Imbroglione, non puoi modificare questo messaggio !");
 					return null;
 				}
 				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
@@ -560,7 +577,7 @@ public class Messages extends MainServlet {
 
 		msg = getPersistence().insertMessage(msg);
 		String m_id = Long.toString(msg.getId());
-		IPMemStorage.store(req, m_id);
+		IPMemStorage.store(req, m_id, author);
 
 		// redirect
 		JsonWriter writer = new JsonWriter(res.getWriter());
@@ -619,7 +636,7 @@ public class Messages extends MainServlet {
 	public static Map<String, String[]> getEmoMap() {
 		return new HashMap<String, String[]>(EMO_MAP);
 	}
-	
+
 	public static Map<String, String[]> getEmoExtendedMap() {
 		return new HashMap<String, String[]>(EMO_EXT_MAP);
 	}
@@ -650,10 +667,7 @@ public class Messages extends MainServlet {
 			return getMessages(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
 		}
 
-		final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
-		final String inToken = req.getParameter("token");
-
-		if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+		if (!antiXssOk(req)) {
 			return getMessages(req, res, NavigationMessage.error("Verifica token fallita"));
 		}
 
@@ -676,7 +690,7 @@ public class Messages extends MainServlet {
 		res.sendError(301);
 		return null;
 	}
-	
+
 	/**
 	 * Nascondi questo orrifico messaggio agli occhi dei poveri troll.
 	 */
@@ -684,7 +698,7 @@ public class Messages extends MainServlet {
 	String hideMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
     	return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), false);
 	}
-	
+
 	/**
 	 * Abilita alla visione questo angelico messaggio
 	 */
@@ -692,7 +706,7 @@ public class Messages extends MainServlet {
 	String restoreHiddenMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
     	return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), true);
 	}
-	
+
 	private String restoreOrHideMessage(HttpServletRequest req, HttpServletResponse res, long msgId, boolean visible)  throws Exception {
     	AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
     	if (loggedUser == null) {
@@ -702,16 +716,13 @@ public class Messages extends MainServlet {
     	if (! isAdmin) {
     		return getMessages(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
     	}
-    
-    	final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
-    	final String inToken = req.getParameter("token");
-    
-    	if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+
+    	if (!antiXssOk(req)) {
     		return getMessages(req, res, NavigationMessage.error("Verifica token fallita"));
     	}
-    
+
     	getPersistence().restoreOrHideMessage(msgId, visible);
-    	
+
     	return getMessages(req, res, NavigationMessage.info("Messaggio infernale nascosto agli occhi dei giovini troll."));
 	}
 
@@ -746,7 +757,7 @@ public class Messages extends MainServlet {
 			setWebsiteTitle(req, forum.equals("") ? "Forum principale @ Forum dei troll" : (forum + " @ Forum dei troll"));
 		}
 		setNavigationMessage(req, message);
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		setAntiXssToken(req);
 		return "messages.jsp";
 	}
 

@@ -25,6 +25,7 @@ import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.IPersistence;
 import com.acmetoy.ravanator.fdt.persistence.PersistenceFactory;
 import com.acmetoy.ravanator.fdt.persistence.QuoteDTO;
+import com.acmetoy.ravanator.fdt.RandomPool;
 
 public abstract class MainServlet extends HttpServlet {
 
@@ -35,8 +36,10 @@ public abstract class MainServlet extends HttpServlet {
 	public static final int PAGE_SIZE = 20;
 
 	public static final String LOGGED_USER_REQ_ATTR = "loggedUser";
-	
 	public static final String LOGGED_USER_SESS_ATTR = "loggedUserNick";
+	public static final String SESSION_IS_BANNED = "sessionIsBanned";
+
+	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
 	private IPersistence persistence;
 
@@ -58,16 +61,37 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	public final void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		doBefore(req, res);
 		doDo(req, res, Action.Method.GET);
+		doAfter(req, res);
 	}
 
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		doDo(req, res, Action.Method.POST);
 	}
+	
+	/**
+	 * Called before {@link #doDo(HttpServletRequest, HttpServletResponse, com.acmetoy.ravanator.fdt.servlets.Action.Method)}
+	 * @param req
+	 * @param res
+	 */
+	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
+		// implement in subclassed
+	}
+	
+	/**
+	 * Called after {@link #doDo(HttpServletRequest, HttpServletResponse, com.acmetoy.ravanator.fdt.servlets.Action.Method)}
+	 * @param req
+	 * @param res
+	 */
+	public void doAfter(HttpServletRequest req, HttpServletResponse res) {
+		// implement in subclassed
+	}
 
-	public final void doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws IOException {
+	private final void doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws IOException {
 
-		req.setAttribute("servlet", this.getClass().getSimpleName());
+		String servlet = this.getClass().getSimpleName();
+		req.setAttribute("servlet", servlet);
 
 		// forums
 		req.setAttribute("forums", cachedForums.get());
@@ -127,7 +151,7 @@ public abstract class MainServlet extends HttpServlet {
 					String pageForward = (String)methodAction.invoke(this, new Object[] {req, res});
 					// forward
 					if (pageForward != null) {
-						getServletContext().getRequestDispatcher("/pages/" + pageForward).forward(req, res);
+						getServletContext().getRequestDispatcher("/pages/" + servlet.toLowerCase() + "/" + pageForward).forward(req, res);
 					}
 				} else {
 					throw new IllegalArgumentException("Azione " + action + " non permette il metodo " + method);
@@ -137,7 +161,7 @@ public abstract class MainServlet extends HttpServlet {
 			handleException(e, req, res);
 		}
 	}
-	
+
 	/**
 	 * Action chiamata quando nessuna e' definita
 	 * @param req
@@ -189,7 +213,7 @@ public abstract class MainServlet extends HttpServlet {
 				}
 				return author;
 			} else {
-				return new AuthorDTO();
+				return new AuthorDTO(null);
 			}
 		}
 
@@ -206,7 +230,7 @@ public abstract class MainServlet extends HttpServlet {
 		}
 
 		// captcha corretto, restituisce l'Author di default
-		return new AuthorDTO();
+		return new AuthorDTO(null);
 	}
 
 	/**
@@ -342,7 +366,7 @@ public abstract class MainServlet extends HttpServlet {
 			}
 		}
 	}
-	
+
 	void addSpecificParam(HttpServletRequest req, String key, String value) {
 		Map<String, String> specificParams = (Map<String, String>)req.getAttribute("specificParams");
 		if (specificParams == null) {
@@ -353,5 +377,15 @@ public abstract class MainServlet extends HttpServlet {
 			specificParams.put(key, value);
 		}
 	}
-	
+
+	protected void setAntiXssToken(final HttpServletRequest req) {
+		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+	}
+
+	protected boolean antiXssOk(final HttpServletRequest req) {
+		final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
+		final String inToken = req.getParameter("token");
+
+		return (token != null) && (inToken != null) && token.equals(inToken);
+	}
 }

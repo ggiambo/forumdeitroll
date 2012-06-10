@@ -410,7 +410,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public AuthorDTO getAuthor(String nick) {
-		AuthorDTO dto = new AuthorDTO();
+		AuthorDTO dto = new AuthorDTO(null);
 		if (StringUtils.isEmpty(nick)) {
 			return dto;
 		}
@@ -438,7 +438,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public List<AuthorDTO> getAuthors(boolean onlyActive) {
 		List<AuthorDTO> res = new ArrayList<AuthorDTO>();
@@ -455,7 +455,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			rs = ps.executeQuery();
 			AuthorDTO dto;
 			while (rs.next()) {
-				dto = new AuthorDTO();
+				dto = new AuthorDTO(null);
 				dto.setNick(rs.getString("nick"));
 				dto.setAvatar(rs.getBytes("avatar"));
 				dto.setMessages(rs.getInt("messages"));
@@ -481,10 +481,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn = getConnection();
 			// check se esiste gia'. Blah banf transazioni chissenefrega <-- (complimenti a chi ha scritto questo - sarrusofono)
 			if (getAuthor(nick).isValid()) {
-				return new AuthorDTO();
+				return new AuthorDTO(null);
 			}
 
-			final AuthorDTO a = new AuthorDTO();
+			final AuthorDTO a = new AuthorDTO(null);
 			PasswordUtils.changePassword(a, password);
 
 			// inserisci
@@ -499,7 +499,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			return getAuthor(nick);
 		} catch (SQLException e) {
 			LOG.error("Cannot get Author " + nick, e);
-			return new AuthorDTO();
+			return new AuthorDTO(null);
 		} finally {
 			close(rs, ps, conn);
 		}
@@ -717,7 +717,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		long pvt_id = -1;
 		try {
 			conn = getConnection();
-			
+
 			//verifica esistenza dei destinatari
 			for (String recipient: recipients) {
 				if (recipient.equals("")) continue;
@@ -726,8 +726,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				rs = ps.executeQuery();
 				if (!rs.next()) throw new FdTException("Il destinatario "+StringEscapeUtils.escapeHtml4(recipient)+" non esiste.");
 			}
-			
-			
+
+
 			ps = conn.prepareStatement("INSERT INTO pvt_content" +
 										"(sender, content, senddate, subject, replyTo) " +
 										"VALUES  (?,?,sysdate(),?,?)", Statement.RETURN_GENERATED_KEYS);
@@ -736,7 +736,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(3, privateMsg.getSubject());
 			ps.setLong(4, privateMsg.getReplyTo());
 			ps.execute();
-			
+
 			rs = ps.getGeneratedKeys();
 			rs.next();
 			pvt_id = rs.getLong(1);
@@ -766,7 +766,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			LOG.error("Cannot insert into pvt_recipient", e);
 			// prova ad annullare l'insert del messaggio ed eventuali collegati
 			for (int i=0;i<recipients.length;++i) {
-				AuthorDTO rec = new AuthorDTO();
+				AuthorDTO rec = new AuthorDTO(null);
 				rec.setNick(recipients[i]);
 				deletePvt(pvt_id, rec);
 			}
@@ -1442,6 +1442,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 	}
 	
+	@Override
 	public void restoreOrHideMessage(long msgId, boolean visible) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1459,6 +1460,58 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 	}
 	
+	@Override
+	public String getSysinfoValue(String key) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			// increase for this forum
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` = ?");
+			ps.setString(1, key);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				return rs.getString("value");
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get sysinfo value for " + key, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return null;
+	}
+
+	@Override
+	public void setSysinfoValue(String key, String value) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String query = null;
+		try {
+			if (getSysinfoValue(key) == null) {
+				// insert
+				query = "INSERT INTO sysinfo (`key`, value) VALUES (?, ?)";
+				conn = getConnection();
+				ps = conn.prepareStatement(query);
+				ps.setString(1, key);
+				ps.setString(2, value);
+			} else {
+				// update
+				query = "UPDATE sysinfo SET value=? WHERE `key`=?";
+				conn = getConnection();
+				ps = conn.prepareStatement(query);
+				ps.setString(1, value);
+				ps.setString(2, key);
+			}
+			ps.execute();
+		} catch (SQLException e) {
+			LOG.error("Cannot set sysinfo value for " + key, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+
 	private void increaseNumberOfMessages(String forum, boolean isNewThread) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1473,7 +1526,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			// increase total
 			ps.setString(1, "messages.total");
 			ps.execute();
-			// increase threads 
+			// increase threads
 			if (isNewThread) {
 				// increase for this forum
 				ps.setString(1, "threads.forum." + forum);
@@ -1488,7 +1541,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	private PollDTO getPoll(Connection conn, ResultSet rs) throws SQLException {
 		PollDTO pollDTO = new PollDTO();
 		pollDTO.setId(rs.getLong("id"));
@@ -1501,7 +1554,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		pollDTO.setVoterNicks(getPollVoterNicks(conn, pollDTO.getId()));
 		return pollDTO;
 	}
-	
+
 	private List<PollQuestion> getPollQuestion(Connection conn, long pollId) throws SQLException {
 		List<PollQuestion> res = new ArrayList<PollQuestion>();
 		PreparedStatement ps = null;
@@ -1556,4 +1609,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 	}
 
+	public boolean blockTorExitNodes() {
+		return "checked".equals(getSysinfoValue("blockTorExitNodes"));
+	}
 }
