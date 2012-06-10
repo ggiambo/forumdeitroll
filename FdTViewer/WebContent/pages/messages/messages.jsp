@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
-<jsp:include page="incTop.jsp" />
+<jsp:include page="../incTop.jsp" />
 <div id="main">
 	<fdt:delayedScript dump="false">
 		var token = "${anti_xss_token}";
@@ -27,7 +27,7 @@
 		<div class="${messagesBoxClass} ${rowclass}">
 			<c:set var="msg" value="${msg}" scope="request"/>
 			<c:set var="index" value="${index.count}" scope="request"/>
-			<jsp:include page="incMessage.jsp"/>
+			<jsp:include page="../incMessage.jsp"/>
 		</div>
 	</c:forEach> 
 </div>
@@ -37,4 +37,4 @@
 		<fdt:pager handler="Messages"></fdt:pager>
 	</c:if>
 </div>
-<jsp:include page="incBottom.jsp" />
+<jsp:include page="../incBottom.jsp" />

@@ -61,16 +61,37 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	public final void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		doBefore(req, res);
 		doDo(req, res, Action.Method.GET);
+		doAfter(req, res);
 	}
 
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		doDo(req, res, Action.Method.POST);
 	}
+	
+	/**
+	 * Called before {@link #doDo(HttpServletRequest, HttpServletResponse, com.acmetoy.ravanator.fdt.servlets.Action.Method)}
+	 * @param req
+	 * @param res
+	 */
+	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
+		// implement in subclassed
+	}
+	
+	/**
+	 * Called after {@link #doDo(HttpServletRequest, HttpServletResponse, com.acmetoy.ravanator.fdt.servlets.Action.Method)}
+	 * @param req
+	 * @param res
+	 */
+	public void doAfter(HttpServletRequest req, HttpServletResponse res) {
+		// implement in subclassed
+	}
 
-	public final void doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws IOException {
+	private final void doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws IOException {
 
-		req.setAttribute("servlet", this.getClass().getSimpleName());
+		String servlet = this.getClass().getSimpleName();
+		req.setAttribute("servlet", servlet);
 
 		// forums
 		req.setAttribute("forums", cachedForums.get());
@@ -130,7 +151,7 @@ public abstract class MainServlet extends HttpServlet {
 					String pageForward = (String)methodAction.invoke(this, new Object[] {req, res});
 					// forward
 					if (pageForward != null) {
-						getServletContext().getRequestDispatcher("/pages/" + pageForward).forward(req, res);
+						getServletContext().getRequestDispatcher("/pages/" + servlet.toLowerCase() + "/" + pageForward).forward(req, res);
 					}
 				} else {
 					throw new IllegalArgumentException("Azione " + action + " non permette il metodo " + method);
