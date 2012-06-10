@@ -209,9 +209,8 @@ var profiler = function(callback, url) {
 		cache : true,
 		complete : function(jqXHR, textStatus) {
 			if (jqXHR.status === 301) {
-				profiler(jqXHR.getResponseHeader('Location'));
+				profiler(callback, jqXHR.getResponseHeader('Location'));
 			} else if (jqXHR.status === 304 || jqXHR.status === 200) {
-				console.log(jqXHR.responseText);
 				var responseData = JSON.parse(jqXHR.responseText);
 				var profileData = {
 					'permr' : responseData.permr,
