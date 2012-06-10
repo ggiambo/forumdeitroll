@@ -715,7 +715,7 @@ div.quote-closer {
 	padding-top: 11px;
 }
 
-div.userPanelCaption {
+div.userPanelCaption, div.modInfoPanel h2 {
 	text-align: center;
 	font-weight: bold;
 	border-bottom: 1px solid #7BAAE7;
@@ -724,7 +724,7 @@ div.userPanelCaption {
 	text-shadow: 1px 1px 2px gray;
 }
 
-div.userPanel {
+div.userPanel, div.modInfoPanel {
 	clear: both;
 	background-color: #D6D6D6;
 	padding: 5px;
@@ -732,11 +732,11 @@ div.userPanel {
 	box-shadow: 0px 0px 4px gray;
 }
 
-div.userPanelContent {
+div.userPanelContent, div.modInfoPanelContent {
 	padding: 0.5em;
 }
 
-div.userPanelSection {
+div.userPanelSection, div.modInfoPanelSection {
 	background-color: white; 
 	padding: 10px; 
 	box-shadow: 2px 2px 4px gray;
@@ -744,7 +744,7 @@ div.userPanelSection {
 	margin-bottom: 8px;
 }
 
-div.userPanelSection .lbl {
+div.userPanelSection .lbl, div.modInfoPanelSection .lbl {
 	font-weight: bold;
 }
 
@@ -757,7 +757,7 @@ div.userPanelContent img.avatar {
 	float: left;
 }
 
-div.userPanelContent h3 {
+div.userPanelContent h3, div.modInfoPanelContent h3 {
 	font-weight: bold;
 	font-variant: small-caps;
 	border-bottom: 1px dotted #7BAAE7;
@@ -765,7 +765,7 @@ div.userPanelContent h3 {
 	font-size: 110%;
 }
 
-div.userPanelContent h3:before {
+div.userPanelContent h3:before, div.modInfoPanelContent h3:before {
 	content: "‣ ";
 }
 
@@ -797,7 +797,7 @@ div.userPanelSection input.sendUserPanel {
 	margin-top: 5px;
 }
 
-div.userPanelSection a.userPanelButton {
+div.userPanelSection a.userPanelButton, div.modInfoPanelSection a.modInfoPanelButton {
 	border: 1px solid #7BAAE7;
 	font-weight: bold;
 	font-size: 90%;
@@ -812,7 +812,7 @@ div.userPanelSection a.userPanelButton {
 	margin-right: 0.5em;
 }
 
-div.userPanelSection a.userPanelButton:hover {
+div.userPanelSection a.userPanelButton:hover, div.modInfoPanelSection a.modInfoPanelButton:hover {
 	box-shadow: 0 0 8px #0A78FF;
 }
 
