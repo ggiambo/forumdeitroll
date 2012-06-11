@@ -21,6 +21,8 @@ public class UserProfile implements Serializable {
 	private TreeSet<String> msgIds = null;
 	// altri dati
 	private long ultimoRiconoscimentoUtente = 0L;
+	// IL booleano
+	private boolean bannato = false;
 	
 	public String getPermr() {
 		return permr;
@@ -111,5 +113,11 @@ public class UserProfile implements Serializable {
 	}
 	public void setMsgIds(TreeSet<String> msgIds) {
 		this.msgIds = msgIds;
+	}
+	public boolean isBannato() {
+		return bannato;
+	}
+	public void setBannato(boolean bannato) {
+		this.bannato = bannato;
 	}
 }

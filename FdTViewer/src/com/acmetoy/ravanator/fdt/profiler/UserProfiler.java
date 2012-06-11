@@ -1,9 +1,14 @@
 package com.acmetoy.ravanator.fdt.profiler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.google.gson.Gson;
 
 public class UserProfiler {
 	private static UserProfiler me = null;
@@ -106,5 +111,42 @@ public class UserProfiler {
 			msgIt.next();
 			msgIt.remove();
 		}
+	}
+	
+	public UserProfile lookup(String uuid) {
+		for (UserProfile profile: profiles) {
+			if (profile.getUuid().equals(uuid))
+				return profile;
+		}
+		return null;
+	}
+	
+	private TreeSet<String> safeAddAll(TreeSet<String> to, TreeSet<String> from) {
+		if (to == null)
+			to = new TreeSet<String>();
+		if (from != null && from.size() > 0) {
+			to.addAll(from);
+		}
+		return to;
+	}
+	
+	public UserProfile mergeKnownProfiles(String one, String two) {
+		UserProfile onep = lookup(one), twop = lookup(two);
+		UserProfile from, to;
+		if (onep.getUltimoRiconoscimentoUtente() < twop.getUltimoRiconoscimentoUtente()) {
+			from = onep;
+			to = twop;
+		} else {
+			from = twop;
+			to = onep;
+		}
+		to.setIpAddresses(safeAddAll(to.getIpAddresses(), from.getIpAddresses()));
+		to.setMsgIds(safeAddAll(to.getMsgIds(), from.getMsgIds()));
+		to.setNicknames(safeAddAll(to.getNicknames(), from.getNicknames()));
+		to.setPluginHashes(safeAddAll(to.getPluginHashes(), from.getPluginHashes()));
+		to.setScreenResolutions(safeAddAll(to.getScreenResolutions(), from.getScreenResolutions()));
+		to.setUserAgents(safeAddAll(to.getUserAgents(), from.getUserAgents()));
+		profiles.remove(from);
+		return to;
 	}
 }

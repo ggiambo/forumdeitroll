@@ -7,7 +7,22 @@
 			<c:forEach items="${profiles}" var="profile" varStatus="index">
 				<div class="userPanel">
 					<p>uuid: ${profile.uuid}</p>
-					<div class="userPanelContent">
+					<form action="UserProfiler" method="post">
+						<input type="hidden" name="action" value="switchBan">
+						<input type="hidden" name="uuid" value="${profile.uuid }">
+						<c:if test="${profile.bannato }">
+							<input type="submit" name="submit" value=" togli ban ">
+						</c:if>
+						<c:if test="${!profile.bannato }">
+							<input type="submit" name="submit" value=" ban! ">
+						</c:if>
+					</form>
+					<c:if test="${profile.bannato }">
+						<div class="userPanelContent" style="border: 1px solid red">
+					</c:if>
+					<c:if test="${!profile.bannato }">
+						<div class="userPanelContent">
+					</c:if>
 						<p>nicknames: ${profile.nicknames }</p>
 						<p>ip addresses: ${profile.ipAddresses }</p>
 						<p>userAgents: ${profile.userAgents }</p>
@@ -19,7 +34,14 @@
 						<p>ultimo riconoscimento: <script type='text/javascript'>document.write(new Date(${profile.ultimoRiconoscimentoUtente }).toString())</script></p>
 					</div>
 				</div>
+				<br>
 			</c:forEach>
+			<form action="UserProfiler" method="POST">
+				<input type="hidden" name="action" value="merge">
+				<input type="text" name="one">
+				<input type="text" name="two">
+				<input type="submit" name="submit" value=" unisci " onclick="return confirm('Unire i dati dei due profili(ua, ip, posts,..) in uno unico?\nNon sarà più possibile tornare indietro.')">
+			</form>
 		</div>
 		<div id="footer"></div>
 <jsp:include page="../incBottom.jsp"/>

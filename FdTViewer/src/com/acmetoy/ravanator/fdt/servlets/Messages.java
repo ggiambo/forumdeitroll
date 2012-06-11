@@ -513,6 +513,21 @@ public class Messages extends MainServlet {
 			insertMessageAjaxFail(res, "Sei stato bannato");
 			return null;
 		}
+		
+		UserProfile profile = null;
+		try {
+			// un errore nel profiler non preclude la funzionalita' del forum, ma bisogna tenere d'occhio i logs
+			profile = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
+			profile.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
+			profile.setNick(login(req).getNick());
+			profile = UserProfiler.getInstance().guess(profile);
+			if (profile.isBannato()) {
+				insertMessageAjaxFail(res, "Sei stato bannato");
+				return null;
+			}
+		} catch (Exception e) {
+			Logger.getLogger(Messages.class).error("ERRORE IN PROFILAZIONE!! "+e.getClass().getName() + ": "+e.getMessage(), e);
+		}
 
 		req.getSession().removeAttribute("captcha");
 
@@ -588,19 +603,14 @@ public class Messages extends MainServlet {
 				getPersistence().updateAuthor(author);
 			}
 		}
-
 		msg = getPersistence().insertMessage(msg);
 		String m_id = Long.toString(msg.getId());
 		IPMemStorage.store(req, m_id, author);
 		try {
-			// un errore nel profiler non preclude la funzionalita' del forum, ma bisogna tenere d'occhio i logs
-			UserProfile profile = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
-			profile.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
-			profile.setNick(login(req).getNick());
-			profile = UserProfiler.getInstance().guess(profile);
-			UserProfiler.getInstance().bind(profile, m_id);
+			if (profile != null)
+				UserProfiler.getInstance().bind(profile, m_id);
 		} catch (Exception e) {
-			Logger.getLogger(Messages.class).error("ERRORE IN PROFILAZIONE!! "+e.getClass().getName() + ": "+e.getMessage(), e);
+			
 		}
 
 		// redirect

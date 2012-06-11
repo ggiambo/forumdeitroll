@@ -11,16 +11,16 @@ import com.acmetoy.ravanator.fdt.profiler.UserProfile;
 import com.google.gson.Gson;
 
 public class UserProfiler extends MainServlet {
-	@Override
+	@Action(method=Action.Method.GET)
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		return null;
+		return browse(req, res);
 	}
 	
 	/**
 	 * La prima chiamata assegna un parametro permr usando una redirect 301, cachata dai browser (eccetto safari) anche in modalità incognito
 	 * La seconda verifica la presenza dell'etag o lo assegna (cache normale dei browser) da qui in poi il browser riceverà sempre un 304
 	 */
-	@Action
+	@Action(method=Action.Method.GET)
 	String prof(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		//printRequest(request);
 		String permr = req.getParameter("permr");
@@ -63,7 +63,7 @@ public class UserProfiler extends MainServlet {
 	/**
 	 * Verifica se il profilo dell'utente è in una banlist
 	 */
-	@Action
+	@Action(method=Action.Method.GET)
 	String check(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		//printRequest(request);
 		UserProfile profile = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
@@ -81,14 +81,33 @@ public class UserProfiler extends MainServlet {
 		res.getWriter().print("false");
 		return null;
 	}
+	private String page(HttpServletRequest req) {
+		req.setAttribute("profiles", com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance().profiles);
+		return "userProfiler.jsp";
+	}
 	
-	@Action
+	@Action(method=Action.Method.GET)
 	String browse(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
 		if (!isAdmin) {
 			return null;
 		}
-		req.setAttribute("profiles", com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance().profiles);
-		return "userProfiler.jsp";
+		return page(req);
+	}
+	
+	@Action(method=Action.Method.POST)
+	String merge(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String one = req.getParameter("one");
+		String two = req.getParameter("two");
+		com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance().mergeKnownProfiles(one, two);
+		return page(req);
+	}
+	
+	@Action(method=Action.Method.POST)
+	String switchBan(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String uuid = req.getParameter("uuid");
+		UserProfile profile = com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance().lookup(uuid);
+		profile.setBannato(!profile.isBannato());
+		return page(req);
 	}
 }
