@@ -53,9 +53,9 @@
 	</c:if>
 
 	<ul class="tabs">
-		<li class="selectedTab" onClick="showEmotiboxClassic()"><a href="#">Serie classica</a></li>
+		<li class="selectedTab" onClick="showEmotiboxClassic(); return false;"><a href="#">Serie classica</a></li>
 		<!-- da togliere quando ci saranno le emos -->
-		<li><a href="#" onClick="showEmotiboxExtended()">Serie estesa</a></li>
+		<li><a href="#" onClick="showEmotiboxExtended(); return false;">Serie estesa</a></li>
 	</ul>
 
 	<div class="emotibox">
