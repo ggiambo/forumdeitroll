@@ -36,15 +36,21 @@ public class User extends MainServlet {
 	public static final String PREF_HIDE_PROC_CATANIA = "hideProcCatania";
 	public static final String PREF_HIDE_BANNERONE = "hideBannerone";
 	public static final String PREF_MSG_MAX_HEIGHT = "msgMaxHeight";
+	
+	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
 
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
+	
+	@Override
+	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
+		req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
+	}
 
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO loggedUser = login(req);
 		setWebsiteTitle(req, "Forum dei troll");
 		if (loggedUser != null && loggedUser.isValid()) {
-			req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 			return "user.jsp";
 		}
 		setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
@@ -76,8 +82,6 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
 		}
-
-		req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 
 		// user loggato, check pass
 		String actualPass = req.getParameter("actualPass");
@@ -125,8 +129,6 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
 		}
-
-		req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 
 		if (!ServletFileUpload.isMultipartContent(req)) {
 			setNavigationMessage(req, NavigationMessage.warn("Nessun avatar caricato"));
@@ -225,7 +227,6 @@ public class User extends MainServlet {
 		// login
 		login(req);
 		req.setAttribute("loggedUser", loggedUser);
-		req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
 		return "user.jsp";
 	}
 
@@ -335,10 +336,6 @@ public class User extends MainServlet {
 			req.setAttribute("token", token);
 		}
 
-		if ("yes".equals(loggedUser.getPreferences().get("super"))) {
-			req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
-		}
-
 		return "userInfo.jsp";
 	}
 
@@ -432,13 +429,13 @@ public class User extends MainServlet {
 		}
 
 		if ((loggedUser != null) && "yes".equals(loggedUser.getPreferences().get("super"))) {
-			String blockTorExitNodes = req.getParameter("blockTorExitNodes");
+			String blockTorExitNodes = req.getParameter(ADMIN_PREF_BLOCK_TOR);
 			if (!StringUtils.isEmpty(blockTorExitNodes)) {
-				getPersistence().setSysinfoValue("blockTorExitNodes", "checked");
+				getPersistence().setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "checked");
 			} else {
-				getPersistence().setSysinfoValue("blockTorExitNodes", "");
+				getPersistence().setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "");
 			}
-			req.setAttribute("blockTorExitNodes", getPersistence().getSysinfoValue("blockTorExitNodes"));
+			req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
 		}
 
 		return "user.jsp";

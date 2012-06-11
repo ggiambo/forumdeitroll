@@ -125,7 +125,7 @@
 							<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
 								<hr/>								
 								<div class="inputUserPanel">
-									<input type="checkbox" name="blockTorExitNodes" id="blockTorExitNodes" ${blockTorExitNodes} />
+									<input type="checkbox" name="<%=User.ADMIN_PREF_BLOCK_TOR%>" id="<%=User.ADMIN_PREF_BLOCK_TOR%>" ${blockTorExitNodes} />
 								</div>
 								<div class="lblUserPanel">
 									<label for="pedonizeThread" class="lbl">Blocca TOR exit nodes:</label>
