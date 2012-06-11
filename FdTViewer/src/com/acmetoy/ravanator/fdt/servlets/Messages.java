@@ -88,6 +88,8 @@ public class Messages extends MainServlet {
 		EMO_EXT_MAP.put("keroppi", new String[] {" $[keroppi]", "Keroppi" });
 		EMO_EXT_MAP.put("lich", new String[] {" $[lich]", "Licchione"});
 		EMO_EXT_MAP.put("ranona", new String[] {" $[ranona]", "Ranona"});
+		EMO_EXT_MAP.put("angioletto2", new String[] {" $[angioletto]", "Angioletto 2"});
+		EMO_EXT_MAP.put("proott", new String[] {" $[proott]", "Proott !!"});
 	}
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
