@@ -22,7 +22,12 @@ public class UserProfiler {
 	public static UserProfiler getInstance() {
 		synchronized (UserProfiler.class) {
 			if (me == null)
-				me = new UserProfiler();	
+				me = new UserProfiler();
+			try {
+				me.preParse();
+			} catch (Exception e) {
+				Logger.getLogger(UserProfiler.class).error(e.getClass().getName()+": "+e.getMessage(), e);
+			}
 		}
 		return me;
 	}
@@ -41,6 +46,18 @@ public class UserProfiler {
 		knownUA.put(ua, userAgent);
 		return userAgent;
 	}
+	
+	public void preParse() {
+		Logger.getLogger(UserProfiler.class).info("Precaricamento UserAgents conosciuti");
+		for (UserProfile profile : profiles) {
+			for (String ua : profile.getUserAgents()) {
+				Logger.getLogger(UserProfiler.class).info("Parse \""+ua+"\"");
+				parseUA(ua); // parsa e carica in memoria gli oggetti
+			}
+		}
+		Logger.getLogger(UserProfiler.class).info("Precaricamento terminato");
+	}
+	
 	// per rilevare un aggiornamento del browser vedo se è abbastanza simile ad altri
 	// UADetector prende i dati da http://user-agent-string.info/
 	private boolean closeEnough(UserAgent ua1, UserAgent ua2) {
@@ -114,15 +131,19 @@ public class UserProfiler {
 				}	
 			}
 			try {
-				if (closeEnough(parseUA(candidate.getUa()), parseUA(profile.getUa())) &&
-						profile.getPluginHashes().contains(candidate.getPlugins())) {
-					if (maybe == null) {
-						maybe = profile;
-						isMaybe = true;
-					} else {
-						isMaybe = false;
+				for (String profileUA : profile.getUserAgents()) {
+					if (closeEnough(parseUA(candidate.getUa()), parseUA(profileUA)) &&
+							profile.getPluginHashes().contains(candidate.getPlugins())) {
+						if (maybe == null) {
+							maybe = profile;
+							isMaybe = true;
+						} else {
+							isMaybe = false;
+						}
+						break;
 					}
 				}
+				
 			} catch (Exception e) {
 				Logger.getLogger(UserProfiler.class).error("ERRORE NEL PARSE DELL'USER AGENT "+candidate.getUa()+" "+e.getClass().getName()+": "+e.getMessage(), e);
 			}

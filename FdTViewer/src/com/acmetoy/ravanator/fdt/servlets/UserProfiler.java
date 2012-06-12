@@ -11,6 +11,10 @@ import com.acmetoy.ravanator.fdt.profiler.UserProfile;
 import com.google.gson.Gson;
 
 public class UserProfiler extends MainServlet {
+	
+	private com.acmetoy.ravanator.fdt.profiler.UserProfiler profiler =
+			com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance();
+	
 	@Action(method=Action.Method.GET)
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return browse(req, res);
@@ -69,7 +73,7 @@ public class UserProfiler extends MainServlet {
 		UserProfile profile = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
 		profile.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
 		profile.setNick(login(req).getNick());
-		profile = com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance().guess(profile);
+		profile = profiler.guess(profile);
 		
 		// TODO controllo banlist qua, un esempio di response attesa dal javascript
 //		if (banlist.contains(profile.getUuid())) {
@@ -82,7 +86,7 @@ public class UserProfiler extends MainServlet {
 		return null;
 	}
 	private String page(HttpServletRequest req) {
-		req.setAttribute("profiles", com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance().profiles);
+		req.setAttribute("profiles", profiler.profiles);
 		return "userProfiler.jsp";
 	}
 	
@@ -99,14 +103,14 @@ public class UserProfiler extends MainServlet {
 	String merge(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String one = req.getParameter("one");
 		String two = req.getParameter("two");
-		com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance().mergeKnownProfiles(one, two);
+		profiler.mergeKnownProfiles(one, two);
 		return page(req);
 	}
 	
 	@Action(method=Action.Method.POST)
 	String switchBan(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String uuid = req.getParameter("uuid");
-		UserProfile profile = com.acmetoy.ravanator.fdt.profiler.UserProfiler.getInstance().lookup(uuid);
+		UserProfile profile = profiler.lookup(uuid);
 		profile.setBannato(!profile.isBannato());
 		return page(req);
 	}
