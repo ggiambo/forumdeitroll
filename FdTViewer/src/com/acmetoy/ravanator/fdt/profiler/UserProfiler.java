@@ -2,11 +2,18 @@ package com.acmetoy.ravanator.fdt.profiler;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+
+import net.sf.uadetector.UADetectorServiceFactory;
+import net.sf.uadetector.UserAgent;
+import net.sf.uadetector.UserAgentStringParser;
 
 import com.google.gson.Gson;
 
@@ -23,6 +30,22 @@ public class UserProfiler {
 	public ArrayList<UserProfile> profiles = null;
 	private UserProfiler() {
 		profiles = UserProfilesStorage.load();
+	}
+	
+	// cache di user agent gia' parsati
+	private HashMap<String, UserAgent> knownUA = new HashMap<String, UserAgent>();
+	private UserAgentStringParser uaParser = UADetectorServiceFactory.getUserAgentStringParser();
+	private UserAgent parseUA(String ua) {
+		if (knownUA.containsKey(ua)) return knownUA.get(ua);
+		UserAgent userAgent =uaParser.parse(ua);
+		knownUA.put(ua, userAgent);
+		return userAgent;
+	}
+	// per rilevare un aggiornamento del browser vedo se è abbastanza simile ad altri
+	// UADetector prende i dati da http://user-agent-string.info/
+	private boolean closeEnough(UserAgent ua1, UserAgent ua2) {
+		return ua1.getFamily().equals(ua2.getFamily()) &&
+				ua1.getOperatingSystem().getName().equals(ua2.getOperatingSystem().getName());
 	}
 	
 	private void merge(UserProfile from, UserProfile to) {
@@ -90,6 +113,19 @@ public class UserProfiler {
 					}
 				}	
 			}
+			try {
+				if (closeEnough(parseUA(candidate.getUa()), parseUA(profile.getUa())) &&
+						profile.getPluginHashes().contains(candidate.getPlugins())) {
+					if (maybe == null) {
+						maybe = profile;
+						isMaybe = true;
+					} else {
+						isMaybe = false;
+					}
+				}
+			} catch (Exception e) {
+				Logger.getLogger(UserProfiler.class).error("ERRORE NEL PARSE DELL'USER AGENT "+candidate.getUa()+" "+e.getClass().getName()+": "+e.getMessage(), e);
+			}
 		}
 		if (maybe == null || !isMaybe) {
 			merge(candidate, candidate);
@@ -146,6 +182,7 @@ public class UserProfiler {
 		to.setPluginHashes(safeAddAll(to.getPluginHashes(), from.getPluginHashes()));
 		to.setScreenResolutions(safeAddAll(to.getScreenResolutions(), from.getScreenResolutions()));
 		to.setUserAgents(safeAddAll(to.getUserAgents(), from.getUserAgents()));
+		to.setBannato(to.isBannato() || from.isBannato());
 		profiles.remove(from);
 		return to;
 	}
