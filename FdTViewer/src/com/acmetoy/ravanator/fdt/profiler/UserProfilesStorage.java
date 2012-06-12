@@ -13,10 +13,10 @@ import org.apache.log4j.Logger;
 public class UserProfilesStorage {
 	private static Logger logger = Logger.getLogger(UserProfilesStorage.class);
 	private static String fs_path = "/tmp/fdt_user_profiles";
-	//TODO: spostiamo il caricamento in una tabella su db con dei blob?
+	//TODO: spostiamo il caricamento in una tabella su db con dei blob? JSON? MessagePack?
 	
 	public static void store(ArrayList<UserProfile> profiles) {
-		logger.info("UserProfilesStorage::store");
+		//logger.info("UserProfilesStorage::store");
 		try {
 			FileOutputStream fos = new FileOutputStream(fs_path);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
