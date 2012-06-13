@@ -345,6 +345,20 @@ public class MessageTag extends BodyTagSupport {
 			q = SP_QUOTE;
 			quoteLvl++;
 		}
+		int scrittoda = line.indexOf("Scritto da: ");
+		if (scrittoda != -1) {
+			if (quoteLvl == 0 && scrittoda == 0) {
+				quoteLvl++;
+			} else {
+				int prefixlen = quoteLvl * (QUOTE.length() + 1);
+				if (quoteLvl > 0 && (prefixlen == scrittoda || (prefixlen - 1) == scrittoda)) {
+					quoteLvl++;
+				}
+			}
+		}
+		if (quoteLvl == 0 && line.indexOf("Scritto da: ") == 0 || quoteLvl > 0 && line.indexOf("Scritto da: ") == quoteLvl * (QUOTE.length() + 1)) {
+			quoteLvl++;
+		}
 		if (quoteLvl != 0) {
 			if (quoteLvl > 4) quoteLvl = 1 + (quoteLvl % 4);
 			line.insert(0, "<span class='quoteLvl" + quoteLvl + "'>");
