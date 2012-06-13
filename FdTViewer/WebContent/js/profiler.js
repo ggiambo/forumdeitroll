@@ -249,3 +249,13 @@ var checkProfile = function(profileData, callback) {
 //		});
 //	});
 //});
+var geodata = function(elem, ip) {
+	elem.innerHTML +=
+		"<script type='text/javascript' src='http://freegeoip.net/json/" +
+			ip +
+				"?callback=geocb'></script>";
+}
+
+var geocb = function(obj) {
+	alert(JSON.stringify(obj, null, 4));
+}

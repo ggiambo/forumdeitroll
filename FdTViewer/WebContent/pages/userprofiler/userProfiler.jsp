@@ -24,7 +24,11 @@
 						<div class="userPanelContent">
 					</c:if>
 						<p>nicknames: ${profile.nicknames }</p>
-						<p>ip addresses: ${profile.ipAddresses }</p>
+						<p>ip addresses:
+						<c:forEach items="${profile.ipAddresses }" var="ip" varStatus="ipIdx">
+							<span onclick="geodata(this, '${ip}');">${ip }</span>
+						</c:forEach>
+						</p>
 						<p>userAgents: ${profile.userAgents }</p>
 						<p>resolutions: ${profile.screenResolutions }</p>
 						<p>plugin (hash): ${profile.pluginHashes }</p>
