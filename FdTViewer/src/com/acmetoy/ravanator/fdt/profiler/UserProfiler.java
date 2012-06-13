@@ -21,12 +21,13 @@ public class UserProfiler {
 	private static UserProfiler me = null;
 	public static UserProfiler getInstance() {
 		synchronized (UserProfiler.class) {
-			if (me == null)
+			if (me == null) {
 				me = new UserProfiler();
-			try {
-				me.preParse();
-			} catch (Exception e) {
-				Logger.getLogger(UserProfiler.class).error(e.getClass().getName()+": "+e.getMessage(), e);
+				try {
+					me.preParse();
+				} catch (Exception e) {
+					Logger.getLogger(UserProfiler.class).error(e.getClass().getName()+": "+e.getMessage(), e);
+				}
 			}
 		}
 		return me;
