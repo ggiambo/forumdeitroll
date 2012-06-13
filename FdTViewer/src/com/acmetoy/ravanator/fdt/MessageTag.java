@@ -356,9 +356,7 @@ public class MessageTag extends BodyTagSupport {
 				}
 			}
 		}
-		if (quoteLvl == 0 && line.indexOf("Scritto da: ") == 0 || quoteLvl > 0 && line.indexOf("Scritto da: ") == quoteLvl * (QUOTE.length() + 1)) {
-			quoteLvl++;
-		}
+		
 		if (quoteLvl != 0) {
 			if (quoteLvl > 4) quoteLvl = 1 + (quoteLvl % 4);
 			line.insert(0, "<span class='quoteLvl" + quoteLvl + "'>");
