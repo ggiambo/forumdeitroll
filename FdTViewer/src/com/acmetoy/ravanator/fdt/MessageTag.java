@@ -161,7 +161,7 @@ public class MessageTag extends BodyTagSupport {
 		if (multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
 			// Se multiLineQuoteStarted qui è vero allora non ho chiuso l'ultimo <div>
 			// del quote-container... ma perché non se ne è occupato "on_line" a riga 154?
-			out.append("</div>");
+			out.append("</div></div>");
 		}
 
 		return out;
@@ -369,12 +369,12 @@ public class MessageTag extends BodyTagSupport {
 			line.append("</span>");
 			if (!multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
 				multiLineQuoteStarted = true;
-				line.insert(0, "<div class='quote-container'>");
+				line.insert(0, "<div class='quote-container'><div>");
 			}
 		} else {
 			if (multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
 				multiLineQuoteStarted = false;
-				line.append("</div>");
+				line.append("</div></div>");
 			}
 		}
 	}
