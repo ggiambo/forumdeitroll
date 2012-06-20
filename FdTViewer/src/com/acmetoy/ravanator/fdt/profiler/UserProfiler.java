@@ -118,6 +118,12 @@ public class UserProfiler {
 				merge(candidate, profile);
 				return profile;
 			}
+			// sia data l'univocita' al plugin hash, sia messo a verbale
+			if (profile.getPluginHashes().contains(candidate.getPlugins())) {
+				merge(candidate, profile);
+				return profile;
+			}
+			
 			// 50% sgamatrollato, maybe solo se unico
 			if (candidate.getPlugins() != null && candidate.getUa() != null && candidate.getScreenres() != null) {
 				if (	profile.getPluginHashes().contains(candidate.getPlugins()) &&
