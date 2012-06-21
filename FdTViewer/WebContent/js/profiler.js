@@ -249,13 +249,23 @@ var checkProfile = function(profileData, callback) {
 //		});
 //	});
 //});
-var geodata = function(elem, ip) {
-	elem.innerHTML +=
-		"<script type='text/javascript' src='http://freegeoip.net/json/" +
-			ip +
-				"?callback=geocb'></script>";
-}
 
-var geocb = function(obj) {
-	alert(JSON.stringify(obj, null, 4));
+function geodata(elem, ip) {
+	$("body").css("cursor", "progress");
+	jQuery.getJSON("http://freegeoip.net/json/" + ip + "?callback=?",
+		function(result) {
+			var box = $('#geoIpContainer');
+			var position = $(elem).offset();
+			var left = position.left + $(elem).width();
+			var top = position.top - $(elem).height();
+			box.css({left:left, top:top});
+			var html = '';
+			$.each(result, function() {
+				html += arguments[0] + ": " + arguments[1] + "<br/>";
+			});
+			box.html(html);
+			box.slideDown();
+			$("body").css("cursor", "auto");
+		}
+	);
 }

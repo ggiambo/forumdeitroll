@@ -1,6 +1,7 @@
 package com.acmetoy.ravanator.fdt.profiler;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.TreeSet;
 
 public class UserProfile implements Serializable {
@@ -104,6 +105,9 @@ public class UserProfile implements Serializable {
 	}
 	public long getUltimoRiconoscimentoUtente() {
 		return ultimoRiconoscimentoUtente;
+	}
+	public Date getUltimoRiconoscimentoUtenteDate() {
+		return new Date(ultimoRiconoscimentoUtente);
 	}
 	public void setUltimoRiconoscimentoUtente(long ultimoRiconoscimentoUtente) {
 		this.ultimoRiconoscimentoUtente = ultimoRiconoscimentoUtente;
