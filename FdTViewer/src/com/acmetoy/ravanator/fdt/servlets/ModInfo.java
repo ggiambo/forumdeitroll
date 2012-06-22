@@ -2,13 +2,13 @@ package com.acmetoy.ravanator.fdt.servlets;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import com.acmetoy.ravanator.fdt.persistence.AuthorDTO;
 import com.acmetoy.ravanator.fdt.persistence.MessageDTO;
 import com.acmetoy.ravanator.fdt.util.IPMemStorage;
-import com.acmetoy.ravanator.fdt.util.CacheTorExitNodes;
-import com.acmetoy.ravanator.fdt.util.ModInfo;
+import com.acmetoy.ravanator.fdt.util.ModInfoBean;
 
-public class ModInfoServlet extends MainServlet {
+public class ModInfo extends MainServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected String show(final HttpServletRequest req, final HttpServletResponse res) throws Exception {
@@ -17,7 +17,7 @@ public class ModInfoServlet extends MainServlet {
 		setWebsiteTitle(req, "Moderazione " + m_id + " @ Forum dei Troll");
 
 		final IPMemStorage.Record record = IPMemStorage.get(m_id);
-		final ModInfo modInfo = new ModInfo(m_id, record);
+		final ModInfoBean modInfo = new ModInfoBean(m_id, record);
 
 		req.setAttribute("modInfo", modInfo);
 
@@ -49,7 +49,7 @@ public class ModInfoServlet extends MainServlet {
 		}
 
 		if (!antiXssOk(req)) {
-			req.setAttribute("comm", "Impossibile verificare token XSS");
+			setNavigationMessage(req,NavigationMessage.error("Impossibile verificare token XSS"));
 			return show(req, res);
 		}
 
@@ -73,14 +73,14 @@ public class ModInfoServlet extends MainServlet {
 		}
 
 		if ((nickname == null) || nickname.equals("Non Autenticato")) {
-			req.setAttribute("comm", "Fallito: impossibile bannare 'Non Autenticato' (o impossibile risalire all'utente che ha creato questo post)");
+			setNavigationMessage(req,NavigationMessage.error("Fallito: impossibile bannare 'Non Autenticato' (o impossibile risalire all'utente che ha creato questo post)"));
 			return show(req, res);
 		}
 
 		final AuthorDTO target = getPersistence().getAuthor(nickname);
 
 		if (target == null) {
-			req.setAttribute("comm", "Fallito: impossibile trovare l'utente <" + nickname + ">");
+			setNavigationMessage(req,NavigationMessage.error("Fallito: impossibile trovare l'utente <" + nickname + ">"));
 			return show(req, res);
 		}
 
@@ -100,7 +100,7 @@ public class ModInfoServlet extends MainServlet {
 		}
 
 		if (!antiXssOk(req)) {
-			req.setAttribute("comm", "Impossibile verificare token XSS");
+			setNavigationMessage(req,NavigationMessage.error("Impossibile verificare token XSS"));
 			return show(req, res);
 		}
 
@@ -108,9 +108,9 @@ public class ModInfoServlet extends MainServlet {
 
 		if (record != null) {
 			Messages.banIP(record.ip());
-			req.setAttribute("comm", "Ok");
+			setNavigationMessage(req,NavigationMessage.info("Ok"));
 		} else {
-			req.setAttribute("comm", "Non riuscito");
+			setNavigationMessage(req,NavigationMessage.error("Non riuscito"));
 		}
 
 		return show(req, res);
@@ -127,11 +127,11 @@ public class ModInfoServlet extends MainServlet {
 		}
 
 		if (!antiXssOk(req)) {
-			req.setAttribute("comm", "Impossibile verificare token XSS");
+			setNavigationMessage(req,NavigationMessage.error("Impossibile verificare token XSS"));
 			return show(req, res);
 		}
 
-		req.setAttribute("comm", "Non implementato");
+		setNavigationMessage(req,NavigationMessage.warn("Non implementato"));
 
 		//TODO:
 		// - nascondere messaggio permanentemente

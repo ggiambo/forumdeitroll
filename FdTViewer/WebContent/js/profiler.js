@@ -226,6 +226,7 @@ var profiler = function(callback, url) {
 	});
 };
 
+/* non usata ?
 var checkProfile = function(profileData, callback) {
 	$.ajax({
 		url : 'UserProfiler?action=check&jsonProfileData=' + encodeURIComponent(JSON.stringify(profileData)),
@@ -237,6 +238,7 @@ var checkProfile = function(profileData, callback) {
 		}
 	});
 };
+*/
 //TODO: implementare il controllo nel codice del post del messaggio, esempio di utilizzo
 //$(document).ready(function() {
 //	profiler(function(profileData) {
@@ -249,23 +251,3 @@ var checkProfile = function(profileData, callback) {
 //		});
 //	});
 //});
-
-function geodata(elem, ip) {
-	$("body").css("cursor", "progress");
-	jQuery.getJSON("http://freegeoip.net/json/" + ip + "?callback=?",
-		function(result) {
-			var box = $('#geoIpContainer');
-			var position = $(elem).offset();
-			var left = position.left + $(elem).width();
-			var top = position.top - $(elem).height();
-			box.css({left:left, top:top});
-			var html = '';
-			$.each(result, function() {
-				html += arguments[0] + ": " + arguments[1] + "<br/>";
-			});
-			box.html(html);
-			box.slideDown();
-			$("body").css("cursor", "auto");
-		}
-	);
-}

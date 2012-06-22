@@ -23,6 +23,7 @@
 	<script src="js/jscolor/jscolor.js" type="text/javascript"></script>
 	<script src="js/PluginDetect_All.js" type="text/javascript"></script>
 	<script src="js/profiler.js?v=<%=bootTime%>" type="text/javascript"></script>
+	<script src="js/${servlet}.js?v=<%=bootTime%>" type="text/javascript"></script>
 	<fdt:delayedScript dump="true">
 		questo non verra' stampato, ma se lo togli la taglib non viene eseguita
 	</fdt:delayedScript>

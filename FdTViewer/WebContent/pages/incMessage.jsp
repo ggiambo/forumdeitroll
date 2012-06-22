@@ -104,7 +104,7 @@
 </div>
 <div id="buttons_${msg.id}" class="messagesButtonBar">
 	<c:if test="${not empty loggedUser && loggedUser.preferences['super'] == 'yes'}">
-		<c:url value="ModInfoServlet" var="modUrl">
+		<c:url value="ModInfo" var="modUrl">
 			<c:param name="m_id" value="${msg.id}"/>
 		</c:url>
 		<a href="${modUrl}"><img alt="Moderazione" style="vertical-align: middle;" src="images/Moderazione.png" /></a>

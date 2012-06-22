@@ -19,24 +19,9 @@
 							<c:if test="${not empty comm}">
 								<p>${comm}</p>
 							</c:if>
-							<c:url var="banMessageUrl" value="">
-								<c:param name="action" value="banMessage"/>
-								<c:param name="m_id" value="${modInfo.m_id}"/>
-								<c:param name="token" value="${anti_xss_token}"/>
-							</c:url>
-							<c:url var="banUserUrl" value="">
-								<c:param name="action" value="banUser"/>
-								<c:param name="m_id" value="${modInfo.m_id}"/>
-								<c:param name="token" value="${anti_xss_token}"/>
-							</c:url>
-							<c:url var="banIPUrl" value="">
-								<c:param name="action" value="banIP"/>
-								<c:param name="m_id" value="${modInfo.m_id}"/>
-								<c:param name="token" value="${anti_xss_token}"/>
-							</c:url>
-							<a class="modInfoPanelButton" href="${banMessageUrl}" title="Cancella Messaggio">Cancella</a>
-							<a class="modInfoPanelButton" href="${banUserUrl}">Ban Utente</a>
-							<a class="modInfoPanelButton" href="${banIPUrl}">Ban IP</a>
+							<a class="modInfoPanelButton" href="#" onClick="banMessage('${modInfo.m_id}', '${anti_xss_token}');return false;" title="Cancella Messaggio">Cancella</a>
+							<a class="modInfoPanelButton" href="#" onClick="banUser('${modInfo.m_id}', '${anti_xss_token}');return false;" title="Ban Utente">Ban Utente</a>
+							<a class="modInfoPanelButton" href="#" onClick="banIP('${modInfo.m_id}', '${anti_xss_token}');return false;" title="Ban IP">Ban IP</a>
 							<div style="clear: both;"></div>
 						</p>
 					</div>

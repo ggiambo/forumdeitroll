@@ -5,24 +5,6 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <jsp:include page="../incTop.jsp"/>
 
-<fdt:delayedScript dump="false">
-	$(document).ready(function() {
-		$('.ip-container').click(function() {
-			geodata(this, $(this).text());
-		}).mouseenter(function() {
-			$(this).css("color", "#007BDF").css("cursor", "pointer");
-		}).mouseleave(function() {
-			$(this).css("color", "black").css("cursor", "default");
-		});
-		
-		$('#geoIpContainer').click(function() {
-			$(this).html('').hide();
-		}).mouseleave(function() {
-			$(this).html('').hide();
-		});
-	});
-</fdt:delayedScript>
-
 <div id="geoIpContainer" style="display:none;position:absolute;border:1px solid black; background:#FFFFBF; padding:3px;"></div>
 
 <c:set var="bannato" value="${profile.bannato}"/>

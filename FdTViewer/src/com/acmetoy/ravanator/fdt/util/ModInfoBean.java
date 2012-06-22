@@ -1,12 +1,12 @@
 package com.acmetoy.ravanator.fdt.util;
 
-public class ModInfo {
+public class ModInfoBean {
 	public final String m_id;
 	public final String authorDescription;
 	public final String ip;
 	public final boolean tor;
 
-	public ModInfo(final String m_id, final IPMemStorage.Record record) {
+	public ModInfoBean(final String m_id, final IPMemStorage.Record record) {
 		this.m_id = m_id;
 		if (record != null) {
 			this.authorDescription = "" + record.authorAppearance() + "/" + record.authorNickname();
