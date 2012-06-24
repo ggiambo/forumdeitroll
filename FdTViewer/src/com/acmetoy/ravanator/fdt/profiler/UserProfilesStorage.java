@@ -7,13 +7,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
 
 public class UserProfilesStorage {
 	private static Logger logger = Logger.getLogger(UserProfilesStorage.class);
 	private static String fs_path = "/tmp/fdt_user_profiles";
-	//TODO: spostiamo il caricamento in una tabella su db con dei blob? JSON? MessagePack?
 	
 	public static void store(ArrayList<UserProfile> profiles) {
 		//logger.info("UserProfilesStorage::store");
@@ -51,6 +51,25 @@ public class UserProfilesStorage {
 		return profiles;
 	}
 	
+	private static long FS_Store_timeout = 60 * 1000;
+	private static long Cleanup_timeout = 60 * 60 * 1000;
+	private static long UserProfile_expires = 2 * 24 * 60 * 60 * 1000;
+	
+	public static void cleanup(ArrayList<UserProfile> profiles) {
+		for (ListIterator<UserProfile> profilesIter = profiles.listIterator(); profilesIter.hasNext();) {
+			UserProfile profile = profilesIter.next();
+			if (!profile.isBannato()) {
+				if (profile.getUltimoRiconoscimentoUtente() + UserProfile_expires < System.currentTimeMillis()) {
+					logger.info("cancellazione del seguente profilo dallo storage persistente:");
+					logger.info(profile.getUuid());
+					logger.info(profile.getNicknames());
+					logger.info(profile.getMsgIds());
+					profilesIter.remove();
+				}
+			}
+		}
+	}
+	
 	private static class PeriodicStore implements Runnable {
 		private ArrayList<UserProfile> profiles = null; // reference
 		public PeriodicStore(ArrayList<UserProfile> profiles) {
@@ -58,9 +77,14 @@ public class UserProfilesStorage {
 		}
 		@Override
 		public void run() {
+			long lastCleanup = System.currentTimeMillis() - Cleanup_timeout; // esegue all'avvio
 			while (true) {
 				try {
-					Thread.sleep(60 * 1000); // 1 minuto
+					if (lastCleanup + Cleanup_timeout < System.currentTimeMillis()) {
+						cleanup(profiles);
+						lastCleanup = System.currentTimeMillis();
+					}
+					Thread.sleep(FS_Store_timeout); // 1 minuto
 				} catch (InterruptedException e) {
 					store(profiles);
 					return;
