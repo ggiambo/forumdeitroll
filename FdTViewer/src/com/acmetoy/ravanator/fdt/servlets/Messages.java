@@ -531,6 +531,8 @@ public class Messages extends MainServlet {
 			}
 		} catch (Exception e) {
 			Logger.getLogger(Messages.class).error("ERRORE IN PROFILAZIONE!! "+e.getClass().getName() + ": "+e.getMessage(), e);
+			insertMessageAjaxFail(res, "Errore durante l'inserimento del messaggio. La suora sa perché.");
+			return null;
 		}
 
 		req.getSession().removeAttribute("captcha");
