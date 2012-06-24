@@ -7,10 +7,8 @@
 
 <div id="geoIpContainer" style="display:none;position:absolute;border:1px solid black; background:#FFFFBF; padding:3px;"></div>
 
-<c:set var="bannato" value="${profile.bannato}"/>
-
 <div id="main">
-	<div class="userPanelCaption">Profili utente riconosciuti</div>
+	<div class="userPanelCaption">Panopticon</div>
 	<c:forEach items="${profiles}" var="profile" varStatus="index">
 		<div class="userPanel">
 			<p>uuid: ${profile.uuid}</p>
@@ -18,17 +16,16 @@
 				<input type="hidden" name="action" value="switchBan">
 				<input type="hidden" name="uuid" value="${profile.uuid }">
 				<c:choose>
-					<c:when test="${bannato}">
+					<c:when test="${profile.bannato}">
 						<input type="submit" name="submit" value=" togli ban ">
+						<c:set var="border" value="border: 2px solid red; border-radius: 5px 5px 5px 5px;"/>
 					</c:when>
 					<c:otherwise>
 						<input type="submit" name="submit" value=" ban! ">
+						<c:set var="border" value=""/>
 					</c:otherwise>
 				</c:choose>
 			</form>
-			<c:if test="${bannato}">
-				<c:set var="border" value="border: 2px solid red; border-radius: 5px 5px 5px 5px;"/>
-			</c:if>
 			<div class="userPanelContent" style="${border}">
 				<p>nicknames: ${profile.nicknames }</p>
 				<p>ip addresses:
