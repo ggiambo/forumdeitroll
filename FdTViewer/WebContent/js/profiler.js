@@ -226,19 +226,19 @@ var profiler = function(callback, url) {
 	});
 };
 
-/* non usata ?
+
 var checkProfile = function(profileData, callback) {
 	$.ajax({
 		url : 'UserProfiler?action=check&jsonProfileData=' + encodeURIComponent(JSON.stringify(profileData)),
 		cache : false,
 		complete : function(jqXHR, textStatus) {
 			if (textStatus === 'success') {
-				callback(jqXHR.responseText === 'false');
+				callback(jqXHR.responseText);
 			}
 		}
 	});
 };
-*/
+
 //TODO: implementare il controllo nel codice del post del messaggio, esempio di utilizzo
 //$(document).ready(function() {
 //	profiler(function(profileData) {

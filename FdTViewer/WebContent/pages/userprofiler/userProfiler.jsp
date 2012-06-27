@@ -26,6 +26,11 @@
 					</c:otherwise>
 				</c:choose>
 			</form>
+			<form action="UserProfiler" method="post" onsubmit="return confirm('Cancellare il profilo? Sei sicuro? E` irreversibile. Non sei Giambo che pastrugna un ipad, vero?')">
+				<input type="hidden" name="action" value="deleteProfile">
+				<input type="hidden" name="uuid" value="${profile.uuid }">
+				<input type="submit" name="submit" value=" cancella ">
+			</form>
 			<div class="userPanelContent" style="${border}">
 				<p>nicknames: ${profile.nicknames }</p>
 				<p>ip addresses:
@@ -40,6 +45,21 @@
 						<a href="Messages?action=getById&msgId=${msgId }">${msgId }</a>
 					</c:forEach></p>
 				<p>ultimo riconoscimento: <fmt:formatDate value="${profile.ultimoRiconoscimentoUtenteDate}" pattern="dd.MM.yyyy@HH:mm:ss"/></p>
+				<p>Cancella un attributo:
+				<form action="UserProfiler" method="post" onsubmit="return confirm('Ci vuoi ripensare? Lo cancelliamo?')">
+					<input type="hidden" name="action" value="deleteAttribute">
+					<input type="hidden" name="uuid" value="${profile.uuid }">
+					<select name="attributeName">
+						<option value="ipAddress">ipAddress</option>
+						<option value="nickname">nickname</option>
+						<option value="userAgent">userAgent</option>
+						<option value="screenRes">screenRes</option>
+						<option value="pluginHash">pluginHash</option>
+						<option value="msgId">msgId</option>
+					</select>
+					<input type="text" name="attributeValue" value="">
+					<input type="submit" name="submit" value=" cancella ">
+				</form>
 			</div>
 		</div>
 		<br>
