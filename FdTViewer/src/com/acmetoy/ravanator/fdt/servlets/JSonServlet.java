@@ -265,7 +265,81 @@ public class JSonServlet extends HttpServlet {
 		writer.endArray();
 		
 		writer.endObject(); // "authors"
+	}
+	
+	/**
+	 * Ritorna una stringa JSON contenente le quotes dell'autore
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	protected void getQuotes(JsonWriter writer, Map<String, String[]> params) throws IOException {
+		String[] nick = params.get("nick");
+		if (nick == null || nick.length == 0) {
+			throw new IOException("missing parameter 'nick'");
+		}
 		
+		AuthorDTO author = persistence.getAuthor(nick[0]);
+		List<QuoteDTO> result = persistence.getQuotes(author);
+		
+		writer.beginObject();
+		writer.name("resultSize").value(result.size());
+		writer.name("quotes");
+		writer.beginArray();
+		for (QuoteDTO quote : result) {
+			writer.beginObject();
+			writer.name("quote");
+			writer.beginObject();
+			writer.name("id").value(quote.getId());
+			writer.name("content").value(quote.getContent());
+			writer.endObject();
+			writer.endObject();
+		}
+		writer.endArray();
+		
+		writer.endObject(); // "quotes"
+	}
+	
+	protected void getEmos(JsonWriter writer, Map<String, String[]> params) throws IOException {
+		writer.beginObject();
+		
+		writer.name("classic");
+		writer.beginObject();
+		Map<String, String[]> emoMap = Messages.getEmoMap();
+		writer.name("resultSize").value(emoMap.size());
+		writer.name("emos");
+		writer.beginArray();
+		for (Map.Entry<String, String[]> entry : emoMap.entrySet()) {
+			writer.beginObject();
+			writer.name("emo");
+			writer.beginObject();
+			writer.name("id").value(entry.getValue()[0]);
+			writer.name("url").value("images/emo/" + entry.getKey() + ".gif");
+			writer.endObject();
+			writer.endObject();
+		}
+		writer.endArray();
+		writer.endObject(); // classic
+
+		writer.name("extended");
+		writer.beginObject();
+		Map<String, String[]> emoExtendedMap = Messages.getEmoExtendedMap();
+		writer.name("resultSize").value(emoExtendedMap.size());
+		writer.name("emos");
+		writer.beginArray();
+		for (Map.Entry<String, String[]> entry : emoExtendedMap.entrySet()) {
+			writer.beginObject();
+			writer.name("emo");
+			writer.beginObject();
+			writer.name("id").value(entry.getValue()[0]);
+			writer.name("url").value("images/emoextended/" + entry.getKey() + ".gif");
+			writer.endObject();
+			writer.endObject();
+		}
+		writer.endArray();
+		writer.endObject(); // extendedEmo
+		
+		writer.endObject();
 	}
 	
 	/**
@@ -297,7 +371,7 @@ public class JSonServlet extends HttpServlet {
 		writer.name("thread");
 		writer.beginObject();
 		writer.name("id").value(threadDTO.getId());
-		writer.name("date").value(threadDTO.getDate().toString());
+		writer.name("date").value(threadDTO.getDate().getTime());
 		writer.name("subject").value(threadDTO.getSubject());
 		writer.name("forum").value(threadDTO.getForum());
 		writer.name("numberOfMessages").value(threadDTO.getNumberOfMessages());
@@ -320,7 +394,7 @@ public class JSonServlet extends HttpServlet {
 		writer.name("message");
 		writer.beginObject();
 		writer.name("id").value(messageDTO.getId());
-		writer.name("date").value(messageDTO.getDate().toString());
+		writer.name("date").value(messageDTO.getDate().getTime());
 		writer.name("subject").value(messageDTO.getSubject());
 		writer.name("forum").value(messageDTO.getForum() == null ? "" : messageDTO.getForum());
 		writer.name("parentId").value(messageDTO.getParentId());
@@ -349,29 +423,7 @@ public class JSonServlet extends HttpServlet {
 		if (author.getAvatar() != null) {
 			writer.name("avatar").value(new BASE64Encoder().encode(author.getAvatar()));
 		}
-		encodeQuotes(persistence.getQuotes(author), writer);
 		writer.endObject();
-	}
-	
-	/**
-	 * Codifica JSON un QuoteDTO
-	 * @param threadDTO
-	 * @param writer
-	 * @throws Exception
-	 */
-	private void encodeQuotes(List<QuoteDTO> quotes, JsonWriter writer) throws IOException {
-		writer.name("quotes");
-		writer.beginArray();
-		for (QuoteDTO quote : quotes) {
-			writer.beginObject();
-			writer.name("quote");
-			writer.beginObject();
-			writer.name("id").value(quote.getId());
-			writer.name("content").value(quote.getContent());
-			writer.endObject();
-			writer.endObject();
-		}
-		writer.endArray();
 	}
 	
 	/**
