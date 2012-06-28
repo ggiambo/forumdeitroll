@@ -301,8 +301,9 @@ public class MessageTag extends BodyTagSupport {
 				candidate.indexOf("mailto:") == 0 ||
 				(candidate.indexOf(".com/") != -1 && candidate.indexOf("/") == candidate.indexOf(".com/") + 4) ||
 				(candidate.indexOf(".it/") != -1 && candidate.indexOf("/") == candidate.indexOf(".it/") + 3) ||
-				candidate.indexOf("Threads?action=getByThread&threadId=") == 0 ||
-				candidate.indexOf("Polls?action=getPollContent&pollId=") == 0);
+				candidate.indexOf("Threads?action=") == 0 ||
+				candidate.indexOf("Polls?action=") == 0) ||
+				candidate.indexOf("Messages?action=") == 0;
 	}
 	private static String addHttpProtocol(String url) {
 		if (url.startsWith("www.")
@@ -320,11 +321,11 @@ public class MessageTag extends BodyTagSupport {
 			url = addHttpProtocol(url);
 			if (url.startsWith("http://www.forumdeitroll.it/m.aspx") || url.startsWith("http://www.forumdeitroll.it/ms.aspx")) {
 				int pm;
-				String m_id = url.substring(
-					(pm=url.indexOf("m_id=")+5), (pm=url.indexOf("&", pm)) != -1
-						? pm
-						: url.length());
 				try {
+					String m_id = url.substring(
+							(pm=url.indexOf("m_id=")+5), (pm=url.indexOf("&", pm)) != -1
+								? pm
+								: url.length());
 					Integer.parseInt(m_id);
 					if (url.indexOf("m.aspx") != -1) {
 						// link a messaggio
@@ -333,7 +334,9 @@ public class MessageTag extends BodyTagSupport {
 						// link a discussione
 						url = "Threads?action=getByMessage&msgId=" + m_id;
 					}
-				} catch (NumberFormatException e) {}
+				}
+				catch (NumberFormatException e) {}
+				catch (IndexOutOfBoundsException e) {}
 			}
 			if (desc.length() > 50) {
 				desc = desc.substring(0, 50) + "...";
