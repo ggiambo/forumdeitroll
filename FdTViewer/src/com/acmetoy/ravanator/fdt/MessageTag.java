@@ -318,6 +318,23 @@ public class MessageTag extends BodyTagSupport {
 			String url = escape(word);
 			String desc = word.toString();
 			url = addHttpProtocol(url);
+			if (url.startsWith("http://www.forumdeitroll.it/m.aspx") || url.startsWith("http://www.forumdeitroll.it/ms.aspx")) {
+				int pm;
+				String m_id = url.substring(
+					(pm=url.indexOf("m_id=")+5), (pm=url.indexOf("&", pm)) != -1
+						? pm
+						: url.length());
+				try {
+					Integer.parseInt(m_id);
+					if (url.indexOf("m.aspx") != -1) {
+						// link a messaggio
+						url = "Messages?action=getById&msgId=" + m_id;	
+					} else {
+						// link a discussione
+						url = "Threads?action=getByMessage&msgId=" + m_id;
+					}
+				} catch (NumberFormatException e) {}
+			}
 			if (desc.length() > 50) {
 				desc = desc.substring(0, 50) + "...";
 			}

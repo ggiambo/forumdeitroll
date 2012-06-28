@@ -35,6 +35,23 @@ public class Threads extends MainServlet {
 	}
 	
 	/**
+	 * Recupera la discussione a partire da un messaggio in essa contenuto
+	 * Usato in conversione di url da .it a .com
+	 * @param req
+	 * @param res
+	 * @return
+	 * @throws Exception
+	 */
+	@Action
+	String getByMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		long msgId = Long.parseLong(req.getParameter("msgId"));
+		long threadId = getPersistence().getMessage(msgId).getThreadId();
+		res.setHeader("Location", "Threads?action=getByThread&threadId=" + threadId + "#msg" + msgId);
+		res.sendError(302);
+		return null;
+	}
+	
+	/**
 	 * Tutti i messaggi di questo thread
 	 */
 	@Action
