@@ -93,8 +93,8 @@
 		</div>
 	</c:if>
 	<c:if test="${not empty loggedUser && loggedUser.preferences['super'] == 'yes'}">
-		<%@page import="com.acmetoy.ravanator.fdt.persistence.MessageDTO"%>
-		<%@page import="com.acmetoy.ravanator.fdt.util.IPMemStorage"%>
+		<%@page import="com.forumdeitroll.persistence.MessageDTO"%>
+		<%@page import="com.forumdeitroll.util.IPMemStorage"%>
 	</c:if>
 
 	<div style="padding: 10px;" class="message">

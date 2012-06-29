@@ -1,5 +1,5 @@
 <%@page import="java.util.Map"%>
-<%@page import="com.acmetoy.ravanator.fdt.servlets.Messages"%>
+<%@page import="com.forumdeitroll.servlets.Messages"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>

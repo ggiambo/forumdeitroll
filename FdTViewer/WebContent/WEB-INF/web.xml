@@ -3,7 +3,7 @@
   <display-name>FdTDueZero</display-name>
   <servlet>
     <servlet-name>Messages</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Messages</servlet-class>
+    <servlet-class>com.forumdeitroll.servlets.Messages</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Messages</servlet-name>
@@ -11,7 +11,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>Threads</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Threads</servlet-class>
+    <servlet-class>com.forumdeitroll.servlets.Threads</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Threads</servlet-name>
@@ -19,7 +19,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>ModInfo</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.ModInfo</servlet-class>
+    <servlet-class>com.forumdeitroll.servlets.ModInfo</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ModInfo</servlet-name>
@@ -27,7 +27,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>User</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.User</servlet-class>
+    <servlet-class>com.forumdeitroll.servlets.User</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>User</servlet-name>
@@ -35,7 +35,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>Pvt</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Pvt</servlet-class>
+    <servlet-class>com.forumdeitroll.servlets.Pvt</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Pvt</servlet-name>
@@ -43,7 +43,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>Misc</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Misc</servlet-class>
+    <servlet-class>com.forumdeitroll.servlets.Misc</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Misc</servlet-name>
@@ -51,7 +51,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>JSon</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.JSonServlet</servlet-class>
+    <servlet-class>com.forumdeitroll.servlets.JSonServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>JSon</servlet-name>
@@ -59,7 +59,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>Polls</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.Polls</servlet-class>
+    <servlet-class>com.forumdeitroll.servlets.Polls</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>Polls</servlet-name>
@@ -67,7 +67,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>UserProfilerServlet</servlet-name>
-    <servlet-class>com.acmetoy.ravanator.fdt.servlets.UserProfiler</servlet-class>
+    <servlet-class>com.forumdeitroll.servlets.UserProfiler</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>UserProfilerServlet</servlet-name>
@@ -102,7 +102,7 @@
   <filter>
     <description>Main filter</description>
     <filter-name>MainFilter</filter-name>
-    <filter-class>com.acmetoy.ravanator.fdt.filters.MainFilter</filter-class>
+    <filter-class>com.forumdeitroll.filters.MainFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>MainFilter</filter-name>
