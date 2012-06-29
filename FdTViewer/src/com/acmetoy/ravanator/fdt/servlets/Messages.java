@@ -90,16 +90,16 @@ public class Messages extends MainServlet {
 	// emo extended
 	private static final Map<String, String[]> EMO_EXT_MAP = new HashMap<String, String[]>();
 	static {
-		EMO_EXT_MAP.put("keroppi", new String[] {" $keroppi", "Keroppi" });
-		EMO_EXT_MAP.put("lich", new String[] {" $lich", "Licchione"});
-		EMO_EXT_MAP.put("ranona", new String[] {" $ranona", "Ranona"});
-		EMO_EXT_MAP.put("angioletto2", new String[] {" $angioletto", "Angioletto 2"});
-		EMO_EXT_MAP.put("proott", new String[] {" $proott", "Proott !!"});
-		EMO_EXT_MAP.put("cool2", new String[] {" $cool", "Ficoso 2"});
-		EMO_EXT_MAP.put("anonimato", new String[] {" $anonimato", "Anonimo Animato"});
-		EMO_EXT_MAP.put("ghost", new String[] {" $ghost", "Ghost Animato"});
-		EMO_EXT_MAP.put("piange", new String[] {" $piange", "Piagnina"});
-		EMO_EXT_MAP.put("foco", new String[] {" $foco", "Datte f&ograve;co"});
+		EMO_EXT_MAP.put("keroppi", new String[] {"$keroppi", "Keroppi" });
+		EMO_EXT_MAP.put("lich", new String[] {"$lich", "Licchione"});
+		EMO_EXT_MAP.put("ranona", new String[] {"$ranona", "Ranona"});
+		EMO_EXT_MAP.put("angioletto2", new String[] {"$angioletto", "Angioletto 2"});
+		EMO_EXT_MAP.put("proott", new String[] {"$proott", "Proott !!"});
+		EMO_EXT_MAP.put("cool2", new String[] {"$cool", "Ficoso 2"});
+		EMO_EXT_MAP.put("anonimato", new String[] {"$anonimato", "Anonimo Animato"});
+		EMO_EXT_MAP.put("ghost", new String[] {"$ghost", "Ghost Animato"});
+		EMO_EXT_MAP.put("piange", new String[] {"$piange", "Piagnina"});
+		EMO_EXT_MAP.put("foco", new String[] {"$foco", "Datte f&ograve;co"});
 	}
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
