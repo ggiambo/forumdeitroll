@@ -199,7 +199,7 @@ public class MessageTag extends BodyTagSupport {
 	}
 
 	private void on_word() {
-		if (!emoticons() && !extendedEmoticons()) {
+		if (!emoticons()) {
 			if (!link()) {
 				search();
 			}
@@ -232,10 +232,9 @@ public class MessageTag extends BodyTagSupport {
 		}
 	}
 	private static final Emo[] emos = load_emos();
-	private static final Emo[] emosExt = load_emosExt();
 	private static Emo[] load_emos() {
 		Map<String, String[]> emoMap = Messages.getEmoMap();
-		Emo[] emos = new Emo[emoMap.size()];
+		Emo[] emos = new Emo[Messages.getEmoMap().size() + Messages.getEmoExtendedMap().size()];
 		int i = 0;
 		for (Map.Entry<String, String[]> entry : emoMap.entrySet()) {
 			String imgName = entry.getKey();
@@ -244,13 +243,7 @@ public class MessageTag extends BodyTagSupport {
 			String emoReplacement = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emo/%s.gif'>", altText, altText, imgName);
 			emos[i++] = new Emo(emoSequence, emoReplacement);
 		}
-		Arrays.sort(emos);
-		return emos;
-	}
-	private static Emo[] load_emosExt() {
-		Map<String, String[]> emoMap = Messages.getEmoExtendedMap();
-		Emo[] emos = new Emo[emoMap.size()];
-		int i = 0;
+		emoMap = Messages.getEmoExtendedMap();
 		for (Map.Entry<String, String[]> entry : emoMap.entrySet()) {
 			String imgName = entry.getKey();
 			String emoSequence = entry.getValue()[0];
@@ -261,26 +254,11 @@ public class MessageTag extends BodyTagSupport {
 		Arrays.sort(emos);
 		return emos;
 	}
-	//mi arrendo: metodo giambo, spazi significativi
+	
 	private boolean emoticons() {
 		word.insert(0, ' ');
 		int wlen = word.length();
 		for (Emo emo: emos) {
-			simpleReplaceAllEmoticons(word, emo.sequence, emo.replacement);
-			simpleReplaceAllEmoticons(word, emo.sequenceToUpper, emo.replacement);
-		}
-		if (wlen != word.length()) {
-			return true;
-		} else {
-			word.delete(0, 1);
-			return false;
-		}
-	}
-	
-	private boolean extendedEmoticons() {
-		word.insert(0, ' ');
-		int wlen = word.length();
-		for (Emo emo: emosExt) {
 			simpleReplaceAllEmoticons(word, emo.sequence, emo.replacement);
 			simpleReplaceAllEmoticons(word, emo.sequenceToUpper, emo.replacement);
 		}
