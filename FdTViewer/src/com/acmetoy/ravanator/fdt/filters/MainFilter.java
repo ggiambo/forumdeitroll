@@ -48,6 +48,9 @@ public class MainFilter implements Filter {
 		if (req.getSession(false) == null) {
 			if (!"OK".equals(req.getParameter("disclaimer"))) {
 				String originalURL = req.getRequestURI();
+				if (originalURL.startsWith("/FdTViewer") {
+					originalURL = originalURL.substring("/FdTViewer".length());
+				}
 				if (req.getQueryString() != null) {
 					originalURL += "?" + req.getQueryString();
 				}
