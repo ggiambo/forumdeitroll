@@ -315,6 +315,13 @@ public class MessageTag extends BodyTagSupport {
 				}
 				catch (NumberFormatException e) {}
 				catch (IndexOutOfBoundsException e) {}
+			} else if (url.indexOf(".youtube.com/watch?") == 9 || url.indexOf(".youtube.com/watch?") == 10 || url.indexOf(".youtube.com/watch?") == 11 || url.startsWith("http://youtu.be/") || url.startsWith("https://youtu.be/")) {
+				String youcode = youcode(url);
+				if (youcode != null) {
+					youtube_embed(youcode);
+					word.setLength(0);
+					return true;
+				}
 			}
 			if (desc.length() > 50) {
 				desc = desc.substring(0, 50) + "...";
@@ -542,22 +549,39 @@ public class MessageTag extends BodyTagSupport {
 		p = img_end + (IMG_END.length - 1);
 	}
 
-	Long ytCounter = 0l;
-	private void youtube() {
-		p += YT.length;
-		int yt_end = scanFor(YT_END);
-		if (yt_end == -1) {
-			line.append(YT);
-			p--;
-			return;
+	private String youcode(String content) {
+		if (!isLink(new StringBuilder(content))) return null;
+		int s = content.indexOf("http://");
+		if (s == -1) {
+			s = 1 + content.indexOf("https://");
+			if (s == 0) return null;
 		}
-		int ps = scanFor(' ');
-		if (ps != -1 && ps < yt_end) {
-			line.append(YT);
-			p--;
-			return;
+		boolean http = s == 0;
+		boolean https = s == 1;
+		int a = content.indexOf(".youtube.com/watch?"),
+			b = content.indexOf("youtu.be/");
+		boolean yt_classic = (http && (a == 9 || a == 10)) || (https && (a == 10 || a == 11));
+		boolean yt_short = (http && b == 7) || (https && b == 8);
+		if (!(yt_classic || yt_short)) return null;
+		if (yt_classic) {
+			a = content.indexOf("?v=");
+			if (a == -1) {
+				a = content.indexOf("&amp;v=");
+				if (a == -1) return null;
+				a += 7;
+			} else {
+				a += 3;
+			}
+			b = content.indexOf("&", a);
+			return content.substring(a, b != -1 ? b : content.length());
+		} else {
+			a = content.indexOf("/", http ? 7 : 8) + 1;
+			b = content.indexOf("?", a);
+			return content.substring(a, b != -1 ? b : content.length());
 		}
-		String youcode = escape(new String(body, p, yt_end - p));
+	}
+
+	private void youtube_embed(String youcode) {
 		String embeddYt = "yes";
 		if (loggedUser != null) {
 			embeddYt = loggedUser.getPreferences().get(User.PREF_EMBEDDYT);
@@ -582,6 +606,29 @@ public class MessageTag extends BodyTagSupport {
 			line.append("' frameborder='0'></iframe>");
 			++embedCount;
 		}
+	}
+
+	Long ytCounter = 0l;
+	private void youtube() {
+		p += YT.length;
+		int yt_end = scanFor(YT_END);
+		if (yt_end == -1) {
+			line.append(YT);
+			p--;
+			return;
+		}
+		int ps = scanFor(' ');
+		if (ps != -1 && ps < yt_end) {
+			line.append(YT);
+			p--;
+			return;
+		}
+		String content = escape(new String(body, p, yt_end - p));
+		String youcode = youcode(content);
+		if (youcode == null) {
+			youcode = content;
+		}
+		youtube_embed(youcode);
 		p = yt_end + (YT_END.length - 1);
 	}
 

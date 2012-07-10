@@ -42,9 +42,7 @@ public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
-	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
-	private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?(\\S+&)?v=(\\S{7,11})");
-
+	
 	// key: filename, value[0]: edit value, value[1]: alt
 	// tutte le emo ora sono in lower case
 	private static final Map<String, String[]> EMO_MAP = new HashMap<String, String[]>();
@@ -545,21 +543,6 @@ public class Messages extends MainServlet {
 		for (String t : new String[] {"i", "b", "u", "s"}) {
 			text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
 			text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
-		}
-
-		// evita inject in yt
-		Matcher m = PATTERN_YT.matcher(text);
-		while (m.find()) {
-			String replace =  m.group(1).replaceAll("\"", "");
-			text = m.replaceFirst(Matcher.quoteReplacement("[yt]" + replace + "[/yt]"));
-			 m = PATTERN_YT.matcher(text);
-		}
-
-		// estrai id da URL youtube
-		m = PATTERN_YOUTUBE.matcher(text);
-		while (m.find()) {
-				text = m.replaceFirst("[yt]"+Matcher.quoteReplacement(m.group(4))+"[/yt]");
-				m = PATTERN_YOUTUBE.matcher(text);
 		}
 
 		// reply o messaggio nuovo ?

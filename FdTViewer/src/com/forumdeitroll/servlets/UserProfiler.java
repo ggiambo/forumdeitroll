@@ -1,11 +1,8 @@
 package com.forumdeitroll.servlets;
 
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.TreeSet;
 import java.util.UUID;
 

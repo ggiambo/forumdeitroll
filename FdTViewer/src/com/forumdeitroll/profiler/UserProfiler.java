@@ -1,21 +1,16 @@
 package com.forumdeitroll.profiler;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.log4j.Logger;
-
 import net.sf.uadetector.UADetectorServiceFactory;
 import net.sf.uadetector.UserAgent;
 import net.sf.uadetector.UserAgentStringParser;
 
-import com.google.gson.Gson;
+import org.apache.log4j.Logger;
 
 public class UserProfiler {
 	private static UserProfiler me = null;

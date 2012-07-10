@@ -1,15 +1,16 @@
 package com.forumdeitroll.util;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.net.InetAddress;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
+
 import com.forumdeitroll.SingleValueCache;
 
 public class CacheTorExitNodes extends SingleValueCache<Set<String>> {
