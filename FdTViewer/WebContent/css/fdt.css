@@ -1269,3 +1269,23 @@ div.msgReply ul.tabs li a {
 div#questionsDiv label {
 	display:block;
 }
+
+div.spoiler {
+	background-color: black;
+	display: inline;
+	cursor: help;
+}
+
+div.spoilerWarning {
+	display: none;
+	font-size: 24px;
+	font-weight: bold;
+}
+
+div.spoiler:hover {
+	background-color: transparent;
+}
+
+div.spoiler:hover > div.spoilerWarning {
+	display: inline;
+}

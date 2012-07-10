@@ -139,6 +139,14 @@ public class MessageTag extends BodyTagSupport {
 				on_word();
 				line.append("</span>");
 				p += COLOR_END.length - 1;
+			} else if (found(SPOILER)) {
+				on_word();
+				line.append("<div class='spoiler'><div class='spoilerWarning'>SPOILER!!!</div> ");
+				p += SPOILER.length - 1;
+			} else if (found(SPOILER_END)) {
+				on_word();
+				line.append("</div>");
+				p += SPOILER_END.length - 1;
 			} else if (c == ' ') {
 				on_word();
 				line.append(' ');
@@ -779,6 +787,9 @@ public class MessageTag extends BodyTagSupport {
 	
 	private static final char[] URL = "[url".toCharArray();
 	private static final char[] URL_END = "[/url]".toCharArray();
+	
+	private static final char[] SPOILER = "[spoiler]".toCharArray();
+	private static final char[] SPOILER_END = "[/spoiler]".toCharArray();
 
 	private static final String QUOTE = "&gt;";
 	private static final String SP_QUOTE = " &gt;";
