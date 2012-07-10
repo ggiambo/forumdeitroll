@@ -6,12 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.ListIterator;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 
 public class UserProfilesStorage {
@@ -40,26 +37,11 @@ public class UserProfilesStorage {
 				Object profilesData = ois.readObject();
 				ois.close();
 				fis.close();
-				// migration code from com.acmetoy.ravanator.fdt to com.forumdeitroll
-				for (ListIterator profilesIter = ((ArrayList)profilesData).listIterator(); profilesIter.hasNext();) {
-					Object profile = profilesIter.next();
-					if (profile instanceof UserProfile) {
-						// gia' migrato
-					} else if (profile instanceof com.acmetoy.ravanator.fdt.profiler.UserProfile) {
-						UserProfile newprofile = new UserProfile();
-						BeanUtils.copyProperties(newprofile, profile);
-						profilesIter.set(newprofile);
-					}
-				}
 				profiles = (ArrayList<UserProfile>) profilesData;
 			} catch (IOException e) {
 				logger.error("IOException: "+e.getMessage(), e);
 			} catch (ClassNotFoundException e) {
 				logger.error("ClassNotFoundException: "+e.getMessage(), e);
-			} catch (IllegalAccessException e) {
-				logger.error("IllegalAccessException: "+e.getMessage(), e);
-			} catch (InvocationTargetException e) {
-				logger.error("InvocationTargetException: "+e.getMessage(), e);
 			}
 			
 		}
