@@ -165,6 +165,11 @@ public class UserProfiler extends MainServlet {
 		logger.info("attributeValue = "+attributeValue);
 		try {
 			UserProfile profile = profiler.lookup(uuid);
+			if (attributeName.equals("permr+etag")) {
+				profile.setPermr("");
+				profile.setEtag("");
+				return page(req);
+			}
 			TreeSet<String> attributeList = null;
 			if (attributeName.equals("ipAddress"))
 				attributeList = profile.getIpAddresses();

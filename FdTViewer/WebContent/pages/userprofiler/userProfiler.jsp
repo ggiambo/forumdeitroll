@@ -38,6 +38,8 @@
 					<span class="ip-container">${ip}</span>
 				</c:forEach>
 				</p>
+				<p>permr: ${profile.permr }</p>
+				<p>etag: ${profile.etag }</p>
 				<p>userAgents: ${profile.userAgents }</p>
 				<p>resolutions: ${profile.screenResolutions }</p>
 				<p>plugin (hash): ${profile.pluginHashes }</p>
@@ -56,6 +58,7 @@
 						<option value="screenRes">screenRes</option>
 						<option value="pluginHash">pluginHash</option>
 						<option value="msgId">msgId</option>
+						<option value="permr+etag">permr+etag</option>
 					</select>
 					<input type="text" name="attributeValue" value="">
 					<input type="submit" name="submit" value=" cancella ">
