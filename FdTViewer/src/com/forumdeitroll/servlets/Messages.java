@@ -523,12 +523,16 @@ public class Messages extends MainServlet {
 		UserProfile profile = null;
 		try {
 			// un errore nel profiler non preclude la funzionalita' del forum, ma bisogna tenere d'occhio i logs
-			profile = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
-			profile.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
-			profile.setNick(login(req).getNick());
-			profile = UserProfiler.getInstance().guess(profile);
+			UserProfile candidate = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
+			candidate.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
+			candidate.setNick(login(req).getNick());
+			profile = UserProfiler.getInstance().guess(candidate);
 			if (profile.isBannato()) {
 				insertMessageAjaxFail(res, "Sei stato bannato");
+				Logger.getLogger(Messages.class).info(
+						"E` stato riconosciuto come bannato il seguente profilo utente: "+new Gson().toJson(candidate));
+				Logger.getLogger(Messages.class).info(
+						"Il profilo utente a cui e` stato associato è "+new Gson().toJson(profile));
 				return null;
 			}
 		} catch (Exception e) {
