@@ -1271,7 +1271,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return messages;
 	}
-	
+
 	private int countMessages(String forum, Connection conn) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1293,7 +1293,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return -1;
 	}
-	
+
 	private int countThreads(String forum, Connection conn) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1365,7 +1365,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public void pedonizeThreadTree(long rootMessageId) {
+	public void moveThreadTree(long rootMessageId, final String destForum) {
 		// forum originale
 		MessageDTO msg = getMessage(rootMessageId);
 		String forum = msg.getForum();
@@ -1399,7 +1399,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			// setta a tutti i messaggi il threadId = rootMessageId
 			ps.close();
 			sql.setLength(0);
-			sql.append("UPDATE messages SET threadId = ? , forum = '").append(FORUM_PROC).append("' WHERE id IN (");
+			sql.append("UPDATE messages SET threadId = ? , forum = '").append(destForum).append("' WHERE id IN (");
 			// sono long, non temo injection io
 			for (Long id : messages) {
 				sql.append(id).append(',');
@@ -1420,11 +1420,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			// update numero di messaggi
 			ps = conn.prepareStatement("UPDATE sysinfo SET value = value + ? WHERE `key` = ?");
 			ps.setInt(1, res);
-			ps.setString(2, "messages.forum." + FORUM_PROC);
+			ps.setString(2, "messages.forum." + destForum);
 			ps.execute();
 			ps.setInt(1, 1);
-			ps.setString(2, "threads.forum." + FORUM_PROC);
-			ps.execute(); 
+			ps.setString(2, "threads.forum." + destForum);
+			ps.execute();
 			ps.setInt(1, -1 * res);
 			ps.setString(2, "messages.forum." + forum);
 			ps.execute();
@@ -1441,7 +1441,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	@Override
 	public void restoreOrHideMessage(long msgId, boolean visible) {
 		Connection conn = null;
@@ -1459,7 +1459,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	@Override
 	public String getSysinfoValue(String key) {
 		Connection conn = null;

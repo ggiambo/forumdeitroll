@@ -36,7 +36,7 @@ public class ThreadDTO {
 	}
 
 	public String getSubject() {
-		return subject;
+		return ((forum != null) && (forum.equals(IPersistence.FORUM_ASHES))) ? "Cenere alla cenere, polvere alla polvere" :  subject;
 	}
 
 	public void setSubject(String subject) {

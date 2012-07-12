@@ -329,6 +329,10 @@ public class Messages extends MainServlet {
 			return "Ma che cacchio di forum e' '" + forum + "' ?!?";
 		}
 
+		if ((forum != null) && forum.equals(IPersistence.FORUM_ASHES)) {
+			return "Postare nel forum " + IPersistence.FORUM_ASHES + " e' vietato e stupido";
+		}
+
 		return null;
 	}
 
@@ -599,7 +603,7 @@ public class Messages extends MainServlet {
 			if (profile != null)
 				UserProfiler.getInstance().bind(profile, m_id);
 		} catch (Exception e) {
-			
+
 		}
 
 		// redirect
@@ -696,7 +700,7 @@ public class Messages extends MainServlet {
 
 		final long rootMessageId = Long.parseLong(req.getParameter("rootMessageId"));
 
-		getPersistence().pedonizeThreadTree(rootMessageId);
+		getPersistence().moveThreadTree(rootMessageId, IPersistence.FORUM_PROC);
 
 		{ // moderator shaming block
 			final MessageDTO movedMessage = getPersistence().getMessage(rootMessageId);

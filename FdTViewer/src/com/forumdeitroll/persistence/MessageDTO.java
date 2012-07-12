@@ -27,7 +27,7 @@ public class MessageDTO extends ThreadDTO {
 	}
 
 	public String getText() {
-		return text;
+		return ((getForum() != null) && (getForum().equals(IPersistence.FORUM_ASHES))) ? "Cenere alla cenere, polvere alla polvere" : text;
 	}
 
 	public void setText(String text) {

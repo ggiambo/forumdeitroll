@@ -165,7 +165,7 @@ public class MessageTag extends BodyTagSupport {
 		for (int i=0;i<open_i;++i) out.append(TAG_I_END);
 		for (int i=0;i<open_s;++i) out.append(TAG_S_END);
 		for (int i=0;i<open_u;++i) out.append(TAG_U_END);
-		
+
 		if (multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
 			// Se multiLineQuoteStarted qui è vero allora non ho chiuso l'ultimo <div>
 			// del quote-container... ma perché non se ne è occupato "on_line" a riga 154?
