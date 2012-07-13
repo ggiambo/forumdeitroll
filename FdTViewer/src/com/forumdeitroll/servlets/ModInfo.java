@@ -3,6 +3,7 @@ package com.forumdeitroll.servlets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.util.IPMemStorage;
@@ -131,11 +132,12 @@ public class ModInfo extends MainServlet {
 			return show(req, res);
 		}
 
-		setNavigationMessage(req,NavigationMessage.warn("Non implementato"));
-
-		//TODO:
-		// - nascondere messaggio permanentemente
-		// -- sarrusofono 2012-06-09
+		try {
+			getPersistence().moveThreadTree(Long.parseLong(m_id), IPersistence.FORUM_ASHES);
+		} catch (NumberFormatException e) {
+			setNavigationMessage(req, NavigationMessage.error("Errore durante l'esecuzione della richiesta: " + e.getMessage()));
+			return show(req, res);
+		}
 
 		return show(req, res);
 	}
