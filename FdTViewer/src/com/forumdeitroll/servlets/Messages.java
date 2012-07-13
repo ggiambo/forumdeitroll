@@ -447,6 +447,9 @@ public class Messages extends MainServlet {
 		if (loggedUser != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
 			// posta come utente loggato
 			return loggedUser;
+		} else if ((loggedUser != null) && StringUtils.isEmpty(nick)) {
+			// utente loggato che posta come anonimo
+			return new AuthorDTO(loggedUser);
 		} else if (StringUtils.isNotEmpty(nick) && StringUtils.isNotEmpty(pass)) {
 			AuthorDTO sockpuppet = getPersistence().getAuthor(nick);
 			if (PasswordUtils.hasUserPassword(sockpuppet, pass)) {
@@ -454,7 +457,7 @@ public class Messages extends MainServlet {
 				return sockpuppet;
 			}
 		} else {
-			// la coppia nome utente/password non e` stata inserita e l'utente non e` loggato, ergo deve inserire il captcha giusto
+			// se non e` stato inserito nome utente/password e l'utente non e` loggato
 			String captcha = req.getParameter("captcha");
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
 			if (StringUtils.isNotEmpty(correctAnswer) && correctAnswer.equals(captcha)) {
@@ -482,7 +485,7 @@ public class Messages extends MainServlet {
 		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) return true;
 
 		final String ip = IPMemStorage.requestToIP(req);
-		
+
 		if (BANNED_IPs.contains(ip)) return true;
 
 		// check se ANOnimo usa TOR
@@ -519,7 +522,7 @@ public class Messages extends MainServlet {
 			insertMessageAjaxFail(res, "Sei stato bannato");
 			return null;
 		}
-		
+
 		UserProfile profile = null;
 		try {
 			// un errore nel profiler non preclude la funzionalita' del forum, ma bisogna tenere d'occhio i logs

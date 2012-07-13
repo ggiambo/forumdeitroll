@@ -18,7 +18,7 @@
 		});
 		jscolor.init()
 	});
-	
+
 	function showEmotiboxClassic() {
 		var emotiboxes = $("#reply_${message.parentId} .emotibox .emo");
 		$(emotiboxes[1]).hide();
@@ -27,7 +27,7 @@
 		$(tabs[1]).removeClass("selectedTab")
 		$(tabs[0]).addClass("selectedTab")
 	}
-	
+
 	function showEmotiboxExtended() {
 		var emotiboxes = $("#reply_${message.parentId} .emotibox .emo");
 		$(emotiboxes[0]).hide();
@@ -36,7 +36,7 @@
 		$(tabs[0]).removeClass("selectedTab")
 		$(tabs[1]).addClass("selectedTab")
 	}
-	
+
 </fdt:delayedScript>
 
 <c:set var="isReply" value="${!isEdit && message.parentId > 0}"/>
@@ -90,7 +90,7 @@
 			<input style="display:none;float:right" tabindex="5" type="button" name="edit" value="Edit" onClick="edit(${message.parentId})"/>&nbsp;
 		</div>
 	</div>
-	
+
 	<c:if test="${isNewThread || isEdit || isReply}">
 		<label for="subject">Oggetto:</label><br />
 		<input tabindex="1" name="subject" id="subject" maxlength="<%=Messages.MAX_SUBJECT_LENGTH %>" size="<%=Messages.MAX_SUBJECT_LENGTH %>" class="msgReplyObj" value="<c:out value="${message.subject}" escapeXml="true"/>"/>
@@ -117,20 +117,24 @@
 		<input tabindex="2" name="nick" id="nick" size="10" value="${loggedUser.nick }"/>&nbsp;&nbsp;
 		<label for="password">Password:&nbsp;</label>
 		<input tabindex="3" type="password" id="password" name="pass" size="10"/>
-		<c:if test="${loggedUser != null}">(inserisci soltanto se vuoi postare con un utente diverso da quello con cui sei loggato)</c:if>
-		<div class="msgCaptcha">
-			<div><img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" /></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">
-			<c:choose>
-				<c:when test="${loggedUser != null}">
-					Cancella il tuo nickname e copia qui il testo dell'immagine per postare come Non Autenticato.
-				</c:when>
-				<c:otherwise>
-					Copia qui il testo dell'immagine
-				</c:otherwise>
-			</c:choose>
-			</div></div>
-			<div style="clear: both;"></div>
-		</div>
+		<c:if test="${loggedUser != null}">
+		(cancellare nome utente per postare anonimamente)
+		</c:if>
+		<c:if test="${loggedUser == null}">
+			<div class="msgCaptcha">
+				<div><img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" /></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">
+				<c:choose>
+					<c:when test="${loggedUser != null}">
+						Cancella il tuo nickname e copia qui il testo dell'immagine per postare come Non Autenticato.
+					</c:when>
+					<c:otherwise>
+						Copia qui il testo dell'immagine
+					</c:otherwise>
+				</c:choose>
+				</div></div>
+				<div style="clear: both;"></div>
+			</div>
+		</c:if>
 	</div>
 	<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />
 	<div style="clear: both;"></div>
