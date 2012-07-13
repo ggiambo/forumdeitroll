@@ -74,6 +74,7 @@ public class MessageTag extends BodyTagSupport {
 	private String[] searches;
 	private static String[] EMPTY_STRING_ARRAY = new String[0];
 	int open_b = 0, open_i = 0, open_s = 0, open_u = 0;
+	int open_spoiler = 0;
 	private String collapseQuotes;
 	private boolean multiLineQuoteStarted;
 
@@ -92,6 +93,7 @@ public class MessageTag extends BodyTagSupport {
 		line = new StringBuilder();
 		searches = search != null && !search.equals("") ? search.split(" ") : EMPTY_STRING_ARRAY;
 		open_b = 0; open_i = 0; open_s = 0; open_u = 0;
+		open_spoiler = 0;
 		p = -1;
 		multiLineQuoteStarted = false;
 
@@ -141,11 +143,15 @@ public class MessageTag extends BodyTagSupport {
 				p += COLOR_END.length - 1;
 			} else if (found(SPOILER)) {
 				on_word();
-				line.append("<div class='spoiler'><div class='spoilerWarning'>SPOILER!!!</div> ");
+				line.append("<div class='spoiler'><span class='spoilerWarning'>SPOILER!!!</span> ");
+				open_spoiler++;
 				p += SPOILER.length - 1;
 			} else if (found(SPOILER_END)) {
 				on_word();
-				line.append("</div>");
+				if (open_spoiler > 0) {
+					line.append("</div>");
+					open_spoiler--;
+				}
 				p += SPOILER_END.length - 1;
 			} else if (c == ' ') {
 				on_word();
@@ -165,6 +171,8 @@ public class MessageTag extends BodyTagSupport {
 		for (int i=0;i<open_i;++i) out.append(TAG_I_END);
 		for (int i=0;i<open_s;++i) out.append(TAG_S_END);
 		for (int i=0;i<open_u;++i) out.append(TAG_U_END);
+		
+		for (int i=0;i<open_spoiler;++i) out.append("</div>");
 		
 		if (multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
 			// Se multiLineQuoteStarted qui è vero allora non ho chiuso l'ultimo <div>

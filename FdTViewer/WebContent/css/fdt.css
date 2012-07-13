@@ -1271,21 +1271,30 @@ div#questionsDiv label {
 }
 
 div.spoiler {
-	background-color: black;
+	background-color: black !important;
+	color: black !important;
 	display: inline;
 	cursor: help;
 }
+div.spoiler > * {
+	visibility: hidden;
+}
 
-div.spoilerWarning {
+span.spoilerWarning {
 	display: none;
 	font-size: 24px;
 	font-weight: bold;
 }
 
 div.spoiler:hover {
-	background-color: transparent;
+	background-color: transparent !important;
+	color: inherit !important;
 }
 
-div.spoiler:hover > div.spoilerWarning {
+div.spoiler:hover > span.spoilerWarning {
 	display: inline;
+}
+
+div.spoiler:hover > * {
+	visibility: visible;
 }
