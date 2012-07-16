@@ -384,7 +384,8 @@ public class MessageTag extends BodyTagSupport {
 		}
 		
 		if (quoteLvl != 0) {
-			if (quoteLvl > 4) quoteLvl = 1 + (quoteLvl % 4);
+			quoteLvl = quoteLvl % 4;
+			if (quoteLvl == 0) quoteLvl = 4;
 			line.insert(0, "<span class='quoteLvl" + quoteLvl + "'>");
 			line.append("</span>");
 			if (!multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
