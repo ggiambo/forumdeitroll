@@ -282,6 +282,14 @@ div.message {
 	font-weight: bold;
 }
 
+#quoteForum.quoteForumSmall {
+	background-color: white;
+	color: black;
+	box-shadow: none;
+	text-shadow: none;
+	background-image: none;
+}
+
 .messagesButtonBar {
 	background: #D6D6D6;
 	height: 21px;

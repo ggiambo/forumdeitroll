@@ -5,9 +5,7 @@
 	<jsp:include page="incHead.jsp"/>
 	<body>
 		<div id="body"> <!-- non mettere nulla prima del div #body -->
-		<c:if test="${empty loggedUser || loggedUser.preferences['hideBannerone'] != 'checked'}">
-			<jsp:include page="incHeader.jsp"/>
-		</c:if>
+		<jsp:include page="incHeader.jsp"/>
 		<jsp:include page="incNav.jsp"/>
 		<c:set var="bodyContentClass" value="" scope="page" />
 		<c:if test="${param.forum == 'Proc di Catania'}">
