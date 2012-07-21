@@ -694,7 +694,7 @@ span.quoteLvl1 {
 }
 
 div.quote-container {
-	height: 11px;
+	height: 16px;
 	background-image: url(../images/plus_sign.gif);
 	background-repeat: no-repeat;
 	cursor: pointer;

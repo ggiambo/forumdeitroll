@@ -397,7 +397,7 @@ public class MessageTag extends BodyTagSupport {
 		} else {
 			if (multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
 				multiLineQuoteStarted = false;
-				line.append("</div></div>");
+				line.insert(0, "</div></div>");
 			}
 		}
 	}
