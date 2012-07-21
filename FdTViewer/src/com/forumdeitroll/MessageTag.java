@@ -371,7 +371,9 @@ public class MessageTag extends BodyTagSupport {
 			q = SP_QUOTE;
 			quoteLvl++;
 		}
-		int scrittoda = line.indexOf("Scritto da: ");
+		int scrittoda = (scrittoda=line.indexOf("- Scritto da: ")) != -1
+				? scrittoda
+				: line.indexOf("Scritto da: ");
 		if (scrittoda != -1) {
 			if (quoteLvl == 0 && scrittoda == 0) {
 				quoteLvl++;
