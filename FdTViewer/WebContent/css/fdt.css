@@ -282,6 +282,14 @@ div.message {
 	font-weight: bold;
 }
 
+#quoteForum.quoteForumSmall {
+	background-color: white;
+	color: black;
+	box-shadow: none;
+	text-shadow: none;
+	background-image: none;
+}
+
 .messagesButtonBar {
 	background: #D6D6D6;
 	height: 21px;
@@ -694,7 +702,7 @@ span.quoteLvl1 {
 }
 
 div.quote-container {
-	height: 11px;
+	height: 16px;
 	background-image: url(../images/plus_sign.gif);
 	background-repeat: no-repeat;
 	cursor: pointer;
@@ -1268,4 +1276,33 @@ div.msgReply ul.tabs li a {
 
 div#questionsDiv label {
 	display:block;
+}
+
+div.spoiler {
+	background-color: black !important;
+	color: black !important;
+	display: inline;
+	cursor: help;
+}
+div.spoiler > * {
+	visibility: hidden;
+}
+
+span.spoilerWarning {
+	display: none;
+	font-size: 24px;
+	font-weight: bold;
+}
+
+div.spoiler:hover {
+	background-color: transparent !important;
+	color: inherit !important;
+}
+
+div.spoiler:hover > span.spoilerWarning {
+	display: inline;
+}
+
+div.spoiler:hover > * {
+	visibility: visible;
 }

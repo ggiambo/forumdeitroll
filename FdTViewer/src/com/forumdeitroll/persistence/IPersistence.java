@@ -8,6 +8,7 @@ import java.util.Properties;
 public interface IPersistence extends Serializable {
 
 	public static final String FORUM_PROC = "Proc di Catania";
+	public static final String FORUM_ASHES = "Cenere";
 
 	public void init(Properties databaseConfig) throws Exception;
 
@@ -110,7 +111,7 @@ public interface IPersistence extends Serializable {
 
 	public List<String> searchAuthor(String searchString);
 
-	public void pedonizeThreadTree(long rootMessageId);
+	public void moveThreadTree(long rootMessageId, final String destForum);
 
 	public long createPoll(PollDTO pollDTO);
 

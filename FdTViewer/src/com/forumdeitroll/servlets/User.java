@@ -19,8 +19,8 @@ import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.servlets.Action.Method;
-import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.CacheTorExitNodes;
+import com.forumdeitroll.util.IPMemStorage;
 
 public class User extends MainServlet {
 

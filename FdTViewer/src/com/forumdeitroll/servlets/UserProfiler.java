@@ -1,11 +1,8 @@
 package com.forumdeitroll.servlets;
 
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.TreeSet;
 import java.util.UUID;
 
@@ -168,6 +165,11 @@ public class UserProfiler extends MainServlet {
 		logger.info("attributeValue = "+attributeValue);
 		try {
 			UserProfile profile = profiler.lookup(uuid);
+			if (attributeName.equals("permr+etag")) {
+				profile.setPermr("");
+				profile.setEtag("");
+				return page(req);
+			}
 			TreeSet<String> attributeList = null;
 			if (attributeName.equals("ipAddress"))
 				attributeList = profile.getIpAddresses();

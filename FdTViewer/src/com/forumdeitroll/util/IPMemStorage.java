@@ -1,7 +1,8 @@
 package com.forumdeitroll.util;
 
-import com.forumdeitroll.persistence.AuthorDTO;
 import javax.servlet.http.HttpServletRequest;
+
+import com.forumdeitroll.persistence.AuthorDTO;
 
 public class IPMemStorage {
 	private static int STORE_SIZE = 1000;

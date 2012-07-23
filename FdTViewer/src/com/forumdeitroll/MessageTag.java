@@ -74,6 +74,7 @@ public class MessageTag extends BodyTagSupport {
 	private String[] searches;
 	private static String[] EMPTY_STRING_ARRAY = new String[0];
 	int open_b = 0, open_i = 0, open_s = 0, open_u = 0;
+	int open_spoiler = 0;
 	private String collapseQuotes;
 	private boolean multiLineQuoteStarted;
 
@@ -92,6 +93,7 @@ public class MessageTag extends BodyTagSupport {
 		line = new StringBuilder();
 		searches = search != null && !search.equals("") ? search.split(" ") : EMPTY_STRING_ARRAY;
 		open_b = 0; open_i = 0; open_s = 0; open_u = 0;
+		open_spoiler = 0;
 		p = -1;
 		multiLineQuoteStarted = false;
 
@@ -139,6 +141,18 @@ public class MessageTag extends BodyTagSupport {
 				on_word();
 				line.append("</span>");
 				p += COLOR_END.length - 1;
+			} else if (found(SPOILER)) {
+				on_word();
+				line.append("<div class='spoiler'><span class='spoilerWarning'>SPOILER!!!</span> ");
+				open_spoiler++;
+				p += SPOILER.length - 1;
+			} else if (found(SPOILER_END)) {
+				on_word();
+				if (open_spoiler > 0) {
+					line.append("</div>");
+					open_spoiler--;
+				}
+				p += SPOILER_END.length - 1;
 			} else if (c == ' ') {
 				on_word();
 				line.append(' ');
@@ -157,7 +171,8 @@ public class MessageTag extends BodyTagSupport {
 		for (int i=0;i<open_i;++i) out.append(TAG_I_END);
 		for (int i=0;i<open_s;++i) out.append(TAG_S_END);
 		for (int i=0;i<open_u;++i) out.append(TAG_U_END);
-		
+		for (int i=0;i<open_spoiler;++i) out.append("</div>");
+
 		if (multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
 			// Se multiLineQuoteStarted qui è vero allora non ho chiuso l'ultimo <div>
 			// del quote-container... ma perché non se ne è occupato "on_line" a riga 154?
@@ -315,6 +330,13 @@ public class MessageTag extends BodyTagSupport {
 				}
 				catch (NumberFormatException e) {}
 				catch (IndexOutOfBoundsException e) {}
+			} else if (url.indexOf(".youtube.com/watch?") == 9 || url.indexOf(".youtube.com/watch?") == 10 || url.indexOf(".youtube.com/watch?") == 11 || url.startsWith("http://youtu.be/") || url.startsWith("https://youtu.be/")) {
+				String youcode = youcode(url);
+				if (youcode != null) {
+					youtube_embed(youcode);
+					word.setLength(0);
+					return true;
+				}
 			}
 			if (desc.length() > 50) {
 				desc = desc.substring(0, 50) + "...";
@@ -349,7 +371,9 @@ public class MessageTag extends BodyTagSupport {
 			q = SP_QUOTE;
 			quoteLvl++;
 		}
-		int scrittoda = line.indexOf("Scritto da: ");
+		int scrittoda = (scrittoda=line.indexOf("- Scritto da: ")) != -1
+				? scrittoda
+				: line.indexOf("Scritto da: ");
 		if (scrittoda != -1) {
 			if (quoteLvl == 0 && scrittoda == 0) {
 				quoteLvl++;
@@ -362,7 +386,8 @@ public class MessageTag extends BodyTagSupport {
 		}
 		
 		if (quoteLvl != 0) {
-			if (quoteLvl > 4) quoteLvl = 1 + (quoteLvl % 4);
+			quoteLvl = quoteLvl % 4;
+			if (quoteLvl == 0) quoteLvl = 4;
 			line.insert(0, "<span class='quoteLvl" + quoteLvl + "'>");
 			line.append("</span>");
 			if (!multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
@@ -372,7 +397,7 @@ public class MessageTag extends BodyTagSupport {
 		} else {
 			if (multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
 				multiLineQuoteStarted = false;
-				line.append("</div></div>");
+				line.insert(0, "</div></div>");
 			}
 		}
 	}
@@ -542,22 +567,39 @@ public class MessageTag extends BodyTagSupport {
 		p = img_end + (IMG_END.length - 1);
 	}
 
-	Long ytCounter = 0l;
-	private void youtube() {
-		p += YT.length;
-		int yt_end = scanFor(YT_END);
-		if (yt_end == -1) {
-			line.append(YT);
-			p--;
-			return;
+	private String youcode(String content) {
+		if (!isLink(new StringBuilder(content))) return null;
+		int s = content.indexOf("http://");
+		if (s == -1) {
+			s = 1 + content.indexOf("https://");
+			if (s == 0) return null;
 		}
-		int ps = scanFor(' ');
-		if (ps != -1 && ps < yt_end) {
-			line.append(YT);
-			p--;
-			return;
+		boolean http = s == 0;
+		boolean https = s == 1;
+		int a = content.indexOf(".youtube.com/watch?"),
+			b = content.indexOf("youtu.be/");
+		boolean yt_classic = (http && (a == 9 || a == 10)) || (https && (a == 10 || a == 11));
+		boolean yt_short = (http && b == 7) || (https && b == 8);
+		if (!(yt_classic || yt_short)) return null;
+		if (yt_classic) {
+			a = content.indexOf("?v=");
+			if (a == -1) {
+				a = content.indexOf("&amp;v=");
+				if (a == -1) return null;
+				a += 7;
+			} else {
+				a += 3;
+			}
+			b = content.indexOf("&", a);
+			return content.substring(a, b != -1 ? b : content.length());
+		} else {
+			a = content.indexOf("/", http ? 7 : 8) + 1;
+			b = content.indexOf("?", a);
+			return content.substring(a, b != -1 ? b : content.length());
 		}
-		String youcode = escape(new String(body, p, yt_end - p));
+	}
+
+	private void youtube_embed(String youcode) {
 		String embeddYt = "yes";
 		if (loggedUser != null) {
 			embeddYt = loggedUser.getPreferences().get(User.PREF_EMBEDDYT);
@@ -582,6 +624,29 @@ public class MessageTag extends BodyTagSupport {
 			line.append("' frameborder='0'></iframe>");
 			++embedCount;
 		}
+	}
+
+	Long ytCounter = 0l;
+	private void youtube() {
+		p += YT.length;
+		int yt_end = scanFor(YT_END);
+		if (yt_end == -1) {
+			line.append(YT);
+			p--;
+			return;
+		}
+		int ps = scanFor(' ');
+		if (ps != -1 && ps < yt_end) {
+			line.append(YT);
+			p--;
+			return;
+		}
+		String content = escape(new String(body, p, yt_end - p));
+		String youcode = youcode(content);
+		if (youcode == null) {
+			youcode = content;
+		}
+		youtube_embed(youcode);
 		p = yt_end + (YT_END.length - 1);
 	}
 
@@ -732,6 +797,9 @@ public class MessageTag extends BodyTagSupport {
 	
 	private static final char[] URL = "[url".toCharArray();
 	private static final char[] URL_END = "[/url]".toCharArray();
+	
+	private static final char[] SPOILER = "[spoiler]".toCharArray();
+	private static final char[] SPOILER_END = "[/spoiler]".toCharArray();
 
 	private static final String QUOTE = "&gt;";
 	private static final String SP_QUOTE = " &gt;";

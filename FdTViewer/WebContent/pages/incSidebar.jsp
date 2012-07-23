@@ -16,7 +16,7 @@
 	<span class="openCloseSidebar" onClick="hideSidebar();" onMouseOver="this.style.cursor='pointer'">&laquo;</span><br/>
 	<form action="Messages" method="get" id="sidebarSearchForm">
 		<input type="hidden" name="action" value="search"/>
-		<input name="search" size="8" value="${param.search}"/>
+		<input name="search" size="8" value="<c:out value="${param.search}"/>"/>
 		<div id="sortDiv">
 			<label for="sort">ordina per: </label>
 			<select name="sort" id="sort">

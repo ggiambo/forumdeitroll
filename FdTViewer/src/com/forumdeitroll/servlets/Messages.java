@@ -42,9 +42,7 @@ public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
-	private static final Pattern PATTERN_YT = Pattern.compile("\\[yt\\]((.*?)\"(.*?))\\[/yt\\]");
-	private static final Pattern PATTERN_YOUTUBE = Pattern.compile("(https?://)?(www|it)\\.youtube\\.com/watch\\?(\\S+&)?v=(\\S{7,11})");
-
+	
 	// key: filename, value[0]: edit value, value[1]: alt
 	// tutte le emo ora sono in lower case
 	private static final Map<String, String[]> EMO_MAP = new HashMap<String, String[]>();
@@ -331,6 +329,10 @@ public class Messages extends MainServlet {
 			return "Ma che cacchio di forum e' '" + forum + "' ?!?";
 		}
 
+		if ((forum != null) && forum.equals(IPersistence.FORUM_ASHES)) {
+			return "Postare nel forum " + IPersistence.FORUM_ASHES + " e' vietato e stupido";
+		}
+
 		return null;
 	}
 
@@ -445,6 +447,9 @@ public class Messages extends MainServlet {
 		if (loggedUser != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
 			// posta come utente loggato
 			return loggedUser;
+		} else if ((loggedUser != null) && StringUtils.isEmpty(nick)) {
+			// utente loggato che posta come anonimo
+			return new AuthorDTO(loggedUser);
 		} else if (StringUtils.isNotEmpty(nick) && StringUtils.isNotEmpty(pass)) {
 			AuthorDTO sockpuppet = getPersistence().getAuthor(nick);
 			if (PasswordUtils.hasUserPassword(sockpuppet, pass)) {
@@ -452,7 +457,7 @@ public class Messages extends MainServlet {
 				return sockpuppet;
 			}
 		} else {
-			// la coppia nome utente/password non e` stata inserita e l'utente non e` loggato, ergo deve inserire il captcha giusto
+			// se non e` stato inserito nome utente/password e l'utente non e` loggato
 			String captcha = req.getParameter("captcha");
 			String correctAnswer = (String)req.getSession().getAttribute("captcha");
 			if (StringUtils.isNotEmpty(correctAnswer) && correctAnswer.equals(captcha)) {
@@ -480,7 +485,7 @@ public class Messages extends MainServlet {
 		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) return true;
 
 		final String ip = IPMemStorage.requestToIP(req);
-		
+
 		if (BANNED_IPs.contains(ip)) return true;
 
 		// check se ANOnimo usa TOR
@@ -517,16 +522,20 @@ public class Messages extends MainServlet {
 			insertMessageAjaxFail(res, "Sei stato bannato");
 			return null;
 		}
-		
+
 		UserProfile profile = null;
 		try {
 			// un errore nel profiler non preclude la funzionalita' del forum, ma bisogna tenere d'occhio i logs
-			profile = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
-			profile.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
-			profile.setNick(login(req).getNick());
-			profile = UserProfiler.getInstance().guess(profile);
+			UserProfile candidate = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
+			candidate.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
+			candidate.setNick(login(req).getNick());
+			profile = UserProfiler.getInstance().guess(candidate);
 			if (profile.isBannato()) {
 				insertMessageAjaxFail(res, "Sei stato bannato");
+				Logger.getLogger(Messages.class).info(
+						"E` stato riconosciuto come bannato il seguente profilo utente: "+new Gson().toJson(candidate));
+				Logger.getLogger(Messages.class).info(
+						"Il profilo utente a cui e` stato associato è "+new Gson().toJson(profile));
 				return null;
 			}
 		} catch (Exception e) {
@@ -545,21 +554,6 @@ public class Messages extends MainServlet {
 		for (String t : new String[] {"i", "b", "u", "s"}) {
 			text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
 			text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
-		}
-
-		// evita inject in yt
-		Matcher m = PATTERN_YT.matcher(text);
-		while (m.find()) {
-			String replace =  m.group(1).replaceAll("\"", "");
-			text = m.replaceFirst(Matcher.quoteReplacement("[yt]" + replace + "[/yt]"));
-			 m = PATTERN_YT.matcher(text);
-		}
-
-		// estrai id da URL youtube
-		m = PATTERN_YOUTUBE.matcher(text);
-		while (m.find()) {
-				text = m.replaceFirst("[yt]"+Matcher.quoteReplacement(m.group(4))+"[/yt]");
-				m = PATTERN_YOUTUBE.matcher(text);
 		}
 
 		// reply o messaggio nuovo ?
@@ -616,7 +610,7 @@ public class Messages extends MainServlet {
 			if (profile != null)
 				UserProfiler.getInstance().bind(profile, m_id);
 		} catch (Exception e) {
-			
+
 		}
 
 		// redirect
@@ -713,7 +707,7 @@ public class Messages extends MainServlet {
 
 		final long rootMessageId = Long.parseLong(req.getParameter("rootMessageId"));
 
-		getPersistence().pedonizeThreadTree(rootMessageId);
+		getPersistence().moveThreadTree(rootMessageId, IPersistence.FORUM_PROC);
 
 		{ // moderator shaming block
 			final MessageDTO movedMessage = getPersistence().getMessage(rootMessageId);

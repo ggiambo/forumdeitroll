@@ -20,12 +20,12 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
 import com.forumdeitroll.PasswordUtils;
+import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.SingleValueCache;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.PersistenceFactory;
 import com.forumdeitroll.persistence.QuoteDTO;
-import com.forumdeitroll.RandomPool;
 
 public abstract class MainServlet extends HttpServlet {
 
