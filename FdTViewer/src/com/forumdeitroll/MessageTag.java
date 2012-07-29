@@ -722,10 +722,10 @@ public class MessageTag extends BodyTagSupport {
 		return -1;
 	}
 	private static String escape(StringBuilder in) {
-		return StringEscapeUtils.escapeHtml4(in.toString()).replace("'", "&quot;");
+		return StringEscapeUtils.escapeHtml4(in.toString()).replace("'", "&apos;");
 	}
 	private static String escape(String in) {
-		return StringEscapeUtils.escapeHtml4(in).replace("'", "&quot;");
+		return StringEscapeUtils.escapeHtml4(in).replace("'", "&apos;");
 	}
 	private static boolean simpleReplaceAll(StringBuilder src, String search, String replacement) {
 		if (search == null || search.length() == 0) return false;
