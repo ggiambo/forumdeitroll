@@ -12,6 +12,8 @@ import net.sf.uadetector.UserAgentStringParser;
 
 import org.apache.log4j.Logger;
 
+import com.forumdeitroll.util.CacheTorExitNodes;
+
 public class UserProfiler {
 	private static UserProfiler me = null;
 	public static UserProfiler getInstance() {
@@ -101,7 +103,8 @@ public class UserProfiler {
 				merge(candidate, profile);
 				return profile;
 			}
-			if (profile.getIpAddresses().contains(candidate.getIpAddress())) {
+			if (profile.getIpAddresses().contains(candidate.getIpAddress())
+					&& !CacheTorExitNodes.check(candidate.getIpAddress())) {
 				merge(candidate, profile);
 				return profile;
 			}
