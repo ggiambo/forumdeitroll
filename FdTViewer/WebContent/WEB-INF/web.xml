@@ -68,6 +68,7 @@
   <servlet>
     <servlet-name>UserProfilerServlet</servlet-name>
     <servlet-class>com.forumdeitroll.servlets.UserProfiler</servlet-class>
+    <load-on-startup>2</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>UserProfilerServlet</servlet-name>

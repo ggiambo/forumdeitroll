@@ -6,6 +6,8 @@ import java.util.ListIterator;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,6 +22,15 @@ public class UserProfiler extends MainServlet {
 	
 	private com.forumdeitroll.profiler.UserProfiler profiler =
 			com.forumdeitroll.profiler.UserProfiler.getInstance();
+	
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		profiler.isProfilerEnabled = 
+				! "checked".equals(
+					getPersistence()
+						.getSysinfoValue(User.ADMIN_PREF_DISABLE_PROFILER));
+	}
 	
 	@Action(method=Action.Method.GET)
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {

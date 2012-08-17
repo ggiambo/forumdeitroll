@@ -128,7 +128,13 @@
 									<input type="checkbox" name="<%=User.ADMIN_PREF_BLOCK_TOR%>" id="<%=User.ADMIN_PREF_BLOCK_TOR%>" ${blockTorExitNodes} />
 								</div>
 								<div class="lblUserPanel">
-									<label for="pedonizeThread" class="lbl">Blocca TOR exit nodes:</label>
+									<label for="<%=User.ADMIN_PREF_BLOCK_TOR%>" class="lbl">Blocca TOR exit nodes:</label>
+								</div>
+								<div class="inputUserPanel">
+									<input type="checkbox" name="<%=User.ADMIN_PREF_DISABLE_PROFILER%>" id="<%=User.ADMIN_PREF_DISABLE_PROFILER%>" ${disableUserProfiler} />
+								</div>
+								<div class="lblUserPanel">
+									<label for="<%=User.ADMIN_PREF_DISABLE_PROFILER%>" class="lbl">Disattiva il profiler:</label>
 								</div>
 								<div style="clear: both;"></div>
 							</c:if>

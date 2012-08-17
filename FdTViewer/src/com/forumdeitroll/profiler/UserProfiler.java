@@ -94,7 +94,10 @@ public class UserProfiler {
 			to.getPluginHashes().add(from.getPlugins());
 	}
 	
+	public boolean isProfilerEnabled = true;
+	
 	public UserProfile guess(UserProfile candidate) {
+		if ( ! isProfilerEnabled ) return candidate;
 		UserProfile maybe = null;
 		boolean isMaybe = false;
 		for (UserProfile profile : profiles) {

@@ -38,12 +38,14 @@ public class User extends MainServlet {
 	public static final String PREF_MSG_MAX_HEIGHT = "msgMaxHeight";
 	
 	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
+	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
 
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 	
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
+		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 	}
 
 	@Action
@@ -436,6 +438,13 @@ public class User extends MainServlet {
 				getPersistence().setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "");
 			}
 			req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
+			String disableUserProfiler = req.getParameter(ADMIN_PREF_DISABLE_PROFILER);
+			if (!StringUtils.isEmpty(disableUserProfiler)) {
+				getPersistence().setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "checked");
+			} else {
+				getPersistence().setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "");
+			}
+			req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 		}
 
 		return "user.jsp";
