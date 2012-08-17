@@ -130,6 +130,7 @@
 								<div class="lblUserPanel">
 									<label for="<%=User.ADMIN_PREF_BLOCK_TOR%>" class="lbl">Blocca TOR exit nodes:</label>
 								</div>
+								<div style="clear: both;"></div>
 								<div class="inputUserPanel">
 									<input type="checkbox" name="<%=User.ADMIN_PREF_DISABLE_PROFILER%>" id="<%=User.ADMIN_PREF_DISABLE_PROFILER%>" ${disableUserProfiler} />
 								</div>
