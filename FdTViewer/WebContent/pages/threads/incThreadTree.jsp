@@ -25,7 +25,7 @@
 		<c:if test="${not empty message.children}">
 			<c:forEach items="${message.children}" var="msg">
 				<c:set var="msg" value="${msg}" scope="request"/>
-				<jsp:include page="threadTree.jsp"/>
+				<jsp:include page="incThreadTree.jsp"/>
 			</c:forEach>
 		</c:if>
 	</li>

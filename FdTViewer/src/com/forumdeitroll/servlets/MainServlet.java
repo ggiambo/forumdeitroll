@@ -167,10 +167,11 @@ public abstract class MainServlet extends HttpServlet {
 					throw new IllegalArgumentException("L'action " + action + " non e' definita");
 				}
 				if (a.method() == Action.Method.GETPOST || a.method() == method) {
-					String pageForward = (String)methodAction.invoke(this, new Object[] {req, res});
+					String page = (String)methodAction.invoke(this, new Object[] {req, res});
 					// forward
-					if (pageForward != null) {
-						getServletContext().getRequestDispatcher("/pages/" + servlet.toLowerCase() + "/" + pageForward).forward(req, res);
+					if (page != null) {
+						req.setAttribute("page", page);
+						getServletContext().getRequestDispatcher("/pages/main.jsp").forward(req, res);
 					}
 				} else {
 					throw new IllegalArgumentException("Azione " + action + " non permette il metodo " + method);

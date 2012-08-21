@@ -65,3 +65,74 @@ function initPvtSendNew(recipients) {
         return true;
     });
 }
+
+function showEmotiboxClassic() {
+	var emotiboxes = $("#emotibox .emo");
+	$(emotiboxes[1]).hide();
+	$(emotiboxes[0]).show();
+	var tabs = $("#tabs li");
+	$(tabs[1]).removeClass("selectedTab")
+	$(tabs[0]).addClass("selectedTab")
+}
+
+function showEmotiboxExtended() {
+	var emotiboxes = $("#emotibox .emo");
+	$(emotiboxes[0]).hide();
+	$(emotiboxes[1]).show();
+	var tabs = $("#tabs li");
+	$(tabs[0]).removeClass("selectedTab")
+	$(tabs[1]).addClass("selectedTab")
+}
+
+/**
+ * Preview PVT
+ * @return
+ */
+function previewPvt() {
+	// post data
+	var textArea = $(":input[name='text']");
+	var data = { text: textArea.val() };
+	// preview message
+	jQuery.ajax({
+		type: "POST",
+		url: "Messages?action=getMessagePreview",
+		data: data,
+		success: function(data) {
+		if (data.resultCode == "OK") {
+			var height = textArea.height();
+			var width = textArea.width();
+			// nascondi textArea
+			textArea.hide();
+			// mostra previewDiv
+			var previewDiv = $("#pvtPreview");
+			previewDiv.height(height);
+			previewDiv.width(width);
+			previewDiv.html(data.content);
+			previewDiv.show();
+			// swap bottoni
+			$(":input[name='preview']").hide();
+			$(":input[name='edit']").show();
+		} else if (data.resultCode == "MSG") {
+			alert(data.content);
+		} else if (data.resultCode == "ERROR") {
+			$("html").html(data.content);
+		}
+	},
+	beforeSend : function(jqXhr, settings) {
+		jqXhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+	},
+	dataType: "json"
+	});
+}
+
+/**
+ * Torna all'edit del PVT
+ * @return
+ */
+function editPvt() {
+	// nascondi preview, mostra textArea, swap bottoni
+	$("#pvtPreview").hide();
+	$(":input[name='text']").show();
+	$(":input[name='preview']").show();
+	$(":input[name='edit']").hide();
+}

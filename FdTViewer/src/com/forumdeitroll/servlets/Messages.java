@@ -285,7 +285,9 @@ public class Messages extends MainServlet {
 
 		//jstl non accede ai campi stitici
 		req.setAttribute("MAX_MESSAGE_LENGTH", MAX_MESSAGE_LENGTH);
-		return "incReplyMessage.jsp";
+		
+		getServletContext().getRequestDispatcher("/pages/messages/incReplyMessage.jsp").forward(req, res);
+		return null;
 	}
 
 	/**

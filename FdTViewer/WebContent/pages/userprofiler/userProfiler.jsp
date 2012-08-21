@@ -3,7 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
-<jsp:include page="../incTop.jsp"/>
 
 <div id="geoIpContainer" style="display:none;position:absolute;border:1px solid black; background:#FFFFBF; padding:3px;"></div>
 
@@ -75,4 +74,3 @@
 	</form>
 </div>
 <div id="footer"></div>
-<jsp:include page="../incBottom.jsp"/>

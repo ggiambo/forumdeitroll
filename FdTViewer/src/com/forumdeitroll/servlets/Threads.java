@@ -82,7 +82,8 @@ public class Threads extends MainServlet {
 		List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
 		req.setAttribute("msg", new ThreadTree(msgs).getRoot());
 
-		return "threadTree.jsp";
+		getServletContext().getRequestDispatcher("/pages/threads/incThreadTree.jsp").forward(req, res);
+		return null;
 	}
 	
 	/**

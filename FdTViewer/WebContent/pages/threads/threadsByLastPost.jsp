@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
-<jsp:include page="../incTop.jsp"/>
+
 <div id="main">
 	<c:forEach items="${messages}" var="msg" varStatus="index">
 		<c:choose>
@@ -49,4 +49,3 @@
 		<fdt:pager handler="Messages"></fdt:pager>
 	</c:if>
 </div>
-<jsp:include page="../incBottom.jsp" />

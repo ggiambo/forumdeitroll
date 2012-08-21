@@ -13,15 +13,10 @@ public class DelayedScriptTag extends BodyTagSupport {
 	/*
 	 * come si usa
 	 * 
-	 * - nelle pagine:
 	 * <fdt:delayedScript>
 	 * $.ready(......${anche.jstl}....<%= e jsp %>....)...
 	 * </fdt:delayedScript>
-	 * 
-	 * 
-	 * 
-	 * - in incBottom.jsp:
-	 * <fdt:delayedScript dump="true">ignore</fdt:delayedScript>
+
 	 */
 	
 	private String dump;

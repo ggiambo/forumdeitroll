@@ -118,40 +118,43 @@ function send(parentId) {
 }
 
 function insert(openTag, closeTag, parentId) {
-	var t = $("#reply_" + parentId + " :input[name='text']").get(0);
-	if (t.createTextRange) {
-		t.focus(t.caretPos);
-		t.caretPos = document.selection.createRange().duplicate();
-		if (t.caretPos.text.length > 0) {
-			var sel = t.caretPos.text;
+	return insertIntoTextArea(openTag, closeTag, $("#reply_" + parentId + " :input[name='text']").get(0));
+}
+
+function insertIntoTextArea(openTag, closeTag, textArea) {
+	if (textArea.createTextRange) {
+		textArea.focus(textArea.caretPos);
+		textArea.caretPos = document.selection.createRange().duplicate();
+		if (textArea.caretPos.text.length > 0) {
+			var sel = textArea.caretPos.text;
 			var fin = '';
 			while (sel.substring(sel.length-1, sel.length) == ' ') {
 				sel = sel.substring(0, sel.length-1)
 				fin += ' ';
 			}
-			t.caretPos.text = sel + fin + openTag + closeTag;
+			textArea.caretPos.text = sel + fin + openTag + closeTag;
 		} else {
-			t.caretPos.text = openTag + closeTag;
+			textArea.caretPos.text = openTag + closeTag;
 		}
 	} else 	{
 		//MOZILLA/NETSCAPE support
-		if (t.selectionStart || t.selectionStart == "0") {
-			var startPos = t.selectionStart;
-			var endPos = t.selectionEnd;
+		if (textArea.selectionStart || textArea.selectionStart == "0") {
+			var startPos = textArea.selectionStart;
+			var endPos = textArea.selectionEnd;
 
 			if (startPos != endPos) {
 				if(openTag.length > 0) {
-					t.value = t.value.substring(0, startPos) + openTag + t.value.substring(startPos, endPos) + closeTag + t.value.substring(endPos, t.value.length);
+					textArea.value = textArea.value.substring(0, startPos) + openTag + textArea.value.substring(startPos, endPos) + closeTag + textArea.value.substring(endPos, textArea.value.length);
 				} else {
-					t.value = t.value.substring(0, endPos) + closeTag + t.value.substring(endPos, t.value.length);
+					textArea.value = textArea.value.substring(0, endPos) + closeTag + textArea.value.substring(endPos, textArea.value.length);
 				}
 			} else {
-				t.value = t.value.substring(0, startPos) + openTag + t.value.substring(endPos, t.value.length);
-				t.selectionStart = (t.value.substring(0, startPos) + openTag).length;
-				t.selectionEnd = (t.value.substring(0, startPos) + openTag).length;
+				textArea.value = textArea.value.substring(0, startPos) + openTag + textArea.value.substring(endPos, textArea.value.length);
+				textArea.selectionStart = (textArea.value.substring(0, startPos) + openTag).length;
+				textArea.selectionEnd = (textArea.value.substring(0, startPos) + openTag).length;
 			}
 		} else {
-			t.value += openTag + closeTag;
+			textArea.value += openTag + closeTag;
 		}
 	}
 }
