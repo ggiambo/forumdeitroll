@@ -18,6 +18,7 @@ import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
+import com.forumdeitroll.profiler.UserProfiler;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
@@ -441,8 +442,10 @@ public class User extends MainServlet {
 			String disableUserProfiler = req.getParameter(ADMIN_PREF_DISABLE_PROFILER);
 			if (!StringUtils.isEmpty(disableUserProfiler)) {
 				getPersistence().setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "checked");
+				UserProfiler.getInstance().isProfilerEnabled = false;
 			} else {
 				getPersistence().setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "");
+				UserProfiler.getInstance().isProfilerEnabled = true;
 			}
 			req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 		}
