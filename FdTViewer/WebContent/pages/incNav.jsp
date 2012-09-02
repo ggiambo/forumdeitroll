@@ -15,21 +15,23 @@
 		<%-- navigation message --%>
 		<c:if test="${navigationMessage != null}">
 			<li>
-				<div class="navigationMessage${navigationMessage.type}">
-				<span style="color:darkred">
-					<c:choose>
-						<c:when test="${forum == null}">
-							Tutto il forum
-						</c:when>
-						<c:when test="${forum != ''}">
-							<c:out value="${forum}"/> 
-						</c:when>
-					</c:choose>
-				</span>
-				<c:if test="${forum == null or forum != ''}">
-					&mdash;
-				</c:if>
-				${navigationMessage.content}
+				<div>
+					<span style="color:darkred; font-weight: bold; margin: 0.2em 0;"">
+						<c:choose>
+							<c:when test="${forum == null}">
+								Tutto il forum
+							</c:when>
+							<c:when test="${forum != ''}">
+								<c:out value="${forum}"/> 
+							</c:when>
+						</c:choose>
+					</span>
+					<c:if test="${forum == null or forum != ''}">
+						&mdash;
+					</c:if>
+					<span class="navigationMessage${navigationMessage.type}">
+						${navigationMessage.content}
+					</span>
 				</div>
 			</li>
 		</c:if>
