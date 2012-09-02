@@ -1,3 +1,21 @@
+function banMessage(m_id, anti_xss_token) {
+	if (confirm("Vuoi bannare questo messaggio ?")) {
+		window.location.assign("ModInfo?action=banMessage&m_id=" + m_id + "&token=" + anti_xss_token);
+	}
+}
+
+function banUser(m_id, anti_xss_token) {
+	if (confirm("Vuoi bannare questo utente ?")) {
+		window.location.assign("ModInfo?action=banUser&m_id=" + m_id + "&token=" + anti_xss_token);
+	}
+}
+
+function banIP(m_id, anti_xss_token) {
+	if (confirm("Vuoi bannare questo IP ?")) {
+		window.location.assign("ModInfo?action=banIP&m_id=" + m_id + "&token=" + anti_xss_token);
+	}
+}
+
 
 $(document).ready(function() {
 	$('.ip-container').click(function() {
@@ -26,7 +44,7 @@ function geodata(elem, ip) {
 			box.css({left:left, top:top});
 			var html = '';
 			$.each(result, function() {
-				html += arguments[0] + ": " + arguments[1] + "<br/>";
+				html += "<b>" + arguments[0] + "</b>: " + arguments[1] + "<br/>";
 			});
 			box.html(html);
 			box.slideDown();
