@@ -11,14 +11,15 @@ import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
 
+import com.forumdeitroll.FdTConfig;
+
 public class UserProfilesStorage {
 	private static Logger logger = Logger.getLogger(UserProfilesStorage.class);
-	private static String fs_path = "/tmp/fdt_user_profiles";
 	
 	public static void store(ArrayList<UserProfile> profiles) {
 		//logger.info("UserProfilesStorage::store");
 		try {
-			FileOutputStream fos = new FileOutputStream(fs_path);
+			FileOutputStream fos = new FileOutputStream(FdTConfig.getProperty("userProfile.path"));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(profiles);
 			oos.close();
@@ -30,9 +31,9 @@ public class UserProfilesStorage {
 	
 	public static ArrayList<UserProfile> load() {
 		ArrayList<UserProfile> profiles = null;
-		if (new File(fs_path).exists()) {
+		if (new File(FdTConfig.getProperty("userProfile.path")).exists()) {
 			try {
-				FileInputStream fis = new FileInputStream(fs_path);
+				FileInputStream fis = new FileInputStream(FdTConfig.getProperty("userProfile.path"));
 				ObjectInputStream ois = new ObjectInputStream(fis);
 				Object profilesData = ois.readObject();
 				ois.close();
