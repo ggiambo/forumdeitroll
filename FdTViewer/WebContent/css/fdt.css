@@ -1314,3 +1314,12 @@ div.spoiler:hover > span.spoilerWarning {
 div.spoiler:hover > * {
 	visibility: visible;
 }
+
+div#geoIpContainer {
+	display: none;
+	position: absolute;
+	border:1px solid black;
+	background: #FFFFBF;
+	padding: 3px;
+	font-family: monospace;
+}

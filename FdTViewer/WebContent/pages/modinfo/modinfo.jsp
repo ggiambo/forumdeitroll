@@ -2,6 +2,8 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<div id="geoIpContainer"></div>
+
 <div id="main">
 	<div class="modInfoPanel">
 		<h2>Moderazione</h2>
@@ -10,7 +12,7 @@
 				<h3>Informazioni</h3>
 				<p><span class="lbl">Messaggio:</span> ${modInfo.m_id}</p>
 				<p><span class="lbl">Utente:</span> ${modInfo.authorDescription}</p>
-				<p><span class="lbl">IP:</span> ${modInfo.ip}</p>
+				<p><span class="lbl">IP:</span> <span class="ip-container">${modInfo.ip}</span></p>
 				<p><span class="lbl">TOR:</span> ${modInfo.tor}</p>
 			</div>
 			<div class="modInfoPanelSection">

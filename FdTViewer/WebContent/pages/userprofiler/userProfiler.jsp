@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
-<div id="geoIpContainer" style="display:none;position:absolute;border:1px solid black; background:#FFFFBF; padding:3px;"></div>
+<div id="geoIpContainer"></div>
 
 <div id="main">
 	<div class="userPanelCaption">Panopticon</div>
