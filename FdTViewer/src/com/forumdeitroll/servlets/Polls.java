@@ -217,7 +217,7 @@ public class Polls extends MainServlet {
         // renderizza con i colori custom
         List datasetKeys = dataset.getKeys();
         for (int i = 0; i < datasetKeys.size(); i++) {
-        		plot.setSectionPaint((Comparable)datasetKeys.get(i), pieSliceColors[(i % pieSliceColors.length)]);
+        	plot.setSectionPaint((Comparable)datasetKeys.get(i), pieSliceColors[(i % pieSliceColors.length)]);
         }
         
         // write chart
@@ -244,6 +244,21 @@ public class Polls extends MainServlet {
 		String pollText = StringEscapeUtils.escapeXml(poll.getText()).replaceAll("\n", "<br/>");
 		req.setAttribute("pollText", pollText);
 		
+		// can vote ?
+		AuthorDTO author = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
+		boolean canVote = true;
+		if (author != null && author.isValid()) {
+			for (String nick : poll.getVoterNicks()) {
+				if (nick.equals(author.getNick())) {
+					canVote = false;
+					break;
+				}
+			}
+		} else {
+			canVote = false;
+		}
+		req.setAttribute("canVote", canVote);
+
 		return "pollContent.jsp";
 	}
 	
