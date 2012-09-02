@@ -100,9 +100,8 @@ public class Threads extends MainServlet {
 	 */
 	@Action
 	String getThreadsByLastPost(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
 		String forum = req.getParameter("forum");
-		ThreadsDTO messages = getPersistence().getThreadsByLastPost(forum, PAGE_SIZE, getPageNr(req), hideProcCatania);
+		ThreadsDTO messages = getPersistence().getThreadsByLastPost(forum, PAGE_SIZE, getPageNr(req), hideProcCatania(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
@@ -126,8 +125,7 @@ public class Threads extends MainServlet {
 		if (!author.isValid()) {
 			throw new Exception("Furmigamento detected !");
 		}
-		boolean hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
-		List<ThreadDTO> messages = getPersistence().getAuthorThreadsByLastPost(author.getNick(), PAGE_SIZE, getPageNr(req), hideProcCatania);
+		List<ThreadDTO> messages = getPersistence().getAuthorThreadsByLastPost(author.getNick(), PAGE_SIZE, getPageNr(req), hideProcCatania(req));
 		req.setAttribute("messages", messages);
 		req.setAttribute("resultSize", messages.size());
 		setNavigationMessage(req, NavigationMessage.info("Discussioni nelle quali hai partecipato"));
@@ -136,13 +134,7 @@ public class Threads extends MainServlet {
 
 	private String getThreads(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
 		String forum = req.getParameter("forum");
-		boolean hideProcCatania;
-		if (IPersistence.FORUM_PROC.equals(forum)) {
-			hideProcCatania = false; // nascondere la proc quando si consulta la proc :P ?
-		} else {
-			 hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
-		}
-		ThreadsDTO messages = getPersistence().getThreads(forum, PAGE_SIZE, getPageNr(req), hideProcCatania);
+		ThreadsDTO messages = getPersistence().getThreads(forum, PAGE_SIZE, getPageNr(req), hideProcCatania(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());

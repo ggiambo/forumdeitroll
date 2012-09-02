@@ -776,13 +776,7 @@ public class Messages extends MainServlet {
 
 	private String getMessages(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
 		String forum = req.getParameter("forum");
-		boolean hideProcCatania;
-		if (IPersistence.FORUM_PROC.equals(forum)) {
-			hideProcCatania = false; // nascondere la proc quando si consulta la proc :P ?
-		} else {
-			 hideProcCatania = StringUtils.isNotEmpty(login(req).getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
-		}
-		MessagesDTO messages = getPersistence().getMessages(forum, PAGE_SIZE, getPageNr(req), hideProcCatania);
+		MessagesDTO messages = getPersistence().getMessages(forum, PAGE_SIZE, getPageNr(req), hideProcCatania(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());

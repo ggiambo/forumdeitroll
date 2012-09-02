@@ -408,4 +408,18 @@ public abstract class MainServlet extends HttpServlet {
 
 		return (token != null) && (inToken != null) && token.equals(inToken);
 	}
+	
+	protected boolean hideProcCatania(HttpServletRequest req) throws NoSuchAlgorithmException {
+		String forum = req.getParameter("forum");
+		if (IPersistence.FORUM_PROC.equals(forum)) {
+			return false; // nascondere la proc quando si consulta la proc :P ?
+		} else {
+			AuthorDTO loggedUser = login(req);
+			if (loggedUser.isValid()) {
+				return StringUtils.isNotEmpty(loggedUser.getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+			} else {
+				return true; // utenti non registrati: nascondi
+			}
+		}
+	}
 }
