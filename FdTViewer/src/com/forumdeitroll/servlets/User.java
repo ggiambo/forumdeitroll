@@ -152,6 +152,10 @@ public class User extends MainServlet {
 			}
 			// carica l'immagine
 			BufferedImage image = ImageIO.read(avatar.getInputStream());
+			if (image == null) {
+				setNavigationMessage(req, NavigationMessage.warn("Formato imamgine sconosciuta"));
+				return "user.jsp";
+			}
 			int w = image.getWidth();
 			int h = image.getHeight();
 			if (w > MAX_SIZE_AVATAR_WIDTH || h > MAX_SIZE_AVATAR_HEIGHT) {
