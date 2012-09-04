@@ -509,12 +509,12 @@ div.msgCaptcha div img {
 div.msgCaptcha div input {
 	width: 8em;
 	text-align: center;
+	float: left;
 }
 
 div.msgCaptcha div div.msgCaptchaInput {
 	float: none;
 	margin: 0;
-	width: 10em;
 	font-size: 75%;
 	font-style: italic;
 	text-align: left;
@@ -1002,7 +1002,11 @@ ul.pager>li {
 }
 
 div.counter-container {
+	color: darkGrey;
+	font-size: 90%;
 	float: right;
+	border: 1px solid #7BAAE7;
+	padding: 1px 4px;
 }
 div.counter-container>input {
 	text-align: right;

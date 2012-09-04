@@ -43,6 +43,9 @@
 <c:set var="isNewThread" value="${!isEdit && message.id == -1 && message.parentId == -1}"/>
 <c:set var="isNewMessage" value="${!isEdit && message.id == -1}"/>
 <c:set var="isEdit" value="${!empty isEdit && isEdit}"/>
+<c:set var="maxMessageLength">
+	<%=Messages.MAX_MESSAGE_LENGTH%>
+</c:set>
 
 <div style="clear: both"></div>
 <div id="reply_${message.parentId}" class="msgReply">
@@ -98,8 +101,8 @@
 
 	<%-- input area --%>
 	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt" id="text_${message.id}"
-	onkeyup="update_counter(${message.id},<%=Messages.MAX_MESSAGE_LENGTH%>)"
-	onchange="update_counter(${message.id},<%=Messages.MAX_MESSAGE_LENGTH%>)">${message.text}</textarea>
+	onkeyup="update_counter(${message.id}, ${maxMessageLength})"
+	onchange="update_counter(${message.id}, ${maxMessageLength})">${message.text}</textarea>
 
 	<%-- preview area --%>
 	<div id="preview_${message.parentId}" class="msgReplyTxt"></div>
@@ -108,30 +111,33 @@
 	<input type="hidden" name="id" value="${message.id }"/>
 	<div class="msgAnonBox">
 		<div class='counter-container'>
-			<input type='text' id='counter_${message.id}' disabled="disabled" value='${MAX_MESSAGE_LENGTH - fn:length(message.text)}'/>
+			<div id='counter_${message.id}'>${maxMessageLength - fn:length(message.text)}</div>
 		</div>
 		<label for="nick">Nome:&nbsp;</label>
 		<input tabindex="2" name="nick" id="nick" size="10" value="${loggedUser.nick }"/>&nbsp;&nbsp;
 		<label for="password">Password:&nbsp;</label>
 		<input tabindex="3" type="password" id="password" name="pass" size="10"/>
-		<c:if test="${loggedUser != null}">
-		(cancellare nome utente per postare anonimamente)
-		</c:if>
-		<c:if test="${loggedUser == null}">
-			<div class="msgCaptcha">
-				<div><img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" /></div><div><input tabindex="4" name="captcha" size="5" /><div class="msgCaptchaInput">
-				<c:choose>
-					<c:when test="${loggedUser != null}">
-						Cancella il tuo nickname e copia qui il testo dell'immagine per postare come Non Autenticato.
-					</c:when>
-					<c:otherwise>
-						Copia qui il testo dell'immagine
-					</c:otherwise>
-				</c:choose>
-				</div></div>
-				<div style="clear: both;"></div>
-			</div>
-		</c:if>
+		<c:choose>
+			<c:when test="${loggedUser != null}">
+				<p style="font-size:75%">
+					Cancellare nome utente per postare anonimamente
+				</p>
+			</c:when>
+			<c:otherwise>
+				<div class="msgCaptcha">
+					<div>
+						<img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" />
+					</div>
+					<div>
+						<input tabindex="4" name="captcha" size="5" />
+						<div class="msgCaptchaInput">
+							Copia qui il testo dell'immagine
+						</div>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+			</c:otherwise>
+		</c:choose>
 	</div>
 	<input style="float:left;font-size: 90%;" tabindex="5" type="button" name="preview" value="Preview" onClick="preview(${message.parentId})"/>&nbsp;
 	<input style="display:none;float:left;font-size: 90%;" tabindex="5" type="button" name="edit" value="Edit" onClick="edit(${message.parentId})"/>&nbsp;

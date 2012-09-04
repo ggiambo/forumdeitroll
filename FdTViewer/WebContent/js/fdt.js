@@ -284,17 +284,17 @@ function pedonizeThreadTree(msgId) {
 // n.b. non furmigate, il controllo della lunghezza c'è anche lato server
 var update_counter = function(messageId, limit) {
 	try {
-	var counter = document.getElementById('counter_' + messageId);
-	var textarea = document.getElementById('text_' + messageId);
-	if (textarea.value.length > limit) {
-		textarea.value = textarea.value.substring(0, limit);
-		counter.style.backgroundColor = 'red';
-		setTimeout(function() {
-			counter.style.backgroundColor = null;
-		}, 200);
-	}
-	counter.value = limit - textarea.value.length;
-
+		var counter = $('#counter_' + messageId);
+		var textarea = $('#text_' + messageId);
+		if (textarea.val().length > limit) {
+			textarea.val(textarea.val().substring(0, limit));
+			var container = counter.parent();
+			container.css('backgroundColor', 'red');
+			setTimeout(function() {
+				container.css("backgroundColor", '');
+			}, 200);
+		}
+		counter.html(limit - textarea.val().length);
 	} catch (e) {alert(e.message);}
 };
 
