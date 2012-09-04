@@ -1327,3 +1327,12 @@ div#geoIpContainer {
 	padding: 3px;
 	font-family: monospace;
 }
+
+div.searchInfo {
+	background: #FFBABA;
+	padding: 2px;
+	color: #D8000C;
+	margin: 5px 5px 5px 5px;
+	font-size: 80%;
+	box-shadow: 0 0 4px #D8000C;
+} 
