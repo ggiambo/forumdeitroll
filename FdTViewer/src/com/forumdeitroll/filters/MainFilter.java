@@ -74,13 +74,6 @@ public class MainFilter implements Filter {
 			return;
 		}
 		
-		// i vecchi errori del passato ...
-		try {
-			req.getSession().removeAttribute("loggedUser");
-		} catch (Exception e) {
-			// nothing to do here, move along ...
-		}
-		
 		String action = req.getParameter("action");
 		if (action == null || action.trim().length() == 0) {
 			action = "init";
