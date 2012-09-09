@@ -337,6 +337,12 @@ public class MessageTag extends BodyTagSupport {
 					word.setLength(0);
 					return true;
 				}
+			} else if (
+					url.startsWith("http://www.forumdeitroll.com/") ||
+					url.startsWith("https://www.forumdeitroll.com/") ||
+					url.startsWith("http://forumdeitroll.com/") ||
+					url.startsWith("https://forumdeitroll.com/")) {
+				url = url.substring(url.indexOf(".com/") + 5);
 			}
 			if (desc.length() > 50) {
 				desc = desc.substring(0, 50) + "...";
