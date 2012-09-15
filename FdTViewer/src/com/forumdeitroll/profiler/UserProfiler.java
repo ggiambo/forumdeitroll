@@ -69,9 +69,11 @@ public class UserProfiler {
 		to.setEtag(from.getEtag());
 		to.setUltimoRiconoscimentoUtente(System.currentTimeMillis());
 		
-		if (to.getIpAddresses() == null)
-			to.setIpAddresses(new TreeSet<String>());
-		to.getIpAddresses().add(from.getIpAddress());
+		if (!CacheTorExitNodes.check(from.getIpAddress())) {
+			if (to.getIpAddresses() == null)
+				to.setIpAddresses(new TreeSet<String>());
+			to.getIpAddresses().add(from.getIpAddress());	
+		}
 		
 		if (to.getNicknames() == null)
 			to.setNicknames(new TreeSet<String>());
