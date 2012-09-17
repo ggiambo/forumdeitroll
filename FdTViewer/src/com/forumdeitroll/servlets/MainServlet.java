@@ -201,14 +201,6 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	/**
-	 * Mostra il disclaimer
-	 */
-	@Action
-	String getDisclaimer(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		return "disclaimer.jsp";
-	}
-
-	/**
 	 * Tenta un login: Ritorna AuthorDTO valido se OK, AuthorDTO invalido se e'
 	 * stato inserito un captcha giusto, null se autenticazione fallita.
 	 * @param req

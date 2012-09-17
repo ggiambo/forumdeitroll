@@ -18,6 +18,7 @@ import nl.captcha.gimpy.RippleGimpyRenderer;
 import nl.captcha.servlet.CaptchaServletUtil;
 import nl.captcha.text.producer.NumbersAnswerProducer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.forumdeitroll.persistence.AuthorDTO;
@@ -94,6 +95,8 @@ public class Misc extends HttpServlet {
 			getCaptcha(req, res);
 		} else if ("logoutAction".equals(action)) {
 			logoutAction(req, res);
+		} else if ("getDisclaimer".equals(action)) {
+			getDisclaimer(req, res);
 		} else {
 			LOG.error("action '" + action + "' conosciuta");
 		}
@@ -161,5 +164,18 @@ public class Misc extends HttpServlet {
 		res.setContentType("text/html");
 		res.setHeader("Location", "Messages?disclaimer=OK");
 	}
-
+	
+	private void getDisclaimer(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		String originalURL =
+			req.getHeader("Referer") != null
+				? req.getHeader("Referer")
+				: req.getHeader("Referrer") != null
+					? req.getHeader("Referrer")
+					: null;
+		if (StringUtils.isEmpty(originalURL)) {
+			originalURL = "Messages";
+		}
+		req.setAttribute("originalURL", originalURL);
+		getServletContext().getRequestDispatcher("/pages/disclaimer.jsp").forward(req, res);
+	}
 }
