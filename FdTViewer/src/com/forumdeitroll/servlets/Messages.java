@@ -626,7 +626,7 @@ public class Messages extends MainServlet {
 		*/
 
 		final String submitLocation = req.getParameter("submitLocation");
-		System.out.println("submitLocation [" + submitLocation + "]");
+		//System.out.println("submitLocation [" + submitLocation + "]");
 		URI submitURI = null;
 		try {
 			submitURI = new URI(submitLocation);
