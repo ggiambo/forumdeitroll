@@ -49,6 +49,12 @@ public abstract class MainServlet extends HttpServlet {
 		}
 	};
 
+	protected SingleValueCache<List<QuoteDTO>> cachedQuotes = new SingleValueCache<List<QuoteDTO>>(60 * 60 * 1000) {
+		@Override protected List<QuoteDTO> update() {
+			return getPersistence().getAllQuotes();
+		}
+	};
+
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -353,9 +359,10 @@ public abstract class MainServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	QuoteDTO getRandomQuoteDTO(HttpServletRequest req, HttpServletResponse res) {
-		QuoteDTO quote = getPersistence().getRandomQuote();
-		quote.setContent(StringEscapeUtils.escapeHtml4("“ " + quote.getContent() + " „"));
-		return quote;
+		final QuoteDTO quote = cachedQuotes.get().get(RandomPool.insecureInt(cachedQuotes.get().size()));
+		final QuoteDTO newquote = new QuoteDTO(quote);
+		newquote.setContent(StringEscapeUtils.escapeHtml4(quote.getContent()));
+		return newquote;
 	}
 
 	/**
@@ -400,7 +407,7 @@ public abstract class MainServlet extends HttpServlet {
 
 		return (token != null) && (inToken != null) && token.equals(inToken);
 	}
-	
+
 	protected boolean hideProcCatania(HttpServletRequest req) throws NoSuchAlgorithmException {
 		String forum = req.getParameter("forum");
 		if (IPersistence.FORUM_PROC.equals(forum)) {

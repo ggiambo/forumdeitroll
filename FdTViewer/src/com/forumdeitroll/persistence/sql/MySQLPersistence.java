@@ -17,7 +17,7 @@ import com.forumdeitroll.persistence.SearchMessagesSort;
 public class MySQLPersistence extends GenericSQLPersistence {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final Logger LOG = Logger.getLogger(MySQLPersistence.class);
 
 	public void init(Properties databaseConfig) throws Exception {
@@ -72,26 +72,5 @@ public class MySQLPersistence extends GenericSQLPersistence {
 			close(rs, ps, conn);
 		}
 		return result;
-	}
-
-	@Override
-	public QuoteDTO getRandomQuote() {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		QuoteDTO out = new QuoteDTO();
-		try {
-			ps = conn.prepareStatement("SELECT * FROM quotes ORDER BY RAND() LIMIT 1");
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				out.setContent(rs.getString("content"));
-				out.setNick(rs.getString("nick"));
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot get random quote", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return out;
 	}
 }

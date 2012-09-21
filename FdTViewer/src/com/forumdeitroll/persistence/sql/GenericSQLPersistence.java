@@ -591,6 +591,31 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return out;
 	}
 
+	public List<QuoteDTO> getAllQuotes() {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		final List<QuoteDTO> out = new ArrayList<QuoteDTO>();
+
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("select quotes.id as id, authors.nick as nick, quotes.content as content from quotes, authors where quotes.nick = authors.nick and authors.messages > 0;");
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				final QuoteDTO dto = new QuoteDTO();
+				dto.setId(rs.getLong("id"));
+				dto.setContent(rs.getString("content"));
+				dto.setNick(rs.getString("nick"));
+				out.add(dto);
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get all quotes", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return out;
+	}
+
 	@Override
 	public void insertUpdateQuote(QuoteDTO quote) {
 		if (quote.getId() > 0) {

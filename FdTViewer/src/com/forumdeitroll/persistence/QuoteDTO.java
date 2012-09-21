@@ -1,9 +1,18 @@
 package com.forumdeitroll.persistence;
 
 public class QuoteDTO {
-	
 	private long id;
-	
+	private String nick;
+	private String content;
+
+	public QuoteDTO() { }
+
+	public QuoteDTO(final QuoteDTO quote) {
+		this.id = quote.id;
+		this.nick = quote.nick;
+		this.content = quote.content;
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -27,9 +36,4 @@ public class QuoteDTO {
 	public void setContent(String content) {
 		this.content = content;
 	}
-
-	private String nick;
-	
-	private String content;
-
 }

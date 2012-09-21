@@ -51,26 +51,4 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 		}
 		return result;
 	}
-
-	@Override
-	public QuoteDTO getRandomQuote() {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		QuoteDTO out = new QuoteDTO();
-		try {
-			ps = conn.prepareStatement("SELECT * FROM quotes ORDER BY RANDOM() LIMIT 1");
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				out.setContent(rs.getString("content"));
-				out.setNick(rs.getString("nick"));
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot get random quote", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return out;
-	}
-
 }

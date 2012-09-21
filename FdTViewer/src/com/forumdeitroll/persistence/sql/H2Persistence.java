@@ -19,7 +19,7 @@ public class H2Persistence extends GenericSQLPersistence {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOG = Logger.getLogger(H2Persistence.class);
-	
+
 	public void init(Properties databaseConfig) throws Exception {
 		Class.forName("org.h2.Driver");
 		String path = databaseConfig.getProperty("path");
@@ -53,26 +53,4 @@ public class H2Persistence extends GenericSQLPersistence {
 		}
 		return result;
 	}
-
-	@Override
-	public QuoteDTO getRandomQuote() {
-		Connection conn = getConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		QuoteDTO out = new QuoteDTO();
-		try {
-			ps = conn.prepareStatement("SELECT * FROM quotes ORDER BY RANDOM() LIMIT 1");
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				out.setContent(rs.getString("content"));
-				out.setNick(rs.getString("nick"));
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot get random quote", e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return out;
-	}
-
 }
