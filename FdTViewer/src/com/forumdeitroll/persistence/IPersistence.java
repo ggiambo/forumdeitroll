@@ -80,6 +80,7 @@ public interface IPersistence extends Serializable {
 	public AuthorDTO registerUser(String nick, String password);
 
 	public List<QuoteDTO> getQuotes(AuthorDTO author);
+
 	public List<QuoteDTO> getAllQuotes();
 
 	public void insertUpdateQuote(QuoteDTO quote);

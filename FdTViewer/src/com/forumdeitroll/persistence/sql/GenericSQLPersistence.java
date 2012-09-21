@@ -599,7 +599,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("select quotes.id as id, authors.nick as nick, quotes.content as content from quotes, authors where quotes.nick = authors.nick and authors.messages > 0;");
+			ps = conn.prepareStatement("select quotes.id as id, authors.nick as nick, quotes.content as content from quotes, authors where quotes.nick = authors.nick and authors.messages > 0 and authors.hash <> ?;");
+			ps.setString(1, AuthorDTO.BANNED_TAG);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				final QuoteDTO dto = new QuoteDTO();
