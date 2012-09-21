@@ -22,6 +22,7 @@ import com.forumdeitroll.profiler.UserProfiler;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
+import com.forumdeitroll.util.Ratelimiter;
 
 public class User extends MainServlet {
 
@@ -37,12 +38,17 @@ public class User extends MainServlet {
 	public static final String PREF_HIDE_PROC_CATANIA = "hideProcCatania";
 	public static final String PREF_HIDE_BANNERONE = "hideBannerone";
 	public static final String PREF_MSG_MAX_HEIGHT = "msgMaxHeight";
-	
+
 	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
 	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
 
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
-	
+
+	public static final int LOGIN_TIME_LIMIT = 3 * 60 * 1000;
+	public static final int LOGIN_NUMBER_LIMIT = 5;
+
+	protected final Ratelimiter<String> loginRatelimiter = new Ratelimiter<String>(LOGIN_TIME_LIMIT, LOGIN_NUMBER_LIMIT);
+
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
@@ -51,13 +57,20 @@ public class User extends MainServlet {
 
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		if (loginRatelimiter.limited(IPMemStorage.requestToIP(req))) {
+			setNavigationMessage(req, NavigationMessage.warn("Hai rotto il cazzo"));
+			return loginAction(req, res);
+		}
+
 		AuthorDTO loggedUser = login(req);
 		setWebsiteTitle(req, "Forum dei troll");
 		if (loggedUser != null && loggedUser.isValid()) {
 			return "user.jsp";
+		} else {
+			loginRatelimiter.increment(IPMemStorage.requestToIP(req));
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+			return loginAction(req,  res);
 		}
-		setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
-		return loginAction(req,  res);
 	}
 
 	/**
