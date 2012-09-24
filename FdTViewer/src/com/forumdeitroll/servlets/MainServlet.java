@@ -354,7 +354,7 @@ public abstract class MainServlet extends HttpServlet {
 	 */
 	QuoteDTO getRandomQuoteDTO(HttpServletRequest req, HttpServletResponse res) {
 		QuoteDTO quote = getPersistence().getRandomQuote();
-		quote.setContent(StringEscapeUtils.escapeHtml4(quote.getContent()));
+		quote.setContent(StringEscapeUtils.escapeHtml4("“ " + quote.getContent() + " „"));
 		return quote;
 	}
 
