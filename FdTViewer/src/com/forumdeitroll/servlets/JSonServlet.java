@@ -52,9 +52,13 @@ public class JSonServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String action = req.getParameter("action");
+		if (StringUtils.isEmpty(action)) {
+			printUsage(req, res);
+			return;
+		}
+		long time = System.currentTimeMillis();
+		StringBuilderWriter writer = new StringBuilderWriter();
 		try {
-			long time = System.currentTimeMillis();
-			StringBuilderWriter writer = new StringBuilderWriter();
 			Method m = this.getClass().getDeclaredMethod(action, JsonWriter.class, Map.class);
 			JsonWriter jsw = initWriter(ResultCode.OK, writer);
 			m.invoke(this, jsw, Collections.unmodifiableMap(req.getParameterMap()));
@@ -65,6 +69,9 @@ public class JSonServlet extends HttpServlet {
 				writer.getBuilder().insert(0, callback + "(").append(")");
 			}
 			res.getWriter().write(writer.getBuilder().toString());
+		} catch (NoSuchMethodException e) {
+			printUsage(req, res);
+			return;
 		} catch (Exception e) {
 			handleException(e, res);
 			return;
@@ -105,23 +112,16 @@ public class JSonServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	protected void getThreads(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		int page = 0;
-		String[] paramPage = params.get("page");
-		if (paramPage != null && paramPage.length > 0) {
-			page = Integer.parseInt(paramPage[0]);
-		}
+		int page = getPage(params);
+		int pageSize = getPageSize(params);
+		String forum = getForum(params);
 		
-		int pageSize = DEFAULT_PAGE_SIZE;
-		String[] paramPageSize = params.get("pageSize");
-		if (paramPageSize != null && paramPageSize.length > 0) {
-			pageSize = Math.min(MAX_PAGE_SIZE, Integer.parseInt(paramPageSize[0]));
-		}
-		
-		ThreadsDTO result = persistence.getThreads(null, pageSize, page, false);
+		ThreadsDTO result = persistence.getThreads(forum, pageSize, page, false);
 		
 		writer.beginObject();
 		writer.name("page").value(page);
 		writer.name("pageSize").value(pageSize);
+		writer.name("forum").value(forum);
 		writer.name("resultSize").value(result.getMessages().size());
 		writer.name("totalSize").value(result.getMaxNrOfMessages());
 		writer.name("threads");
@@ -142,23 +142,16 @@ public class JSonServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	protected void getMessages(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		int page = 0;
-		String[] paramPage = params.get("page");
-		if (paramPage != null && paramPage.length > 0) {
-			page = Integer.parseInt(paramPage[0]);
-		}
+		int page = getPage(params);
+		int pageSize = getPageSize(params);
+		String forum = getForum(params);
 		
-		int pageSize = DEFAULT_PAGE_SIZE;
-		String[] paramPageSize = params.get("pageSize");
-		if (paramPageSize != null && paramPageSize.length > 0) {
-			pageSize = Math.min(MAX_PAGE_SIZE, Integer.parseInt(paramPageSize[0]));
-		}
-		
-		MessagesDTO result = persistence.getMessages(null, pageSize, page, false);
+		MessagesDTO result = persistence.getMessages(forum, pageSize, page, false);
 		
 		writer.beginObject();
 		writer.name("page").value(page);
 		writer.name("pageSize").value(pageSize);
+		writer.name("forum").value(forum);
 		writer.name("resultSize").value(result.getMessages().size());
 		writer.name("totalSize").value(result.getMaxNrOfMessages());
 		writer.name("messages");
@@ -179,12 +172,10 @@ public class JSonServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	protected void getThread(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		long threadId = 0;
-		String[] paramThreadId = params.get("threadId");
-		if (paramThreadId == null || paramThreadId.length == 0) {
+		long threadId = getThreadId(params);
+		if (threadId == -1) {
 			throw new IOException("missing parameter 'threadId'");
 		}
-		threadId = Long.parseLong(paramThreadId[0]);
 		
 		List<MessageDTO> result = persistence.getMessagesByThread(threadId);
 		
@@ -209,12 +200,10 @@ public class JSonServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	protected void getMessage(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		long msgId = 0;
-		String[] paramMsgId = params.get("msgId");
-		if (paramMsgId == null || paramMsgId.length == 0) {
+		long msgId = getMsgId(params);
+		if (msgId == -1) {
 			throw new IOException("missing parameter 'msgId'");
 		}
-		msgId = Long.parseLong(paramMsgId[0]);
 		
 		MessageDTO result = persistence.getMessage(msgId);
 		encodeMessage(result, writer);
@@ -352,7 +341,7 @@ public class JSonServlet extends HttpServlet {
 		JsonWriter writer = initWriter(ResultCode.ERROR, res.getWriter());
 		writer.beginArray();
 		for (String sf : ExceptionUtils.getStackFrames(e)) {
-			writer.value(sf);
+			writer.value(sf.replaceAll("^\t", ""));
 		}
 		writer.endArray();
 		writer.endObject();
@@ -454,6 +443,46 @@ public class JSonServlet extends HttpServlet {
 		writer.close();
 	}
 	
+	private int getPage(Map<String, String[]> params) {
+		String[] paramPage = params.get("page");
+		if (paramPage != null && paramPage.length > 0) {
+			return Integer.parseInt(paramPage[0]);
+		}
+		return 0;
+	}
+	
+	private String getForum(Map<String, String[]> params) {
+		String[] paramForum = params.get("forum");
+		if (paramForum != null && paramForum.length > 0) {
+			 return paramForum[0];
+		}
+		return null;
+	}
+	
+	private int getPageSize(Map<String, String[]> params) {
+		String[] paramPageSize = params.get("pageSize");
+		if (paramPageSize != null && paramPageSize.length > 0) {
+			return Math.min(MAX_PAGE_SIZE, Integer.parseInt(paramPageSize[0]));
+		}
+		return DEFAULT_PAGE_SIZE;
+	}
+	
+	private long getThreadId(Map<String, String[]> params) {
+		String[] paramThreadId = params.get("threadId");
+		if (paramThreadId == null || paramThreadId.length == 0) {
+			return -1;
+		}
+		return Long.parseLong(paramThreadId[0]);
+	}	
+	
+	private long getMsgId(Map<String, String[]> params) {
+		String[] msgId = params.get("msgId");
+		if (msgId == null || msgId.length == 0) {
+			return -1;
+		}
+		return Long.parseLong(msgId[0]);
+	}
+	
 	/**
 	 * Result code per la risposta
 	 * @author giambo
@@ -471,6 +500,10 @@ public class JSonServlet extends HttpServlet {
 		public String toString() {
 			return humanCode + ":" + code;
 		}
+	}
+	
+	private void printUsage(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		getServletContext().getRequestDispatcher("/pages/jsonUsage.jsp").forward(req, res);
 	}
 	
 }
