@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.ThreadTree;
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;

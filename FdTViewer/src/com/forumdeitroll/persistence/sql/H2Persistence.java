@@ -11,7 +11,6 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 
 import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
 
 public class H2Persistence extends GenericSQLPersistence {

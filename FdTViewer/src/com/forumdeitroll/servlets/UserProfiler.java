@@ -18,6 +18,8 @@ import com.google.gson.Gson;
 
 public class UserProfiler extends MainServlet {
 	
+	private static final long serialVersionUID = 1L;
+
 	private static Logger logger = Logger.getLogger(UserProfiler.class);
 	
 	private com.forumdeitroll.profiler.UserProfiler profiler =

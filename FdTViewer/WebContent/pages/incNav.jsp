@@ -16,7 +16,7 @@
 		<c:if test="${navigationMessage != null}">
 			<li>
 				<div>
-					<span style="color:darkred; font-weight: bold; margin: 0.2em 0;"">
+					<span style="color:darkred; font-weight: bold; margin: 0.2em 0;">
 						<c:choose>
 							<c:when test="${forum == null}">
 								Tutto il forum
