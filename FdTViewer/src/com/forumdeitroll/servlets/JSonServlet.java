@@ -222,8 +222,9 @@ public class JSonServlet extends HttpServlet {
 		}
 		
 		AuthorDTO result = persistence.getAuthor(nick[0]);
-
+		writer.beginObject();
 		encodeAuthor(result, writer);
+		writer.endObject();
 	}
 	
 	/**
@@ -503,7 +504,7 @@ public class JSonServlet extends HttpServlet {
 	}
 	
 	private void printUsage(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		getServletContext().getRequestDispatcher("/pages/jsonUsage.jsp").forward(req, res);
+		getServletContext().getRequestDispatcher("/pages/jsonUsage.html").forward(req, res);
 	}
 	
 }
