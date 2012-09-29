@@ -417,7 +417,7 @@ public abstract class MainServlet extends HttpServlet {
 			if (loggedUser.isValid()) {
 				return StringUtils.isNotEmpty(loggedUser.getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
 			} else {
-				return true; // utenti non registrati: nascondi
+				return false; // utenti non registrati: mostra
 			}
 		}
 	}
