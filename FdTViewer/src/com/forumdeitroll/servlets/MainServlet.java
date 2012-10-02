@@ -131,6 +131,8 @@ public abstract class MainServlet extends HttpServlet {
 
 			userSessionBanContagion(req, loggedUser);
 
+			// notifications ?
+			req.setAttribute("notifications", getPersistence().getNotifications(null, loggedUser.getNick()));
 			// pvts ?
 			req.setAttribute("hasPvts", getPersistence().checkForNewPvts(loggedUser));
 			// sidebar status come attributo nel reques

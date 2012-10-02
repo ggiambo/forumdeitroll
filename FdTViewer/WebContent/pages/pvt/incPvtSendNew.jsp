@@ -59,11 +59,7 @@
 			<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt" id="text">${text}</textarea>
 		
 			<%-- preview area --%>
-			<%--
-			<div id="pvtPreview" style="background:white; border: 1px solid #7BAAE7; display:none; padding:3px; margin-bottom: 5px; overflow:auto"></div>
-			 --%>
 			<div id="pvtPreview" class="msgReplyTxt"></div>
-		
 			
 			<div style="margin-bottom: 5px;">
 				<label for="recipients">Destinatari:</label><br />

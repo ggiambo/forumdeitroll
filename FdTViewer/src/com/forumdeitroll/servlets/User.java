@@ -23,6 +23,7 @@ import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.Ratelimiter;
+import com.google.gson.stream.JsonWriter;
 
 public class User extends MainServlet {
 
@@ -468,6 +469,113 @@ public class User extends MainServlet {
 		}
 
 		return "user.jsp";
+	}
+	
+	/**
+	 * Mostra le notifiche
+	 * @param req
+	 * @param res
+	 * @return
+	 */
+	@Action
+	String getNotifications(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+			return loginAction(req,  res);
+		}
+		
+		setWebsiteTitle(req, "Notifiche @ Forum dei Troll");
+		req.setAttribute("notificationsFrom", getPersistence().getNotifications(loggedUser.getNick(), null));
+		req.setAttribute("notificationsTo", getPersistence().getNotifications(null, loggedUser.getNick()));
+		
+		return "notifications.jsp";
+	}
+	
+	/**
+	 * Mostra le notifiche
+	 * @param req
+	 * @param res
+	 * @return
+	 */
+	@Action(method=Method.POST)
+	String removeNotification(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+			return loginAction(req,  res);
+		}
+		
+		setWebsiteTitle(req, "Notifiche @ Forum dei Troll");
+		
+		long notificationId = Long.parseLong(req.getParameter("notificationId"));
+		getPersistence().removeNotification(loggedUser.getNick(), null, notificationId);
+		
+		return getNotifications(req, res);
+	}
+	
+	/**
+	 * Notifica un utente
+	 * @param req
+	 * @param res
+	 * @return
+	 */
+	@Action(method=Method.POST)
+	String notifyUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		JsonWriter writer = new JsonWriter(res.getWriter());
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			writer.beginObject();
+			writer.name("resultCode").value("ERROR");
+			writer.name("content").value("Hue', guaglio', che stai affa' ?!?");
+			writer.endObject();
+			writer.flush();
+			writer.close();
+			return null;
+		}
+		
+		String toNick = req.getParameter("toNick");
+		if (StringUtils.isEmpty(toNick)) {
+			writer.beginObject();
+			writer.name("resultCode").value("ERROR");
+			writer.name("content").value("Il destinatario della notifica e' vuoto");
+			writer.endObject();
+			writer.flush();
+			writer.close();
+			return null;
+		}
+		
+		long msgId;
+		try {
+			msgId = Long.parseLong(req.getParameter("msgId"));
+		} catch (NumberFormatException e) {
+			writer.beginObject();
+			writer.name("resultCode").value("ERROR");
+			writer.name("content").value("L'id del messaggio " + req.getParameter("msgId") + " mi e' incomprensibile :S ...");
+			writer.endObject();
+			writer.flush();
+			writer.close();
+			return null;
+		}
+		
+		if (getPersistence().getNotifications(loggedUser.getNick(), null).size() > 9) {
+			writer.beginObject();
+			writer.name("resultCode").value("ERROR");
+			writer.name("content").value("Hai gia' 10 notifiche: Vergognati spammone !!");
+			writer.endObject();
+			writer.flush();
+			writer.close();
+			return null;
+		}
+		
+		getPersistence().createNotification(loggedUser.getNick(), toNick, msgId);
+		writer.beginObject();
+		writer.name("resultCode").value("OK");
+		writer.endObject();
+		writer.flush();
+		writer.close();
+		
+		return null;
 	}
 
 	protected static final class AvailableTorRegistrations {

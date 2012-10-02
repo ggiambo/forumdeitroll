@@ -71,8 +71,8 @@ function showEmotiboxClassic() {
 	$(emotiboxes[1]).hide();
 	$(emotiboxes[0]).show();
 	var tabs = $("#tabs li");
-	$(tabs[1]).removeClass("selectedTab")
-	$(tabs[0]).addClass("selectedTab")
+	$(tabs[1]).removeClass("selectedTab");
+	$(tabs[0]).addClass("selectedTab");
 }
 
 function showEmotiboxExtended() {
@@ -80,8 +80,8 @@ function showEmotiboxExtended() {
 	$(emotiboxes[0]).hide();
 	$(emotiboxes[1]).show();
 	var tabs = $("#tabs li");
-	$(tabs[0]).removeClass("selectedTab")
-	$(tabs[1]).addClass("selectedTab")
+	$(tabs[0]).removeClass("selectedTab");
+	$(tabs[1]).addClass("selectedTab");
 }
 
 /**

@@ -338,3 +338,59 @@ function showHIddenMessage(msgId) {
 	$("#msg" + msgId).addClass("msgVisible");
 	$("#msgWarning" + msgId).hide();
 }
+
+function openNotifyInput(msgId) {
+	var span = $("#notify_" + msgId);
+	span.children("a").hide();
+	var input = span.children("input");
+	input.show();
+	input.autocomplete({
+		// minimo 2 caratter
+		minLength: 2,
+		// funzione per cercare i nomi
+		source: function(req, add) {
+			// chiamata ajax
+			$.getJSON("Pvt?action=searchAuthorAjax", {searchString: req['term']} , function(data) {
+				// array con i risultati
+				var suggestions = [];
+                $.each(data.content, function(i, val) {
+					suggestions.push(val);
+				});
+				add(suggestions);
+			});
+		},
+		// funzione per click sul nome dalla lista
+		select: function(e, ui) {
+			var recipient = ui.item.value;
+			// post della notifica
+			jQuery.ajax({
+				type: "POST",
+				url: "User?action=notifyUser",
+				data: {toNick:recipient, msgId:msgId},
+				success: function(data) {
+					if (data.resultCode == "OK") {
+						alert(recipient + " notificato !");
+						span.children("a").show();
+						input.hide();
+						input.val("");
+					} else if (data.resultCode == "ERROR") {
+						alert(data.content);
+					}
+				},
+				beforeSend : function(jqXhr, settings) {
+					jqXhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+				},
+				dataType: "json"
+			});
+        },
+        close: function() {
+        	// cancella il contenuto del campo input
+        	$("#recipients").val('');
+        },
+        open: function() {
+        	$('.ui-autocomplete').css('width', '10em');
+        }
+        
+	});
+	
+}

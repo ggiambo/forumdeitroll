@@ -1335,4 +1335,21 @@ div.searchInfo {
 	margin: 5px 5px 5px 5px;
 	font-size: 80%;
 	box-shadow: 0 0 4px #D8000C;
+}
+
+span.searchHighlight {
+	background-color: yellow;
+	border-bottom: 1px solid goldenrod;
+	border-radius: 3px 3px 3px 3px;
+	border-right: 1px solid goldenrod;
+	padding: 0 3px;
+}
+
+div.notifications {
+	background: #FFBABA;
+	margin: 5px 0px 5px 30px; 
+	padding: 5px; 
+	width: 350px;">
+	font-size: 80%;
+	box-shadow: 0 0 4px #D8000C;
 } 

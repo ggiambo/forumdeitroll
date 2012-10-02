@@ -125,9 +125,15 @@ public interface IPersistence extends Serializable {
 
 	public void restoreOrHideMessage(long msgId, boolean visible);
 
-	void setSysinfoValue(String key, String value);
+	public void setSysinfoValue(String key, String value);
 
-	String getSysinfoValue(String key);
+	public String getSysinfoValue(String key);
 
-	boolean blockTorExitNodes();
+	public boolean blockTorExitNodes();
+
+	public List<NotificationDTO> getNotifications(String fromNick, String toNick);
+
+	public void removeNotification(String fromNick, String toNick, long id);
+
+	public void createNotification(String fromNick, String toNick, long id);
 }

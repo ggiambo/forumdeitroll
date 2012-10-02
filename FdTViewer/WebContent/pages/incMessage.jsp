@@ -124,6 +124,12 @@
 			</c:otherwise>
 		</c:choose>
 	</c:if>
+	<c:if test="${not empty loggedUser}">
+		<span id="notify_${msg.id}" style="width: 100px">
+			<a href="#" onClick="openNotifyInput('${msg.id}');return false;"><img alt="Notifica" style="vertical-align: middle;" src="images/notifica.png" /></a>
+			<input type="text" size="15" name="notifyToNick" style="border: 1px solid #7BAAE7; padding: 0 5px; font-size: 11px; display: none; "/>
+		</span>
+	</c:if>
 	<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img alt="Rispondi" style="vertical-align: middle;" src="images/rispondi.gif" /></a>
 	<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img alt="Quota" style="vertical-align: middle;" src="images/quota.gif" /></a>
 </div>

@@ -188,6 +188,21 @@ public class Messages extends MainServlet {
 		req.setAttribute("messages", messages);
 		req.setAttribute("resultSize", messages.size());
 		setAntiXssToken(req);
+
+		// request from a notification ?
+		String notificationId = req.getParameter("notificationId");
+		String fromNick = req.getParameter("notificationFromNick");
+		final AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
+		if (StringUtils.isNotEmpty(notificationId) && StringUtils.isNotEmpty(fromNick) && loggedUser.isValid()) {
+			// remove this notification once clicked
+			try {
+				long id = Long.parseLong(notificationId);
+				getPersistence().removeNotification(fromNick, loggedUser.getNick(), id);
+			} catch (NumberFormatException e) {
+				// Ma che c'� frega ma che ce 'mporta ...
+			}
+		}
+		
 		return "messages.jsp";
 	}
 

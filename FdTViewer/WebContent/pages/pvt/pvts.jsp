@@ -29,6 +29,7 @@
 				<h3>Altre Azioni</h3>
 				<a href="./User" class="userPanelButton">User Panel</a>
 				<a href="./User?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
+				<a href="./User?action=getNotifications" class="userPanelButton">Notifiche</a>
 				<div style="clear: both;"></div>
 			</div>
 		</div> <%-- /Content --%>

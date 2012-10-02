@@ -26,6 +26,7 @@ import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
+import com.forumdeitroll.persistence.NotificationDTO;
 import com.forumdeitroll.persistence.PollDTO;
 import com.forumdeitroll.persistence.PollQuestion;
 import com.forumdeitroll.persistence.PollsDTO;
@@ -1158,6 +1159,95 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 		return null;
+	}
+	
+	@Override
+	public List<NotificationDTO> getNotifications(String fromNick, String toNick) {
+		List<NotificationDTO> res = new ArrayList<NotificationDTO>();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			StringBuilder query = new StringBuilder("SELECT * FROM notification WHERE 1=1");
+			if (StringUtils.isNotEmpty(fromNick)) {
+				query.append(" AND fromNick = ?");
+			}
+			if (StringUtils.isNotEmpty(toNick)) {
+				query.append(" AND toNick = ?");
+			}
+			query.append(" ORDER BY id ASC");
+			ps = conn.prepareStatement(query.toString());
+			int i = 1;
+			if (StringUtils.isNotEmpty(fromNick)) {
+				ps.setString(i++, fromNick);
+			}
+			if (StringUtils.isNotEmpty(toNick)) {
+				ps.setString(i++, toNick);
+			}
+			rs = ps.executeQuery();
+			NotificationDTO notification;
+			while (rs.next()) {
+				notification = new NotificationDTO();
+				notification.setId(rs.getLong("id"));
+				notification.setFromNick(rs.getString("fromNick"));
+				notification.setToNick(rs.getString("toNick"));
+				notification.setMsgId(rs.getLong("msgId"));
+				res.add(notification);
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get notifications for fromNick " + fromNick + " and toNick " + toNick, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return res;
+	}
+	
+	@Override
+	public void removeNotification(String fromNick, String toNick, long id) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			StringBuilder query = new StringBuilder("DELETE FROM notification WHERE fromNick = ?");
+			if (StringUtils.isNotEmpty(toNick)) {
+				query.append(" AND toNick = ?");
+			}
+			query.append(" AND id = ?");
+			ps = conn.prepareStatement(query.toString());
+			int i = 1;
+			ps.setString(i++, fromNick);
+			if (StringUtils.isNotEmpty(toNick)) {
+				ps.setString(i++, toNick);
+			}
+			ps.setLong(i++, id);
+			ps.execute();
+		} catch (SQLException e) {
+			LOG.error("Cannot remove notifications from " + fromNick + " and id " + id, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	@Override
+	public void createNotification(String fromNick, String toNick, long msgId) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("INSERT INTO notification (fromNick, toNick, msgId) VALUES (?, ?, ?)");
+			int i = 1;
+			ps.setString(i++, fromNick);
+			ps.setString(i++, toNick);
+			ps.setLong(i++, msgId);
+			ps.execute();
+		} catch (SQLException e) {
+			LOG.error("Cannot get notifications for fromNick " + fromNick + " and toNick " + toNick, e);
+		} finally {
+			close(rs, ps, conn);
+		}
 	}
 	
 	private List<String> getPollVoterNicks(Connection conn, long pollId) {

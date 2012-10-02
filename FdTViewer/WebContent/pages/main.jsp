@@ -59,6 +59,19 @@
 
 			<jsp:include page="incNav.jsp"/>
 			
+			<%-- notifiche --%>
+			<c:if test="${not empty notifications && (servlet eq 'Messages' or servlet eq 'Threads')}">
+				<input type="hidden" name="notificationId" id="notificationId" />
+				 <div class="notifications">
+ 					<c:forEach items="${notifications}" var="item" varStatus="index">
+						L'utente ${item.fromNick} ti invita a leggere questo <a href="Messages?action=getById&msgId=${item.msgId}&notificationId=${item.id}&notificationFromNick=${item.fromNick}">post</a>
+						<c:if test="${not index.last}">
+							<br/>
+						</c:if>
+					</c:forEach>
+				</div>
+			</c:if>
+			
 			<%-- se forum e' Proc di Catania, mostra pedobear --%>
 			<c:set var="bodyContentClass" value="" scope="page" />
 			<c:if test="${param.forum == 'Proc di Catania'}">
