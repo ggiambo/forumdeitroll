@@ -26,7 +26,7 @@
 					<c:otherwise>
 						<h3>Hai spedito queste notifiche</h3>
 						<form action="User?action=removeNotification" method="post" id="notificationsFromForm">
-							<input type="hidden" name="notificationId" id="notificationId" />
+							<input type="hidden" name="notificationId" id="notificationIdFrom" />
 							<table style="width: 100%;">
 								<tbody>
 								<tr>
@@ -37,7 +37,7 @@
 									<c:forEach items="${notificationsFrom}" var="item" varStatus="i">
 										<tr>
 											<td>
-												<a href="#" onClick="$('#notificationId').val('${item.id}');$('#notificationsFromForm').submit();">
+												<a href="#" onClick="$('#notificationIdFrom').val('${item.id}');$('#notificationsFromForm').submit();">
 													<img src="images/delete.png" alt="Cancella" />
 												</a>
 											</td>
@@ -60,7 +60,7 @@
 					<c:otherwise>
 						<h3>Hai ricevuto queste notifiche</h3>
 						<form action="User?action=removeNotification" method="post" id="notificationsToForm">
-							<input type="hidden" name="notificationId" id="notificationId" />
+							<input type="hidden" name="notificationId" id="notificationIdTo" />
 							<table style="width: 100%;">
 								<tbody>
 								<tr>
@@ -71,7 +71,7 @@
 									<c:forEach items="${notificationsTo}" var="item" varStatus="i">
 										<tr>
 											<td>
-												<a href="#" onClick="$('#notificationId').val('${item.id}');$('#notificationsToForm').submit();">
+												<a href="#" onClick="$('#notificationIdTo').val('${item.id}');$('#notificationsToForm').submit();">
 													<img src="images/delete.png" alt="Cancella" />
 												</a>
 											</td>
