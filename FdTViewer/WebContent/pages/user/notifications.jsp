@@ -70,11 +70,7 @@
 								</tr>
 									<c:forEach items="${notificationsTo}" var="item" varStatus="i">
 										<tr>
-											<td>
-												<a href="#" onClick="$('#notificationIdTo').val('${item.id}');$('#notificationsToForm').submit();">
-													<img src="images/delete.png" alt="Cancella" />
-												</a>
-											</td>
+											<td><!-- puff! --></td>
 											<td style="font-weight: normal">${item.toNick}</td>
 											<td style="font-weight: normal"><a href="Messages?action=getById&msgId=${item.msgId}">messaggio</a></td>
 										</tr>
