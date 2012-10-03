@@ -141,6 +141,7 @@
 	</div>
 	<input style="float:left;font-size: 90%;" tabindex="5" type="button" name="preview" value="Preview" onClick="preview(${message.parentId})"/>&nbsp;
 	<input style="display:none;float:left;font-size: 90%;" tabindex="5" type="button" name="edit" value="Edit" onClick="edit(${message.parentId})"/>&nbsp;
+	<a href="Misc?action=getDisclaimer" style="font-size:80%;">disclaimer &amp; privacy policy</a>
 	<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />
 	<div style="clear: both;"></div>
 </div>
