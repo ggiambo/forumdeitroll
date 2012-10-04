@@ -72,7 +72,7 @@
 										<tr>
 											<td><!-- puff! --></td>
 											<td style="font-weight: normal">${item.fromNick}</td>
-											<td style="font-weight: normal"><a href="Messages?action=getById&msgId=${item.msgId}">messaggio</a></td>
+											<td style="font-weight: normal"><a href="Messages?action=getById&msgId=${item.msgId}&notificationId=${item.id}&notificationFromNick=${item.fromNick}">messaggio</a></td>
 										</tr>
 									</c:forEach>
 								</tbody>
