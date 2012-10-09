@@ -105,7 +105,7 @@
 			</c:url>
 			<div class="buttonBarButton">
 				<a class="buttonBarLink" href="${modUrl}">
-					<img class="buttonBarImgAdmin buttonBarImgModerazione">
+					<span class="buttonBarImgAdmin buttonBarImgModerazione"></span>
 					Moderazione
 				</a>
 			</div>
@@ -116,7 +116,7 @@
 			<c:if test="${msg.forum != 'Proc di Catania'}">
 				<div class="buttonBarButton">
 					<a class="buttonBarLink" href="#" onClick="pedonizeThreadTree('${msg.id}');return false;">
-						<img class="buttonBarImgAdmin buttonBarImgPedonize">
+						<span class="buttonBarImgAdmin buttonBarImgPedonize"></span>
 						Pedonize !
 					</a>
 				</div>
@@ -129,13 +129,13 @@
 				<c:choose>
 					<c:when test="${msg.visible}">
 						<a class="buttonBarLink" href="#" onClick="hideMessage('${msg.id}');return false;">
-							<img class="buttonBarImgAdmin buttonBarImgHide">
+							<span class="buttonBarImgAdmin buttonBarImgHide"></span>
 							Nascondi
 						</a>
 					</c:when>
 					<c:otherwise>
 						<a class="buttonBarLink" href="#" onClick="restoreHiddenMessage('${msg.id}');return false;">
-							<img class="buttonBarImg buttonBarImgReveal">
+							<span class="buttonBarImg buttonBarImgReveal"></span>
 							Rendi visibile
 						</a>
 					</c:otherwise>
@@ -147,7 +147,7 @@
 		<div class="buttonBarButton">
 			<span id="notify_${msg.id}" style="width: 100px">
 				<a class="buttonBarLink" href="#" onClick="openNotifyInput('${msg.id}');return false;">
-					<img class="buttonBarImg buttonBarImgNotifica">
+					<span class="buttonBarImg buttonBarImgNotifica"></span>
 					Notifica
 				</a>
 				<input type="text" size="15" name="notifyToNick" class="notifyInput" />
@@ -158,7 +158,7 @@
 		<c:if test="${msg.author.nick == loggedUser.nick}">
 			<div class="buttonBarButton">
 				<a class="buttonBarLink" href="Messages?action=editMessage&amp;msgId=${msg.id}&amp;forum=${msg.forum}">
-					<img class="buttonBarImg buttonBarImgModifica">
+					<span class="buttonBarImg buttonBarImgModifica"></span>
 					Modifica
 				</a>
 			</div>
@@ -169,7 +169,7 @@
 	<%-- Rispondi --%>
 	<div class="buttonBarButton">
 		<a class="buttonBarLink" href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;">
-			<img class="buttonBarImg buttonBarImgRispondi">
+			<span class="buttonBarImg buttonBarImgRispondi"></span>
 			Rispondi
 		</a>
 	</div>
@@ -177,7 +177,7 @@
 	<%-- Quota --%>
 	<div class="buttonBarButton">
 		<a class="buttonBarLink" href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;">
-			<img class="buttonBarImg buttonBarImgQuota">
+			<span class="buttonBarImg buttonBarImgQuota"></span>
 			Quota
 		</a>
 	</div>

@@ -239,9 +239,9 @@ jQuery("document").ready(function(){
 		buttonBarButton.css("background", "white");
 		var buttonBarLink = buttonBarButton.find("a.buttonBarLink");
 		buttonBarLink.css("color", "#007BDF");
-		var buttonBarImg = buttonBarLink.find("img.buttonBarImg");
+		var buttonBarImg = buttonBarLink.find("span.buttonBarImg");
 		buttonBarImg.css('background-image', 'url("css/images/ui-icons_228ef1_256x240.png")');
-		var buttonBarImgAdmin = buttonBarLink.find("img.buttonBarImgAdmin");
+		var buttonBarImgAdmin = buttonBarLink.find("span.buttonBarImgAdmin");
 		buttonBarImgAdmin.css('background-image', 'url("css/images/ui-icons_ffd27a_256x240.png")');
 	}).mouseleave(function() {
 		var buttonBarButton = $(this);
@@ -249,9 +249,9 @@ jQuery("document").ready(function(){
 		buttonBarButton.css("background", "#F6F6F6");
 		var buttonBarLink = buttonBarButton.find("a.buttonBarLink");
 		buttonBarLink.css("color", "blue");
-		var buttonBarImg = buttonBarLink.find("img.buttonBarImg");
+		var buttonBarImg = buttonBarLink.find("span.buttonBarImg");
 		buttonBarImg.css('background-image', 'url("css/images/ui-icons_222222_256x240.png")');
-		var buttonBarImgAdmin = buttonBarLink.find("img.buttonBarImgAdmin");
+		var buttonBarImgAdmin = buttonBarLink.find("span.buttonBarImgAdmin");
 		buttonBarImgAdmin.css('background-image', 'url("css/images/ui-icons_ef8c08_256x240.png")');
 	});
 	

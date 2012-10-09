@@ -316,7 +316,7 @@ a.buttonBarLink:visited {
 	color:blue;
 }
 
-img.buttonBarImg {
+span.buttonBarImg {
 	display: block;
 	background-image: url("images/ui-icons_222222_256x240.png");
 	width: 16px;
@@ -327,7 +327,7 @@ img.buttonBarImg {
 	border-style: none;
 }
 
-img.buttonBarImgAdmin {
+span.buttonBarImgAdmin {
 	display: block;
 	background-image: url("images/ui-icons_ef8c08_256x240.png");
 	width: 16px;
@@ -337,35 +337,35 @@ img.buttonBarImgAdmin {
 	vertical-align: middle;
 }
 
-img.buttonBarImgModerazione {
+span.buttonBarImgModerazione {
 	background-position: -144px -128px;
 }
 
-img.buttonBarImgPedonize {
+span.buttonBarImgPedonize {
 	background-position: -176px -96px;
 }
 
-img.buttonBarImgHide {
+span.buttonBarImgHide {
 	background-position: -192px -96px;
 }
 
-img.buttonBarImgReveal {
+span.buttonBarImgReveal {
 	background-position: -208px -96px;
 }
 
-img.buttonBarImgNotifica {
+span.buttonBarImgNotifica {
 	background-position: -144px -96px;
 }
 
-img.buttonBarImgRispondi {
+span.buttonBarImgRispondi {
 	background-position: -32px -96px;
 }
 
-img.buttonBarImgQuota {
+span.buttonBarImgQuota {
 	background-position: -128px -96px;
 }
 
-img.buttonBarImgModifica {
+span.buttonBarImgModifica {
 	background-position: -64px -112px;
 }
 
