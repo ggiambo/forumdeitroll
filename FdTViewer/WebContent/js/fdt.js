@@ -233,6 +233,28 @@ jQuery("document").ready(function(){
 		$(this).addClass('quote-container');
 	});
 
+	$("div.buttonBarButton").mouseenter(function() {
+		var buttonBarButton = $(this);
+		buttonBarButton.css("border", "1px solid #AAAAAA");
+		buttonBarButton.css("background", "white");
+		var buttonBarLink = buttonBarButton.find("a.buttonBarLink");
+		buttonBarLink.css("color", "#007BDF");
+		var buttonBarImg = buttonBarLink.find("img.buttonBarImg");
+		buttonBarImg.css('background-image', 'url("css/images/ui-icons_228ef1_256x240.png")');
+		var buttonBarImgAdmin = buttonBarLink.find("img.buttonBarImgAdmin");
+		buttonBarImgAdmin.css('background-image', 'url("css/images/ui-icons_ffd27a_256x240.png")');
+	}).mouseleave(function() {
+		var buttonBarButton = $(this);
+		buttonBarButton.css("border", "1px solid #F6F6F6");
+		buttonBarButton.css("background", "#F6F6F6");
+		var buttonBarLink = buttonBarButton.find("a.buttonBarLink");
+		buttonBarLink.css("color", "blue");
+		var buttonBarImg = buttonBarLink.find("img.buttonBarImg");
+		buttonBarImg.css('background-image', 'url("css/images/ui-icons_222222_256x240.png")');
+		var buttonBarImgAdmin = buttonBarLink.find("img.buttonBarImgAdmin");
+		buttonBarImgAdmin.css('background-image', 'url("css/images/ui-icons_ef8c08_256x240.png")');
+	});
+	
 });
 
 // tasto 'j' per saltare al prossimo messaggio, 'k' per quello precedente

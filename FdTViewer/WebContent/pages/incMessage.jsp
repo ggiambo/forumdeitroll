@@ -71,14 +71,9 @@
 			<c:if test="${not empty msg.author.nick}">
 				<div class="msgTotalMsg">
 					Trollate totali: ${msg.author.messages}
-		</div>
+				</div>
 			</c:if>
 		</div>
-		<c:if test="${not empty loggedUser && msg.author.nick == loggedUser.nick}">
-			<div class="msgAction">
-				<a href="Messages?action=editMessage&amp;msgId=${msg.id}&amp;forum=${msg.forum}">Modifica</a>
-			</div>
-		</c:if>
 	</div>
 
 	<span style="width:100%; margin:5px;">
@@ -92,44 +87,99 @@
 			<tt><!-- Ciao wakko :-) -->Rilevanza: <fmt:formatNumber value="${msg.searchRelevance}" pattern="#0.00" />. Messaggi nel thread: ${msg.searchCount - 1}</tt>
 		</div>
 	</c:if>
-	<c:if test="${not empty loggedUser && loggedUser.preferences['super'] == 'yes'}">
-		<%@page import="com.forumdeitroll.persistence.MessageDTO"%>
-		<%@page import="com.forumdeitroll.util.IPMemStorage"%>
-	</c:if>
 
 	<div style="padding: 10px;" class="message">
 		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
 
 </div>
+
 <div id="buttons_${msg.id}" class="messagesButtonBar">
-	<c:if test="${not empty loggedUser && loggedUser.preferences['super'] == 'yes'}">
-		<c:url value="ModInfo" var="modUrl">
-			<c:param name="m_id" value="${msg.id}"/>
-		</c:url>
-		<a href="${modUrl}"><img alt="Moderazione" style="vertical-align: middle;" src="images/Moderazione.png" /></a>
-	</c:if>
-	<c:if test="${not empty loggedUser && loggedUser.preferences['pedonizeThread'] == 'yes'}">
-		<c:if test="${msg.forum != 'Proc di Catania'}">
-			<a href="#" onClick="pedonizeThreadTree('${msg.id}');return false;"><img alt="Pedonize!" style="vertical-align: middle;" src="images/pedonize.png" /></a>
-		</c:if>
-	</c:if>
-	<c:if test="${not empty loggedUser && loggedUser.preferences['hideMessages'] == 'yes'}">
-		<c:choose>
-			<c:when test="${msg.visible}">
-				<a href="#" onClick="hideMessage('${msg.id}');return false;"><img alt="Nascondi messaggio" style="vertical-align: middle;" src="images/hideMessage.png" /></a>
-			</c:when>
-			<c:otherwise>
-				<a href="#" onClick="restoreHiddenMessage('${msg.id}');return false;"><img alt="Rendi messaggio visibile" style="vertical-align: middle;" src="images/restoreHiddenMessage.png" /></a>
-			</c:otherwise>
-		</c:choose>
-	</c:if>
+
 	<c:if test="${not empty loggedUser}">
-		<span id="notify_${msg.id}" style="width: 100px">
-			<a href="#" onClick="openNotifyInput('${msg.id}');return false;"><img alt="Notifica" style="vertical-align: middle;" src="images/notifica.png" /></a>
-			<input type="text" size="15" name="notifyToNick" style="border: 1px solid #7BAAE7; padding: 0 5px; font-size: 11px; display: none; "/>
-		</span>
+
+		<%-- Moderazione --%>
+		<c:if test="${loggedUser.preferences['super'] == 'yes'}">
+			<c:url value="ModInfo" var="modUrl">
+				<c:param name="m_id" value="${msg.id}"/>
+			</c:url>
+			<div class="buttonBarButton">
+				<a class="buttonBarLink" href="${modUrl}">
+					<img class="buttonBarImgAdmin buttonBarImgModerazione">
+					Moderazione
+				</a>
+			</div>
+		</c:if>
+
+		<%-- Pedonize ! --%>
+		<c:if test="${loggedUser.preferences['pedonizeThread'] == 'yes'}">
+			<c:if test="${msg.forum != 'Proc di Catania'}">
+				<div class="buttonBarButton">
+					<a class="buttonBarLink" href="#" onClick="pedonizeThreadTree('${msg.id}');return false;">
+						<img class="buttonBarImgAdmin buttonBarImgPedonize">
+						Pedonize !
+					</a>
+				</div>
+			</c:if>
+		</c:if>
+
+		<%-- Nascondi / Mostra --%>
+		<c:if test="${loggedUser.preferences['hideMessages'] == 'yes'}">
+			<div class="buttonBarButton">
+				<c:choose>
+					<c:when test="${msg.visible}">
+						<a class="buttonBarLink" href="#" onClick="hideMessage('${msg.id}');return false;">
+							<img class="buttonBarImgAdmin buttonBarImgHide">
+							Nascondi
+						</a>
+					</c:when>
+					<c:otherwise>
+						<a class="buttonBarLink" href="#" onClick="restoreHiddenMessage('${msg.id}');return false;">
+							<img class="buttonBarImg buttonBarImgReveal">
+							Rendi visibile
+						</a>
+					</c:otherwise>
+				</c:choose>
+			</div>
+		</c:if>
+
+		<%-- Notifica --%>
+		<div class="buttonBarButton">
+			<span id="notify_${msg.id}" style="width: 100px">
+				<a class="buttonBarLink" href="#" onClick="openNotifyInput('${msg.id}');return false;">
+					<img class="buttonBarImg buttonBarImgNotifica">
+					Notifica
+				</a>
+				<input type="text" size="15" name="notifyToNick" class="notifyInput" />
+			</span>
+		</div>
+
+		<%-- Modifica --%>
+		<c:if test="${msg.author.nick == loggedUser.nick}">
+			<div class="buttonBarButton">
+				<a class="buttonBarLink" href="Messages?action=editMessage&amp;msgId=${msg.id}&amp;forum=${msg.forum}">
+					<img class="buttonBarImg buttonBarImgModifica">
+					Modifica
+				</a>
+			</div>
+		</c:if>
+
 	</c:if>
-	<a href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;"><img alt="Rispondi" style="vertical-align: middle;" src="images/rispondi.gif" /></a>
-	<a href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;"><img alt="Quota" style="vertical-align: middle;" src="images/quota.gif" /></a>
+
+	<%-- Rispondi --%>
+	<div class="buttonBarButton">
+		<a class="buttonBarLink" href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;">
+			<img class="buttonBarImg buttonBarImgRispondi">
+			Rispondi
+		</a>
+	</div>
+
+	<%-- Quota --%>
+	<div class="buttonBarButton">
+		<a class="buttonBarLink" href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;">
+			<img class="buttonBarImg buttonBarImgQuota">
+			Quota
+		</a>
+	</div>
+
 </div>
