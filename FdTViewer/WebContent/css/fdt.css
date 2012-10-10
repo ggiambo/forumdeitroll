@@ -340,6 +340,10 @@ span.buttonBarImgAdmin {
 	vertical-align: middle;
 }
 
+span.buttonBarImgOpenMod {
+	background-position: -176px -114px;
+}
+
 span.buttonBarImgModerazione {
 	background-position: -144px -128px;
 }

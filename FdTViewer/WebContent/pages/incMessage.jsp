@@ -97,7 +97,14 @@
 <div id="buttons_${msg.id}" class="messagesButtonBar">
 
 	<c:if test="${not empty loggedUser}">
-
+		<c:if test="${loggedUser.preferences['super'] == 'yes' || loggedUser.preferences['pedonizeThread'] == 'yes'}">
+		<div class="buttonBarButton" id="OpenMod_${msg.id}">
+			<a class="buttonBarLink" href="#" onclick="document.getElementById('buttonBarModContainer_${msg.id}').style.display = 'inline'; document.getElementById('OpenMod_${msg.id}').style.display = 'none'; return false">
+				<span class="buttonBarImgAdmin buttonBarImgOpenMod"></span>
+			</a>
+		</div>
+		</c:if>
+		<div id="buttonBarModContainer_${msg.id}" style="display:none">
 		<%-- Moderazione --%>
 		<c:if test="${loggedUser.preferences['super'] == 'yes'}">
 			<c:url value="ModInfo" var="modUrl">
@@ -142,6 +149,7 @@
 				</c:choose>
 			</div>
 		</c:if>
+		</div>
 
 		<%-- Notifica --%>
 		<div class="buttonBarButton">
