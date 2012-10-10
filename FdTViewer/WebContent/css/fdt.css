@@ -291,10 +291,13 @@ div.message {
 }
 
 .messagesButtonBar {
+	float: right;
 	background: #D6D6D6;
 	height: 23px;
 	display: box;
 	clear: both;
+	border-top-left-radius: 3px;
+	padding-right: 2px;
 }
 
 div.buttonBarButton {
