@@ -129,7 +129,7 @@ function insertIntoTextArea(openTag, closeTag, textArea) {
 			var sel = textArea.caretPos.text;
 			var fin = '';
 			while (sel.substring(sel.length-1, sel.length) == ' ') {
-				sel = sel.substring(0, sel.length-1)
+				sel = sel.substring(0, sel.length-1);
 				fin += ' ';
 			}
 			textArea.caretPos.text = sel + fin + openTag + closeTag;
@@ -235,22 +235,37 @@ jQuery("document").ready(function(){
 
 	$("div.buttonBarButton").mouseenter(function() {
 		var buttonBarButton = $(this);
-		buttonBarButton.css("border", "1px solid #AAAAAA");
+		buttonBarButton.css("box-shadow", "0 0 8px #0A78FF");
 		buttonBarButton.css("background", "white");
 		var buttonBarLink = buttonBarButton.find("a.buttonBarLink");
 		buttonBarLink.css("color", "#007BDF");
 		var buttonBarImg = buttonBarLink.find("span.buttonBarImg");
 		buttonBarImg.css('background-image', 'url("css/images/ui-icons_228ef1_256x240.png")');
-		var buttonBarImgAdmin = buttonBarLink.find("span.buttonBarImgAdmin");
-		buttonBarImgAdmin.css('background-image', 'url("css/images/ui-icons_ffd27a_256x240.png")');
 	}).mouseleave(function() {
 		var buttonBarButton = $(this);
-		buttonBarButton.css("border", "1px solid #F6F6F6");
+		buttonBarButton.css("box-shadow", "none");
 		buttonBarButton.css("background", "#F6F6F6");
 		var buttonBarLink = buttonBarButton.find("a.buttonBarLink");
 		buttonBarLink.css("color", "blue");
 		var buttonBarImg = buttonBarLink.find("span.buttonBarImg");
 		buttonBarImg.css('background-image', 'url("css/images/ui-icons_222222_256x240.png")');
+	});
+	
+	$("div.buttonBarButtonAdmin").mouseenter(function() {
+		var buttonBarButton = $(this);
+		buttonBarButton.css("box-shadow", "0 0 8px orange");
+		buttonBarButton.css("background", "white");
+		var buttonBarLink = buttonBarButton.find("a.buttonBarLink");
+		buttonBarLink.css("color", "#007BDF");
+		var buttonBarImgAdmin = buttonBarLink.find("span.buttonBarImgAdmin");
+		buttonBarImgAdmin.css('background-image', 'url("css/images/ui-icons_ffd27a_256x240.png")');
+	}).mouseleave(function() {
+		var buttonBarButton = $(this);
+		//buttonBarButton.css("border", "1px solid #F6F6F6");
+		buttonBarButton.css("box-shadow", "none");
+		buttonBarButton.css("background", "#F6F6F6");
+		var buttonBarLink = buttonBarButton.find("a.buttonBarLink");
+		buttonBarLink.css("color", "blue");
 		var buttonBarImgAdmin = buttonBarLink.find("span.buttonBarImgAdmin");
 		buttonBarImgAdmin.css('background-image', 'url("css/images/ui-icons_ef8c08_256x240.png")');
 	});
@@ -415,4 +430,9 @@ function openNotifyInput(msgId) {
         
 	});
 	
+}
+
+function showAdminButtons(msgId) {
+	$("#OpenMod_" + msgId).remove();
+	$("#buttons_" + msgId).find("div.buttonBarButtonAdmin").show("slide", { direction: "up" }, 500);
 }

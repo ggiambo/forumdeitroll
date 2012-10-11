@@ -84,7 +84,7 @@
 
 	<c:if test="${msg.searchRelevance >= 0}">
 		<div class="searchInfo">
-			<tt><!-- Ciao wakko :-) -->Rilevanza: <fmt:formatNumber value="${msg.searchRelevance}" pattern="#0.00" />. Messaggi nel thread: ${msg.searchCount - 1}</tt>
+			<pre><!-- Ciao wakko :-) -->Rilevanza: <fmt:formatNumber value="${msg.searchRelevance}" pattern="#0.00" />. Messaggi nel thread: ${msg.searchCount - 1}</pre>
 		</div>
 	</c:if>
 
@@ -97,20 +97,20 @@
 <div id="buttons_${msg.id}" class="messagesButtonBar">
 
 	<c:if test="${not empty loggedUser}">
-		<c:if test="${loggedUser.preferences['super'] == 'yes' || loggedUser.preferences['pedonizeThread'] == 'yes'}">
-		<div class="buttonBarButton" id="OpenMod_${msg.id}">
-			<a class="buttonBarLink" href="#" onclick="document.getElementById('buttonBarModContainer_${msg.id}').style.display = 'inline'; document.getElementById('OpenMod_${msg.id}').style.display = 'none'; return false">
-				<span class="buttonBarImgAdmin buttonBarImgOpenMod"></span>
-			</a>
-		</div>
+		<c:if test="${loggedUser.preferences['super'] == 'yes' || loggedUser.preferences['pedonizeThread'] == 'yes' || loggedUser.preferences['hideMessages'] == 'yes'}">
+			<div class="buttonBarButton buttonBarButtonAdmin" id="OpenMod_${msg.id}" style="display: inline">
+				<a class="buttonBarLink" href="#" onclick="showAdminButtons('${msg.id}'); return false">
+					<span class="buttonBarImgAdmin buttonBarImgOpenMod"></span>
+				</a>
+			</div>
 		</c:if>
-		<div id="buttonBarModContainer_${msg.id}" style="display:none">
+		
 		<%-- Moderazione --%>
 		<c:if test="${loggedUser.preferences['super'] == 'yes'}">
 			<c:url value="ModInfo" var="modUrl">
 				<c:param name="m_id" value="${msg.id}"/>
 			</c:url>
-			<div class="buttonBarButton">
+			<div class="buttonBarButton buttonBarButtonAdmin">
 				<a class="buttonBarLink" href="${modUrl}">
 					<span class="buttonBarImgAdmin buttonBarImgModerazione"></span>
 					Moderazione
@@ -121,7 +121,7 @@
 		<%-- Pedonize ! --%>
 		<c:if test="${loggedUser.preferences['pedonizeThread'] == 'yes'}">
 			<c:if test="${msg.forum != 'Proc di Catania'}">
-				<div class="buttonBarButton">
+				<div class="buttonBarButton buttonBarButtonAdmin">
 					<a class="buttonBarLink" href="#" onClick="pedonizeThreadTree('${msg.id}');return false;">
 						<span class="buttonBarImgAdmin buttonBarImgPedonize"></span>
 						Pedonize !
@@ -132,7 +132,7 @@
 
 		<%-- Nascondi / Mostra --%>
 		<c:if test="${loggedUser.preferences['hideMessages'] == 'yes'}">
-			<div class="buttonBarButton">
+			<div class="buttonBarButton buttonBarButtonAdmin">
 				<c:choose>
 					<c:when test="${msg.visible}">
 						<a class="buttonBarLink" href="#" onClick="hideMessage('${msg.id}');return false;">
@@ -149,7 +149,6 @@
 				</c:choose>
 			</div>
 		</c:if>
-		</div>
 
 		<%-- Notifica --%>
 		<div class="buttonBarButton">

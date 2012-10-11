@@ -293,7 +293,7 @@ div.message {
 .messagesButtonBar {
 	float: right;
 	background: #D6D6D6;
-	height: 23px;
+	height: 21px;
 	display: box;
 	clear: both;
 	border-top-left-radius: 3px;
@@ -302,17 +302,22 @@ div.message {
 
 div.buttonBarButton {
 	float: left;
-	margin: 2px 0px 0px 3px;
-	border-radius: 3px;
+	margin: 3px 0px 0px 3px;
+	border-radius: 3px 3px 0px 0px;
 	background: #F6F6F6;
-	padding: 0px 5px 0px 0px;
-	border: 1px solid #F6F6F6;
+	padding: 1px 5px 0px 0px;
+	height: 16px;
+}
+
+div.buttonBarButtonAdmin {
+	display: none;
 }
 
 a.buttonBarLink {
 	text-decoration: none;
 	text-align:left;
 	font-size: 0.8em;
+	vertical-align: top;
 }
 
 a.buttonBarLink:visited {
@@ -323,7 +328,7 @@ span.buttonBarImg {
 	display: block;
 	background-image: url("images/ui-icons_222222_256x240.png");
 	width: 16px;
-	height: 16px;
+	height: 14px;
 	background-repeat: no-repeat;
 	float: left;
 	vertical-align: middle;
@@ -341,39 +346,39 @@ span.buttonBarImgAdmin {
 }
 
 span.buttonBarImgOpenMod {
-	background-position: -176px -114px;
+	background-position: -174px -114px;
 }
 
 span.buttonBarImgModerazione {
-	background-position: -144px -128px;
+	background-position: -144px -130px;
 }
 
 span.buttonBarImgPedonize {
-	background-position: -176px -96px;
+	background-position: -176px -98px;
 }
 
 span.buttonBarImgHide {
-	background-position: -192px -96px;
+	background-position: -192px -98px;
 }
 
 span.buttonBarImgReveal {
-	background-position: -208px -96px;
+	background-position: -208px -98px;
 }
 
 span.buttonBarImgNotifica {
-	background-position: -144px -96px;
+	background-position: -144px -98px;
 }
 
 span.buttonBarImgRispondi {
-	background-position: -32px -96px;
+	background-position: -32px -98px;
 }
 
 span.buttonBarImgQuota {
-	background-position: -128px -96px;
+	background-position: -128px -98px;
 }
 
 span.buttonBarImgModifica {
-	background-position: -64px -112px;
+	background-position: -64px -114px;
 }
 
 #sidebarSearchForm {
