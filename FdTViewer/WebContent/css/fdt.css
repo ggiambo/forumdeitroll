@@ -197,7 +197,7 @@ div.msgOptMaxHeight {
 
 div.msgInfo {
 	width: 150px;
-	margin: 5px;
+	margin: 5px 5px 10px 5px;
 	float: right;
 	text-align: center;
 	display: table;
@@ -1437,9 +1437,19 @@ input.notifyInput {
 	vertical-align: top;
 }
 
-hr.firma {
-	border: 0;
-	height: 0;
-	border-top: 1px solid #F6F6F6;
-	box-shadow: 0 0 4px #0A78FF;
+div.firma {
+	font-size: 0.8em;
+	font-style: italic;
+	padding: 10px;
+	margin: 10px 20px;
+	clear: both;
+	border: 1px dotted gray;
+}
+
+div.firmaOdd {
+	background: #F6F6F6;
+}
+
+div.firmaEven {
+	background: #FFFFFF;
 }
