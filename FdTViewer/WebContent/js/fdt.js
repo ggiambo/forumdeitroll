@@ -20,6 +20,7 @@ function showSidebar() {
 function showReplyDiv(type, parentId) {
 	refreshable--;
 	$("#buttons_" + parentId).hide();
+	$("#firma_" + parentId).hide();
 	$("body").css("cursor", "progress");
 	$.get("Messages?action=showReplyDiv&type=" + type + "&parentId=" + parentId,
 		function(data) {
@@ -33,6 +34,7 @@ function showReplyDiv(type, parentId) {
 function closeReplyDiv(parentId) {
 	$("#reply_" + parentId).remove();
 	$("#buttons_" + parentId).show();
+	$("#firma_" + parentId).show();
 	refreshable++;
 }
 

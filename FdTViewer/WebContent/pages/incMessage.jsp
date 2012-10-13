@@ -103,7 +103,7 @@
 			<c:set var="rowclass" value="firmaOdd"/>
 		</c:otherwise>
 	</c:choose>
-	<div class="firma ${rowclass}">
+	<div class="firma ${rowclass}" id="firma_${msg.id}">
 		<c:out value="${msg.author.preferences['signature']}" escapeXml="true"/>
 	</div>
 </c:if>
