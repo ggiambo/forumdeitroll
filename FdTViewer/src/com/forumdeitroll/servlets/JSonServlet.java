@@ -333,6 +333,19 @@ public class JSonServlet extends HttpServlet {
 	}
 	
 	/**
+	 * fornisce l'ultimo id della tabella
+	 * @param writer
+	 * @param params
+	 * @throws IOException
+	 */
+	protected void getLastId(JsonWriter writer, Map<String, String[]> params) throws IOException {
+		long id = persistence.getLastId();
+		writer.beginObject();
+		writer.name("id").value(id);
+		writer.endObject();
+	}
+	
+	/**
 	 * Scrive l'exception in formato JSON direttamente nella response.
 	 * @param e
 	 * @param res

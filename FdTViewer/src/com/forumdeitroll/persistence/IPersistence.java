@@ -136,4 +136,6 @@ public interface IPersistence extends Serializable {
 	public void removeNotification(String fromNick, String toNick, long id);
 
 	public void createNotification(String fromNick, String toNick, long id);
+	
+	public long getLastId();
 }
