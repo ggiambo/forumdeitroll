@@ -140,6 +140,15 @@
 						</div>
 						<div style="clear: both;"></div>
 					</div>
+					<div>
+						<div class="inputUserPanel">
+							<input type="checkbox" name="<%=User.PREF_AUTO_REFRESH%>" id="<%=User.PREF_AUTO_REFRESH%>" ${loggedUser.preferences['autoRefresh']} />
+						</div>
+						<div class="lblUserPanel">
+							<label for="<%=User.PREF_AUTO_REFRESH%>" class="lbl">Auto refresh ogni 2 min.</label>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
 					<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
 						<hr/>								
 						<div class="inputUserPanel">

@@ -110,7 +110,14 @@
 		<script src="js/profiler.js?v=<%=bootTime%>" type="text/javascript"></script>
 		<script src="js/${fn:toLowerCase(servlet)}.js?v=<%=bootTime%>" type="text/javascript"></script>
 		<fdt:delayedScript dump="false">
-			var refreshable = parseInt('${refreshable}') || 0; // "|| 0" cosi' da avere "0" nel caso di NaN ;)
+			<c:choose>
+				<c:when test="${not empty loggedUser && loggedUser.preferences['autoRefresh'] == 'checked'}">
+					var refreshable = parseInt('${refreshable}') || 0; // "|| 0" cosi' da avere "0" nel caso di NaN ;)
+				</c:when>
+				<c:otherwise>
+					var refreshable = 0;
+				</c:otherwise>
+			</c:choose>
 		</fdt:delayedScript>
 		<fdt:delayedScript dump="true">
 			questo non verra' stampato, ma se lo togli la taglib non viene eseguita
