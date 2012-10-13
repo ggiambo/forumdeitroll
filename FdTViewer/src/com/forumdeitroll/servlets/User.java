@@ -578,6 +578,36 @@ public class User extends MainServlet {
 		return null;
 	}
 
+	/**
+	 * Firma
+	 * @param req
+	 * @param res
+	 * @return
+	 */
+	@Action(method=Method.POST)
+	String updateSignature(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+			return loginAction(req,  res);
+		}
+		
+		String signature = req.getParameter("signature");
+		if (StringUtils.isEmpty(signature)) {
+			signature = "";
+		}
+		if (signature.length() > 200) {
+			setNavigationMessage(req, NavigationMessage.error("Yawn, resta sotto i 200 caratteri !"));
+			return "user.jsp";
+		}
+		
+		loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "signature", signature));
+		
+		setNavigationMessage(req, NavigationMessage.info("Firma modificato con successo !"));
+		return "user.jsp";
+		
+	}
+
 	protected static final class AvailableTorRegistrations {
 		protected int available = 1;
 		protected long lastUpdate = System.currentTimeMillis();

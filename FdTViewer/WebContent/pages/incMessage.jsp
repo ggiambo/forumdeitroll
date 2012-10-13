@@ -92,6 +92,11 @@
 		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
 
+	<c:if test="${not empty msg.author.preferences['signature']}">
+		<hr class="firma"/>
+		<div style="font-size: 0.8em; padding:10px"><c:out value="${msg.author.preferences['signature']}" escapeXml="true"/></div>
+	</c:if>
+
 </div>
 
 <div id="buttons_${msg.id}" class="messagesButtonBar">

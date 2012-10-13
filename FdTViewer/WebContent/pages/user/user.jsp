@@ -64,6 +64,25 @@
 					<div style="clear: both;"></div>
 				</form>		
 			</div>
+			
+			<div class="userPanelSection">
+				<h3>Firma</h3>
+				<form action="User?action=updateSignature" method="post">
+					<div>
+						<div class="lblUserPanel">
+							<label for="actualPass" class="lbl">Firma:</label>
+						</div>
+						<div class="inputUserPanel">
+							<input type="text" name="signature" id="signature" value="${loggedUser.preferences['signature']}"/>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+					<div style="clear: both;"></div>
+					<input type="submit" value="Modifica" class="sendUserPanel" />
+					<div style="clear: both;"></div>
+				</form>		
+			</div>
+
 			<div class="userPanelSection">
 				<h3>Preferenze</h3>
 				<form action="User?action=updatePreferences" method="post">

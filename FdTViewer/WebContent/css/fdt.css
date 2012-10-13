@@ -1436,3 +1436,10 @@ input.notifyInput {
 	display: none;
 	vertical-align: top;
 }
+
+hr.firma {
+	border: 0;
+	height: 0;
+	border-top: 1px solid #F6F6F6;
+	box-shadow: 0 0 4px #0A78FF;
+}
