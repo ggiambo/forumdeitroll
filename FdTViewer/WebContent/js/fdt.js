@@ -436,7 +436,7 @@ function openNotifyInput(msgId) {
         	$("#recipients").val('');
         },
         open: function() {
-        	$('.ui-autocomplete').css('width', '10em');
+        	$('.ui-autocomplete').css('width', '10em').css('font-size', '.8em');
         }
         
 	});

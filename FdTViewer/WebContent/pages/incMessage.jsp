@@ -37,7 +37,7 @@
 						<c:param name="nick" value="${msg.author.nick}"/>
 					</c:url>
 					<a href="<c:out value="${userInfoUrl}" escapeXml="true"/>">
-						<img class="avatarImgLinkable" alt="Avatar" src="Misc<c:out value="${avatarURL}" escapeXml="true" />" />
+						<img class="avatarImg avatarImgLinkable" alt="Avatar" src="Misc<c:out value="${avatarURL}" escapeXml="true" />" />
 					</a>
 				</c:when>
 				<c:otherwise>
