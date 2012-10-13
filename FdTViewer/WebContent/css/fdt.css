@@ -1443,3 +1443,9 @@ hr.firma {
 	border-top: 1px solid #F6F6F6;
 	box-shadow: 0 0 4px #0A78FF;
 }
+
+div.firma {
+	font-size: .8em;
+	padding: 10px;
+	font-style: italic;
+}

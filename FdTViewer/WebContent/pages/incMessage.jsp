@@ -94,7 +94,7 @@
 
 	<c:if test="${not empty msg.author.preferences['signature']}">
 		<hr class="firma"/>
-		<div style="font-size: 0.8em; padding:10px"><c:out value="${msg.author.preferences['signature']}" escapeXml="true"/></div>
+		<div class="firma"><c:out value="${msg.author.preferences['signature']}" escapeXml="true"/></div>
 	</c:if>
 
 </div>
