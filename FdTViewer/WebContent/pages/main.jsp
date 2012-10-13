@@ -109,6 +109,9 @@
 		<script src="js/PluginDetect_All.js" type="text/javascript"></script>
 		<script src="js/profiler.js?v=<%=bootTime%>" type="text/javascript"></script>
 		<script src="js/${fn:toLowerCase(servlet)}.js?v=<%=bootTime%>" type="text/javascript"></script>
+		<fdt:delayedScript dump="false">
+			var refreshable = parseInt('${refreshable}') || 0; // "|| 0" cosi' da avere "0" nel caso di NaN ;)
+		</fdt:delayedScript>
 		<fdt:delayedScript dump="true">
 			questo non verra' stampato, ma se lo togli la taglib non viene eseguita
 		</fdt:delayedScript>

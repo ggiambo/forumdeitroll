@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +41,8 @@ import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
+
+	private static final List<String> REFRESHABLE_ACTIONS = Arrays.asList("getMessages");
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
 	
@@ -112,6 +115,13 @@ public class Messages extends MainServlet {
 		res.setHeader("Location", "Messages?action=getMessages");
 		res.sendError(301);
 		return null;
+	}
+
+	@Override
+	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
+		if (REFRESHABLE_ACTIONS.contains(req.getAttribute("action"))) {
+			req.setAttribute("refreshable", "1");
+		}
 	}
 
 	/**

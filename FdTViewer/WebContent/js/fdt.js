@@ -18,6 +18,7 @@ function showSidebar() {
 }
 
 function showReplyDiv(type, parentId) {
+	refreshable--;
 	$("#buttons_" + parentId).hide();
 	$("body").css("cursor", "progress");
 	$.get("Messages?action=showReplyDiv&type=" + type + "&parentId=" + parentId,
@@ -32,6 +33,7 @@ function showReplyDiv(type, parentId) {
 function closeReplyDiv(parentId) {
 	$("#reply_" + parentId).remove();
 	$("#buttons_" + parentId).show();
+	refreshable++;
 }
 
 function preview(parentId) {
@@ -270,6 +272,13 @@ jQuery("document").ready(function(){
 		buttonBarImgAdmin.css('background-image', 'url("css/images/ui-icons_ef8c08_256x240.png")');
 	});
 	
+	// refresh ogni 2 minuti
+	setInterval(function() {
+		if (refreshable > 0) {
+			location.reload();
+		}
+	}, 120000);
+	
 });
 
 // tasto 'j' per saltare al prossimo messaggio, 'k' per quello precedente
@@ -377,6 +386,7 @@ function showHIddenMessage(msgId) {
 }
 
 function openNotifyInput(msgId) {
+	refreshable--;
 	var span = $("#notify_" + msgId);
 	span.children("a").hide();
 	var input = span.children("input");
@@ -410,6 +420,7 @@ function openNotifyInput(msgId) {
 						span.children("a").show();
 						input.hide();
 						input.val("");
+						refreshable++;
 					} else if (data.resultCode == "ERROR") {
 						alert(data.content);
 					}

@@ -1,5 +1,5 @@
 package com.forumdeitroll.servlets;
-
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +19,8 @@ public class Threads extends MainServlet {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final List<String> REFRESHABLE_ACTIONS = Arrays.asList("getThreads", "getThreadsByLastPost", "getAuthorThreadsByLastPost");
+
 	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
 	/**
@@ -31,6 +33,13 @@ public class Threads extends MainServlet {
 		res.setHeader("Location", "Threads?action=getThreads");
 		res.sendError(301);
 		return null;
+	}
+	
+	@Override
+	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
+		if (REFRESHABLE_ACTIONS.contains(req.getAttribute("action"))) {
+			req.setAttribute("refreshable", "1");
+		}
 	}
 	
 	/**
