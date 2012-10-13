@@ -124,6 +124,14 @@ public class Messages extends MainServlet {
 		}
 	}
 
+	@Override
+	public void doAfter(HttpServletRequest req, HttpServletResponse res) {
+		AuthorDTO author = (AuthorDTO) req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
+		if (author != null) {
+			req.setAttribute("notifications", getPersistence().getNotifications(null, author.getNick()));
+		}
+	}
+	
 	/**
 	 * I messaggi di questa pagina (Dimensione PAGE_SIZE) in ordine di data
 	 * @param req
@@ -208,8 +216,6 @@ public class Messages extends MainServlet {
 			try {
 				long id = Long.parseLong(notificationId);
 				getPersistence().removeNotification(fromNick, loggedUser.getNick(), id);
-				// aggiornamento avvenuto con successo: ricarica le notifiche
-				req.setAttribute("notifications", getPersistence().getNotifications(null, loggedUser.getNick()));
 			} catch (NumberFormatException e) {
 				// Ma che c'� frega ma che ce 'mporta ...
 			}

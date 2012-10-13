@@ -1,4 +1,5 @@
 package com.forumdeitroll.servlets;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,6 +40,14 @@ public class Threads extends MainServlet {
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		if (REFRESHABLE_ACTIONS.contains(req.getAttribute("action"))) {
 			req.setAttribute("refreshable", "1");
+		}
+	}
+	
+	@Override
+	public void doAfter(HttpServletRequest req, HttpServletResponse res) {
+		AuthorDTO author = (AuthorDTO) req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
+		if (author != null) {
+			req.setAttribute("notifications", getPersistence().getNotifications(null, author.getNick()));
 		}
 	}
 	

@@ -50,8 +50,8 @@
 					<input type="submit" value="Modifica" class="sendUserPanel" />
 					<div style="clear: both;"></div>
 				</form>
-				
 			</div>
+
 			<div class="userPanelSection">
 				<h3>Cambio Avatar</h3>
 				<form action="User?action=updateAvatar" method="post" enctype="multipart/form-data">

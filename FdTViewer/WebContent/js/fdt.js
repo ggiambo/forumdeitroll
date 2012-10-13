@@ -445,5 +445,5 @@ function openNotifyInput(msgId) {
 
 function showAdminButtons(msgId) {
 	$("#OpenMod_" + msgId).remove();
-	$("#buttons_" + msgId).find("div.buttonBarButtonAdmin").show("slide", { direction: "up" }, 500);
+	$("#buttons_" + msgId).find("div.buttonBarButtonAdmin").show();
 }

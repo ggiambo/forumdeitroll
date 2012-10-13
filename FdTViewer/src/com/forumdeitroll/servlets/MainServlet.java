@@ -36,7 +36,7 @@ public abstract class MainServlet extends HttpServlet {
 	public static final int PAGE_SIZE = 20;
 
 	public static final String LOGGED_USER_REQ_ATTR = "loggedUser";
-	public static final String LOGGED_USER_SESS_ATTR = "loggedUserNick";
+	private static final String LOGGED_USER_SESS_ATTR = "loggedUserNick";
 	public static final String SESSION_IS_BANNED = "sessionIsBanned";
 
 	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
@@ -67,13 +67,26 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	public final void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		doBefore(req, res);
-		doDo(req, res, Action.Method.GET);
-		doAfter(req, res);
+		doGetPost(req, res, Action.Method.GET);
 	}
 
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		doDo(req, res, Action.Method.POST);
+		doGetPost(req, res, Action.Method.POST);
+	}
+	
+	private void doGetPost(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws IOException {
+		try {
+			doBefore(req, res);
+			String page = doDo(req, res, method);
+			doAfter(req, res);
+			// forward
+			if (page != null) {
+				req.setAttribute("page", page);
+				getServletContext().getRequestDispatcher("/pages/main.jsp").forward(req, res);
+			}
+		} catch (Exception e) {
+			handleException(e, req, res);
+		}
 	}
 
 	/**
@@ -110,7 +123,7 @@ public abstract class MainServlet extends HttpServlet {
 		}
 	}
 
-	private final void doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws IOException {
+	private final String doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws Exception {
 
 		String servlet = this.getClass().getSimpleName();
 		req.setAttribute("servlet", servlet);
@@ -131,8 +144,6 @@ public abstract class MainServlet extends HttpServlet {
 
 			userSessionBanContagion(req, loggedUser);
 
-			// notifications ?
-			req.setAttribute("notifications", getPersistence().getNotifications(null, loggedUser.getNick()));
 			// pvts ?
 			req.setAttribute("hasPvts", getPersistence().checkForNewPvts(loggedUser));
 			// sidebar status come attributo nel reques
@@ -156,7 +167,6 @@ public abstract class MainServlet extends HttpServlet {
 
 		// execute action
 		String action = (String)req.getAttribute("action");
-		try {
 			Method methodAction = null;
 			Class servletClass = this.getClass();
 			while (methodAction == null && MainServlet.class.isAssignableFrom(servletClass)) {
@@ -175,19 +185,11 @@ public abstract class MainServlet extends HttpServlet {
 					throw new IllegalArgumentException("L'action " + action + " non e' definita");
 				}
 				if (a.method() == Action.Method.GETPOST || a.method() == method) {
-					String page = (String)methodAction.invoke(this, new Object[] {req, res});
-					// forward
-					if (page != null) {
-						req.setAttribute("page", page);
-						getServletContext().getRequestDispatcher("/pages/main.jsp").forward(req, res);
-					}
+				return (String)methodAction.invoke(this, new Object[] {req, res});
 				} else {
 					throw new IllegalArgumentException("Azione " + action + " non permette il metodo " + method);
 				}
 			}
-		} catch (Exception e) {
-			handleException(e, req, res);
-		}
 	}
 
 	/**

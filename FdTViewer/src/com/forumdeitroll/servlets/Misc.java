@@ -157,8 +157,6 @@ public class Misc extends HttpServlet {
 	 * @throws Exception
 	 */
 	private void logoutAction(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		req.removeAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
-		req.getSession().removeAttribute(MainServlet.LOGGED_USER_SESS_ATTR);
 		req.getSession().invalidate();
 		res.setStatus(302);
 		res.setContentType("text/html");
