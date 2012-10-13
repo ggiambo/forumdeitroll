@@ -118,6 +118,10 @@
 					var refreshable = 0;
 				</c:otherwise>
 			</c:choose>
+			var lastId = null;
+			jQuery.get('JSon?action=getLastId', function(data) {
+				lastId = data.content.id;
+			});
 		</fdt:delayedScript>
 		<fdt:delayedScript dump="true">
 			questo non verra' stampato, ma se lo togli la taglib non viene eseguita

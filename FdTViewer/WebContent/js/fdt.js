@@ -192,6 +192,14 @@ var urlInput = function(parentId) {
 	}
 };
 
+var checkRefresh = function(callback) {
+	jQuery.get('JSon?action=getLastId', function(data) {
+		if (lastId != data.content.id) {
+			callback();
+		};
+	});
+};
+
 jQuery("document").ready(function(){
 	// Eseguita quando il documento è pronto
 	jQuery(".messagesBox").resizable({handles: 'e, w'}); // Solo lato EST e OVEST
@@ -275,7 +283,9 @@ jQuery("document").ready(function(){
 	// refresh ogni 2 minuti
 	setInterval(function() {
 		if (refreshable > 0) {
-			location.reload();
+			checkRefresh(function() {
+				location.reload();	
+			});
 		}
 	}, 120000);
 	

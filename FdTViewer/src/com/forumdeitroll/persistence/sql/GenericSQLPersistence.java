@@ -1728,4 +1728,22 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	public boolean blockTorExitNodes() {
 		return "checked".equals(getSysinfoValue("blockTorExitNodes"));
 	}
+	
+	public long getLastId() {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT MAX(id) FROM messages");
+			rs = ps.executeQuery();
+			if (rs.next()) return rs.getLong(1);
+			else throw new SQLException("No rows in messages?????");
+		} catch (SQLException e) {
+			LOG.error("Cannot retrieve max(id) from messages table", e);
+			return 0;
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
 }

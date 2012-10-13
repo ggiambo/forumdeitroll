@@ -119,7 +119,7 @@ public class Messages extends MainServlet {
 
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
-		if (REFRESHABLE_ACTIONS.contains(req.getAttribute("action"))) {
+		if (REFRESHABLE_ACTIONS.contains(req.getAttribute("action")) && StringUtils.isEmpty(req.getParameter("page"))) {
 			req.setAttribute("refreshable", "1");
 		}
 	}
