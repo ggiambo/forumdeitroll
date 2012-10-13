@@ -92,7 +92,6 @@
 		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
 
-
 </div>
 
 <c:if test="${not empty msg.author.preferences['signature']}">
