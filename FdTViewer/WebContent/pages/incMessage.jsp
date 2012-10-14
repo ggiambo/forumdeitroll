@@ -95,15 +95,7 @@
 </div>
 
 <c:if test="${not empty msg.author.preferences['signature']}">
-	<c:choose>
-		<c:when test="${index % 2 == 0}">
-			<c:set var="rowclass" value="firmaEven"/>
-		</c:when>
-		<c:otherwise>
-			<c:set var="rowclass" value="firmaOdd"/>
-		</c:otherwise>
-	</c:choose>
-	<div class="firma ${rowclass}" id="firma_${msg.id}">
+	<div class="firma" id="firma_${msg.id}">
 		<c:out value="${msg.author.preferences['signature']}" escapeXml="true"/>
 	</div>
 </c:if>
