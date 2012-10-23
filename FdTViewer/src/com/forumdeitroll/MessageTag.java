@@ -1,5 +1,7 @@
 package com.forumdeitroll;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -356,7 +358,7 @@ public class MessageTag extends BodyTagSupport {
 				}
 			}
 			word.setLength(0);
-			word.append(String.format("<a href=\"%s\" target='_blank' rel='nofollow noreferrer'>%s</a>", url, desc));
+			word.append(String.format("<a href=\"%s\" target='_blank' rel='nofollow noreferrer' title=\"%s\">%s</a>", wrapInRedirect(url), url, desc));
 			return true;
 		}
 		return false;
@@ -453,7 +455,7 @@ public class MessageTag extends BodyTagSupport {
 						String desc = new StringBuilder()
 							.append(body, p_url_end + 1, p_end - (p_url_end + 1))
 							.toString();
-						line.append(String.format("<a href=\"%s\" target='_blank' rel='nofollow noreferrer' title=\"%s\">%s</a>", normalized_url, normalized_url, desc));
+						line.append(String.format("<a href=\"%s\" target='_blank' rel='nofollow noreferrer' title=\"%s\">%s</a>", wrapInRedirect(normalized_url), normalized_url, desc));
 						p = p_end + URL_END.length - 1;
 					} else {
 						// [url=non_url]...[/url]
@@ -726,6 +728,13 @@ public class MessageTag extends BodyTagSupport {
 			if (body[i] == c) return i;
 		}
 		return -1;
+	}
+	private static String wrapInRedirect(String url) {
+		try {
+			return "Misc?action=redirectTo&url=" + URLEncoder.encode(url, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	private static String escape(StringBuilder in) {
 		return StringEscapeUtils.escapeHtml4(in.toString()).replace("'", "&apos;");

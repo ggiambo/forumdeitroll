@@ -97,9 +97,16 @@ public class Misc extends HttpServlet {
 			logoutAction(req, res);
 		} else if ("getDisclaimer".equals(action)) {
 			getDisclaimer(req, res);
+		} else if ("redirectTo".equals(action)) {
+			redirectTo(req, res);
 		} else {
 			LOG.error("action '" + action + "' conosciuta");
 		}
+	}
+	
+	private void redirectTo(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		res.setHeader("Location", req.getParameter("url"));
+		res.sendError(302);
 	}
 	
 	/**
