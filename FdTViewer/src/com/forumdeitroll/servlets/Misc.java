@@ -18,6 +18,7 @@ import nl.captcha.gimpy.RippleGimpyRenderer;
 import nl.captcha.servlet.CaptchaServletUtil;
 import nl.captcha.text.producer.NumbersAnswerProducer;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -105,7 +106,10 @@ public class Misc extends HttpServlet {
 	}
 	
 	private void redirectTo(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		res.setHeader("Location", req.getParameter("url"));
+		String url = req.getParameter("url");
+		url = StringEscapeUtils.unescapeHtml4(url);
+		url = url.replaceAll("&apos;", "'");
+		res.setHeader("Location", url);
 		res.sendError(302);
 	}
 	
