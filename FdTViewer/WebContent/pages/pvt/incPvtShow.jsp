@@ -12,11 +12,20 @@
 		<c:forEach items="${pvtdetail.toNick}" var="destNick" varStatus="index">
 			<c:url value="User" var="destNickURL">
 				<c:param name="action" value="getUserInfo"/>
-				<c:param name="nick" value="${destNick}"/>
+				<c:param name="nick" value="${destNick.nick}"/>
 			</c:url>
-			<a href="<c:out value="${destNickURL}" escapeXml="true" />" class="pvtNickname">
-				<c:out value="${destNick}"/>
-			</a>
+			<c:if test="${destNick.read }">
+				<a href="<c:out value="${destNickURL}" escapeXml="true" />" class="pvtNickname"
+					style="font-weight: normal;" title="Ha letto il messaggio">
+					<c:out value="${destNick.nick}"/>
+				</a>
+			</c:if>
+			<c:if test="${!destNick.read }">
+				<a href="<c:out value="${destNickURL}" escapeXml="true" />" class="pvtNickname"
+					title="Deve ancora leggere il messaggio">
+					<c:out value="${destNick.nick}"/>
+				</a>
+			</c:if>
 		</c:forEach>
 	</p>
 	<div class="pvtTextMessage">

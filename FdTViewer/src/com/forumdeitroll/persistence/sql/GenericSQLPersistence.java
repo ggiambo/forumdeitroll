@@ -35,6 +35,7 @@ import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
+import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
 
 public abstract class GenericSQLPersistence implements IPersistence {
 
@@ -654,7 +655,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(
-				"SELECT content, replyTo, subject, senddate, recipient, sender " +
+				"SELECT content, replyTo, subject, senddate, recipient, sender, pvt_recipient.read " +
 				"FROM pvt_content, pvt_recipient " +
 				"WHERE id = pvt_id " +
 				"AND id = ? " +
@@ -682,7 +683,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 					msg.setText(rs.getString("content"));
 					msg.setSubject(rs.getString("subject"));
 				}
-				msg.getToNick().add(rs.getString("recipient"));
+				ToNickDetailsDTO toNick = new ToNickDetailsDTO();
+				toNick.setNick(rs.getString("recipient"));
+				toNick.setRead(rs.getBoolean("pvt_recipient.read"));
+				msg.getToNick().add(toNick);
 			}
 			return msg;
 		} catch (SQLException e) {
@@ -719,11 +723,14 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				msg.setSubject(rs2.getString("subject"));
 				msg.setFromNick(rs2.getString("sender"));
 				close(rs2, ps2, null);
-				ps2 = conn.prepareStatement("SELECT recipient FROM pvt_recipient WHERE pvt_id = ?");
+				ps2 = conn.prepareStatement("SELECT recipient, `read` FROM pvt_recipient WHERE pvt_id = ?");
 				ps2.setLong(1, id);
 				rs2 = ps2.executeQuery();
 				while (rs2.next()) {
-					msg.getToNick().add(rs2.getString(1));
+					ToNickDetailsDTO toNick = new ToNickDetailsDTO();
+					toNick.setNick(rs2.getString(1));
+					toNick.setRead(rs2.getBoolean(2));
+					msg.getToNick().add(toNick);
 				}
 				close(rs2, ps2, null);
 				result.add(msg);
@@ -812,7 +819,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT count(*) FROM pvt_recipient WHERE recipient = ? AND `read` = 0");
+			ps = conn.prepareStatement("SELECT count(*) FROM pvt_recipient WHERE recipient = ? AND `read` = 0 AND deleted = 0");
 			ps.setString(1, recipient.getNick());
 			rs = ps.executeQuery();
 			rs.next();
@@ -906,11 +913,14 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				msg.setId(rs.getLong("id"));
 				msg.setSubject(rs.getString("subject"));
 				msg.setDate(rs.getTimestamp("senddate"));
-				ps2 = conn.prepareStatement("SELECT recipient FROM pvt_recipient WHERE pvt_id = ?");
+				ps2 = conn.prepareStatement("SELECT recipient, `read` FROM pvt_recipient WHERE pvt_id = ?");
 				ps2.setLong(1, msg.getId());
 				rs2 = ps2.executeQuery();
 				while (rs2.next()) {
-					msg.getToNick().add(rs2.getString(1));
+					ToNickDetailsDTO toNick = new ToNickDetailsDTO();
+					toNick.setNick(rs2.getString(1));
+					toNick.setRead(rs2.getBoolean(2));
+					msg.getToNick().add(toNick);
 				}
 				close(rs2, ps2, null);
 				result.add(msg);

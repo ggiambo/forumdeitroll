@@ -37,11 +37,20 @@
 								<c:forEach items="${pvt.toNick}" var="destNick" varStatus="index">
 									<c:url value="User" var="destNickURL">
 										<c:param name="action" value="getUserInfo"/>
-										<c:param name="nick" value="${destNick}"/>
+										<c:param name="nick" value="${destNick.nick}"/>
 									</c:url>
-									<a href="<c:out value="${destNickURL}" escapeXml="true" />">
-										<c:out value="${destNick }"/>
-									</a>
+									<c:if test="${destNick.read }">
+										<a href="<c:out value="${destNickURL}" escapeXml="true" />">
+											<c:out value="${destNick.nick }"/>
+										</a>
+									</c:if>
+									<c:if test="${! destNick.read }">
+										<b>
+											<a href="<c:out value="${destNickURL}" escapeXml="true" />">
+												<c:out value="${destNick.nick }"/>
+											</a>
+										</b>
+									</c:if>
 								</c:forEach>
 							</c:if>
 						</td>

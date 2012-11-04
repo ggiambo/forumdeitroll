@@ -6,11 +6,32 @@ import java.util.List;
 
 public class PrivateMsgDTO {
 	
+	public static class ToNickDetailsDTO {
+		public ToNickDetailsDTO() {}
+		public ToNickDetailsDTO(String nick) {
+			this.nick = nick;
+		}
+		private String nick;
+		private boolean read = false;
+		public String getNick() {
+			return nick;
+		}
+		public void setNick(String nick) {
+			this.nick = nick;
+		}
+		public boolean isRead() {
+			return read;
+		}
+		public void setRead(boolean read) {
+			this.read = read;
+		}
+	}
+	
 	public PrivateMsgDTO() {}
 	
 	private long id;
 	private String fromNick;
-	private List<String> toNick = new LinkedList<String>();
+	private List<ToNickDetailsDTO> toNick = new LinkedList<ToNickDetailsDTO>();
 	private String subject;
 	private Date date;
 	private String text;
@@ -33,11 +54,11 @@ public class PrivateMsgDTO {
 		this.fromNick = fromNick;
 	}
 
-	public List<String> getToNick() {
+	public List<ToNickDetailsDTO> getToNick() {
 		return toNick;
 	}
 
-	public void setToNick(List<String> toNick) {
+	public void setToNick(List<ToNickDetailsDTO> toNick) {
 		this.toNick = toNick;
 	}
 

@@ -1,6 +1,7 @@
 package com.forumdeitroll.servlets;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
+import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
 import com.forumdeitroll.servlets.Action.Method;
 import com.google.gson.stream.JsonWriter;
 
@@ -189,10 +191,15 @@ public class Pvt extends MainServlet {
 		pvt = getPersistence().getPvtDetails(id, login(req));
 		// prepara il reply
 		if (toAll) {
-			List<String> recipients = new ArrayList<String>(pvt.getToNick());
-			recipients.add(pvt.getFromNick());
+			List<ToNickDetailsDTO> recipients = new ArrayList<ToNickDetailsDTO>(pvt.getToNick());
+			
+			recipients.add(new ToNickDetailsDTO(pvt.getFromNick()));
 			String me = login(req).getNick();
-			recipients.remove(me);
+			for (Iterator<ToNickDetailsDTO> itRec = recipients.iterator(); itRec.hasNext();) {
+				if (me.equals(itRec.next().getNick())) {
+					itRec.remove();
+				}
+			}
 			req.setAttribute("recipients", "'" + StringUtils.join(recipients, "','") + "'");
 		} else {
 			req.setAttribute("recipients", "'" + pvt.getFromNick() + "'");
