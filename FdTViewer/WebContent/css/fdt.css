@@ -214,6 +214,7 @@ img.avatarImg {
 
 img.avatarImgLinkable:hover {
 	box-shadow: 0 0 8px #0A78FF;
+	border: 2px solid lightGray;
 }
 
 div.msgForum {
