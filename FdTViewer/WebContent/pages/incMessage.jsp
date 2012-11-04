@@ -148,7 +148,7 @@
 					</c:when>
 					<c:otherwise>
 						<a class="buttonBarLink" href="#" onClick="restoreHiddenMessage('${msg.id}');return false;">
-							<span class="buttonBarImg buttonBarImgReveal"></span>
+							<span class="buttonBarImgAdmin buttonBarImgReveal"></span>
 							Rendi visibile
 						</a>
 					</c:otherwise>
