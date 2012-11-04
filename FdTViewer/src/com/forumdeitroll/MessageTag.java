@@ -298,7 +298,8 @@ public class MessageTag extends BodyTagSupport {
 				(candidate.indexOf(".it/") != -1 && candidate.indexOf("/") == candidate.indexOf(".it/") + 3) ||
 				candidate.indexOf("Threads?action=") == 0 ||
 				candidate.indexOf("Polls?action=") == 0) ||
-				candidate.indexOf("Messages?action=") == 0;
+				candidate.indexOf("Messages?action=") == 0 ||
+				candidate.indexOf("Misc?action=") == 0;
 	}
 	private static String addHttpProtocol(String url) {
 		if (url.startsWith("www.")
@@ -332,7 +333,11 @@ public class MessageTag extends BodyTagSupport {
 				}
 				catch (NumberFormatException e) {}
 				catch (IndexOutOfBoundsException e) {}
-			} else if (url.indexOf(".youtube.com/watch?") == 9 || url.indexOf(".youtube.com/watch?") == 10 || url.indexOf(".youtube.com/watch?") == 11 || url.startsWith("http://youtu.be/") || url.startsWith("https://youtu.be/")) {
+			} else if (url.indexOf(".youtube.com/watch?") == 9 ||
+						url.indexOf(".youtube.com/watch?") == 10 ||
+						url.indexOf(".youtube.com/watch?") == 11 ||
+						url.startsWith("http://youtu.be/") ||
+						url.startsWith("https://youtu.be/")) {
 				String youcode = youcode(url);
 				if (youcode != null) {
 					youtube_embed(youcode);
@@ -731,7 +736,10 @@ public class MessageTag extends BodyTagSupport {
 	}
 	private static String wrapInRedirect(String url) {
 		try {
-			return "Misc?action=redirectTo&url=" + URLEncoder.encode(url, "UTF-8");
+			if (url.startsWith("http://") || url.startsWith("https://"))
+				return "Misc?action=redirectTo&url=" + URLEncoder.encode(url, "UTF-8");
+			else
+				return url;
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
