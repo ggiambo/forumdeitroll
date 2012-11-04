@@ -105,6 +105,20 @@ public class Pvt extends MainServlet {
 		}
 	}
 	
+	@Action(method=Method.POST)
+	String notifyUnread(HttpServletRequest req, HttpServletResponse res)
+		throws Exception {
+		long id = Long.parseLong(req.getParameter("id"));
+		PrivateMsgDTO pvt = new PrivateMsgDTO();
+		pvt.setId(id);
+		getPersistence().notifyUnread(login(req), pvt);
+		pvt = getPersistence().getPvtDetails(id, login(req));
+		req.setAttribute("pvtdetail", pvt);
+		req.setAttribute("from", "show");
+		req.setAttribute("sender", getPersistence().getAuthor(pvt.getFromNick()));
+		return "pvts.jsp";
+	}
+	
 	@Action(method=Method.GET)
 	String show(HttpServletRequest req, HttpServletResponse res)
 		throws Exception {

@@ -23,6 +23,11 @@
 		<fdt:msg author="${sender}">${pvtdetail.text }</fdt:msg>
 	</div>
 	<c:if test="${pvtdetail.fromNick != loggedUser.nick}">
+		<form action="Pvt" method="POST">
+			<input type="hidden" name="action" value="notifyUnread">
+			<input type="hidden" name="id" value="${pvtdetail.id }">
+			<a href="javascript:void()" onclick="this.parentNode.submit()" class="pvtRispondiBtn">Da leggere</a>
+		</form>
 		<a href="Pvt?action=reply&amp;id=${pvtdetail.id}" class="pvtRispondiBtn">Rispondi</a>
 		<a href="Pvt?action=replyAll&amp;id=${pvtdetail.id}" class="pvtRispondiBtn">Rispondi a tutti</a>
 		<div style="clear: both;"></div>

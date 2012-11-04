@@ -824,17 +824,17 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return false;
 	}
-
-	@Override
-	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
+	
+	private void notifyPvt(AuthorDTO recipient, PrivateMsgDTO privateMsg, boolean read) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("UPDATE pvt_recipient SET `read` = 1 WHERE recipient = ? AND pvt_id = ?");
-			ps.setString(1, recipient.getNick());
-			ps.setLong(2, privateMsg.getId());
+			ps = conn.prepareStatement("UPDATE pvt_recipient SET `read` = ? WHERE recipient = ? AND pvt_id = ?");
+			ps.setBoolean(1, read);
+			ps.setString(2, recipient.getNick());
+			ps.setLong(3, privateMsg.getId());
 			int result;
 			if ((result = ps.executeUpdate()) > 1) { // 0 == messaggio gia' letto
 				throw new SQLException("Le scimmie presto! "+recipient.getNick()+"ha aggiornato "+result+" records!");
@@ -844,6 +844,16 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} finally {
 			close(rs, ps, conn);
 		}
+	}
+	
+	@Override
+	public void notifyUnread(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
+		notifyPvt(recipient, privateMsg, false);
+	}
+
+	@Override
+	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
+		notifyPvt(recipient, privateMsg, true);
 	}
 
 	@Override

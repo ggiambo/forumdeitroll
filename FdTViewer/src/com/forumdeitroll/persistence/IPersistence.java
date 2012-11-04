@@ -98,6 +98,8 @@ public interface IPersistence extends Serializable {
 	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients);
 
 	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg);
+	
+	public void notifyUnread(AuthorDTO recipient, PrivateMsgDTO privateMsg);
 
 	public boolean checkForNewPvts(AuthorDTO author);
 
