@@ -91,14 +91,14 @@
 	<div style="padding: 10px;" class="message">
 		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
+	
+	<c:if test="${not empty msg.author.preferences['signature']}">
+		<div class="firma" id="firma_${msg.id}">
+			<c:out value="${msg.author.preferences['signature']}" escapeXml="true"/>
+		</div>
+	</c:if>
 
 </div>
-
-<c:if test="${not empty msg.author.preferences['signature']}">
-	<div class="firma" id="firma_${msg.id}">
-		<c:out value="${msg.author.preferences['signature']}" escapeXml="true"/>
-	</div>
-</c:if>
 
 <div id="buttons_${msg.id}" class="messagesButtonBar">
 
