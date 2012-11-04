@@ -2,6 +2,7 @@ package com.forumdeitroll.servlets;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -191,15 +192,17 @@ public class Pvt extends MainServlet {
 		pvt = getPersistence().getPvtDetails(id, login(req));
 		// prepara il reply
 		if (toAll) {
-			List<ToNickDetailsDTO> recipients = new ArrayList<ToNickDetailsDTO>(pvt.getToNick());
+			List<String> recipients = new ArrayList<String>();
 			
-			recipients.add(new ToNickDetailsDTO(pvt.getFromNick()));
+			recipients.add(pvt.getFromNick());
 			String me = login(req).getNick();
-			for (Iterator<ToNickDetailsDTO> itRec = recipients.iterator(); itRec.hasNext();) {
-				if (me.equals(itRec.next().getNick())) {
-					itRec.remove();
+			for (Iterator<ToNickDetailsDTO> itRec = pvt.getToNick().iterator(); itRec.hasNext();) {
+				String nick = itRec.next().getNick();
+				if (!me.equals(nick)) {
+					recipients.add(nick);
 				}
 			}
+			
 			req.setAttribute("recipients", "'" + StringUtils.join(recipients, "','") + "'");
 		} else {
 			req.setAttribute("recipients", "'" + pvt.getFromNick() + "'");
