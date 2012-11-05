@@ -501,7 +501,7 @@ public class MessageTag extends BodyTagSupport {
 				p = p_end + PRE_TAG_END.length;
 			} else {
 				// [code] orfano di chiusura: ignora
-				line.append(CODE).append(']');
+				line.append(CODE);
 				p--;
 			}
 		} else if (' ' == body[p + CODE.length]) {
