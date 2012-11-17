@@ -167,6 +167,9 @@ public abstract class MainServlet extends HttpServlet {
 
 		// execute action
 		String action = (String)req.getAttribute("action");
+		if (action == null) {
+			LOG.error("action è null per la request "+req.getRequestURI()+": hai messo l'<url-pattern> nel filter (web.xml)?");
+		}
 			Method methodAction = null;
 			Class servletClass = this.getClass();
 			while (methodAction == null && MainServlet.class.isAssignableFrom(servletClass)) {
