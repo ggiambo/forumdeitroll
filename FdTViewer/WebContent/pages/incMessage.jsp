@@ -109,8 +109,12 @@
 		</div>
 	</div>
 </c:if>
+<c:if test="${not empty loggedUser}">
 <div id="buttons_${msg.id}" class="messagesButtonBar">
-
+</c:if>
+<c:if test="${empty loggedUser}">
+<div id="buttons_${msg.id}" style="clear:both" class="messagesButtonBar">
+</c:if>
 	<c:if test="${not empty loggedUser}">
 		<c:if test="${loggedUser.preferences['super'] == 'yes' || loggedUser.preferences['pedonizeThread'] == 'yes' || loggedUser.preferences['hideMessages'] == 'yes'}">
 			<div class="buttonBarButton buttonBarButtonAdmin" id="OpenMod_${msg.id}" style="display: inline">
