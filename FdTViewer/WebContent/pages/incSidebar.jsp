@@ -14,6 +14,10 @@
 </div>
 <div id="sidebar" style="${sidebarStyle}">
 	<span class="openCloseSidebar" onClick="hideSidebar();" onMouseOver="this.style.cursor='pointer'">&laquo;</span><br/>
+	<c:if test="${not empty loggedUser}">
+		<a href="Bookmarks">Segnalibri</a>
+		<br><br>
+	</c:if>
 	<form action="Messages" method="get" id="sidebarSearchForm">
 		<input type="hidden" name="action" value="search"/>
 		<input name="search" size="8" value="<c:out value="${param.search}"/>"/>

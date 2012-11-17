@@ -23,6 +23,7 @@ import com.forumdeitroll.FdTException;
 import com.forumdeitroll.PagerTag;
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.BookmarkDTO;
 import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
@@ -31,11 +32,11 @@ import com.forumdeitroll.persistence.PollDTO;
 import com.forumdeitroll.persistence.PollQuestion;
 import com.forumdeitroll.persistence.PollsDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
+import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
-import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
 
 public abstract class GenericSQLPersistence implements IPersistence {
 
@@ -1762,6 +1763,106 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} catch (SQLException e) {
 			LOG.error("Cannot retrieve max(id) from messages table", e);
 			return 0;
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	public List<BookmarkDTO> getBookmarks(AuthorDTO owner) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<BookmarkDTO> ret = new ArrayList<BookmarkDTO>();
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT nick, msgId, subject FROM bookmarks WHERE nick = ?");
+			ps.setString(1, owner.getNick());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				BookmarkDTO bookmark = new BookmarkDTO();
+				bookmark.setNick(rs.getString(1));
+				bookmark.setMsgId(rs.getLong(2));
+				bookmark.setSubject(rs.getString(3));
+				ret.add(bookmark);
+			}
+		} catch (SQLException e) {
+			LOG.error("getBookmarks failed", e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return ret;
+	}
+	
+	public boolean existsBookmark(BookmarkDTO bookmark) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT nick, msgId, subject FROM bookmarks WHERE nick = ? AND msgId = ?");
+			ps.setString(1, bookmark.getNick());
+			ps.setLong(2, bookmark.getMsgId());
+			rs = ps.executeQuery();
+			return rs.next();
+		} catch (SQLException e) {
+			LOG.error("existsBookmark failed", e);
+			throw new RuntimeException(e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	public void addBookmark(BookmarkDTO bookmark) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("INSERT INTO bookmarks(nick, msgId, subject) VALUES (?,?,?)");
+			ps.setString(1, bookmark.getNick());
+			ps.setLong(2, bookmark.getMsgId());
+			ps.setString(3, bookmark.getSubject());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			LOG.error("Impossibile inserire il segnalibro -> "+bookmark.toString(), e);
+			throw new RuntimeException(e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	public void deleteBookmark(BookmarkDTO bookmark) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("DELETE FROM bookmarks WHERE nick = ? AND msgId = ?");
+			ps.setString(1, bookmark.getNick());
+			ps.setLong(2, bookmark.getMsgId());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			LOG.error("Impossibile eliminare il segnalibro -> "+bookmark.toString(), e);
+			throw new RuntimeException(e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	public void editBookmark(BookmarkDTO bookmark) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("UPDATE bookmarks SET subject = ? WHERE nick = ? AND msgId = ?");
+			ps.setString(1, bookmark.getSubject());
+			ps.setString(2, bookmark.getNick());
+			ps.setLong(3, bookmark.getMsgId());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			LOG.error("Impossibile modificare il segnalibro -> "+bookmark.toString(), e);
+			throw new RuntimeException(e);
 		} finally {
 			close(rs, ps, conn);
 		}

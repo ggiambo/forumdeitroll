@@ -287,13 +287,19 @@ div.message {
 	text-shadow: none;
 	background-image: none;
 }
-
+.messagesButtonBarLeft {
+	float: left;
+	background: #D6D6D6;
+	height: 21px;
+	display: box;
+	border-top-right-radius: 3px;
+	padding-right: 2px;
+}
 .messagesButtonBar {
 	float: right;
 	background: #D6D6D6;
 	height: 21px;
 	display: box;
-	clear: both;
 	border-top-left-radius: 3px;
 	padding-right: 2px;
 }
@@ -377,6 +383,10 @@ span.buttonBarImgQuota {
 
 span.buttonBarImgModifica {
 	background-position: -64px -114px;
+}
+
+span.buttonBarImgBookmark {
+	background-position: -48px -178px;
 }
 
 #sidebarSearchForm {

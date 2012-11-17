@@ -140,4 +140,14 @@ public interface IPersistence extends Serializable {
 	public void createNotification(String fromNick, String toNick, long id);
 	
 	public long getLastId();
+	
+	public List<BookmarkDTO> getBookmarks(AuthorDTO owner);
+	
+	public boolean existsBookmark(BookmarkDTO bookmark);
+	
+	public void addBookmark(BookmarkDTO bookmark);
+	
+	public void deleteBookmark(BookmarkDTO bookmark);
+	
+	public void editBookmark(BookmarkDTO bookmark);
 }

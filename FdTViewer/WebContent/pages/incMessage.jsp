@@ -99,7 +99,16 @@
 	</c:if>
 
 </div>
-
+<c:if test="${not empty loggedUser}">
+	<div id="buttons_${msg.id}_L" class="messagesButtonBarLeft">
+		<div class="buttonBarButton">
+			<a class="buttonBarLink" href="Bookmarks?action=add&msgId=${msg.id}">
+				<span class="buttonBarImg buttonBarImgBookmark"></span>
+				Aggiungi ai segnalibri
+			</a>
+		</div>
+	</div>
+</c:if>
 <div id="buttons_${msg.id}" class="messagesButtonBar">
 
 	<c:if test="${not empty loggedUser}">

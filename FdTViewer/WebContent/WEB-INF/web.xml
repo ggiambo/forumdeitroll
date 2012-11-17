@@ -74,6 +74,15 @@
     <servlet-name>UserProfilerServlet</servlet-name>
     <url-pattern>/UserProfiler</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>Bookmarks</servlet-name>
+    <servlet-class>com.forumdeitroll.servlets.Bookmarks</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Bookmarks</servlet-name>
+    <url-pattern>/Bookmarks</url-pattern>
+  </servlet-mapping>
   <jsp-config>
     <taglib>
       <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
@@ -114,5 +123,6 @@
     <url-pattern>/Polls/*</url-pattern>
     <url-pattern>/ModInfo/*</url-pattern>
     <url-pattern>/UserProfiler</url-pattern>
+    <url-pattern>/Bookmarks</url-pattern>
   </filter-mapping>
 </web-app>
