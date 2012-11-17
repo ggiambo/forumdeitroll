@@ -44,6 +44,7 @@
 				<a href="./User" class="userPanelButton">User Panel</a>
 				<a href="./Pvt?action=inbox" class="userPanelButton">Posta</a>
 				<a href="./User?action=getNotifications" class="userPanelButton">Notifiche</a>
+				<a href="./Bookmarks?action=list" class="userPanelButton">Segnalibri</a>
 				<div style="clear: both;"></div>
 			</div>
 			

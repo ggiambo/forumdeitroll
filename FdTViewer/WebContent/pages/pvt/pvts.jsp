@@ -30,6 +30,7 @@
 				<a href="./User" class="userPanelButton">User Panel</a>
 				<a href="./User?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
 				<a href="./User?action=getNotifications" class="userPanelButton">Notifiche</a>
+				<a href="./Bookmarks?action=list" class="userPanelButton">Segnalibri</a>
 				<div style="clear: both;"></div>
 			</div>
 		</div> <%-- /Content --%>
