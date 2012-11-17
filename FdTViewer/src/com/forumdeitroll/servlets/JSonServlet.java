@@ -63,7 +63,7 @@ public class JSonServlet extends HttpServlet {
 			JsonWriter jsw = initWriter(ResultCode.OK, writer);
 			m.invoke(this, jsw, Collections.unmodifiableMap(req.getParameterMap()));
 			closeWriter(jsw, time);
-			res.setContentType("application/json");
+			res.setContentType("application/json; charset=UTF-8");
 			String callback = req.getParameter("callback");
 			if (callback != null) {
 				writer.getBuilder().insert(0, callback + "(").append(")");
@@ -438,6 +438,7 @@ public class JSonServlet extends HttpServlet {
 	 */
 	private JsonWriter initWriter(ResultCode resultCode, Writer out) throws IOException {
 		JsonWriter writer = new JsonWriter(out);
+		writer.setHtmlSafe(true);
 		writer.setIndent("  ");
 		writer.beginObject();
 		writer.name("resultCode").value(resultCode.toString());
