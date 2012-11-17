@@ -31,9 +31,9 @@
 								<tr>
 									<c:if test="${highlight == bookmark.msgId}">
 										<td style="background-color: yellow;">
-											<a id="link_bm_${bookmark.msgId}" href="Threads?action=getByMessage&msgId=${bookmark.msgId}#msg${bookmark.msgId}">
-												<c:out value="${bookmark.subject}"/>
-											</a>
+											<a id="link_bm_${bookmark.msgId}" href="Threads?action=getByMessage&msgId=${bookmark.msgId}#msg${bookmark.msgId}"
+											><c:out value="${bookmark.subject}"/></a>
+											<%-- il tag qui sopra è formattato cosi' per evitare di trimmare via js il testo --%>
 										</td>
 									</c:if>
 									<c:if test="${highlight != bookmark.msgId}">
