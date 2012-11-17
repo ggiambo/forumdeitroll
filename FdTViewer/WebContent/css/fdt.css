@@ -294,6 +294,7 @@ div.message {
 	display: box;
 	border-top-right-radius: 3px;
 	padding-right: 2px;
+	clear: left;
 }
 .messagesButtonBar {
 	float: right;
@@ -302,6 +303,7 @@ div.message {
 	display: box;
 	border-top-left-radius: 3px;
 	padding-right: 2px;
+	clear: right;
 }
 
 div.buttonBarButton {
