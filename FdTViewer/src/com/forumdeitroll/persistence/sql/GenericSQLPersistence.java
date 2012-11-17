@@ -1783,6 +1783,9 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				bookmark.setNick(rs.getString(1));
 				bookmark.setMsgId(rs.getLong(2));
 				bookmark.setSubject(rs.getString(3));
+				if (StringUtils.isEmpty(bookmark.getSubject())) {
+					bookmark.setSubject("Vai al messaggio " + bookmark.getMsgId());
+				}
 				ret.add(bookmark);
 			}
 		} catch (SQLException e) {
