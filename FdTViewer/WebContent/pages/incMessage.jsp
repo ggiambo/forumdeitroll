@@ -97,7 +97,7 @@
 			<c:out value="${msg.author.preferences['signature']}" escapeXml="true"/>
 		</div>
 	</c:if>
-
+	<div style="clear:both; height: 1px; width: 100%;"></div>
 </div>
 <c:if test="${not empty loggedUser}">
 	<div id="buttons_${msg.id}_L" class="messagesButtonBarLeft">
