@@ -563,7 +563,7 @@ public class Messages extends MainServlet {
 			// un errore nel profiler non preclude la funzionalita' del forum, ma bisogna tenere d'occhio i logs
 			UserProfile candidate = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
 			candidate.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
-			candidate.setNick(login(req).getNick());
+			candidate.setNick(author.getNick());
 			profile = UserProfiler.getInstance().guess(candidate);
 			if (profile.isBannato()) {
 				insertMessageAjaxFail(res, "Sei stato bannato");
