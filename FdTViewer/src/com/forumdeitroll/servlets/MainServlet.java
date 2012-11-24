@@ -366,10 +366,14 @@ public abstract class MainServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	QuoteDTO getRandomQuoteDTO(HttpServletRequest req, HttpServletResponse res) {
-		final QuoteDTO quote = cachedQuotes.get().get(RandomPool.insecureInt(cachedQuotes.get().size()));
-		final QuoteDTO newquote = new QuoteDTO(quote);
-		newquote.setContent(StringEscapeUtils.escapeHtml4(quote.getContent()));
-		return newquote;
+		if (cachedQuotes.get().size() > 0) {
+			final QuoteDTO quote = cachedQuotes.get().get(RandomPool.insecureInt(cachedQuotes.get().size()));
+			final QuoteDTO newquote = new QuoteDTO(quote);
+			newquote.setContent(StringEscapeUtils.escapeHtml4(quote.getContent()));
+			return newquote;
+		} else {
+			return new QuoteDTO();
+		}
 	}
 
 	/**
