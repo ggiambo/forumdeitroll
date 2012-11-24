@@ -1,133 +1,237 @@
--- phpMyAdmin SQL Dump
--- version 3.4.5deb1
--- http://www.phpmyadmin.net
+-- MySQL dump 10.13  Distrib 5.1.63, for debian-linux-gnu (x86_64)
 --
--- Host: localhost
--- Generation Time: Feb 11, 2012 at 08:59 PM
--- Server version: 5.1.58
--- PHP Version: 5.3.6-13ubuntu3.5
-
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
+-- Host: localhost    Database: fdtsucker
+-- ------------------------------------------------------
+-- Server version	5.1.63-0+squeeze1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
-
---
--- Database: `fdtsucker`
---
-
--- --------------------------------------------------------
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
 -- Table structure for table `authors`
 --
 
-CREATE TABLE IF NOT EXISTS `authors` (
+DROP TABLE IF EXISTS `authors`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `authors` (
   `nick` tinytext NOT NULL,
-  `ranking` int(11) NOT NULL,
   `messages` int(11) NOT NULL,
   `avatar` mediumblob,
   `password` tinytext NOT NULL,
   `salt` tinytext,
   `hash` tinytext
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- --------------------------------------------------------
+--
+-- Table structure for table `bookmarks`
+--
+
+DROP TABLE IF EXISTS `bookmarks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `bookmarks` (
+  `nick` tinytext NOT NULL,
+  `msgId` int(11) NOT NULL,
+  `subject` tinytext NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `messages`
 --
 
-CREATE TABLE IF NOT EXISTS `messages` (
+DROP TABLE IF EXISTS `messages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `messages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `text` mediumtext NOT NULL,
+  `text` longtext NOT NULL,
   `date` datetime NOT NULL,
   `subject` tinytext NOT NULL,
   `threadId` int(11) NOT NULL,
   `parentId` int(11) NOT NULL,
-  `author` varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `forum` varchar(256) CHARCTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `author` varchar(256) DEFAULT NULL,
+  `forum` varchar(256) DEFAULT NULL,
+  `visible` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `parentId` (`parentId`),
   KEY `threadId` (`threadId`),
   KEY `author` (`author`),
-  KEY `forum` (`forum`)
-  FULLTEXT KEY `text` (`text`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
-
--- --------------------------------------------------------
+  KEY `forum` (`forum`),
+  FULLTEXT KEY `text` (`text`),
+  FULLTEXT KEY `search` (`subject`,`text`)
+) ENGINE=MyISAM AUTO_INCREMENT=2722091 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `quotes`
+-- Table structure for table `notification`
 --
 
-CREATE TABLE IF NOT EXISTS `quotes` (
+DROP TABLE IF EXISTS `notification`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `notification` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nick` text NOT NULL,
-  `content` text NOT NULL,
+  `fromNick` varchar(256) NOT NULL,
+  `toNick` varchar(256) NOT NULL,
+  `msgId` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
-
--- --------------------------------------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- pvt.sql -- tabelle per i messaggi privati
+-- Table structure for table `poll`
 --
 
-CREATE TABLE IF NOT EXISTS `pvt_content` (
+DROP TABLE IF EXISTS `poll`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `poll` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(256) NOT NULL,
+  `text` mediumtext NOT NULL,
+  `author` varchar(256) NOT NULL,
+  `creationDate` datetime NOT NULL,
+  `updateDate` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `poll_question`
+--
+
+DROP TABLE IF EXISTS `poll_question`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `poll_question` (
+  `pollId` int(11) NOT NULL,
+  `sequence` int(11) NOT NULL,
+  `text` varchar(256) NOT NULL,
+  `votes` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `poll_user`
+--
+
+DROP TABLE IF EXISTS `poll_user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `poll_user` (
+  `nick` varchar(256) NOT NULL,
+  `pollId` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `preferences`
+--
+
+DROP TABLE IF EXISTS `preferences`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `preferences` (
+  `nick` tinytext NOT NULL,
+  `key` tinytext NOT NULL,
+  `value` tinytext NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `pvt_content`
+--
+
+DROP TABLE IF EXISTS `pvt_content`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pvt_content` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sender` text NOT NULL,
   `content` mediumtext NOT NULL,
   `senddate` datetime NOT NULL,
   `subject` text NOT NULL,
-	`replyTo` int(11),
-	`deleted` int(1) DEFAULT 0,
+  `replyTo` int(11) DEFAULT NULL,
+  `deleted` int(1) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+) ENGINE=MyISAM AUTO_INCREMENT=1204 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE IF NOT EXISTS `pvt_recipient` (
+--
+-- Table structure for table `pvt_recipient`
+--
+
+DROP TABLE IF EXISTS `pvt_recipient`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pvt_recipient` (
   `pvt_id` int(11) NOT NULL,
   `recipient` text NOT NULL,
-	`read` int(1) DEFAULT 0,
-	`deleted` int(1) DEFAULT 0
+  `read` int(1) DEFAULT '0',
+  `deleted` int(1) DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- preferences.sql -- tabella di salvataggio delle preferenze
+-- Table structure for table `quotes`
 --
 
-CREATE TABLE IF NOT EXISTS `preferences` (
-  `nick` tinytext NOT NULL,
+DROP TABLE IF EXISTS `quotes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `quotes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nick` text NOT NULL,
+  `content` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=398 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sysinfo`
+--
+
+DROP TABLE IF EXISTS `sysinfo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sysinfo` (
   `key` tinytext NOT NULL,
   `value` tinytext NOT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
-
--- --------------------------------------------------------
-
---
--- sysinfo.sql -- tabella per le informazioni di sistema
---
-
-CREATE TABLE IF NOT EXISTS `sysinfo` (
-  `key` tinytext NOT NULL,
-  `value` tinytext NOT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ;
-
--- --------------------------------------------------------
---
--- messageIndices.sql -- indici
---
-
-ALTER TABLE `messages` ADD INDEX ( `author` )
-ALTER TABLE `messages` ADD INDEX ( `forum` )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- fulltext index su subject
+-- Table structure for table `tags`
 --
 
-CREATE FULLTEXT INDEX search ON messages(subject, text);
+DROP TABLE IF EXISTS `tags`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tags` (
+  `tagName` varchar(12) NOT NULL,
+  `used` int(11) NOT NULL,
+  UNIQUE KEY `tagName` (`tagName`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2012-11-24 22:46:59
