@@ -34,3 +34,10 @@ function geodata(elem, ip) {
 		}
 	);
 }
+
+var blink = function(elem) {
+	elem.style.backgroundColor = 'red';
+	setTimeout(function() {
+		elem.style.backgroundColor = 'transparent';
+	}, 300);
+};

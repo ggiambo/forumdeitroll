@@ -4,6 +4,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
+<fdt:delayedScript dump="false">
+(function(w) {
+	var hash = w.location.hash;
+	if (hash && hash.match(/^#msgId=\d+$/)) {
+		var id = hash.match(/^#msgId=(\d+)$/)[1];
+		var url = 'Messages?action=getById&msgId=' + id;
+		var selector = 'a[href="' + url + '"]';
+		$(selector).focus();
+	}
+})(window);
+</fdt:delayedScript>
+
 <div id="geoIpContainer"></div>
 
 <div id="main">
@@ -43,7 +55,7 @@
 				<p>resolutions: ${profile.screenResolutions }</p>
 				<p>plugin (hash): ${profile.pluginHashes }</p>
 				<p>Ultimi 100 messaggi di questo utente: <c:forEach items="${profile.msgIds }" var="msgId" varStatus="indexMsg">
-						<a href="Messages?action=getById&msgId=${msgId }">${msgId }</a>
+						<a href="Messages?action=getById&msgId=${msgId }" onfocus="blink(this)">${msgId }</a>
 					</c:forEach></p>
 				<p>ultimo riconoscimento: <fmt:formatDate value="${profile.ultimoRiconoscimentoUtenteDate}" pattern="dd.MM.yyyy@HH:mm:ss"/></p>
 				<p>Cancella un attributo:

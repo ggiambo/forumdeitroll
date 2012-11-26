@@ -14,6 +14,7 @@
 				<p><span class="lbl">Utente:</span> ${modInfo.authorDescription}</p>
 				<p><span class="lbl">IP:</span> <span class="ip-container">${modInfo.ip}</span></p>
 				<p><span class="lbl">TOR:</span> ${modInfo.tor}</p>
+				<p><span class="lbl"><a href="UserProfiler#msgId=${modInfo.m_id}">Vai alle informazioni del profiler per questo messaggio</a></span></p>
 			</div>
 			<div class="modInfoPanelSection">
 				<h3>Azioni</h3>
