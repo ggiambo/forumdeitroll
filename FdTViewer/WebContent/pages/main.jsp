@@ -15,12 +15,16 @@
 	<% response.setHeader("Content-Type", "text/html; charset=utf-8"); %>
 	<% response.setHeader("Pragma", "no-cache"); %>
 	<head>
+		<% String tmst = ""; %>
+		<c:if test="${not empty loggedUser && loggedUser.preferences['autoRefresh'] == 'checked' && refreshable == 1}">
+			<% tmst = "[" + new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date()) + "] ";%>	
+		</c:if>
 		<c:choose>
 			<c:when test="${websiteTitle != ''}">
-				<title>${websiteTitle}</title>
+				<title><%=tmst%>${websiteTitle}</title>
 			</c:when>
 			<c:otherwise>
-				<title>Forum dei Troll</title>
+				<title><%=tmst%>Forum dei Troll</title>
 			</c:otherwise>
 		</c:choose>
 		<link rel="icon" href="favicon.ico" type="image/x-icon" />
