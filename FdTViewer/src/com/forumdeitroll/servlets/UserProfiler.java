@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 
 import com.forumdeitroll.profiler.UserProfile;
 import com.google.gson.Gson;
@@ -103,7 +104,63 @@ public class UserProfiler extends MainServlet {
 	
 	@Action(method=Action.Method.GET)
 	String snoop(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
+		if (isAdmin) {
+			req.setAttribute("lastUnbanRequested", lastUnbanRequested);
+			req.setAttribute("jsonProfile", new Gson().toJson(lastUnbanRequested));
+		}
 		return "snoop.jsp";
+	}
+	
+	private static UserProfile lastUnbanRequested = null;
+	
+	@Action(method=Action.Method.POST)
+	String requestUnban(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String jsonProfile = req.getParameter("jsonProfile");
+		UserProfile userProfile = new Gson().fromJson(jsonProfile, UserProfile.class);
+		lastUnbanRequested = userProfile;
+		setNavigationMessage(req, NavigationMessage.info("Richiesta accodata"));
+		return snoop(req, res);
+	}
+	
+	@Action(method=Action.Method.POST)
+	String unban(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
+		if (!isAdmin) {
+			return null;
+		}
+		String jsonProfile = req.getParameter("jsonProfile");
+		Log.debug("jsonProfile = "+jsonProfile);
+		UserProfile profile = new Gson().fromJson(jsonProfile, UserProfile.class);
+		lastUnbanRequested = null;
+		UserProfile banned = profiler.guess(profile);
+		if (!banned.isBannato()) {
+			setNavigationMessage(req, NavigationMessage.warn("Il profilo identificato non era stato bannato."));
+			return "snoop.jsp";
+		}
+		if (profile.getPermr().equals(banned.getPermr())) {
+			banned.setPermr(null);
+		}
+		if (profile.getEtag().equals(banned.getEtag())) {
+			banned.setEtag(null);
+		}
+		if (banned.getPluginHashes().contains(profile.getPlugins())) {
+			banned.getPluginHashes().remove(profile.getPlugins());
+		}
+		if (banned.getUserAgents().contains(profile.getUa())) {
+			banned.getUserAgents().remove(profile.getUa());
+		}
+		if (banned.getScreenResolutions().contains(profile.getScreenres())) {
+			banned.getScreenResolutions().remove(profile.getScreenres());
+		}
+		if (banned.getIpAddresses().contains(profile.getIpAddress())) {
+			banned.getIpAddresses().remove(profile.getIpAddress());
+		}
+		if (banned.getNicknames().contains(profile.getNick())) {
+			banned.getNicknames().remove(profile.getNick());
+		}
+		setNavigationMessage(req, NavigationMessage.info("Profilo "+banned.getUuid()+" pulito delle informazioni da sbannare"));
+		return page(req);
 	}
 	
 	private String page(HttpServletRequest req) {

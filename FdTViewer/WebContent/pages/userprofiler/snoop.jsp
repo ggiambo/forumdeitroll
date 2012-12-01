@@ -5,14 +5,36 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
 <div id="main">
-	<textarea id='snoopDataContainer' rows="10" cols="50"></textarea>
+	<c:if test="${not empty loggedUser && loggedUser.preferences['super'] == 'yes'}">
+		<c:if test="${not empty lastUnbanRequested }">
+			<p>Ultima richiesta di sban</p>
+			<p>permr: ${lastUnbanRequested.permr }</p>
+			<p>etag: ${lastUnbanRequested.etag }</p>
+			<p>plugins: ${lastUnbanRequested.plugins }</p>
+			<p>ua: ${lastUnbanRequested.ua }</p>
+			<p>screenres: ${lastUnbanRequested.screenres }</p>
+			<p>ipAddress: ${lastUnbanRequested.ipAddress }</p>
+			<p>nick: ${lastUnbanRequested.nick }</p>
+			<form action="UserProfiler" method="POST">
+				<input type="hidden" name="action" value="unban">
+				<input type="hidden" name="jsonProfile" value='${jsonProfile}'>
+				<input type="submit" name="btn" value="Sbanna">
+			</form>
+		</c:if>
+	</c:if>
+	<form action="UserProfiler" method="POST">
+		<input type="hidden" name="action" value="requestUnban">
+		<input type="hidden" id="jsonProfile" name="jsonProfile" value="">
+		<input type="submit" id="btn" name="btn" value="Sbannatemi!" disabled="disabled">
+	</form>
 </div>
 <fdt:delayedScript dump="false">
 $(document).ready(function() {
 	profiler(function(profileData) {
 		checkProfile(profileData, function(reply) {
-			$('#snoopDataContainer').html(reply);
-		});
+			$('#jsonProfile').val(JSON.stringify(JSON.parse(reply).input));
+			$('#btn').attr('disabled', false);
+		})
 	});
 });
 </fdt:delayedScript>
