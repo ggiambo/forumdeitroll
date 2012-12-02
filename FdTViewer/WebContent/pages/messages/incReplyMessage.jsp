@@ -4,6 +4,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
+<c:set var="maxMessageLength">
+	<%=Messages.MAX_MESSAGE_LENGTH%>
+</c:set>
+
 <fdt:delayedScript dump="false">
 	$(document).ready(function() {
 		$("#reply_${message.parentId} :input[name='pass']").keydown(function(e) {
@@ -16,7 +20,28 @@
 				send(${message.parentId});
 			}
 		});
-		jscolor.init()
+		jscolor.init();
+		// update numero caratteri, ogni secondo
+		messageId = ${message.id};
+		limit = ${maxMessageLength};
+		setInterval(function() {
+			// n.b. non furmigate, il controllo della lunghezza c'è anche lato server
+			try {
+				var counter = $('#counter_' + messageId);
+				var textarea = $('#text_' + messageId);
+				if (textarea.val().length > limit) {
+					textarea.val(textarea.val().substring(0, limit));
+					var container = counter.parent();
+					container.css('backgroundColor', 'red');
+					setTimeout(function() {
+						container.css("backgroundColor", '');
+					}, 200);
+				}
+				counter.html(limit - textarea.val().length);
+			} catch (e) {
+				alert(e.message);
+			}
+		}, 1000);
 	});
 
 	function showEmotiboxClassic() {
@@ -43,9 +68,6 @@
 <c:set var="isNewThread" value="${!isEdit && message.id == -1 && message.parentId == -1}"/>
 <c:set var="isNewMessage" value="${!isEdit && message.id == -1}"/>
 <c:set var="isEdit" value="${!empty isEdit && isEdit}"/>
-<c:set var="maxMessageLength">
-	<%=Messages.MAX_MESSAGE_LENGTH%>
-</c:set>
 
 <div style="clear: both"></div>
 <div id="reply_${message.parentId}" class="msgReply">
@@ -100,9 +122,7 @@
 	</c:if>
 
 	<%-- input area --%>
-	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt" id="text_${message.id}"
-	onkeyup="update_counter(${message.id}, ${maxMessageLength})"
-	onchange="update_counter(${message.id}, ${maxMessageLength})">${message.text}</textarea>
+	<textarea tabindex="1" name="text" tabindex="2" rows="20" class="msgReplyTxt" id="text_${message.id}">${message.text}</textarea>
 
 	<%-- preview area --%>
 	<div id="preview_${message.parentId}" class="msgReplyTxt"></div>

@@ -339,23 +339,6 @@ function pedonizeThreadTree(msgId) {
 	}
 }
 
-// n.b. non furmigate, il controllo della lunghezza c'è anche lato server
-var update_counter = function(messageId, limit) {
-	try {
-		var counter = $('#counter_' + messageId);
-		var textarea = $('#text_' + messageId);
-		if (textarea.val().length > limit) {
-			textarea.val(textarea.val().substring(0, limit));
-			var container = counter.parent();
-			container.css('backgroundColor', 'red');
-			setTimeout(function() {
-				container.css("backgroundColor", '');
-			}, 200);
-		}
-		counter.html(limit - textarea.val().length);
-	} catch (e) {alert(e.message);}
-};
-
 var getRandomQuote = function() {
 	jQuery.ajax("Messages?action=getRandomQuote", {
 		success : function(data, textStatus, jqXHR) {
