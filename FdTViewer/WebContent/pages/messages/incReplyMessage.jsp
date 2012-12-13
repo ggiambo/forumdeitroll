@@ -24,7 +24,8 @@
 		// update numero caratteri, ogni secondo
 		messageId = ${message.id};
 		limit = ${maxMessageLength};
-		setInterval(function() {
+		
+		var intervalID = setInterval(function() {
 			// n.b. non furmigate, il controllo della lunghezza c'è anche lato server
 			try {
 				var counter = $('#counter_' + messageId);
@@ -39,7 +40,7 @@
 				}
 				counter.html(limit - textarea.val().length);
 			} catch (e) {
-				alert(e.message);
+				clearInterval(intervalID);
 			}
 		}, 1000);
 	});
