@@ -1460,3 +1460,7 @@ div.firma {
     text-align: right;
 }
 
+span.fakeLink {
+	color: #0000ee;
+	cursor: pointer;
+}

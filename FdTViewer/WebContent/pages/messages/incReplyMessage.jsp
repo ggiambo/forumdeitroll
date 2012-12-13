@@ -104,12 +104,13 @@
 			<span onmousedown="insert('<i>', '</i>', '${message.parentId}')" class="msgButton btnItalic" title="Corsivo">I</span>&nbsp;
 			<span onmousedown="insert('<u>', '</u>', '${message.parentId}')" class="msgButton btnUnderline" title="Sottolineato">U</span>&nbsp;
 			<span onmousedown="insert('<s>', '</s>', '${message.parentId}')" class="msgButton btnStrike" title="Barrato">S</span>&nbsp;
-			<a href="javascript:void(0);" onmousedown="insert('[img]', '[/img]', '${message.parentId}')" class="msgButton">[immagine]</a>
-			<a href="javascript:void(0);" onmousedown="insert('[code]', '[/code]', '${message.parentId}')" class="msgButton">[codice]</a>
-			<a href="javascript:void(0);" onmousedown="insert('[yt]', '[/yt]', '${message.parentId}')" class="msgButton">[youtube]</a>
-			<a href="javascript:void(0);" onmousedown="insert('[spoiler]', '[/spoiler]', '${message.parentId}')" class="msgButton">[spoiler]</a>
-			<a href="javascript:void(0);" onmousedown="urlInput('${message.parentId}')" class="msgButton">[url]</a>
-			<a href="javascript:void(0);" onmousedown="insert('[color #' + $('.color').val() + ']', '[/color]', '${message.parentId}')" class="msgButton">[color]</a> <input type='text' class='color' value='66ff00' style='width:40px; font-size: 10px'>
+			<span class="fakeLink" onclick="insert('[img]', '[/img]', '${message.parentId}')">[immagine]</span>&nbsp;
+			<span class="fakeLink" onclick="insert('[code]', '[/code]', '${message.parentId}')">[codice]</span>&nbsp;
+			<span class="fakeLink" onclick="insert('[yt]', '[/yt]', '${message.parentId}')">[youtube]</span>&nbsp;
+			<span class="fakeLink" onclick="insert('[spoiler]', '[/spoiler]', '${message.parentId}')">[spoiler]</span>&nbsp;
+			<span class="fakeLink" onclick="urlInput('${message.parentId}')">[url]</span>&nbsp;
+			<span class="fakeLink" onclick="insert('[color #' + $('.color').val() + ']', '[/color]', '${message.parentId}')">[color]</span>&nbsp;
+			<input type='text' class='color' value='66ff00' style='width:40px; font-size: 10px'>
 		</div>
 	</div>
 
