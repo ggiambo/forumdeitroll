@@ -113,11 +113,11 @@ public class UserProfiler {
 				merge(candidate, profile);
 				return profile;
 			}
-			if (profile.getPermr().equals(candidate.getPermr())) {
+			if (profile.getPermr() != null && profile.getPermr().equals(candidate.getPermr())) {
 				merge(candidate, profile);
 				return profile;
 			}
-			if (profile.getEtag().equals(candidate.getEtag())) {
+			if (profile.getEtag() != null && profile.getEtag().equals(candidate.getEtag())) {
 				merge(candidate, profile);
 				return profile;
 			}
