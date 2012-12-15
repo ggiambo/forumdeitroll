@@ -396,6 +396,11 @@ public class MessageTag extends BodyTagSupport {
 					quoteLvl++;
 				}
 			}
+			// linkifica il nickname
+			String nickname = line.substring(scrittoda + "Scritto da: ".length());
+			if (nickname.startsWith(": ")) // "- Scritto da: "
+				nickname = nickname.substring(2);
+			simpleReplaceFirst(line, nickname, String.format("<a href=\"User?action=getUserInfo&nick=%s\">%s</a>", escape(nickname), nickname));
 		}
 		
 		if (quoteLvl != 0) {
@@ -777,7 +782,6 @@ public class MessageTag extends BodyTagSupport {
 		return src.length() != len;
 	}
 
-	/* never used ?
 	private static void simpleReplaceFirst(StringBuilder src, String search, String replacement) {
 		if (search == null || search.length() == 0) return;
 		int i = 0;
@@ -786,7 +790,7 @@ public class MessageTag extends BodyTagSupport {
 			i += replacement.length();
 		}
 	}
-	*/
+	
 	private static boolean isAlphabetic(char ch) {
 		int type = Character.getType(ch);
 		return type == Character.UPPERCASE_LETTER
