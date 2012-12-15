@@ -403,14 +403,18 @@ public class MessageTag extends BodyTagSupport {
 			if (quoteLvl == 0) quoteLvl = 4;
 			line.insert(0, "<span class='quoteLvl" + quoteLvl + "'>");
 			line.append("</span>");
-			if (!multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
-				multiLineQuoteStarted = true;
-				line.insert(0, "<div class='quote-container'><div>");
-			}
-		} else {
-			if (multiLineQuoteStarted && "checked".equals(collapseQuotes)) {
-				multiLineQuoteStarted = false;
-				line.insert(0, "</div></div>");
+		}
+		if ("checked".equals(collapseQuotes)) {
+			if (!multiLineQuoteStarted) {
+				if (quoteLvl != 0 && scrittoda == -1) {
+					multiLineQuoteStarted = true;
+					line.insert(0, "<div class='quote-container'><div>");
+				}
+			} else {
+				if (quoteLvl == 0 || scrittoda != -1) {
+					multiLineQuoteStarted = false;
+					line.insert(0, "</div></div>");
+				}
 			}
 		}
 	}
