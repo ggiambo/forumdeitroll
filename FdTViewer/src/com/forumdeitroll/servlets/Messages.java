@@ -44,7 +44,7 @@ public class Messages extends MainServlet {
 
 	private static final List<String> REFRESHABLE_ACTIONS = Arrays.asList("getMessages");
 
-	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR>(&gt;\\ ?)*");
+	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR> *(&gt;\\ ?)*");
 	
 	// key: filename, value[0]: edit value, value[1]: alt
 	// tutte le emo ora sono in lower case
