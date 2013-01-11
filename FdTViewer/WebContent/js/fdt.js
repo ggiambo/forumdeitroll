@@ -460,9 +460,9 @@ function ircbox() {
 				$('#nav').after('<div id="ircbox" style="display:none;">' + line + '</div>');
 				$('#ircbox').show('slow');
 			}
-			setTimeout(showLine, 2000, lines);
+			setTimeout(showLine, 5000, lines);
 			return;
 		};
-		setTimeout(showLine, 2000, lines);
+		setTimeout(showLine, 1, lines);
 	});
 }
