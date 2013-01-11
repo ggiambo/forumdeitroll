@@ -110,5 +110,8 @@
 			<li>|</li>
 			<li><fdt:pager handler="Messages"></fdt:pager></li>
 		</c:if>
+		
+		<li>|</li>
+		<li><a href="javascript:ircbox()">#irc</a></li>
 	</ul>
 </div>

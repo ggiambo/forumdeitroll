@@ -442,3 +442,27 @@ function showAdminButtons(msgId) {
 	$("#OpenMod_" + msgId).remove();
 	$("#buttons_" + msgId).find("div.buttonBarButtonAdmin").show();
 }
+
+function ircbox() {
+	$.get('Irc', function(data) {
+		var lines = data.split(/[\r\n]/).filter(function(l) {return l !== '';});
+		lines.push('<a target="_blank" href="http://webchat.freenode.net/?channels=%23%23fdt">Vieni a trovarci!</a>');
+		lines = lines.reverse();
+		var showLine = function(lines) {
+			if (lines.length == 0) return;
+			var line = lines.pop();
+			if (/nessuna informazione disponibile/.test(line)) {
+				line = lines.pop();
+			}
+			if ($('#ircbox').length > 0) {
+				$('#ircbox').html(line);
+			} else {
+				$('#nav').after('<div id="ircbox" style="display:none;">' + line + '</div>');
+				$('#ircbox').show('slow');
+			}
+			setTimeout(showLine, 2000, lines);
+			return;
+		};
+		setTimeout(showLine, 2000, lines);
+	});
+}
