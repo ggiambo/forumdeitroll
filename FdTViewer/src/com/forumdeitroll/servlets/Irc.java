@@ -30,6 +30,7 @@ public class Irc extends HttpServlet {
 	private static Date Mtime = null;
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
 		// se invocato senza parametri
 		if (!request.getParameterNames().hasMoreElements()) {
