@@ -125,4 +125,14 @@
     <url-pattern>/UserProfiler</url-pattern>
     <url-pattern>/Bookmarks</url-pattern>
   </filter-mapping>
+  <servlet>
+    <description></description>
+    <display-name>Irc</display-name>
+    <servlet-name>Irc</servlet-name>
+    <servlet-class>com.forumdeitroll.servlets.Irc</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Irc</servlet-name>
+    <url-pattern>/Irc</url-pattern>
+  </servlet-mapping>
 </web-app>
