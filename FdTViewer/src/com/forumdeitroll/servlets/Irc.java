@@ -22,14 +22,14 @@ import com.forumdeitroll.persistence.PersistenceFactory;
  */
 public class Irc extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
 	private static Logger LOG = Logger.getLogger(Irc.class);
 
 	private static String Topic = null;
 	private static String Lista_utenti = null;
 	private static Date Mtime = null;
-	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
 		// se invocato senza parametri
@@ -44,17 +44,17 @@ public class Irc extends HttpServlet {
 			return;
 		}
 		try {
-			
+
 			String lista_utenti = request.getParameter("lista_utenti");
 			String topic = request.getParameter("topic");
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
-			
+
 			if (StringUtils.isEmpty(username)) throw new Exception("username is null");
 			if (StringUtils.isEmpty(password)) throw new Exception("password is null");
 			if (StringUtils.isEmpty(lista_utenti)) throw new Exception("lista_utenti is null");
 			if (StringUtils.isEmpty(topic)) throw new Exception("topic is null");
-			
+
 			AuthorDTO author = PersistenceFactory.getInstance().getAuthor(username);
 			if (!PasswordUtils.hasUserPassword(author, password)) {
 				throw new Exception("pazzword ezzere zbagliata");
@@ -63,18 +63,18 @@ public class Irc extends HttpServlet {
 			if (!"yes".equals(admin)) {
 				throw new Exception("utente non ezzere admin");
 			}
-			
+
 			Lista_utenti = lista_utenti;
 			Topic = topic;
 			Mtime = new Date();
-			
+
 			out.println("OK");
-			
+
 		} catch (Exception e) {
 			out.println(e.getMessage());
 		}
-		
-		
+
+
 	}
 
 }
