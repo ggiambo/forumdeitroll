@@ -112,6 +112,6 @@
 		</c:if>
 		
 		<li>|</li>
-		<li><a href="javascript:ircbox()">#irc</a></li>
+		<li><a href="javascript:ircbox()">##fdt@freenode</a></li>
 	</ul>
 </div>

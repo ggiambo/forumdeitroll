@@ -443,26 +443,26 @@ function showAdminButtons(msgId) {
 	$("#buttons_" + msgId).find("div.buttonBarButtonAdmin").show();
 }
 
+function createIrcbox() {
+	if ($('#ircbox').length == 0) {
+		$('#nav').after('<div id="ircbox" style="display:none"></div>');
+		setTimeout(function() {$('#ircbox').show('slow');}, 1);
+	}
+}
+
 function ircbox() {
+	createIrcbox();
 	$.get('Irc', function(data) {
 		var lines = data.split(/[\r\n]/).filter(function(l) {return l !== '';});
-		lines.push('<a target="_blank" href="http://webchat.freenode.net/?channels=%23%23fdt">Vieni a trovarci!</a>');
-		lines = lines.reverse();
-		var showLine = function(lines) {
-			if (lines.length == 0) return;
-			var line = lines.pop();
-			if (/nessuna informazione disponibile/.test(line)) {
-				line = lines.pop();
-			}
-			if ($('#ircbox').length > 0) {
-				$('#ircbox').html(line);
-			} else {
-				$('#nav').after('<div id="ircbox" style="display:none;">' + line + '</div>');
-				$('#ircbox').show('slow');
-			}
-			setTimeout(showLine, 5000, lines);
-			return;
-		};
-		setTimeout(showLine, 1, lines);
+		if (lines.length == 1 && lines[0].match(/nessuna informazione disponibile/)) {
+			$('#ircbox').html('<a href=\"http://webchat.freenode.net/?channels=%23%23fdt\">Vieni a trovarci!</a>');
+		} else {
+			var topic = lines[0];
+			var users = lines[1];
+			var mtime = lines[2];
+			var html = '<a href=\"http://webchat.freenode.net/?channels=%23%23fdt\">' + topic + "</a><br>";
+			html += "<small>" + users + "<br>" + mtime + "</small>";
+			$('#ircbox').html(html);
+		}
 	});
 }
