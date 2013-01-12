@@ -29,18 +29,28 @@ public class Irc extends HttpServlet {
 	private static String Lista_utenti = null;
 	private static Date Mtime = null;
 
+	protected void printCurrent(final PrintWriter out) {
+		if (StringUtils.isEmpty(Topic) || StringUtils.isEmpty(Lista_utenti)) {
+			out.print("nessuna informazione disponibile");
+			return;
+		}
+		out.println("Topic: "+Topic);
+		out.println("Lista utenti: "+Lista_utenti);
+		out.println("Aggiornato alle "+new SimpleDateFormat("HH:mm").format(Mtime));
+		return;
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/plain");
+		printCurrent(response.getWriter());
+	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
 		// se invocato senza parametri
 		if (!request.getParameterNames().hasMoreElements()) {
-			if (StringUtils.isEmpty(Topic) || StringUtils.isEmpty(Lista_utenti)) {
-				out.print("nessuna informazione disponibile");
-				return;
-			}
-			out.println("Topic: "+Topic);
-			out.println("Lista utenti: "+Lista_utenti);
-			out.println("Aggiornato alle "+new SimpleDateFormat("HH:mm").format(Mtime));
+			printCurrent(out);
 			return;
 		}
 		try {
