@@ -11,6 +11,7 @@ public class ThreadDTO {
 	private String forum = null;
 	private int setNumberOfMessages = -1;
 	private boolean isVisible = true;
+	private int rank = 0;
 
 	public boolean isValid() {
 		boolean valid = true;
@@ -74,6 +75,14 @@ public class ThreadDTO {
 	public void setIsVisible(boolean isVisible) {
 		this.isVisible = isVisible;
 	}
+	
+	public int getRank() {
+		return rank;
+	}
+
+	public void setRank(int rank) {
+		this.rank = rank;
+	}
 
 	@Override
 	public String toString() {
@@ -85,6 +94,7 @@ public class ThreadDTO {
 		sb.append("forum:").append(forum).append(",");
 		sb.append("setNumberOfMessages:").append(setNumberOfMessages).append(",");
 		sb.append("isVisible:").append(isVisible).append(",");
+		sb.append("rank:").append(rank).append(",");
 		return sb.toString();
 	}
 

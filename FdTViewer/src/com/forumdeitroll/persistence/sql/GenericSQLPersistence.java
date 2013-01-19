@@ -1382,6 +1382,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
 			message.setIsVisible(rs.getBoolean("visible"));
+			message.setRank(rs.getInt("rank"));
 
 			if (search) {
 				message.setSearchRelevance(rs.getDouble("relevance"));
@@ -1404,6 +1405,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			message.setDate(rs.getTimestamp("date"));
 			message.setNumberOfMessages(getNumberOfMessages(message.getId()));
 			message.setIsVisible(rs.getBoolean("visible"));
+			message.setRank(rs.getInt("rank"));
 			messages.add(message);
 		}
 		return messages;
@@ -1647,6 +1649,40 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} finally {
 			close(rs, ps, conn);
 		}
+	}
+	
+	@Override
+	public boolean like(long msgId, String nick, boolean upvote) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT COUNT(msgId) FROM likes WHERE nick = ? AND msgId = ?");
+			ps.setString(1, nick);
+			ps.setLong(2, msgId);
+			rs = ps.executeQuery();
+			if (rs.next() && rs.getInt(1) < 1) {
+				close(rs, ps, null);
+				conn.setAutoCommit(false);
+				ps = conn.prepareStatement("UPDATE messages SET rank = rank " + (upvote ? "+" : "-") + "1 WHERE id = ?");
+				ps.setLong(1, msgId);
+				ps.executeUpdate();
+				ps = conn.prepareStatement("INSERT INTO likes (nick, msgId) VALUES (?, ?)");
+				ps.setString(1, nick);
+				ps.setLong(2, msgId);
+				ps.execute();
+				conn.commit();
+			} else {
+				// gia' votato
+				return false;
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot donw/upvote: msgId=" + msgId + ", nick=" + nick, e);
+		} finally {
+			close(rs, ps, conn);
+		}
+		return true;
 	}
 
 	private void increaseNumberOfMessages(String forum, boolean isNewThread) {

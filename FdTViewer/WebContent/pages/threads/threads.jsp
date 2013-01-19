@@ -56,7 +56,7 @@
 						</c:otherwise>
 					</c:choose>
 				</span>
-				il <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${thread.date}" pattern="HH:mm"/>
+				il <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${thread.date}" pattern="HH:mm"/> Ranking: ${msg.rank}
 			</div>
 			<div class="threadTreeEntries"></div>
 		</div>

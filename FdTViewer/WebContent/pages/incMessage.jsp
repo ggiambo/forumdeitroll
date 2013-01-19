@@ -2,6 +2,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
+<fdt:delayedScript dump="false">
+	var token = "${anti_xss_token}";
+</fdt:delayedScript>
+
 <c:choose>
 	<c:when test="${msg.visible}">
 		<c:set var="rowclass" value="msgVisible"/>
@@ -26,6 +30,9 @@
 
 	<div class="msgInfo">
 		<div>
+			<div style="font-size: 70%;">
+				Ranking: ${msg.rank}
+			</div>
 			<c:url value="" var="avatarURL">
 				<c:param name="action" value="getAvatar"/>
 				<c:param name="nick" value="${msg.author.nick}"/>
@@ -68,6 +75,7 @@
 				</c:choose>
 			</div>
 			<div class="msgDate">il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/></div>
+			
 			<c:if test="${not empty msg.author.nick}">
 				<div class="msgTotalMsg">
 					Trollate totali: ${msg.author.messages}
@@ -205,6 +213,24 @@
 				Quota
 			</a>
 		</div>
+		
+		<c:if test="${not empty loggedUser}">
+			<%-- +1 --%>
+			<div class="buttonBarButton">
+				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', true);return false;">
+					&nbsp;+1
+				</a>
+			</div>
+			
+			<%-- -1 --%>
+			<div class="buttonBarButton">
+				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', false);return false;">
+					&nbsp;-1
+				</a>
+			</div>
+		</c:if>
+		
+		
 	</div>
 
 </div>

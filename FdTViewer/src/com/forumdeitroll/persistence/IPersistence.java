@@ -148,6 +148,15 @@ public interface IPersistence extends Serializable {
 	public void addBookmark(BookmarkDTO bookmark);
 	
 	public void deleteBookmark(BookmarkDTO bookmark);
-	
+
 	public void editBookmark(BookmarkDTO bookmark);
+	
+	/**
+	 * Like/unlike di un messaggio (+1/-1). Ritorna true se l'operazione e' permessa.
+	 * @param msgId
+	 * @param nick
+	 * @param unlike
+	 * @return
+	 */
+	public boolean like(long msgId, String nick, boolean upvote);
 }

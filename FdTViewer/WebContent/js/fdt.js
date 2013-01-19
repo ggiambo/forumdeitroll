@@ -466,3 +466,21 @@ function ircbox() {
 		}
 	});
 }
+
+function like(msgId, like) {
+	jQuery.ajax({
+		type: "GET",
+		dataType: "json",
+		url: "Messages?action=like",
+		data: { msgId: msgId, token: token, like: like},
+		success: function(data) {
+			if (data.resultCode == "OK") {
+				alert(data.content);
+			} else if (data.resultCode == "MSG") {
+				alert(data.content);
+			} else if (data.resultCode == "ERROR") {
+				$("html").html(data.content);
+			}
+		}
+	});
+}

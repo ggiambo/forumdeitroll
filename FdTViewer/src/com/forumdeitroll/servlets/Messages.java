@@ -807,6 +807,51 @@ public class Messages extends MainServlet {
 		res.getWriter().write(quote.getContent()+'\n'+quote.getNick());
 		return null;
 	}
+	
+	/**
+	 * up/downVote
+	 */
+	@Action(method=Method.GET)
+	String like(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		if (!antiXssOk(req)) {
+			insertMessageAjaxFail(res, "Verifica token fallita");
+			return null;
+		}
+    	AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
+    	if (loggedUser == null) {
+    		insertMessageAjaxFail(res, "Non furmigare !");
+    		return null;
+    	}
+		String id = req.getParameter("msgId");
+		if (StringUtils.isEmpty(id)) {
+			insertMessageAjaxFail(res, "Nessun messaggio selezionato");
+			return null;
+		}
+		long msgId;
+		try {
+			msgId = Long.parseLong(id);
+		} catch (NumberFormatException e) {
+			insertMessageAjaxFail(res, "Messaggio " + id + " non conosciuto");
+			return null;
+		}
+		String upvote = req.getParameter("like");
+		if (StringUtils.isEmpty(upvote)) {
+			insertMessageAjaxFail(res, "+1 o -1, deciditi cribbio !");
+			return null;
+		}
+		if (getPersistence().like(msgId, loggedUser.getNick(), Boolean.parseBoolean(upvote))) {
+			JsonWriter writer = new JsonWriter(res.getWriter());
+			writer.beginObject();
+			writer.name("resultCode").value("OK");
+			writer.name("content").value("Hai espresso il tuo inalienabile diritto di voto !");
+			writer.endObject();
+			writer.flush();
+			writer.close();
+		} else {
+			insertMessageAjaxFail(res, "Un troll, un voto !");
+		}
+		return null;
+	}
 
 	private String getMessages(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
 		String forum = req.getParameter("forum");

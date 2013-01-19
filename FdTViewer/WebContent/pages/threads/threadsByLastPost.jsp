@@ -37,7 +37,7 @@
 						</c:otherwise>
 				</c:choose>
 			</span>
-			il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/>
+			il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/> Ranking: ${msg.rank}
 			</div>
 		</div>
 	</c:forEach>
