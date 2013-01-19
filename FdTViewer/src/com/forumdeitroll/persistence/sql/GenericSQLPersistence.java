@@ -1652,39 +1652,69 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 	
 	@Override
-	public boolean like(long msgId, String nick, boolean upvote) {
+	public int like(long msgId, String nick, boolean upvote) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT COUNT(msgId) FROM likes WHERE nick = ? AND msgId = ?");
+			ps = conn.prepareStatement("SELECT vote FROM likes WHERE nick = ? AND msgId = ?");
 			ps.setString(1, nick);
 			ps.setLong(2, msgId);
 			rs = ps.executeQuery();
-			if (rs.next() && rs.getInt(1) < 1) {
-				close(rs, ps, null);
-				conn.setAutoCommit(false);
-				ps = conn.prepareStatement("UPDATE messages SET rank = rank " + (upvote ? "+" : "-") + "1 WHERE id = ?");
-				ps.setLong(1, msgId);
-				ps.executeUpdate();
-				ps = conn.prepareStatement("INSERT INTO likes (nick, msgId) VALUES (?, ?)");
+			
+			boolean hasVoted = rs.next();
+			boolean oldVote = hasVoted && rs.getBoolean(1);
+			
+			rs.close();
+			ps.close();
+			
+			
+			if (hasVoted && oldVote == upvote) {
+				// doppio voto, stessa direzione
+				return 0;
+			}
+			
+			int voteValue =
+					hasVoted
+						? upvote
+							? 2
+							: -2
+						: upvote
+							? 1
+							: -1;
+			
+			conn.setAutoCommit(false);
+			ps = conn.prepareStatement("UPDATE messages SET rank = rank " + (upvote ? "+" : "-") + (hasVoted ? "2" : "1")+ " WHERE id = ?");
+			ps.setLong(1, msgId);
+			ps.executeUpdate();
+			ps.close();
+			
+			if (!hasVoted) {
+				ps = conn.prepareStatement("INSERT INTO likes (nick, msgId, vote) VALUES (?, ?, ?)");
 				ps.setString(1, nick);
 				ps.setLong(2, msgId);
-				ps.execute();
-				conn.commit();
+				ps.setBoolean(3, upvote);
+				ps.executeUpdate();
+				ps.close();
 			} else {
-				// gia' votato
-				return false;
+				ps = conn.prepareStatement("UPDATE likes SET vote = ? WHERE nick = ? AND msgId = ?");
+				ps.setBoolean(1, upvote);
+				ps.setString(2, nick);
+				ps.setLong(3, msgId);
+				ps.executeUpdate();
+				ps.close();
 			}
+			conn.commit();
+			return voteValue;
 		} catch (SQLException e) {
 			LOG.error("Cannot donw/upvote: msgId=" + msgId + ", nick=" + nick, e);
+			return 0;
 		} finally {
 			close(rs, ps, conn);
 		}
-		return true;
 	}
-
+	
 	private void increaseNumberOfMessages(String forum, boolean isNewThread) {
 		Connection conn = null;
 		PreparedStatement ps = null;

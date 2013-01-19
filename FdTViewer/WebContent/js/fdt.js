@@ -475,7 +475,15 @@ function like(msgId, like) {
 		data: { msgId: msgId, token: token, like: like},
 		success: function(data) {
 			if (data.resultCode == "OK") {
-				alert(data.content);
+				var strval = $('#msg' + msgId + '_ranking').html();
+				var oldval = parseInt(strval);
+				if (isNaN(oldval)) {
+					$('#msg' + msgId + '_ranking').html("1");
+				} else {
+					var newval = oldval + data.voteValue;
+					$('#msg' + msgId + '_ranking').html(""+newval);
+				}
+				$('#msg' + msgId + '_ranking').css('color', 'red');
 			} else if (data.resultCode == "MSG") {
 				alert(data.content);
 			} else if (data.resultCode == "ERROR") {

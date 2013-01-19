@@ -839,11 +839,13 @@ public class Messages extends MainServlet {
 			insertMessageAjaxFail(res, "+1 o -1, deciditi cribbio !");
 			return null;
 		}
-		if (getPersistence().like(msgId, loggedUser.getNick(), Boolean.parseBoolean(upvote))) {
+		int voteValue = getPersistence().like(msgId, loggedUser.getNick(), Boolean.parseBoolean(upvote));
+		if (voteValue != 0) {
 			JsonWriter writer = new JsonWriter(res.getWriter());
 			writer.beginObject();
 			writer.name("resultCode").value("OK");
 			writer.name("content").value("Hai espresso il tuo inalienabile diritto di voto !");
+			writer.name("voteValue").value(voteValue);
 			writer.endObject();
 			writer.flush();
 			writer.close();

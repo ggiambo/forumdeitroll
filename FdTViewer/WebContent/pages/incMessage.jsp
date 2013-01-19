@@ -31,7 +31,7 @@
 	<div class="msgInfo">
 		<div>
 			<div style="font-size: 70%;">
-				Ranking: ${msg.rank}
+				Ranking: <span id="msg${msg.id}_ranking">${msg.rank}</span>
 			</div>
 			<c:url value="" var="avatarURL">
 				<c:param name="action" value="getAvatar"/>

@@ -158,5 +158,5 @@ public interface IPersistence extends Serializable {
 	 * @param unlike
 	 * @return
 	 */
-	public boolean like(long msgId, String nick, boolean upvote);
+	public int like(long msgId, String nick, boolean upvote);
 }
