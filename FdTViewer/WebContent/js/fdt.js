@@ -483,7 +483,6 @@ function like(msgId, like) {
 					var newval = oldval + data.voteValue;
 					$('#msg' + msgId + '_ranking').html(""+newval);
 				}
-				$('#msg' + msgId + '_ranking').css('color', 'red');
 			} else if (data.resultCode == "MSG") {
 				alert(data.content);
 			} else if (data.resultCode == "ERROR") {

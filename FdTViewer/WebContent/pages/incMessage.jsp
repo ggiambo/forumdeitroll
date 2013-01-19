@@ -30,9 +30,6 @@
 
 	<div class="msgInfo">
 		<div>
-			<div style="font-size: 70%;">
-				Ranking: <span id="msg${msg.id}_ranking">${msg.rank}</span>
-			</div>
 			<c:url value="" var="avatarURL">
 				<c:param name="action" value="getAvatar"/>
 				<c:param name="nick" value="${msg.author.nick}"/>
@@ -215,22 +212,22 @@
 		</div>
 		
 		<c:if test="${not empty loggedUser}">
-			<%-- +1 --%>
 			<div class="buttonBarButton">
+				<%-- +1 --%>
 				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', true);return false;">
-					&nbsp;+1
+					<span class="buttonBarImg buttonBarImgUpvote"></span>
+				</a>
+				
+				<%-- -1 --%>
+				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', false);return false;">
+					<span class="buttonBarImg buttonBarImgDownvote"></span>
 				</a>
 			</div>
 			
-			<%-- -1 --%>
-			<div class="buttonBarButton">
-				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', false);return false;">
-					&nbsp;-1
-				</a>
-			</div>
 		</c:if>
-		
-		
+		<div class="buttonBarButton">
+			&nbsp;<span class="ranking" id="msg${msg.id}_ranking">${msg.rank}</span>
+		</div>
 	</div>
 
 </div>

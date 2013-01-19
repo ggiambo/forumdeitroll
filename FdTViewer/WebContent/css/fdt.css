@@ -390,6 +390,20 @@ span.buttonBarImgModifica {
 span.buttonBarImgBookmark {
 	background-position: -48px -178px;
 }
+span.buttonBarImgUpvote {
+	width: 12px;
+	background-position: 0px -48px;
+}
+span.buttonBarImgDownvote {
+	width: 12px;
+	background-position: -64px -48px;
+}
+
+span.ranking {
+	font-size: .8em;
+	vertical-align: top;
+	text-align: right;
+}
 
 #sidebarSearchForm {
 	display: block;
