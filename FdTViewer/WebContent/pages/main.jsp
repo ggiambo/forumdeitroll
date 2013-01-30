@@ -42,7 +42,11 @@
 			<%-- banner --%>
 			<c:if test="${empty loggedUser || loggedUser.preferences['hideBannerone'] != 'checked'}">
 				<img id="headerimg" alt="" src="./images/2.0.png" />
-				<div id="header">
+				<% String banners[] = new String[]{
+					"images/banners/banner.jpg",
+					"images/banners/banner2.jpg"
+				}; %>
+				<div id="header" style="background-image: url(<%=banners[(int)(System.currentTimeMillis() % banners.length)]%>)">
 					<h1>
 						<a title="Boot time: <%=new java.util.Date(bootTime)%>" href="Threads" id="titoloForum">
 							Forum dei Troll
