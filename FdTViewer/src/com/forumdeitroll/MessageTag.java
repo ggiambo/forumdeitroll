@@ -337,7 +337,13 @@ public class MessageTag extends BodyTagSupport {
 						url.indexOf(".youtube.com/watch?") == 10 ||
 						url.indexOf(".youtube.com/watch?") == 11 ||
 						url.startsWith("http://youtu.be/") ||
-						url.startsWith("https://youtu.be/")) {
+						url.startsWith("https://youtu.be/") ||
+						url.startsWith("http://youtube.com/watch?") ||
+						url.startsWith("https://youtube.com/watch?")) {
+				if (url.startsWith("http://youtube.com/watch?") ||
+						url.startsWith("https://youtube.com/watch?")) {
+					url = "http://www.youtube.com/watch?" + url.substring(url.indexOf('?') + 1);
+				}
 				String youcode = youcode(url);
 				if (youcode != null) {
 					youtube_embed(youcode);
