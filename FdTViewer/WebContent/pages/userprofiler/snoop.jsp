@@ -6,21 +6,21 @@
 
 <div id="main">
 	<c:if test="${not empty loggedUser && loggedUser.preferences['super'] == 'yes'}">
-		<c:if test="${not empty lastUnbanRequested }">
+		<c:forEach items="${ unbanRequests }" var="unbanRequest">
 			<p>Ultima richiesta di sban</p>
-			<p>permr: ${lastUnbanRequested.permr }</p>
-			<p>etag: ${lastUnbanRequested.etag }</p>
-			<p>plugins: ${lastUnbanRequested.plugins }</p>
-			<p>ua: ${lastUnbanRequested.ua }</p>
-			<p>screenres: ${lastUnbanRequested.screenres }</p>
-			<p>ipAddress: ${lastUnbanRequested.ipAddress }</p>
-			<p>nick: ${lastUnbanRequested.nick }</p>
+			<p>permr: ${unbanRequest.permr }</p>
+			<p>etag: ${unbanRequest.etag }</p>
+			<p>plugins: ${unbanRequest.plugins }</p>
+			<p>ua: ${unbanRequest.ua }</p>
+			<p>screenres: ${unbanRequest.screenres }</p>
+			<p>ipAddress: ${unbanRequest.ipAddress }</p>
+			<p>nick: ${unbanRequest.nick }</p>
 			<form action="UserProfiler" method="POST">
-				<input type="hidden" name="action" value="unban">
-				<input type="hidden" name="jsonProfile" value='${jsonProfile}'>
-				<input type="submit" name="btn" value="Sbanna">
+				<input type="hidden" name="jsonProfile" value='${unbanRequest.JSON}'>
+				<input type="submit" name="action" value="unban">
+				<input type="submit" name="action" value="deleteRequest">
 			</form>
-		</c:if>
+		</c:forEach>
 	</c:if>
 	<form action="UserProfiler" method="POST">
 		<input type="hidden" name="action" value="requestUnban">

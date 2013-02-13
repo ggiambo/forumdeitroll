@@ -506,6 +506,16 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
+	protected void insertMessageAjaxBan(final HttpServletResponse res) throws IOException {
+		JsonWriter writer = new JsonWriter(res.getWriter());
+		writer.beginObject();
+		writer.name("resultCode").value("BAN");
+		writer.name("content").value("Sei stato bannato");
+		writer.endObject();
+		writer.flush();
+		writer.close();
+	}
+	
 	protected void insertMessageAjaxFail(final HttpServletResponse res, final String error) throws IOException {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
@@ -555,7 +565,7 @@ public class Messages extends MainServlet {
 		}
 
 		if (authorIsBanned(author, req)) {
-			insertMessageAjaxFail(res, "Sei stato bannato");
+			insertMessageAjaxBan(res);
 			return null;
 		}
 
@@ -567,7 +577,7 @@ public class Messages extends MainServlet {
 			candidate.setNick(author.getNick());
 			profile = UserProfiler.getInstance().guess(candidate);
 			if (profile.isBannato()) {
-				insertMessageAjaxFail(res, "Sei stato bannato");
+				insertMessageAjaxBan(res);
 				Logger.getLogger(Messages.class).info(
 						"E` stato riconosciuto come bannato il seguente profilo utente: "+new Gson().toJson(candidate));
 				Logger.getLogger(Messages.class).info(

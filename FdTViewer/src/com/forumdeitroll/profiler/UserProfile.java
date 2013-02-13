@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.TreeSet;
 
+import com.google.gson.Gson;
+
 public class UserProfile implements Serializable {
 	
 	private static final long serialVersionUID = 6133184658596477756L;
@@ -24,6 +26,10 @@ public class UserProfile implements Serializable {
 	private long ultimoRiconoscimentoUtente = 0L;
 	// IL booleano
 	private boolean bannato = false;
+	// usato per richieste unban
+	public String getJSON() {
+		return new Gson().toJson(this);
+	}
 	
 	public String getPermr() {
 		return permr;

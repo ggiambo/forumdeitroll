@@ -107,6 +107,10 @@ function send(parentId) {
 					window.location.assign(newUrl + data.content);
 				} else if (data.resultCode == "MSG") {
 					alert(data.content);
+				} else if (data.resultCode == "BAN") {
+					alert(data.content);
+					$('#reply_' + parentId).remove();
+					$('#msg' + parentId).append("<a href='UserProfiler?action=snoop'>Sei stato bannato per errore?</a>");
 				} else if (data.resultCode == "ERROR") {
 					$("html").html(data.content);
 				}

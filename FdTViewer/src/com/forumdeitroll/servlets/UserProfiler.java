@@ -1,6 +1,7 @@
 package com.forumdeitroll.servlets;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.ListIterator;
 import java.util.TreeSet;
@@ -106,23 +107,41 @@ public class UserProfiler extends MainServlet {
 	String snoop(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
 		if (isAdmin) {
-			req.setAttribute("lastUnbanRequested", lastUnbanRequested);
-			req.setAttribute("jsonProfile", new Gson().toJson(lastUnbanRequested));
+			req.setAttribute("unbanRequests", unbanRequests);
 		}
 		return "snoop.jsp";
 	}
 	
-	private static UserProfile lastUnbanRequested = null;
+	public static ArrayList<UserProfile> unbanRequests = new ArrayList<UserProfile>();
 	
 	@Action(method=Action.Method.POST)
 	String requestUnban(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String jsonProfile = req.getParameter("jsonProfile");
 		UserProfile userProfile = new Gson().fromJson(jsonProfile, UserProfile.class);
-		lastUnbanRequested = userProfile;
+		userProfile.setUuid(UUID.randomUUID().toString());
+		unbanRequests.add(userProfile);
 		setNavigationMessage(req, NavigationMessage.info("Richiesta accodata"));
 		return snoop(req, res);
 	}
 	
+	@Action(method=Action.Method.POST)
+	String deleteRequest(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
+		if (!isAdmin) {
+			return null;
+		}
+		String jsonProfile = req.getParameter("jsonProfile");
+		Log.debug("jsonProfile = "+jsonProfile);
+		UserProfile profile = new Gson().fromJson(jsonProfile, UserProfile.class);
+		for (ListIterator<UserProfile> itP = unbanRequests.listIterator(); itP.hasNext();) {
+			if (itP.next().getUuid().equals(profile.getUuid())) {
+				itP.remove();
+				break;
+			}
+		}
+		return snoop(req, res);
+	}
+
 	@Action(method=Action.Method.POST)
 	String unban(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
@@ -132,7 +151,13 @@ public class UserProfiler extends MainServlet {
 		String jsonProfile = req.getParameter("jsonProfile");
 		Log.debug("jsonProfile = "+jsonProfile);
 		UserProfile profile = new Gson().fromJson(jsonProfile, UserProfile.class);
-		lastUnbanRequested = null;
+		for (ListIterator<UserProfile> itP = unbanRequests.listIterator(); itP.hasNext();) {
+			if (itP.next().getUuid().equals(profile.getUuid())) {
+				itP.remove();
+				break;
+			}
+		}
+		profile.setUuid(null);
 		UserProfile banned = profiler.guess(profile);
 		if (!banned.isBannato()) {
 			setNavigationMessage(req, NavigationMessage.warn("Il profilo identificato non era stato bannato."));
