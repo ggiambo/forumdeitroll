@@ -600,8 +600,11 @@ public class MessageTag extends BodyTagSupport {
 				int height = 100 + (int) ((System.currentTimeMillis() % 60000) / 1000);
 				int width  = 100 + (int) ((System.currentTimeMillis() % 80000) / 1000);
 				url = "http://placekitten.com/" + height + "/" + width;
+			} else if (Boolean.parseBoolean(getSignature())) {
+				line.append(String.format("<a class='preview' href='%s'><img class='signatureImage' alt='Immagine postata dall&#39;utente' src=\"%s\"></a>", url, url));
+			} else {
+				line.append(String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src=\"%s\"></a>", url, url));
 			}
-			line.append(String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src=\"%s\"></a>", url, url));
 			immysCount++;
 		}
 		p = img_end + (IMG_END.length - 1);

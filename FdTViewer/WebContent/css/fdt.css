@@ -652,6 +652,11 @@ img.userPostedImage {
 	max-width: 150px;
 }
 
+img.signatureImage {
+	max-width: 570px;
+	max-height: 180px;
+}
+
 div.loginForm {
 	clear: both;
 	background-color: #D6D6D6;
