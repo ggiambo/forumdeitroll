@@ -99,7 +99,7 @@
 	
 	<c:if test="${not empty msg.author.preferences['signature']}">
 		<div class="firma" id="firma_${msg.id}">
-			<c:out value="${msg.author.preferences['signature']}" escapeXml="true"/>
+			<fdt:msg search="" author="${msg.author}">${msg.author.preferences['signature']}</fdt:msg>
 		</div>
 	</c:if>
 	<div style="clear:both; height: 1px; width: 100%;"></div>
