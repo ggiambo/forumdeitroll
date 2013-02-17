@@ -94,12 +94,12 @@
 	</c:if>
 
 	<div style="padding: 10px;" class="message">
-		<fdt:msg search="${param.search}" author="${msg.author}">${msg.text}</fdt:msg>
+		<fdt:msg search="${param.search}" signature="false" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
 	
 	<c:if test="${not empty msg.author.preferences['signature']}">
 		<div class="firma" id="firma_${msg.id}">
-			<fdt:msg search="" author="${msg.author}">${msg.author.preferences['signature']}</fdt:msg>
+			<fdt:msg search="" signature="true" author="${msg.author}">${msg.author.preferences['signature']}</fdt:msg>
 		</div>
 	</c:if>
 	<div style="clear:both; height: 1px; width: 100%;"></div>

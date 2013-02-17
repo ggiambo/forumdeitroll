@@ -29,7 +29,7 @@
 		</c:forEach>
 	</p>
 	<div class="pvtTextMessage">
-		<fdt:msg author="${sender}">${pvtdetail.text }</fdt:msg>
+		<fdt:msg author="${sender}" signature="false">${pvtdetail.text }</fdt:msg>
 	</div>
 	<c:if test="${pvtdetail.fromNick != loggedUser.nick}">
 		<form action="Pvt" method="POST">

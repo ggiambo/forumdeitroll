@@ -24,6 +24,7 @@ public class MessageTag extends BodyTagSupport {
 	// ----- BodyTagSupport -----
 	private String search;
 	private AuthorDTO author;
+	private String signature;
 	public void setSearch(String search) {
 		this.search = search;
 	}
@@ -36,7 +37,13 @@ public class MessageTag extends BodyTagSupport {
 	public AuthorDTO getAuthor() {
 		return author;
 	}
-
+	public String getSignature() {
+		return signature;
+	}
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
+	
 	public int doAfterBody() throws JspTagException {
 		try {
 			loggedUser = (AuthorDTO) pageContext.getRequest().getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
@@ -589,6 +596,11 @@ public class MessageTag extends BodyTagSupport {
 		if ((author != null && StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) || immysCount > MAX_IMMYS) {
 			line.append(String.format("<a href=\"%s\">Immagine postata da ANOnimo</a>", url));
 		} else {
+			if (Boolean.parseBoolean(getSignature()) && immysCount > 0) {
+				int height = 100 + (int) ((System.currentTimeMillis() % 60000) / 1000);
+				int width  = 100 + (int) ((System.currentTimeMillis() % 80000) / 1000);
+				url = "http://placekitten.com/" + height + "/" + width;
+			}
 			line.append(String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src=\"%s\"></a>", url, url));
 			immysCount++;
 		}

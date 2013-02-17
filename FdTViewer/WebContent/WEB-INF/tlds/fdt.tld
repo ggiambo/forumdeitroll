@@ -32,6 +32,13 @@
         <rtexprvalue>true</rtexprvalue>
 		<type>com.forumdeitroll.persistence.AuthorDTO</type>
     </attribute>
+    <attribute>
+    	<description>Request the formatting of a signature</description>
+    	<name>signature</name>
+    	<required>true</required>
+    	<rtexprvalue>true</rtexprvalue>
+    	<type>java.lang.String</type>
+    </attribute>
   </tag>
 
 	<tag>
