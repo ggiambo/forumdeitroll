@@ -72,7 +72,7 @@
 				</c:choose>
 			</div>
 			<div class="msgDate">il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/></div>
-
+			
 			<c:if test="${not empty msg.author.nick}">
 				<div class="msgTotalMsg">
 					Trollate totali: ${msg.author.messages}
@@ -96,12 +96,12 @@
 	<div style="padding: 10px;" class="message">
 		<fdt:msg search="${param.search}" signature="false" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
-
-<!--	<c:if test="${not empty msg.author.preferences['signature']}">
+	
+	<c:if test="${not empty msg.author.preferences['signature']}">
 		<div class="firma" id="firma_${msg.id}">
 			<fdt:msg search="" signature="true" author="${msg.author}">${msg.author.preferences['signature']}</fdt:msg>
 		</div>
-	</c:if>-->
+	</c:if>
 	<div style="clear:both; height: 1px; width: 100%;"></div>
 </div>
 <div id="buttons_${msg.id}">
@@ -126,7 +126,7 @@
 					</a>
 				</div>
 			</c:if>
-
+			
 			<%-- Moderazione --%>
 			<c:if test="${loggedUser.preferences['super'] == 'yes'}">
 				<c:url value="ModInfo" var="modUrl">
@@ -139,7 +139,7 @@
 					</a>
 				</div>
 			</c:if>
-
+	
 			<%-- Pedonize ! --%>
 			<c:if test="${loggedUser.preferences['pedonizeThread'] == 'yes'}">
 				<c:if test="${msg.forum != 'Proc di Catania'}">
@@ -151,7 +151,7 @@
 					</div>
 				</c:if>
 			</c:if>
-
+	
 			<%-- Nascondi / Mostra --%>
 			<c:if test="${loggedUser.preferences['hideMessages'] == 'yes'}">
 				<div class="buttonBarButton buttonBarButtonAdmin">
@@ -171,7 +171,7 @@
 					</c:choose>
 				</div>
 			</c:if>
-
+	
 			<%-- Notifica --%>
 			<div class="buttonBarButton">
 				<span id="notify_${msg.id}" style="width: 100px">
@@ -182,7 +182,7 @@
 					<input type="text" size="15" name="notifyToNick" class="notifyInput" />
 				</span>
 			</div>
-
+	
 			<%-- Modifica --%>
 			<c:if test="${msg.author.nick == loggedUser.nick}">
 				<div class="buttonBarButton">
@@ -192,9 +192,9 @@
 					</a>
 				</div>
 			</c:if>
-
+	
 		</c:if>
-
+	
 		<%-- Rispondi --%>
 		<div class="buttonBarButton">
 			<a class="buttonBarLink" href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;">
@@ -202,7 +202,7 @@
 				Rispondi
 			</a>
 		</div>
-
+	
 		<%-- Quota --%>
 		<div class="buttonBarButton">
 			<a class="buttonBarLink" href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;">
@@ -210,20 +210,20 @@
 				Quota
 			</a>
 		</div>
-
+		
 		<c:if test="${not empty loggedUser}">
 			<div class="buttonBarButton">
 				<%-- +1 --%>
 				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', true);return false;">
 					<span class="buttonBarImg buttonBarImgUpvote"></span>
 				</a>
-
+				
 				<%-- -1 --%>
 				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', false);return false;">
 					<span class="buttonBarImg buttonBarImgDownvote"></span>
 				</a>
 			</div>
-
+			
 		</c:if>
 		<div class="buttonBarButton">
 			&nbsp;<span class="ranking" id="msg${msg.id}_ranking">${msg.rank}</span>
