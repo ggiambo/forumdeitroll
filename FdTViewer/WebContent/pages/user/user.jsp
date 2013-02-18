@@ -62,23 +62,33 @@
 					</div>
 					<input type="submit" value="Upload" class="sendUserPanel" />
 					<div style="clear: both;"></div>
-				</form>		
+					<p>Limitazioni: dimensione massima consentita <%=""+User.MAX_SIZE_AVATAR_BYTES%> bytes, altezza <%=""+User.MAX_SIZE_AVATAR_HEIGHT %> pixels, larghezza <%=""+User.MAX_SIZE_AVATAR_WIDTH %> pixels</p>
+				</form>
 			</div>
 			
 			<div class="userPanelSection">
 				<h3>Firma</h3>
-				<form action="User?action=updateSignature" method="post">
+				<form action="User?action=updateSignature" method="post" enctype="multipart/form-data">
 					<div>
-						<div class="lblUserPanel">
-							<label for="actualPass" class="lbl">Firma:</label>
+						<div class="lblUserPanel" style="width: 25%">
+							<label for="signature" class="lbl">Firma:</label>
 						</div>
-						<div class="inputUserPanel">
-							<input type="text" name="signature" id="signature" value="${loggedUser.preferences['signature']}"/>
+						<div class="inputUserPanel" style="width: 70%">
+							<textarea name="signature" id="signature" style="width: 100%">${loggedUser.preferences['signature']}</textarea>
 						</div>
 						<div style="clear: both;"></div>
+						<div class="lblUserPanel">
+							<label for="signature_image" class="lbl">File:</label>
+						</div>
+						<div class="inputUserPanel">
+							<input type="file" name="signature_image">
+						</div>
+						<div style="clear: both;"></div>
+						<p>Limitazioni: dimensione massima consentita <%=""+User.MAX_SIZE_SIGNATURE_BYTES%> bytes, altezza <%=""+User.MAX_SIZE_SIGNATURE_HEIGHT %> pixels, larghezza <%=""+User.MAX_SIZE_SIGNATURE_WIDTH %> pixels, testo 200 caratteri</p>
 					</div>
 					<div style="clear: both;"></div>
-					<input type="submit" value="Modifica" class="sendUserPanel" />
+					<input type="submit" name="submitBtn" value="Elimina" class="sendUserPanel" />
+					<input type="submit" name="submitBtn" value="Modifica" class="sendUserPanel"/>
 					<div style="clear: both;"></div>
 				</form>		
 			</div>

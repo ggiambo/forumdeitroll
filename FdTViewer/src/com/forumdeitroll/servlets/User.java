@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
+import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.profiler.UserProfiler;
@@ -29,9 +30,13 @@ public class User extends MainServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final int MAX_SIZE_AVATAR_BYTES = 512*1024;
-	private static final long MAX_SIZE_AVATAR_WIDTH = 100;
-	private static final long MAX_SIZE_AVATAR_HEIGHT = 100;
+	public static final int MAX_SIZE_AVATAR_BYTES = 512*1024;
+	public static final long MAX_SIZE_AVATAR_WIDTH = 100;
+	public static final long MAX_SIZE_AVATAR_HEIGHT = 100;
+	
+	public static final int MAX_SIZE_SIGNATURE_BYTES = 512*1024;
+	public static final long MAX_SIZE_SIGNATURE_WIDTH = 530;
+	public static final long MAX_SIZE_SIGNATURE_HEIGHT = 50;
 
 	public static final String PREF_SHOWANONIMG = "showAnonImg";
 	public static final String PREF_EMBEDDYT = "embeddYt";
@@ -592,18 +597,63 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
 		}
-		
-		String signature = req.getParameter("signature");
-		if (StringUtils.isEmpty(signature)) {
-			signature = "";
+		String submitBtn = null;
+		String signature = null;
+		byte[] signature_image = null;
+		DiskFileItemFactory  fileItemFactory = new DiskFileItemFactory ();
+		fileItemFactory.setSizeThreshold(MAX_SIZE_SIGNATURE_BYTES); // grandezza massima 512Kbytes
+		fileItemFactory.setRepository(new File(System.getProperty("java.io.tmpdir")));
+		ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
+		for (Iterator<FileItem> it = uploadHandler.parseRequest(req).iterator(); it.hasNext(); ) {
+			FileItem item = it.next();
+			if (item.isFormField()) {
+				if (item.getFieldName().equals("submitBtn")) {
+					submitBtn = item.getString();
+				} else if (item.getFieldName().equals("signature")) {
+					signature = InputSanitizer.sanitizeText(item.getString());
+				}
+			} else {
+				if (item.getSize() == 0) {
+					continue;
+				}
+				if (item.getSize() > MAX_SIZE_SIGNATURE_BYTES) {
+					setNavigationMessage(req, NavigationMessage.warn("Megalomane, firma troppo grande, al massimo 512K !"));
+					return "user.jsp";
+				}
+				BufferedImage image = ImageIO.read(item.getInputStream());
+				if (image == null) {
+					setNavigationMessage(req, NavigationMessage.warn("Formato imamgine sconosciuta"));
+					return "user.jsp";
+				}
+				int w = image.getWidth();
+				int h = image.getHeight();
+				if (w > MAX_SIZE_SIGNATURE_WIDTH || h > MAX_SIZE_SIGNATURE_HEIGHT) {
+					setNavigationMessage(req, NavigationMessage.warn("Dimensione massima consentita: 530x50px"));
+					return "user.jsp";
+				}
+				signature_image = item.get();
+			}
 		}
-		if (signature.length() > 200) {
-			setNavigationMessage(req, NavigationMessage.error("Yawn, resta sotto i 200 caratteri !"));
+		if ("Modifica".equals(submitBtn)) {
+			if (signature.length() > 200) {
+				setNavigationMessage(req, NavigationMessage.error("Yawn, resta sotto i 200 caratteri !"));
+				return "user.jsp";
+			}
+			if (signature_image != null) {
+				loggedUser.setSignatureImage(signature_image);
+				getPersistence().updateAuthor(loggedUser);
+				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "signature", signature));
+			} else {
+				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "signature", signature));
+			}
+		} else if ("Elimina".equals(submitBtn)) {
+			loggedUser.setSignatureImage(null);
+			getPersistence().updateAuthor(loggedUser);
+			loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "signature", ""));
+		} else {
+			setNavigationMessage(req, NavigationMessage.error("Nessuna operazione eseguita !"));
 			return "user.jsp";
 		}
-		
-		loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "signature", signature));
-		
 		setNavigationMessage(req, NavigationMessage.info("Firma modificato con successo !"));
 		return "user.jsp";
 		

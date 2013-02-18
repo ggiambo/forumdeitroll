@@ -100,6 +100,8 @@ public class Misc extends HttpServlet {
 			getDisclaimer(req, res);
 		} else if ("redirectTo".equals(action)) {
 			redirectTo(req, res);
+		} else if ("getUserSignatureImage".equals(action)) {
+			getUserSignatureImage(req, res);
 		} else {
 			LOG.error("action '" + action + "' conosciuta");
 		}
@@ -134,6 +136,16 @@ public class Misc extends HttpServlet {
 		} else {
 			out.write(notAuthenticated);
 		}
+		out.flush();
+		out.close();
+	}
+	
+	private void getUserSignatureImage(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		String nick = req.getParameter("nick");
+		res.setHeader("Cache-Control", "max-age=3600");
+		AuthorDTO author = persistence.getAuthor(nick);
+		ServletOutputStream out = res.getOutputStream();
+		out.write(author.getSignatureImage());
 		out.flush();
 		out.close();
 	}

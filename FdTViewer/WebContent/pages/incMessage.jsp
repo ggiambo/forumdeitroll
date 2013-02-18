@@ -97,9 +97,18 @@
 		<fdt:msg search="${param.search}" signature="false" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
 	
-	<c:if test="${not empty msg.author.preferences['signature']}">
+	<c:if test="${not empty msg.author.preferences['signature'] || not empty msg.author.signatureImage}">
 		<div class="firma" id="firma_${msg.id}">
-			<fdt:msg search="" signature="true" author="${msg.author}">${msg.author.preferences['signature']}</fdt:msg>
+			<c:if test="${not empty msg.author.preferences['signature']}">
+				<fdt:msg search="" signature="true" author="${msg.author}">${msg.author.preferences['signature']}</fdt:msg>
+			</c:if>
+			<c:if test="${not empty msg.author.signatureImage}">
+				<c:url value="Misc" var="signatureUrl">
+					<c:param name="action" value="getUserSignatureImage"/>
+					<c:param name="nick" value="${msg.author.nick}"/>
+				</c:url>
+				<img src="<c:out value="${signatureUrl}" escapeXml="true"/>"/>
+			</c:if>
 		</div>
 	</c:if>
 	<div style="clear:both; height: 1px; width: 100%;"></div>

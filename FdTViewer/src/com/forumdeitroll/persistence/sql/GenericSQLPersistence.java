@@ -428,6 +428,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			while (rs.next()) {
 				dto.setNick(rs.getString("nick"));
 				dto.setAvatar(rs.getBytes("avatar"));
+				dto.setSignatureImage(rs.getBytes("signature_image"));
 				dto.setMessages(rs.getInt("messages"));
 				dto.setOldPassword(rs.getString("password"));
 				dto.setSalt(rs.getString("salt"));
@@ -461,6 +462,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				dto = new AuthorDTO(null);
 				dto.setNick(rs.getString("nick"));
 				dto.setAvatar(rs.getBytes("avatar"));
+				dto.setSignatureImage(rs.getBytes("signature_image"));
 				dto.setMessages(rs.getInt("messages"));
 				dto.setOldPassword(rs.getString("password"));
 				dto.setSalt(rs.getString("salt"));
@@ -533,10 +535,11 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("UPDATE authors SET messages = ?, avatar = ? where nick = ?");
+			ps = conn.prepareStatement("UPDATE authors SET messages = ?, avatar = ?, signature_image = ? where nick = ?");
 			ps.setInt(1, author.getMessages());
 			ps.setBytes(2, author.getAvatar());
-			ps.setString(3, author.getNick());
+			ps.setBytes(3, author.getSignatureImage());
+			ps.setString(4, author.getNick());
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			LOG.error("Cannot update author " + author, e);

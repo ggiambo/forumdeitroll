@@ -43,6 +43,9 @@ public class MessageTag extends BodyTagSupport {
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
+	public boolean isRenderingSignature() {
+		return Boolean.parseBoolean(getSignature());
+	}
 	
 	public int doAfterBody() throws JspTagException {
 		try {
@@ -137,10 +140,10 @@ public class MessageTag extends BodyTagSupport {
 			} else if (found(URL)) {
 				on_word();
 				url();
-			} else if (found(IMG)) {
+			} else if (found(IMG) && !isRenderingSignature()) {
 				on_word();
 				img();
-			} else if (found(YT)) {
+			} else if (found(YT) && !isRenderingSignature()) {
 				on_word();
 				youtube();
 			} else if (found(COLOR)) {
@@ -596,15 +599,7 @@ public class MessageTag extends BodyTagSupport {
 		if ((author != null && StringUtils.isEmpty(author.getNick()) && StringUtils.isEmpty(showAnonImg)) || immysCount > MAX_IMMYS) {
 			line.append(String.format("<a href=\"%s\">Immagine postata da ANOnimo</a>", url));
 		} else {
-			if (Boolean.parseBoolean(getSignature()) && immysCount > 0) {
-				int height = 100 + (int) ((System.currentTimeMillis() % 60000) / 1000);
-				int width  = 100 + (int) ((System.currentTimeMillis() % 80000) / 1000);
-				url = "http://placekitten.com/" + height + "/" + width;
-			} else if (Boolean.parseBoolean(getSignature())) {
-				line.append(String.format("<a class='preview' href='%s'><img class='signatureImage' alt='Immagine postata dall&#39;utente' src=\"%s\"></a>", url, url));
-			} else {
-				line.append(String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src=\"%s\"></a>", url, url));
-			}
+			line.append(String.format("<a class='preview' href='%s'><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src=\"%s\"></a>", url, url));
 			immysCount++;
 		}
 		p = img_end + (IMG_END.length - 1);

@@ -28,7 +28,8 @@ CREATE TABLE `authors` (
   `avatar` mediumblob,
   `password` tinytext NOT NULL,
   `salt` tinytext,
-  `hash` tinytext
+  `hash` tinytext,
+  `signature_image` mediumblob,
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
