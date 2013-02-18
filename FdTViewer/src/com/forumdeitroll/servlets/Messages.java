@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import com.forumdeitroll.MessageTag;
 import com.forumdeitroll.PasswordUtils;
+import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
@@ -417,14 +418,9 @@ public class Messages extends MainServlet {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
-		// replace dei caratteri HTML
-		text = text.replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\n", "<BR>");
-
-		// restore <i>, <b>, <u> e <s>
-		for (String t : new String[] {"i", "b", "u", "s"}) {
-			text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
-			text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
-		}
+		
+		text = InputSanitizer.sanitizeText(text);
+		
 		writer.name("content").value(MessageTag.getMessageStatic(text, null, author, null));
 		writer.endObject();
 		writer.flush();
@@ -593,14 +589,8 @@ public class Messages extends MainServlet {
 		req.getSession().removeAttribute("captcha");
 
 		String text = req.getParameter("text");
-		// replace dei caratteri HTML
-		text = text.replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\n", "<BR>");
-
-		// restore <i>, <b>, <u> e <s>
-		for (String t : new String[] {"i", "b", "u", "s"}) {
-			text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
-			text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
-		}
+		
+		text = InputSanitizer.sanitizeText(text);
 
 		// reply o messaggio nuovo ?
 		long parentId = Long.parseLong(req.getParameter("parentId"));
@@ -609,7 +599,7 @@ public class Messages extends MainServlet {
 		msg.setParentId(parentId);
 		msg.setDate(new Date());
 		msg.setText(text);
-		msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
+		msg.setSubject(InputSanitizer.sanitizeSubject(req.getParameter("subject")));
 		if (parentId > 0) {
 			long id = Long.parseLong(req.getParameter("id"));
 			if (id > -1) {
@@ -621,7 +611,7 @@ public class Messages extends MainServlet {
 				}
 				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
 				msg.setText(text);
-				msg.setSubject(req.getParameter("subject").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
+				msg.setSubject(InputSanitizer.sanitizeSubject(req.getParameter("subject")));
 			} else {
 				// reply
 				MessageDTO replyMsg = getPersistence().getMessage(parentId);
@@ -639,7 +629,7 @@ public class Messages extends MainServlet {
 			if (StringUtils.isEmpty(forum)) {
 				forum = null;
 			} else {
-				forum = forum.replaceAll(">", "&gt;").replaceAll("<", "&lt;");
+				forum = InputSanitizer.sanitizeForum(forum);
 			}
 			msg.setForum(forum);
 			msg.setThreadId(-1);
