@@ -2,6 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <div id="main">	
 	<div class="userPanel">
 		<div class="userPanelCaption">Pannello Utente</div>
@@ -75,7 +76,7 @@
 							<label for="signature" class="lbl">Firma:</label>
 						</div>
 						<div class="inputUserPanel" style="width: 70%">
-							<textarea name="signature" id="signature" style="width: 100%">${loggedUser.preferences['signature']}</textarea>
+							<textarea name="signature" id="signature" style="width: 100%">${fn:replace(fn:replace(loggedUser.preferences['signature'],'<br>',''), '<BR>','')}</textarea>
 						</div>
 						<div style="clear: both;"></div>
 						<div class="lblUserPanel">
