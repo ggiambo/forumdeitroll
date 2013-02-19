@@ -161,6 +161,15 @@
 						</div>
 						<div style="clear: both;"></div>
 					</div>
+					<div>
+						<div class="inputUserPanel">
+							<input type="checkbox" name="<%=User.PREF_HIDE_SIGNATURE%>" id="<%=User.PREF_HIDE_SIGNATURE%>" ${loggedUser.preferences['hideSignature']} />
+						</div>
+						<div class="lblUserPanel">
+							<label for="<%=User.PREF_HIDE_SIGNATURE%>" class="lbl">Nascondi le firme.</label>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
 					<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
 						<hr/>								
 						<div class="inputUserPanel">

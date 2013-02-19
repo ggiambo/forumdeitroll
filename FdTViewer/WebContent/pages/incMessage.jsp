@@ -97,7 +97,7 @@
 		<fdt:msg search="${param.search}" signature="false" author="${msg.author}">${msg.text}</fdt:msg>
 	</div>
 	
-	<c:if test="${not empty msg.author.preferences['signature'] || not empty msg.author.signatureImage}">
+	<c:if test="${(not empty msg.author.preferences['signature'] || not empty msg.author.signatureImage) && not empty loggedUser && loggedUser.preferences['hideSignature'] != 'checked'}">
 		<div class="firma" id="firma_${msg.id}">
 			<c:if test="${not empty msg.author.preferences['signature']}">
 				<fdt:msg search="" signature="true" author="${msg.author}">${msg.author.preferences['signature']}</fdt:msg>
