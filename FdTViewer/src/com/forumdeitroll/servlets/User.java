@@ -610,7 +610,7 @@ public class User extends MainServlet {
 				if (item.getFieldName().equals("submitBtn")) {
 					submitBtn = item.getString();
 				} else if (item.getFieldName().equals("signature")) {
-					signature = InputSanitizer.sanitizeText(item.getString());
+					signature = InputSanitizer.sanitizeText(item.getString("UTF-8"));
 				}
 			} else {
 				if (item.getSize() == 0) {

@@ -69,6 +69,7 @@
 			<div class="userPanelSection">
 				<h3>Firma</h3>
 				<form action="User?action=updateSignature" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="utf8" value="&#9731;">
 					<div>
 						<div class="lblUserPanel" style="width: 25%">
 							<label for="signature" class="lbl">Firma:</label>
