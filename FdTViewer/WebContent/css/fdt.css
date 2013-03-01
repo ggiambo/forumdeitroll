@@ -508,6 +508,7 @@ div.msgReply {
 }
 
 div.msgReply input {
+	border-radius: 3px 3px 3px 3px;
 	border: 1px solid #7BAAE7;
 	padding: 0 5px;
 }
@@ -918,6 +919,7 @@ div.userPanelSection textarea {
 }
 
 div.userPanelSection input.sendUserPanel {
+	border-radius: 3px 3px 3px 3px;
 	float: right;
 	width: 8em;
 	border: 1px solid #7BAAE7;
@@ -927,6 +929,7 @@ div.userPanelSection input.sendUserPanel {
 }
 
 div.userPanelSection a.userPanelButton, div.modInfoPanelSection a.modInfoPanelButton {
+	border-radius: 3px 3px 3px 3px;
 	border: 1px solid #7BAAE7;
 	font-weight: bold;
 	font-size: 90%;
@@ -960,6 +963,7 @@ div.userPanelSection div.fraseCelebreUserPanel input.fraseCelebreUserPanel {
 }
 
 div.userPanelSection div.fraseCelebreUserPanel input.sendFraseCelebreUserPanel {
+	border-radius: 3px 3px 3px 3px;
 	width: 5em;
 	border: 1px solid #7BAAE7;
 	font-weight: bold;
@@ -999,6 +1003,7 @@ div.userPanelSection form.pvtSendMessage textarea {
 }
 
 div.userPanelSection form.pvtSendMessage input.sendPvt {
+	border-radius: 3px 3px 3px 3px;
 	width: 5em;
 	border: 1px solid #7BAAE7;
 	font-weight: bold;
@@ -1221,6 +1226,7 @@ form#poll textarea {
 }
 
 form#poll input[type="submit"] {
+	border-radius: 3px 3px 3px 3px;
 	float: right;
 	width: 8em;
 	border: 1px solid #7BAAE7;
@@ -1394,11 +1400,13 @@ div.msgReply ul.tabs li {
 }
 
 div.msgReply ul.tabs li.selectedTab {
+	border-radius: 3px 3px 0px 0px;
 	padding-bottom: 1px;
 	background: white;
 }
 
 div.msgReply ul.tabs li a {
+	border-radius: 3px 3px 0px 0px;
 	padding: 0 1em;
 	font-weight: normal;
 	text-decoration: none;
