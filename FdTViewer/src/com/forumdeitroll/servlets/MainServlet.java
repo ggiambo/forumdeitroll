@@ -43,6 +43,8 @@ public abstract class MainServlet extends HttpServlet {
 
 	private IPersistence persistence;
 
+	private Map<String, Method> actionMethodCache;
+
 	protected SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
 			return getPersistence().getForums();
@@ -64,6 +66,7 @@ public abstract class MainServlet extends HttpServlet {
 			LOG.fatal(e);
 			throw new ServletException("Cannot instantiate persistence", e);
 		}
+		actionMethodCache = new HashMap<String, Method>();
 	}
 
 	public final void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -73,7 +76,7 @@ public abstract class MainServlet extends HttpServlet {
 	public final void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		doGetPost(req, res, Action.Method.POST);
 	}
-	
+
 	private void doGetPost(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws IOException {
 		try {
 			doBefore(req, res);
@@ -170,29 +173,20 @@ public abstract class MainServlet extends HttpServlet {
 		if (action == null) {
 			LOG.error("action è null per la request "+req.getRequestURI()+": hai messo l'<url-pattern> nel filter (web.xml)?");
 		}
-			Method methodAction = null;
-			Class servletClass = this.getClass();
-			while (methodAction == null && MainServlet.class.isAssignableFrom(servletClass)) {
-				// search action method also in superclasses
-				try {
-					methodAction = servletClass.getDeclaredMethod(action, new Class[] {HttpServletRequest.class, HttpServletResponse.class});
-				} catch (NoSuchMethodException e) {
-					servletClass = servletClass.getSuperclass();
-				}
+		Method actionMethod = getActionMethod(action);
+		if (actionMethod == null) {
+			throw new IllegalArgumentException("Azione sconosciuta: " + action);
+		} else {
+			Action a = actionMethod.getAnnotation(Action.class);
+			if (a == null) {
+				throw new IllegalArgumentException("L'action " + action + " non e' definita");
 			}
-			if (methodAction == null) {
-				throw new IllegalArgumentException("Azione sconosciuta: " + action);
+			if (a.method() == Action.Method.GETPOST || a.method() == method) {
+				return (String)actionMethod.invoke(this, new Object[] {req, res});
 			} else {
-				Action a = methodAction.getAnnotation(Action.class);
-				if (a == null) {
-					throw new IllegalArgumentException("L'action " + action + " non e' definita");
-				}
-				if (a.method() == Action.Method.GETPOST || a.method() == method) {
-				return (String)methodAction.invoke(this, new Object[] {req, res});
-				} else {
-					throw new IllegalArgumentException("Azione " + action + " non permette il metodo " + method);
-				}
+				throw new IllegalArgumentException("Azione " + action + " non permette il metodo " + method);
 			}
+		}
 	}
 
 	/**
@@ -431,5 +425,34 @@ public abstract class MainServlet extends HttpServlet {
 				return false; // utenti non registrati: mostra
 			}
 		}
+	}
+
+	/**
+	 * Mappa action -> Actionmethod.
+	 * @param action
+	 * @return
+	 */
+	private final Method getActionMethod(String action) {
+		Method actionMethod = null;
+		if (!actionMethodCache.containsKey(action)) {
+			Class servletClass = this.getClass();
+			synchronized (actionMethodCache) {
+				if (!actionMethodCache.containsKey(action)) {
+					while (actionMethod == null && MainServlet.class.isAssignableFrom(servletClass)) {
+						// search action method also in superclasses
+						try {
+							actionMethod = servletClass.getDeclaredMethod(action, new Class[] {HttpServletRequest.class, HttpServletResponse.class});
+						} catch (NoSuchMethodException e) {
+							servletClass = servletClass.getSuperclass();
+						}
+					}
+					// Una key puo' avere value == null, cosi' da evitare la ricerca in futuro.
+					actionMethodCache.put(action, actionMethod); 
+				}
+			}
+		} else {
+			actionMethod = actionMethodCache.get(action);
+		}
+		return actionMethod;
 	}
 }
