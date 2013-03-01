@@ -904,13 +904,26 @@ div.userPanelSection input {
 	padding: 0 5px;
 }
 
+div.userPanelSection input.file {
+	border: 1px solid #7BAAE7;
+	width: 100%;
+	padding: 0 5px;
+}
+
+div.userPanelSection textarea {
+	border: 1px solid #7BAAE7;
+	width: 20em;
+	height: 4em;
+	padding: 0 5px;
+}
+
 div.userPanelSection input.sendUserPanel {
 	float: right;
 	width: 8em;
 	border: 1px solid #7BAAE7;
 	font-weight: bold;
 	font-size: 90%;
-	margin-top: 5px;
+	margin: 5px 0px 0px 5px;
 }
 
 div.userPanelSection a.userPanelButton, div.modInfoPanelSection a.modInfoPanelButton {
