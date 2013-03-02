@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -18,6 +19,7 @@ import nl.captcha.gimpy.RippleGimpyRenderer;
 import nl.captcha.servlet.CaptchaServletUtil;
 import nl.captcha.text.producer.NumbersAnswerProducer;
 
+import org.apache.catalina.util.URLEncoder;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -102,6 +104,8 @@ public class Misc extends HttpServlet {
 			redirectTo(req, res);
 		} else if ("getUserSignatureImage".equals(action)) {
 			getUserSignatureImage(req, res);
+		} else if ("searchAjax".equals(action)) {
+			searchAjax(req, res);
 		} else {
 			LOG.error("action '" + action + "' conosciuta");
 		}
@@ -198,5 +202,41 @@ public class Misc extends HttpServlet {
 		}
 		req.setAttribute("originalURL", originalURL);
 		getServletContext().getRequestDispatcher("/pages/disclaimer.jsp").forward(req, res);
+	}
+	
+	/**
+	 * Metodo di utilità per aggirare la same origin policy quando si testa in locale il motorino
+	 * wrappando le chiamate
+	 * 
+	 * @param req
+	 * @param res
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	private void searchAjax(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		String search = req.getParameter("q");
+		String sort = req.getParameter("sort");
+		String page = req.getParameter("p");
+		
+		String endpoint = "http://forumdeitroll.com/motorino/search?q=" + new URLEncoder().encode(search);
+		if (!StringUtils.isEmpty(sort)) {
+			endpoint += "&sort=" + sort; //date,rdate,rank
+		}
+		if (!StringUtils.isEmpty(page)) {
+			endpoint += "&p=" + page;
+		}
+		
+		System.out.println(endpoint);
+		InputStream in = new URL(endpoint).openStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		byte[] buffer = new byte[512];
+		int count;
+		while ((count = in.read(buffer)) != -1) {
+			out.write(buffer, 0, count);
+		}
+		in.close();
+		
+		res.setContentType("application/json");
+		res.getOutputStream().write(out.toByteArray());
 	}
 }

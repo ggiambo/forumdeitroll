@@ -1,0 +1,76 @@
+<% if (!results) {%>
+	Nessun risultato corrisponde al criterio di ricerca.
+<% return;
+	} %>
+<div>
+	<b>
+		Pagina <%=currentPage%>
+	</b>
+</div>
+<% var index = 0; for (index = 0; index < results.length; index++) { %>
+	<% var result = results[index]; %>
+	<% var evenOdd = index % 2 ? "msgEven" : "msgOdd"; %>
+	<div class="messagesBox <%=evenOdd%>">
+		<div class="msgVisible">
+			<div class="msgInfo">
+				<% if (result['opener-user'] && result['opener-user'] != "Non Autenticato") { %>
+					<div>
+						<a href="User?action=getUserInfo&nick=<%=result['opener-user']%>">
+							<img class="avatarImg avatarImgLinkable" src="Misc?action=getAvatar&nick=<%=result['opener-user']%>">
+						</a>
+					</div>
+					<% if (result.forum) { %>
+						<div class="msgForum">
+							<%=result.forum%>
+						</div>
+					<% } %>
+					<div class="msgDetails">
+						<div class="msgWrittenby">Thread aperto da</div>
+						<div class="msgAuthor">
+							<a href="Messages?action=getByAuthor&author=<%=result['opener-user']%>">
+								<%=result['opener-user']%>
+							</a>
+						</div>
+						<div class="msgDate"><%=result['start-date']%></div>
+					</div>
+				<% } else { %>
+					<div>
+						<img class="avatarImg avatarImgLinkable" src="Misc?action=getAvatar&nick=">
+					</div>
+					<% if (result.forum) { %>
+						<div class="msgForum">
+							<%=result.forum%>
+						</div>
+					<% } %>
+					<div class="msgDetails">
+						<div class="msgWrittenby">Thread aperto da</div>
+						<div class="msgAuthor">Non Autenticato</div>
+						<div class="msgDate"><%=result['start-date']%></div>
+					</div>
+				<% } %>
+			</div>
+			<span style="width:100%; margin: 5px">
+				<b>
+					<a href="Threads?action=getByThread&threadId=<%=result.mid%>">
+						<%=result.title%>
+					</a>
+				</b>
+			</span>
+			<div class="message" style="padding: 10px;">
+				<i>Snippet dal thread:</i>
+				<br>
+				<%=result.snippet%>
+				<br>
+				<i>Partecipanti al thread</i>
+				<br>
+				<%=_.uniq(result['list-of-users']).map(function(user) {
+					return "<i><a href=\"User?action=getUserInfo&nick=" + encodeURIComponent(user) + "\">"+user+"</a></i>";
+				}).join(", ")%>
+				
+			</div>
+		</div>
+	</div>
+<% } %>
+<div id="loading">
+	Caricamento pagina successiva...
+</div>

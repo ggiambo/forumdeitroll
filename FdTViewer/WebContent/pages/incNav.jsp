@@ -108,7 +108,7 @@
 		
 		<c:if test="${!empty page}">
 			<li>|</li>
-			<li><fdt:pager handler="Messages"></fdt:pager></li>
+			<li id='pager'><fdt:pager handler="Messages"></fdt:pager></li>
 		</c:if>
 		
 		<li>|</li>

@@ -118,6 +118,7 @@
 		
 		<%-- i vari scripts --%>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script src="js/underscore.1.4.4.min.js"></script>
 		<script src="js/json2.js" type="text/javascript"></script>
 		<script type="text/javascript" src="js/fdt.js?v=<%=bootTime%>"></script>
 		<script type="text/javascript" src="js/preview.js?v=<%=bootTime%>"></script>

@@ -18,7 +18,7 @@
 		<a href="Bookmarks">Segnalibri</a>
 		<br><br>
 	</c:if>
-	<form action="Messages" method="get" id="sidebarSearchForm">
+	<form action="Messages" method="get" id="sidebarSearchForm" onsubmit="return searchAjax();">
 		<input type="hidden" name="action" value="search"/>
 		<input name="search" size="8" value="<c:out value="${param.search}"/>"/>
 		<div id="sortDiv">

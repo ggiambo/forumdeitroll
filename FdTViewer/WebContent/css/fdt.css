@@ -1511,6 +1511,6 @@ span.fakeLink {
 	cursor: pointer;
 }
 
-#ircbox {
-	
+#loading {
+	font-weight: bold;
 }

@@ -495,3 +495,98 @@ function like(msgId, like) {
 		}
 	});
 }
+
+
+
+var endpointSearch = "Misc?action=searchAjax";
+//var endpointSearch = "/motorino/search?dummy=true";
+
+var templateSearch = null;
+var lockSearch = null;
+
+function infiniteScroll(page) {
+	return function() {
+		try {
+			var wst = $(window).scrollTop();
+			var dh = $(document).height();
+			var wh = $(window).height();
+			if ((dh - wh) - wst < 500) {
+				searchAjax(page);
+			}
+		} catch (e) {
+			alert(e.message);
+		}
+	};
+}
+
+function runTemplate(data) {
+	var html = templateSearch(data);
+	if (data.currentPage == 0) {
+		document.getElementById('main').innerHTML = html;
+	} else {
+		document.getElementById('main').innerHTML += html;
+	}
+	$(window).bind("scroll", infiniteScroll(data.nextPage));
+	lockSearch = null;
+}
+
+
+function searchAjax(page) {
+	console.log("page = "+page);
+	$(window).unbind("scroll");
+	if (page && lockSearch != null) return false;
+	lockSearch = 1;
+	try {
+		if ($('#pager').length > 0) {
+			$('#pager').remove();
+		}
+		if ($('#footer').length > 0) {
+			$('#footer').remove();
+		}
+		var q = document.forms.sidebarSearchForm.search.value;
+		var sort = document.forms.sidebarSearchForm.sort.value;
+		if (sort == 'date') {
+			sort = 'rdate';
+		} else if (sort == 'rdate') {
+			sort = 'date';
+		}
+		if (!page) {
+			page = 0;
+		}
+		var query =
+			endpointSearch +
+			"&q=" + encodeURIComponent(q) +
+			"&sort=" + encodeURIComponent(sort) +
+			"&p=" + page;
+		$.get(query, function(data) {
+			if ($('#loading').length > 0) {
+				$('#loading').remove();
+			}
+			if (data.results.length == 0) {
+				lock = 1;
+				return;
+			}
+			data.currentPage = page;
+			data.nextPage = page + 1;
+			try {
+				if (!templateSearch) {
+					$.get('templates/messages.tmpl', function(tmplSource) {
+						try {
+							templateSearch = _.template(tmplSource);
+							runTemplate(data);
+						} catch (e) {
+							alert(e.message);
+						}
+					});
+				} else {
+					runTemplate(data);
+				}
+			} catch (e) {
+				alert(e.message);
+			}
+		});
+	} catch (e) {
+		alert(e.message);
+	}
+	return false;
+}

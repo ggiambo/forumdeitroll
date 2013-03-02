@@ -1,8 +1,10 @@
 package com.forumdeitroll.servlets;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +33,6 @@ import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
-import com.forumdeitroll.persistence.SearchMessagesSort;
 import com.forumdeitroll.profiler.UserProfile;
 import com.forumdeitroll.profiler.UserProfiler;
 import com.forumdeitroll.servlets.Action.Method;
@@ -237,19 +238,19 @@ public class Messages extends MainServlet {
 	String search(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		final String search = req.getParameter("search");
 		final String sort = req.getParameter("sort");
-
+		
 		addSpecificParam(req, "search", search);
 		addSpecificParam(req, "sort", sort);
-
+		
 		setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
 
-		List<MessageDTO> messages = getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req));
-		req.setAttribute("messages", messages);
-		req.setAttribute("resultSize", messages.size());
+//		List<MessageDTO> messages = getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req));
+//		req.setAttribute("messages", messages);
+//		req.setAttribute("resultSize", messages.size());
 		setAntiXssToken(req);
 		return "messages.jsp";
 	}
-
+	
 	/**
 	 * Popola il div per la risposta/quota messaggio
 	 * @param req
