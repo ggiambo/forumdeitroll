@@ -29,10 +29,6 @@
 			<jsp:include page="../incMessage.jsp"/>
 		</div>
 	</c:forEach> 
-	
-	<c:if test="${servlet == 'search'}">
-		TODO
-	</c:if>
 </div>
 
 <div id="footer">
