@@ -67,6 +67,7 @@
 						.map(function(user) {
 							return "<i><a href=\"User?action=getUserInfo&nick=" + encodeURIComponent(user) + "\">"+user+"</a></i>";
 						})
+						.uniq()
 						.value() %>
 					<% if (users.length > 0) {%>
 						<i>Partecipanti al thread</i>
