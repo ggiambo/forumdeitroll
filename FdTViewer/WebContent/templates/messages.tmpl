@@ -61,7 +61,7 @@
 					<%=result.snippet%>
 					<br>
 					<br>
-					<% var users =_.uniq(result['list-of-users']).filter(function(u) {return u !== ""}).map(function(user) {
+					<% var users =_.filter(_.uniq(result['list-of-users']), function(u) {return u !== ""}).map(function(user) {
 						return "<i><a href=\"User?action=getUserInfo&nick=" + encodeURIComponent(user) + "\">"+user+"</a></i>";
 					}) %>
 					<% if (users.length > 0) {%>
