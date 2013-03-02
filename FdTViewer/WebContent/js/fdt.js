@@ -532,6 +532,7 @@ function runTemplate(data) {
 
 
 function searchAjax(page) {
+	refreshable = 0;
 	console.log("page = "+page);
 	$(window).unbind("scroll");
 	if (page && lockSearch != null) return false;
@@ -552,6 +553,7 @@ function searchAjax(page) {
 		}
 		if (!page) {
 			page = 0;
+			document.getElementById("main").innerHTML = "Ricerca avviata...";
 		}
 		var query =
 			endpointSearch +
@@ -562,7 +564,7 @@ function searchAjax(page) {
 			if ($('#loading').length > 0) {
 				$('#loading').remove();
 			}
-			if (data.results.length == 0) {
+			if (data.results.length == 0 && page != 0) {
 				lock = 1;
 				return;
 			}
