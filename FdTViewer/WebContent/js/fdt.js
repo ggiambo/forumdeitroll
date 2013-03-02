@@ -240,11 +240,11 @@ jQuery("document").ready(function(){
 	SyntaxHighlighter.all();
 
 	// collassa quotes
-	$('.quote-container').live('click', function() {
+	$('.quote-container').on('click', function() {
 		$(this).removeClass('quote-container');
 		$(this).addClass('quote-closer');
 	});
-	$('.quote-closer').live('click', function() {
+	$('.quote-closer').on('click', function() {
 		$(this).removeClass('quote-closer');
 		$(this).addClass('quote-container');
 	});
@@ -298,7 +298,7 @@ jQuery("document").ready(function(){
 });
 
 // tasto 'j' per saltare al prossimo messaggio, 'k' per quello precedente
-$("body").live("keypress", function(e) {
+$("body").on("keypress", function(e) {
 	var target = $(e.target);
 	if (!target.is("input") && !target.is("textarea")) {
 		if (e.charCode == 106) {
@@ -514,7 +514,7 @@ function infiniteScroll(page) {
 				searchAjax(page);
 			}
 		} catch (e) {
-			alert(e.message);
+			alert("infiniteScroll: "+e.message);
 		}
 	};
 }
@@ -526,14 +526,13 @@ function runTemplate(data) {
 	} else {
 		document.getElementById('main').innerHTML += html;
 	}
-	$(window).bind("scroll", infiniteScroll(data.nextPage));
+	$(window).on("scroll", infiniteScroll(data.nextPage));
 	lockSearch = null;
 }
 
 
 function searchAjax(page) {
 	refreshable = 0;
-	console.log("page = "+page);
 	$(window).unbind("scroll");
 	if (page && lockSearch != null) return false;
 	lockSearch = 1;
@@ -577,18 +576,18 @@ function searchAjax(page) {
 							templateSearch = _.template(tmplSource);
 							runTemplate(data);
 						} catch (e) {
-							alert(e.message);
+							alert("searchAjax1: "+e.message);
 						}
 					});
 				} else {
 					runTemplate(data);
 				}
 			} catch (e) {
-				alert(e.message);
+				alert("searchAjax2: "+e.message);
 			}
 		});
 	} catch (e) {
-		alert(e.message);
+		alert("searchAjax3: "+e.message);
 	}
 	return false;
 }
