@@ -9,7 +9,7 @@
 </div>
 <% var index = 0; for (index = 0; index < results.length; index++) { %>
 	<% var result = results[index]; %>
-	<% var evenOdd = index % 2 ? "msgEven" : "msgOdd"; %>
+	<% var evenOdd = index % 2 ? "msgOdd" : "msgEven"; %>
 	<div class="messagesBox <%=evenOdd%>">
 		<div class="msgVisible">
 			<div class="msgInfo">
@@ -57,16 +57,19 @@
 				</b>
 			</span>
 			<div class="message" style="padding: 10px;">
-				<i>Snippet dal thread:</i>
+				<i>Snippet dal thread</i>
 				<br>
 				<%=result.snippet%>
 				<br>
-				<i>Partecipanti al thread</i>
 				<br>
-				<%=_.uniq(result['list-of-users']).map(function(user) {
+				<% var users =_.uniq(result['list-of-users']).filter(function(u) {return u !== ""}).map(function(user) {
 					return "<i><a href=\"User?action=getUserInfo&nick=" + encodeURIComponent(user) + "\">"+user+"</a></i>";
-				}).join(", ")%>
-				
+				}) %>
+				<% if (users.length > 0) {%>
+					<i>Partecipanti al thread</i>
+					<br>
+					<%=users.join(", ")%>
+				<% } %>
 			</div>
 		</div>
 	</div>

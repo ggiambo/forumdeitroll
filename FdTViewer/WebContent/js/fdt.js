@@ -498,8 +498,8 @@ function like(msgId, like) {
 
 
 
-var endpointSearch = "Misc?action=searchAjax";
-//var endpointSearch = "/motorino/search?dummy=true";
+//var endpointSearch = "Misc?action=searchAjax";
+var endpointSearch = "/motorino/search?dummy=true";
 
 var templateSearch = null;
 var lockSearch = null;
