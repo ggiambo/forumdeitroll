@@ -570,7 +570,7 @@ function searchAjax(page) {
 			data.nextPage = page + 1;
 			try {
 				if (!templateSearch) {
-					$.get('templates/messages.tmpl', function(tmplSource) {
+					$.get('templates/messages.tmpl?v=' + Math.random(), function(tmplSource) {
 						try {
 							templateSearch = _.template(tmplSource);
 							runTemplate(data);
