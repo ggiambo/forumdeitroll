@@ -122,7 +122,7 @@
 		<script src="js/json2.js" type="text/javascript"></script>
 		<script type="text/javascript" src="js/fdt.js?v=<%=bootTime%>"></script>
 		<script type="text/javascript" src="js/preview.js?v=<%=bootTime%>"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/jquery-ui.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
 		<script src="js/sh/shCore.js" type="text/javascript"></script>
 		<script src="js/sh/shAutoloader.js" type="text/javascript"></script>
 		<script src="js/jscolor/jscolor.js" type="text/javascript"></script>
