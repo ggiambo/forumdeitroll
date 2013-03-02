@@ -17,6 +17,13 @@ body {
 	background-color: #41636B;
 }
 
+sup {
+	vertical-align: top;
+	position: relative;
+	top: -0.5em;
+	font-size: 0.6em;
+}
+
 #body {
 	width: 80%;
 	margin: auto;

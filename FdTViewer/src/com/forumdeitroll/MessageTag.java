@@ -228,7 +228,9 @@ public class MessageTag extends BodyTagSupport {
 	private void on_word() {
 		if (!emoticons()) {
 			if (!link()) {
-				search();
+				if (!search()) {
+					exponential();
+				}
 			}
 		}
 		line.append(word);
@@ -385,10 +387,24 @@ public class MessageTag extends BodyTagSupport {
 		return false;
 	}
 
-	private void search() {
+	private boolean search() {
+		boolean ret = false;
 		for (String s : searches) {
-			simpleReplaceAll(word, s, String.format("<span class='searchHighlight'>%s</span>", s));
+			ret = ret || simpleReplaceAll(word, s, String.format("<span class='searchHighlight'>%s</span>", s));
 		}
+		return ret;
+	}
+	
+	private boolean exponential() {
+		boolean ret = false;
+		int pcaret = word.indexOf("^");
+		int wlen = word.length();
+		while (pcaret != -1 && pcaret != wlen - 1) {
+			word.replace(pcaret, word.length(), String.format("<sup>%s</sup>", word.substring(word.indexOf("^") + 1)));
+			pcaret = word.indexOf("^");
+			ret = true;
+		}
+		return ret;
 	}
 
 	private void color_collapse_quote() {
