@@ -517,13 +517,21 @@ public class MessageTag extends BodyTagSupport {
 			int p_end;
 			if ((p_end = scanFor(CODE_END)) != -1) {
 				// [code]...[/code]
-				line.append("<pre class='code'>");
 				StringBuilder code_body = new StringBuilder();
 				code_body.append(body, p + 1, p_end - (p + 1));
 				simpleReplaceAll(code_body, "<BR>", "\n");
-				line.append(code_body);
-				line.append(PRE_TAG_END);
-				p = p_end + PRE_TAG_END.length;
+				if (code_body.indexOf("\n") != -1) {
+					line.append("<pre class='code'>");
+					line.append(code_body);
+					line.append(PRE_TAG_END);
+					p = p_end + PRE_TAG_END.length;
+				} else {
+					line
+						.append("<span style=\"font-family: monospace\">")
+						.append(escape(code_body))
+						.append("</span>");
+					p = p_end + "</span>".length();
+				}
 			} else {
 				// [code] orfano di chiusura: ignora
 				line.append(CODE);
