@@ -544,7 +544,7 @@ public class MessageTag extends BodyTagSupport {
 				} else {
 					line
 						.append("<span style=\"font-family: monospace\">")
-						.append(escape(code_body))
+						.append(code_body)
 						.append("</span>");
 					p = p_end + "</span>".length();
 				}
