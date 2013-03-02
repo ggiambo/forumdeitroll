@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -19,7 +20,6 @@ import nl.captcha.gimpy.RippleGimpyRenderer;
 import nl.captcha.servlet.CaptchaServletUtil;
 import nl.captcha.text.producer.NumbersAnswerProducer;
 
-import org.apache.catalina.util.URLEncoder;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -218,7 +218,7 @@ public class Misc extends HttpServlet {
 		String sort = req.getParameter("sort");
 		String page = req.getParameter("p");
 		
-		String endpoint = "http://forumdeitroll.com/motorino/search?q=" + new URLEncoder().encode(search);
+		String endpoint = "http://forumdeitroll.com/motorino/search?q=" + URLEncoder.encode(search);
 		if (!StringUtils.isEmpty(sort)) {
 			endpoint += "&sort=" + sort; //date,rdate,rank
 		}
