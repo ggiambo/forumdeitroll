@@ -57,8 +57,12 @@
 				<h3>Cambio Avatar</h3>
 				<form action="User?action=updateAvatar" method="post" enctype="multipart/form-data">
 					<div>
-						<label for="avatar" class="lbl">File:</label>
-						<input type="file" name="avatar" id="avatar" />
+						<div class="lblUserPanel">
+							<label for="avatar" class="lbl">File:</label>
+						</div>
+						<div class="inputUserPanel">
+							<input type="file" name="avatar" id="avatar" class="file"/>
+						</div>
 						<div style="clear: both;"></div>
 					</div>
 					<input type="submit" value="Upload" class="sendUserPanel" />
@@ -72,22 +76,24 @@
 				<form action="User?action=updateSignature" method="post" enctype="multipart/form-data">
 					<input type="hidden" name="utf8" value="&#9731;">
 					<div>
-						<div class="lblUserPanel" style="width: 25%">
+						<div class="lblUserPanel">
 							<label for="signature" class="lbl">Firma:</label>
 						</div>
-						<div class="inputUserPanel" style="width: 70%">
-							<textarea name="signature" id="signature" style="width: 100%">${fn:replace(fn:replace(loggedUser.preferences['signature'],'<br>',''), '<BR>','')}</textarea>
+						<div class="inputUserPanel">
+							<textarea name="signature" id="signature">${fn:replace(fn:replace(loggedUser.preferences['signature'],'<br>',''), '<BR>','')}</textarea>
 						</div>
 						<div style="clear: both;"></div>
+					</div>
+					<div>
 						<div class="lblUserPanel">
 							<label for="signature_image" class="lbl">File:</label>
 						</div>
 						<div class="inputUserPanel">
-							<input type="file" name="signature_image">
+							<input type="file" name="signature_image" class="file"/>
 						</div>
 						<div style="clear: both;"></div>
-						<p>Limitazioni: dimensione massima consentita <%=""+User.MAX_SIZE_SIGNATURE_BYTES%> bytes, altezza <%=""+User.MAX_SIZE_SIGNATURE_HEIGHT %> pixels, larghezza <%=""+User.MAX_SIZE_SIGNATURE_WIDTH %> pixels, testo 200 caratteri</p>
 					</div>
+					<p>Limitazioni: dimensione massima consentita <%=""+User.MAX_SIZE_SIGNATURE_BYTES%> bytes, altezza <%=""+User.MAX_SIZE_SIGNATURE_HEIGHT %> pixels, larghezza <%=""+User.MAX_SIZE_SIGNATURE_WIDTH %> pixels, testo 200 caratteri</p>
 					<div style="clear: both;"></div>
 					<input type="submit" name="submitBtn" value="Elimina" class="sendUserPanel" />
 					<input type="submit" name="submitBtn" value="Modifica" class="sendUserPanel"/>
