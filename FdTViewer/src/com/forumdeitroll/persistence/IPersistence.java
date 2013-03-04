@@ -48,19 +48,9 @@ public interface IPersistence extends Serializable {
 	 * @param hideProcCatania
 	 * @return
 	 */
-	public MessagesDTO getMessages(String forum, int limit, int page, boolean hideProcCatania);
+	public MessagesDTO getMessages(String forum, String author, int limit, int page, boolean hideProcCatania);
 
 	public List<MessageDTO> getMessagesByThread(long threadId);
-
-	/**
-	 *
-	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
-	 * @param limit
-	 * @param page
-	 * @param hideProcCatania
-	 * @return
-	 */
-	public MessagesDTO getMessagesByAuthor(String author, String forum, int pageSize, int page);
 
 	public AuthorDTO getAuthor(String nick);
 

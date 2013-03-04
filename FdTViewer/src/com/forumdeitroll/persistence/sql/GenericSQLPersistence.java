@@ -71,58 +71,41 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public MessagesDTO getMessagesByAuthor(String author, String forum, int limit, int page) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			conn = getConnection();
-			StringBuilder query = new StringBuilder("SELECT * FROM messages WHERE author = ?");
-			int i = 1;
-			if ("".equals(forum)) {
-				query.append(" AND forum IS NULL");
-			} else if (forum != null) {
-				query.append(" AND forum = ?");
-			}
-			query.append(" ORDER BY id DESC LIMIT ? OFFSET ?");
-			ps = conn.prepareStatement(query.toString());
-			ps.setString(i++, author);
-			if (StringUtils.isNotEmpty(forum)) {
-				ps.setString(i++, forum);
-			}
-			ps.setInt(i++, limit);
-			ps.setInt(i++, limit*page);
-			return new MessagesDTO(getMessages(ps.executeQuery(), false), countMessagesByAuthor(author, forum, conn));
-		} catch (SQLException e) {
-			LOG.error("Cannot get messages with limit" + limit + " and page " + page, e);
-		} finally {
-			close(rs, ps, conn);
-		}
-		return new MessagesDTO();
-	}
-
-	@Override
-	public MessagesDTO getMessages(String forum, int limit, int page, boolean hideProcCatania) {
+	public MessagesDTO getMessages(String forum, String author, int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
 			StringBuilder query = new StringBuilder("SELECT * FROM messages");
-			int i = 1;
+			boolean where = true;
 			if ("".equals(forum)) {
 				query.append(" WHERE forum IS NULL");
+				where = false;
 			} else if (forum == null) {
 				if (hideProcCatania) {
 					query.append(" WHERE (forum IS NULL OR forum != '").append(FORUM_PROC).append("') ");
+					where = false;
 				}
 			} else {
 				query.append(" WHERE forum = ?");
+				where = false;
+			}
+			if (StringUtils.isNotEmpty(author)) {
+				if (where) {
+					query.append(" WHERE author = ?");
+				} else {
+					query.append(" AND author = ?");
+				}
 			}
 			query.append(" ORDER BY id DESC LIMIT ? OFFSET ?");
 			ps = conn.prepareStatement(query.toString());
+			int i = 1;
 			if (StringUtils.isNotEmpty(forum)) {
 				ps.setString(i++, forum);
+			}
+			if (StringUtils.isNotEmpty(author)) {
+				ps.setString(i++, author);
 			}
 			ps.setInt(i++, limit);
 			ps.setInt(i++, limit*page);

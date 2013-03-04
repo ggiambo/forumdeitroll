@@ -145,8 +145,14 @@ public class JSonServlet extends HttpServlet {
 		int page = getPage(params);
 		int pageSize = getPageSize(params);
 		String forum = getForum(params);
+		String author = null;
 		
-		MessagesDTO result = persistence.getMessages(forum, pageSize, page, false);
+		String[] nick = params.get("nick");
+		if (nick != null && nick.length > 0) {
+			author = nick[0];
+		}
+		
+		MessagesDTO result = persistence.getMessages(forum, author, pageSize, page, false);
 		
 		writer.beginObject();
 		writer.name("page").value(page);
