@@ -46,10 +46,9 @@ function initPvtSendNew(recipients) {
     });
 
     // click sulla "x": rimuove lo <span>
-    $(".removeRecipient", document.getElementById("recipientsDiv")).live("click", function() {  
-        $(this).parent().remove();  
+	$(document).on("click", ".removeRecipient", function() {
+        $(this).parent("span").remove();  
     });
-    
     // submit
     $(".pvtSendMessage").submit(function() {
     	// aggiunge tutti i recipients come hidden inputs
