@@ -19,12 +19,21 @@ public class Emoticons {
 				word.replace(0, e.initialSequence.length(), e.htmlReplacement);
 				replaced = true;
 			}
+			if (!replaced && word.indexOf(e.initialSequenceUpcase) == 0 && e.sequenceStartWithSpace) {
+				word.replace(0, e.initialSequenceUpcase.length(), e.htmlReplacement);
+				replaced = true;
+			}
 			if (e.sequenceStartWithSpace) {
 				continue;
 			}
 			do {
 				int p = word.indexOf(e.sequence);
-				if (p == -1) break;
+				if (p == -1) {
+					p = word.indexOf(e.sequenceUpcase);
+				}
+				if (p == -1) {
+					break;
+				}
 				word.replace(p, p + e.sequence.length(), e.htmlReplacement);
 				replaced = true;
 			} while (true);
