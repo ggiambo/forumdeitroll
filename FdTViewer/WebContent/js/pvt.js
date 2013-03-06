@@ -3,7 +3,7 @@ function initPvtSendNew(recipients) {
 	if (recipients != undefined) {
 	// aggiungi i recipients esistenti
 		$.each(recipients, function(index, recipient) {
-			span = $("<span>").text(recipient);
+			span = $("<span>").text(recipient).addClass("recipientsSpan");
 			a = $("<a>").addClass("removeRecipient").attr({ href: "javascript:", title: "Remove ${recipient}"}).text("x").appendTo(span);
 			span.insertBefore("#recipients");
 			$("#recipients").val("");
@@ -28,13 +28,13 @@ function initPvtSendNew(recipients) {
 		},
 		// funzione per click sul nome dalla lista
 		select: function(e, ui) {
-			if ($("#recipientsDiv span").length > 4) {
+			if ($("#recipientsDiv span.recipientsSpan").length > 4) {
 				alert("Massimo 5 destinatari, spammone !");
 				return;
 			}
 			var recipient = ui.item.value;
         	// span che contiene il nome di questo recipient
-			span = $("<span>").text(recipient);
+			span = $("<span>").addClass("recipientsSpan").text(recipient);
 			a = $("<a>").addClass("removeRecipient").attr({ href: "javascript:", title: "Remove " + recipient}).text("x").appendTo(span);
 			span.insertBefore("#recipients");
         },
@@ -52,7 +52,7 @@ function initPvtSendNew(recipients) {
     // submit
     $(".pvtSendMessage").submit(function() {
     	// aggiunge tutti i recipients come hidden inputs
-		$("#recipientsDiv span").each(function(i, val) {
+		$("#recipientsDiv span.recipientsSpan").each(function(i, val) {
 			var recipient = $(val).text();
 			// hack schifoso: piglia il contenuto dello span e leva la "x" come ultima lettera :p
 			recipient = recipient.substring(0, recipient.length - 1);
