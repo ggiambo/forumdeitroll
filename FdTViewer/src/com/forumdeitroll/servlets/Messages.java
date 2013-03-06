@@ -45,64 +45,6 @@ public class Messages extends MainServlet {
 	private static final List<String> REFRESHABLE_ACTIONS = Arrays.asList("getMessages");
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR> *(&gt;\\ ?)*");
-	
-	// key: filename, value[0]: edit value, value[1]: alt
-	// tutte le emo ora sono in lower case
-	private static final Map<String, String[]> EMO_MAP = new HashMap<String, String[]>();
-	static {
-		EMO_MAP.put("1", new String[] {" :)", "Sorride" });
-		EMO_MAP.put("2", new String[] {" :d", "A bocca aperta"});
-		EMO_MAP.put("3", new String[] {" ;)", "Occhiolino"});
-		EMO_MAP.put("4", new String[] {" :o", "Sorpresa"});
-		EMO_MAP.put("5", new String[] {" :p", "Con la lingua fuori"});
-		EMO_MAP.put("6", new String[] {" :\\", "A bocca storta"});
-		EMO_MAP.put("7", new String[] {" :@", "Arrabbiato"});
-		EMO_MAP.put("8", new String[] {" :s", "Perplesso"});
-		EMO_MAP.put("9", new String[] {" :$", "Imbarazzato"});
-		EMO_MAP.put("10", new String[] {" :(", "Triste"});
-		EMO_MAP.put("11", new String[] {":'(", "In lacrime"});
-		EMO_MAP.put("12", new String[] {" :|", "Deluso"});
-		EMO_MAP.put("13", new String[] {" 8)", "Ficoso"});
-		EMO_MAP.put("angelo", new String[] {" o)", "Angioletto"});
-		EMO_MAP.put("anonimo", new String[] {"(anonimo)", "Anonimo"});
-		EMO_MAP.put("diavoletto", new String[] {" @^", "Indiavolato"});
-		EMO_MAP.put("fantasmino", new String[] {"(ghost)", "Fantasma"});
-		EMO_MAP.put("geek", new String[] {"(geek)", "Geek"});
-		EMO_MAP.put("idea", new String[] {"(idea)", "Idea!"});
-		EMO_MAP.put("love", new String[] {"(love)", "Innamorato"});
-		EMO_MAP.put("loveamiga", new String[] {"(amiga)", "Fan Amiga"});
-		EMO_MAP.put("loveapple", new String[] {"(apple)", "Fan Apple"});
-		EMO_MAP.put("loveatari", new String[] {"(atari)", "Fan Atari"});
-		EMO_MAP.put("lovec64", new String[] {"(c64)", "Fan Commodore64"});
-		EMO_MAP.put("lovelinux", new String[] {"(linux)", "Fan Linux"});
-		EMO_MAP.put("lovewin", new String[] {"(win)", "Fan Windows"});
-		EMO_MAP.put("newbie", new String[] {"(newbie)", "Newbie, inesperto"});
-		EMO_MAP.put("noia3", new String[] {" :-o", "Annoiato"});
-		EMO_MAP.put("nolove", new String[] {"(nolove)", "Disinnamorato"});
-		EMO_MAP.put("pirata", new String[] {" p)", "Pirata"});
-		EMO_MAP.put("robot", new String[] {"(cylon)", "Cylon"});
-		EMO_MAP.put("rotfl", new String[] {"(rotfl)", "Rotola dal ridere"});
-		EMO_MAP.put("troll1", new String[] {"(troll1)", "Troll occhiolino"});
-		EMO_MAP.put("troll2", new String[] {"(troll2)", "Troll chiacchierone"});
-		EMO_MAP.put("troll3", new String[] {"(troll3)", "Troll occhi di fuori"});
-		EMO_MAP.put("troll4", new String[] {"(troll4)", "Troll di tutti i colori"});
-		EMO_MAP.put("troll", new String[] {"(troll)", "Troll"});
-	}
-	// emo extended
-	private static final Map<String, String[]> EMO_EXT_MAP = new HashMap<String, String[]>();
-	static {
-		EMO_EXT_MAP.put("keroppi", new String[] {"$keroppi", "Keroppi" });
-		EMO_EXT_MAP.put("lich", new String[] {"$lich", "Licchione"});
-		EMO_EXT_MAP.put("ranona", new String[] {"$ranona", "Ranona"});
-		EMO_EXT_MAP.put("angioletto2", new String[] {"$angioletto", "Angioletto 2"});
-		EMO_EXT_MAP.put("proott", new String[] {"$proott", "Proott !!"});
-		EMO_EXT_MAP.put("cool2", new String[] {"$cool", "Ficoso 2"});
-		EMO_EXT_MAP.put("anonimato", new String[] {"$anonimato", "Anonimo Animato"});
-		EMO_EXT_MAP.put("ghost", new String[] {"$ghost", "Ghost Animato"});
-		EMO_EXT_MAP.put("piange", new String[] {"$piange", "Piagnina"});
-		EMO_EXT_MAP.put("foco", new String[] {"$foco", "Datte f&ograve;co"});
-		EMO_EXT_MAP.put("poop", new String[] {"$poop", "Evacua"});
-	}
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 40;
@@ -263,8 +205,6 @@ public class Messages extends MainServlet {
 		req.setAttribute("message", msg);
 		setWebsiteTitle(req, "Nuovo messaggio @ Forum dei Troll");
 		// faccine - ordinate per key
-		req.setAttribute("emoMap", new TreeMap<String, String[]>(EMO_MAP));
-		req.setAttribute("extendedEmos", new TreeMap<String, String[]>(EMO_EXT_MAP));
 		return "newMessage.jsp";
 	}
 
@@ -312,10 +252,6 @@ public class Messages extends MainServlet {
 		newMsg.setSubject(subject.substring(0, Math.min(MAX_SUBJECT_LENGTH, subject.length())));
 		newMsg.setParentId(parentId);
 		req.setAttribute("message", newMsg);
-
-		// faccine - ordinate per key
-		req.setAttribute("emoMap", new TreeMap<String, String[]>(EMO_MAP));
-		req.setAttribute("extendedEmos", new TreeMap<String, String[]>(EMO_EXT_MAP));
 
 		//jstl non accede ai campi stitici
 		req.setAttribute("MAX_MESSAGE_LENGTH", MAX_MESSAGE_LENGTH);
@@ -392,10 +328,6 @@ public class Messages extends MainServlet {
 		// cleanup
 		msg.setText(msg.getText().replaceAll("<BR>", "\r\n"));
 		req.setAttribute("message", msg);
-
-		// faccine - ordinate per key
-		req.setAttribute("emoMap", new TreeMap<String, String[]>(EMO_MAP));
-		req.setAttribute("extendedEmos", new TreeMap<String, String[]>(EMO_EXT_MAP));
 
 		req.setAttribute("isEdit", true);
 
@@ -700,14 +632,6 @@ public class Messages extends MainServlet {
 		writer.flush();
 		writer.close();
 		return null;
-	}
-
-	public static Map<String, String[]> getEmoMap() {
-		return new HashMap<String, String[]>(EMO_MAP);
-	}
-
-	public static Map<String, String[]> getEmoExtendedMap() {
-		return new HashMap<String, String[]>(EMO_EXT_MAP);
 	}
 
 	protected void forShame(final AuthorDTO author, final String shameTitle, final String shameMessage) {

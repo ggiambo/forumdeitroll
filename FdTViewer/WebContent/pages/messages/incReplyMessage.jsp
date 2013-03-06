@@ -1,3 +1,4 @@
+<%@page import="com.forumdeitroll.markup.Emoticons"%>
 <%@page import="java.util.Map"%>
 <%@page import="com.forumdeitroll.servlets.Messages"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -85,18 +86,18 @@
 
 	<div class="emotibox">
 		<div class="emo">
-			<c:forEach items="${emoMap}" var="emo" varStatus="index">
+			<c:forEach items="<%=Emoticons.getInstance().serieClassica%>" var="emo" varStatus="index">
 				 <%-- caso speciale per la faccina :\  --%>
-				<c:set var="emoValue" value="${fn:replace(emo.value[0], '\\\\', '\\\\\\\\')}"/>
+				<c:set var="emoValue" value="${fn:replace(emo.sequence, '\\\\', '\\\\\\\\')}"/>
 				 <%-- caso speciale per la faccina :'(  --%>
 				<c:set var="emoValue" value="${fn:replace(emoValue, '\\'', '\\\\\\'')}"/>
-				<img onmousedown="insert('${emoValue}', '', '${message.parentId}')" title="${emoValue}" src="images/emo/${emo.key}.gif" style="cursor: pointer;"/>
+				<img onmousedown="insert('${emo.sequence}', '', '${message.parentId}')" title="${emo.altText}" src="images/emo/${emo.imgName}.gif" style="cursor: pointer;"/>
 				<c:if test="${index.count % 13 == 0}"><br/></c:if>
 			</c:forEach>
 		</div>
 		<div style="display:none" class="emo">
-			<c:forEach items="${extendedEmos}" var="emo" varStatus="index">
-				<img onmousedown="insert('${emo.value[0]}', '', '${message.parentId}')" title="${emo.value[1]}" src="images/emoextended/${emo.key}.gif" style="cursor: pointer;"/>
+			<c:forEach items="<%=Emoticons.getInstance().serieEstesa%>" var="emo" varStatus="index">
+				<img onmousedown="insert('${emo.sequence}', '', '${message.parentId}')" title="${emo.altText}" src="images/emoextended/${emo.imgName}.gif" style="cursor: pointer;"/>
 				<c:if test="${index.count % 13 == 0}"><br/></c:if>
 			</c:forEach>
 		</div>

@@ -55,8 +55,6 @@ public class Pvt extends MainServlet {
 		if (!StringUtils.isEmpty(recipients)) {
 			req.setAttribute("recipients", "'" + recipients + "'");
 		}
-		req.setAttribute("emoMap", new TreeMap<String, String[]>(Messages.getEmoMap()));
-		req.setAttribute("extendedEmos", new TreeMap<String, String[]>(Messages.getEmoExtendedMap()));
 		req.setAttribute("from", "sendNew");
 		return "pvts.jsp";
 	}
@@ -215,8 +213,6 @@ public class Pvt extends MainServlet {
 		String text = pvt.getText().replaceAll("^", "> ").replaceAll("<BR>", "> ");
 		req.setAttribute("text", text);
 		req.setAttribute("from", "sendNew");
-		req.setAttribute("emoMap", new TreeMap<String, String[]>(Messages.getEmoMap()));
-		req.setAttribute("extendedEmos", new TreeMap<String, String[]>(Messages.getEmoExtendedMap()));
 		return "pvts.jsp";
 	}
 	
@@ -244,8 +240,6 @@ public class Pvt extends MainServlet {
 	private void ripopola(HttpServletRequest req) {
 		req.setAttribute("text", req.getParameter("text"));
 		req.setAttribute("subject", req.getParameter("subject"));
-		req.setAttribute("emoMap", new TreeMap<String, String[]>(Messages.getEmoMap()));
-		req.setAttribute("extendedEmos", new TreeMap<String, String[]>(Messages.getEmoExtendedMap()));
 		// recipients: dato in pasto a javascript sotto forma di array di stringhe
 		String[] recipients = req.getParameterValues("recipients");
 		if (recipients != null) {

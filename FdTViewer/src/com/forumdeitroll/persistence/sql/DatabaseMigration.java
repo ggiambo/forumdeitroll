@@ -26,7 +26,7 @@ public abstract class DatabaseMigration {
 	private static final Pattern PATTERN_IMG = Pattern.compile("<a.+?><img.*?src=\"(.+?)\".*?></a>");
 	private static final Pattern PATTERN_BLOCKQUOTE = Pattern.compile("<blockquote><pre width='34px' style='border: 1px dashed gray'><b>(.+?)</b></pre></blockquote>");
 
-	private static final Map<String, String[]> EMO_MAP = Messages.getEmoMap();
+	private static final Map<String, String[]> EMO_MAP = null; // Messages.getEmoMap();
 	
 	public static void main(String[] args) {
 

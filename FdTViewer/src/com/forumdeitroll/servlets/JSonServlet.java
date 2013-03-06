@@ -19,6 +19,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import sun.misc.BASE64Encoder;
 
+import com.forumdeitroll.markup.Emoticon;
+import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
@@ -301,16 +303,16 @@ public class JSonServlet extends HttpServlet {
 		
 		writer.name("classic");
 		writer.beginObject();
-		Map<String, String[]> emoMap = Messages.getEmoMap();
-		writer.name("resultSize").value(emoMap.size());
+		Emoticons emoticons = Emoticons.getInstance();
+		writer.name("resultSize").value(emoticons.serieClassica.size());
 		writer.name("emos");
 		writer.beginArray();
-		for (Map.Entry<String, String[]> entry : emoMap.entrySet()) {
+		for (Emoticon e : emoticons.serieClassica) {
 			writer.beginObject();
 			writer.name("emo");
 			writer.beginObject();
-			writer.name("id").value(entry.getValue()[0]);
-			writer.name("url").value("images/emo/" + entry.getKey() + ".gif");
+			writer.name("id").value(e.sequence);
+			writer.name("url").value("images/emo/" + e.imgName + ".gif");
 			writer.endObject();
 			writer.endObject();
 		}
@@ -319,16 +321,15 @@ public class JSonServlet extends HttpServlet {
 
 		writer.name("extended");
 		writer.beginObject();
-		Map<String, String[]> emoExtendedMap = Messages.getEmoExtendedMap();
-		writer.name("resultSize").value(emoExtendedMap.size());
+		writer.name("resultSize").value(emoticons.serieEstesa.size());
 		writer.name("emos");
 		writer.beginArray();
-		for (Map.Entry<String, String[]> entry : emoExtendedMap.entrySet()) {
+		for (Emoticon e : emoticons.serieEstesa) {
 			writer.beginObject();
 			writer.name("emo");
 			writer.beginObject();
-			writer.name("id").value(entry.getValue()[0]);
-			writer.name("url").value("images/emoextended/" + entry.getKey() + ".gif");
+			writer.name("id").value(e.sequence);
+			writer.name("url").value("images/emoextended/" + e.imgName + ".gif");
 			writer.endObject();
 			writer.endObject();
 		}

@@ -2,8 +2,6 @@ package com.forumdeitroll;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Map;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
@@ -12,6 +10,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.servlets.MainServlet;
 import com.forumdeitroll.servlets.Messages;
@@ -243,60 +242,10 @@ public class MessageTag extends BodyTagSupport {
 		out.append(line);
 		line.setLength(0);
 	}
-	private static final class Emo implements Comparable<Emo> {
-		public final String sequence, replacement, sequenceToUpper;
-		public final char[] sequenceCh;
-		public final int length;
-		public Emo(String emoSequence, String emoReplacement) {
-			super();
-			this.sequence = emoSequence;
-			this.sequenceToUpper = emoSequence.toUpperCase();
-			this.replacement = emoReplacement;
-			this.sequenceCh = emoSequence.toCharArray();
-			this.length = sequenceCh.length;
-		}
-		@Override
-		public int compareTo(Emo o) {
-			return o.length - this.length;
-		}
-	}
-	private static final Emo[] emos = load_emos();
-	private static Emo[] load_emos() {
-		Map<String, String[]> emoMap = Messages.getEmoMap();
-		Emo[] emos = new Emo[Messages.getEmoMap().size() + Messages.getEmoExtendedMap().size()];
-		int i = 0;
-		for (Map.Entry<String, String[]> entry : emoMap.entrySet()) {
-			String imgName = entry.getKey();
-			String emoSequence = entry.getValue()[0];
-			String altText = entry.getValue()[1];
-			String emoReplacement = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emo/%s.gif'>", altText, altText, imgName);
-			emos[i++] = new Emo(emoSequence, emoReplacement);
-		}
-		emoMap = Messages.getEmoExtendedMap();
-		for (Map.Entry<String, String[]> entry : emoMap.entrySet()) {
-			String imgName = entry.getKey();
-			String emoSequence = entry.getValue()[0];
-			String altText = entry.getValue()[1];
-			String emoReplacement = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emoextended/%s.gif'>", altText, altText, imgName);
-			emos[i++] = new Emo(emoSequence, emoReplacement);
-		}
-		Arrays.sort(emos);
-		return emos;
-	}
+	
 	
 	private boolean emoticons() {
-		word.insert(0, ' ');
-		int wlen = word.length();
-		for (Emo emo: emos) {
-			simpleReplaceAllEmoticons(word, emo.sequence, emo.replacement);
-			simpleReplaceAllEmoticons(word, emo.sequenceToUpper, emo.replacement);
-		}
-		if (wlen != word.length()) {
-			return true;
-		} else {
-			word.delete(0, 1);
-			return false;
-		}
+		return Emoticons.getInstance().replace(word);
 	}
 
 	private static boolean isLink(StringBuilder candidate) {
@@ -804,18 +753,6 @@ public class MessageTag extends BodyTagSupport {
 		int i = 0;
 		int len = src.length();
 		while ((i = src.indexOf(search, i)) != -1) {
-			src.replace(i, i + search.length(), replacement);
-			i += replacement.length();
-		}
-		return src.length() != len;
-	}
-
-	private boolean simpleReplaceAllEmoticons(StringBuilder src, String search, String replacement) {
-		if (search == null || search.length() == 0) return false;
-		int i = 0;
-		int len = src.length();
-		while ((i = src.indexOf(search, i)) != -1) {
-			if (emotiCount++ > MAX_EMOTICONS) break;
 			src.replace(i, i + search.length(), replacement);
 			i += replacement.length();
 		}
