@@ -1,3 +1,4 @@
+<%@page import="com.forumdeitroll.markup.Emoticon"%>
 <%@page import="com.forumdeitroll.markup.Emoticons"%>
 <%@page import="java.util.Map"%>
 <%@page import="com.forumdeitroll.servlets.Messages"%>
@@ -27,11 +28,7 @@
 			<div class="emotibox" id="emotibox">
 				<div class="emo">
 					<c:forEach items="<%=Emoticons.getInstance().serieClassica%>" var="emo" varStatus="index">
-						 <%-- caso speciale per la faccina :\  --%>
-						<c:set var="emoValue" value="${fn:replace(emo.sequence, '\\\\', '\\\\\\\\')}"/>
-						 <%-- caso speciale per la faccina :'(  --%>
-						<c:set var="emoValue" value="${fn:replace(emoValue, '\\'', '\\\\\\'')}"/>
-						<img onmousedown="insertIntoTextArea('${emoValue}', '', $('#text').get(0))" title="${emo.altText}" src="images/emo/${emo.imgName}.gif" style="cursor: pointer;"/>
+						<img onmousedown="insertIntoTextArea('<%=((Emoticon)pageContext.getAttribute("emo")).sequence.replace("\\", "\\\\").replace("'", "\\'")%>', '', $('#text').get(0))" title="${emo.altText}" src="images/emo/${emo.imgName}.gif" style="cursor: pointer;"/>
 						<c:if test="${index.count % 13 == 0}"><br/></c:if>
 					</c:forEach>
 				</div>
