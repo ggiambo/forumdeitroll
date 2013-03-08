@@ -495,7 +495,7 @@ public class MessageTag extends BodyTagSupport {
 						.append("<span style=\"font-family: monospace\">")
 						.append(code_body)
 						.append("</span>");
-					p = p_end + "</span>".length();
+					p = p_end + "</span>".length() - 1;
 				}
 			} else {
 				// [code] orfano di chiusura: ignora
