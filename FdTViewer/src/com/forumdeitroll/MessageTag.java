@@ -89,7 +89,6 @@ public class MessageTag extends BodyTagSupport {
 	private String collapseQuotes;
 	private boolean multiLineQuoteStarted;
 
-	private static final int MAX_EMOTICONS = 200;
 	private static final int MAX_EMBED = 10;
 	private static final int MAX_IMMYS = 15;
 
@@ -245,7 +244,14 @@ public class MessageTag extends BodyTagSupport {
 	
 	
 	private boolean emoticons() {
-		return Emoticons.getInstance().replace(word);
+		int newCount = Emoticons.getInstance().replace(word, this.emotiCount);
+		if (newCount != emotiCount) {
+			emotiCount = newCount;
+			return true;
+		} else {
+			emotiCount = newCount;
+			return false;
+		}
 	}
 
 	private static boolean isLink(StringBuilder candidate) {

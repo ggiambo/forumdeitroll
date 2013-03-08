@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Emoticons {
+	// singleton
 	private Emoticons() {}
 	private static Emoticons me;
 	public static Emoticons getInstance() {
@@ -12,21 +13,26 @@ public class Emoticons {
 		return me;
 	}
 	
-	public boolean replace(StringBuilder word) {
-		boolean replaced = false;
+	private static final int MAX_EMOTICONS = 200;
+	
+	public int replace(StringBuilder word, int emotiCount) {
+		int count = 0;
 		for (Emoticon e : tutte) {
-			if (!replaced && word.indexOf(e.initialSequence) == 0 && e.sequenceStartWithSpace) {
+			if (emotiCount == MAX_EMOTICONS) return emotiCount;
+			if (count == 0 && word.indexOf(e.initialSequence) == 0 && e.sequenceStartWithSpace) {
 				word.replace(0, e.initialSequence.length(), e.htmlReplacement);
-				replaced = true;
-			}
-			if (!replaced && word.indexOf(e.initialSequenceUpcase) == 0 && e.sequenceStartWithSpace) {
+				count++;
+				emotiCount++;
+			} else if (count == 0 && word.indexOf(e.initialSequenceUpcase) == 0 && e.sequenceStartWithSpace) {
 				word.replace(0, e.initialSequenceUpcase.length(), e.htmlReplacement);
-				replaced = true;
+				count++;
+				emotiCount++;
 			}
 			if (e.sequenceStartWithSpace) {
 				continue;
 			}
 			do {
+				if (emotiCount == MAX_EMOTICONS) return emotiCount;
 				int p = word.indexOf(e.sequence);
 				if (p == -1) {
 					p = word.indexOf(e.sequenceUpcase);
@@ -35,10 +41,11 @@ public class Emoticons {
 					break;
 				}
 				word.replace(p, p + e.sequence.length(), e.htmlReplacement);
-				replaced = true;
+				count++;
+				emotiCount++;
 			} while (true);
 		}
-		return replaced;
+		return emotiCount;
 	}
 	
 	public final List<Emoticon> serieClassica = new ArrayList<Emoticon>() {
