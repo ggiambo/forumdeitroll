@@ -74,6 +74,19 @@
 						<br>
 						<%=users.join(", ")%>
 					<% } %>
+					<% var resources = _
+						.chain(result['list-of-resources'])
+						.uniq()
+						.map(function(l) {
+							return "<a target='_blank' rel='nofollow noreferrer' title=\""+encodeURI(l)+"\" href=\"" + encodeURI(l) + "\">" + l + "</a>"
+						})
+						.value()
+						if (resources.length > 0) { %>
+						<br>
+						<i>link e immagini dal thread</i>
+						<br>
+						<%= resources.join("<br>") %>
+					<% } %>
 				</div>
 			</div>
 		</div>
