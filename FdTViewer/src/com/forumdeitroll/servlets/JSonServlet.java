@@ -2,8 +2,12 @@ package com.forumdeitroll.servlets;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,8 +23,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import sun.misc.BASE64Encoder;
 
+import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.markup.Emoticon;
 import com.forumdeitroll.markup.Emoticons;
+import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
@@ -31,6 +37,7 @@ import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
 import com.google.gson.stream.JsonWriter;
 
+// TODO: hanldeException fa cacare a spruzzo
 public class JSonServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -74,19 +81,21 @@ public class JSonServlet extends HttpServlet {
 		} catch (NoSuchMethodException e) {
 			printUsage(req, res);
 			return;
-		} catch (Exception e) {
-			handleException(e, res);
+		} catch (InvocationTargetException e) {
+			handleException(e.getCause(), req, res, time);
 			return;
+		} catch (IllegalAccessException e) {
+			handleException(e.getCause(), req, res, time);
+			return;
+		} finally {
+			writer.flush();
+			writer.close();
 		}
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		JsonWriter writer = initWriter(ResultCode.ERROR, res.getWriter());
-		writer.value("POST not implemented");
-		writer.endObject();
-		writer.flush();
-		writer.close();
+		doGet(req, res);
 	}
 	
 	/**
@@ -298,6 +307,12 @@ public class JSonServlet extends HttpServlet {
 		writer.endObject(); // "quotes"
 	}
 	
+	/**
+	 * Ritorna una stringa JSON contenente tutte le emoticons
+	 * @param writer
+	 * @param params
+	 * @throws IOException
+	 */
 	protected void getEmos(JsonWriter writer, Map<String, String[]> params) throws IOException {
 		writer.beginObject();
 		
@@ -353,21 +368,147 @@ public class JSonServlet extends HttpServlet {
 	}
 	
 	/**
+	 * Posta un messaggio (Nuovo o editato).
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	protected void addMessage(JsonWriter writer, Map<String, String[]> params) throws IOException {
+		
+		String[] type = params.get("type");
+		if (type == null || type.length == 0) {
+			throw new IOException("no action specified");
+		}
+		
+		MessageDTO message = new MessageDTO();
+		
+		// text
+		String[] text = params.get("text");
+		if (text == null || text.length == 0) {
+			throw new IOException("No text");
+		}
+		if (text[0].length() < 5) {
+			throw new IOException("Un po di fantasia, scrivi almeno 5 caratteri ...");
+		}
+		if (text[0].length() > Messages.MAX_MESSAGE_LENGTH) {
+			throw new IOException("Sei piu' logorroico di una Wakka, stai sotto i " + Messages.MAX_MESSAGE_LENGTH + " caratteri !");
+		}
+		message.setText(InputSanitizer.sanitizeText(text[0]));
+		
+		// subject
+		String[] subject = params.get("subject");
+		if (subject == null || subject.length == 0) {
+			throw new IOException("No subject");
+		}
+		if (subject[0].length() < 3) {
+			throw new IOException("Oggetto di almeno di 3 caratteri, cribbio !");
+		}
+		if (subject[0].length() > Messages.MAX_SUBJECT_LENGTH) {
+			throw new IOException("LOL oggetto piu' lungo di " + Messages.MAX_SUBJECT_LENGTH + " caratteri !");
+		}
+		message.setSubject(InputSanitizer.sanitizeSubject(subject[0]));
+		
+		// author - non e' possibile postare da ANOnimi !
+		String[] nick = params.get("nick");
+		if (nick == null || nick.length == 0) {
+			throw new IOException("no username specified");
+		}
+		String[] password = params.get("password");
+		if (password == null || password.length == 0) {
+			throw new IOException("no password specified");
+		}
+		AuthorDTO author = persistence.getAuthor(nick[0]);
+		try {
+			if (!PasswordUtils.hasUserPassword(author, password[0])) {
+				throw new IOException("wrong password");
+			}
+		} catch (NoSuchAlgorithmException e) {
+			throw new IOException("cannot check password");
+		}
+		message.setAuthor(author);
+		
+		// forum
+		String[] forum = params.get("forum");
+		if (forum != null && forum.length > 0 && !forum.equals(IPersistence.FORUM_ASHES)) {
+			if (!persistence.getForums().contains(forum[0])) {
+				throw new IOException("Ma che cacchio di forum e' '" + forum + "' ?!?");
+			} else {
+				message.setForum(InputSanitizer.sanitizeForum(forum[0]));
+			}
+		}
+		
+		if (type[0].equals("new")) {
+			author.setMessages(author.getMessages() + 1);
+			message.setDate(new Date());
+			persistence.updateAuthor(author);
+		} else if (type[0].equals("edit") || type[0].equals("quote") || type[0].equals("reply")) {
+			// msgId / parentId
+			long msgId = getMsgId(params);
+			if (msgId == -1) {
+				throw new IOException("msgId not specified");
+			}
+			if (type[0].equals("edit")) {
+				message.setId(msgId);
+				// check se l'autore e' lo stesso
+				AuthorDTO messageAuthor = persistence.getMessage(msgId).getAuthor();
+				if (messageAuthor != null && !nick.equals(messageAuthor.getNick())) {
+					throw new IOException("Imbroglione, non puoi modificare questo messaggio !");
+				}
+				// testo
+				message.setText(message.getText() + "<BR><BR><b>**Modificato dall'autore il " + 
+						new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>");
+			} else { // quote / reply
+				message.setDate(new Date());
+				message.setParentId(msgId);
+			}
+		} else {
+			throw new IOException("type '" + type[0] + "'not recognized");
+		}
+		
+		message = persistence.insertMessage(message);
+		
+		writer.beginObject();
+		writer.name("id").value(message.getId());
+		writer.endObject();
+	}
+	
+	/**
 	 * Scrive l'exception in formato JSON direttamente nella response.
 	 * @param e
 	 * @param res
 	 * @throws IOException
 	 */
-	private void handleException(Exception e, HttpServletResponse res) throws IOException {
-		JsonWriter writer = initWriter(ResultCode.ERROR, res.getWriter());
+	private void handleException(Throwable e, HttpServletRequest req, HttpServletResponse res, long time) throws IOException {
+		
+		Writer resWriter = res.getWriter();
+		
+		String callback = req.getParameter("callback");
+		if (callback != null) {
+			resWriter.write(callback + "(");
+		}
+		
+		JsonWriter writer = initWriter(ResultCode.ERROR, resWriter);
+		
+		writer.beginObject();
+		writer.name("message").value(e.getLocalizedMessage());
+		writer.name("stackTrace");
 		writer.beginArray();
 		for (String sf : ExceptionUtils.getStackFrames(e)) {
 			writer.value(sf.replaceAll("^\t", ""));
 		}
 		writer.endArray();
 		writer.endObject();
+
+		writer.name("executionTimeMs").value(System.currentTimeMillis() - time);
+		writer.endObject();
+		
+		if (callback != null) {
+			resWriter.write(")");
+		}
+		
 		writer.flush();
 		writer.close();
+		
 	}
 	
 	/**
