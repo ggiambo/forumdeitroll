@@ -41,11 +41,11 @@ import com.google.gson.stream.JsonWriter;
 public class JSonServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final int DEFAULT_PAGE_SIZE = 25;
-	
+
 	private static final int MAX_PAGE_SIZE = 100;
-	
+
 	private IPersistence persistence;
 
 	@Override
@@ -68,515 +68,568 @@ public class JSonServlet extends HttpServlet {
 		long time = System.currentTimeMillis();
 		StringBuilderWriter writer = new StringBuilderWriter();
 		try {
-			Method m = this.getClass().getDeclaredMethod(action, JsonWriter.class, Map.class);
-			JsonWriter jsw = initWriter(ResultCode.OK, writer);
-			m.invoke(this, jsw, Collections.unmodifiableMap(req.getParameterMap()));
-			closeWriter(jsw, time);
-			res.setContentType("application/json; charset=UTF-8");
-			String callback = req.getParameter("callback");
-			if (callback != null) {
-				writer.getBuilder().insert(0, callback + "(").append(")");
-			}
-			res.getWriter().write(writer.getBuilder().toString());
+			Method m = this.getClass().getDeclaredMethod(action, StringBuilderWriter.class, Map.class, Long.TYPE);
+			m.invoke(this, writer, Collections.unmodifiableMap(req.getParameterMap()), time);
 		} catch (NoSuchMethodException e) {
 			printUsage(req, res);
 			return;
 		} catch (InvocationTargetException e) {
-			handleException(e.getCause(), req, res, time);
-			return;
+			handleException(e.getTargetException(), writer, time);
 		} catch (IllegalAccessException e) {
-			handleException(e.getCause(), req, res, time);
-			return;
+			handleException(e.getCause(), writer, time);
 		} finally {
+			// wrap with the callback
+			String callback = req.getParameter("callback");
+			if (callback != null) {
+				writer.getBuilder().insert(0, callback + "(").append(")");
+			}
+			// flush and close
 			writer.flush();
 			writer.close();
 		}
+		// write in response
+		res.setContentType("application/json; charset=UTF-8");
+		res.getWriter().write(writer.getBuilder().toString());
 	}
-	
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		doGet(req, res);
 	}
-	
+
 	/**
 	 * Ritorna una stringa JSON contenente tutti i forums
 	 * @param params
 	 * @return
 	 * @throws Exception
 	 */
-	protected void getForums(JsonWriter writer, Map<String, String[]> params) throws IOException {
+	protected void getForums(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
 		List<String> forums = persistence.getForums();
-		writer.beginObject();
-		writer.name("forums");
-		writer.beginArray();
+		out.beginObject();
+		out.name("forums");
+		out.beginArray();
 		for (String forum : forums) {
-			writer.value(forum);
+			out.value(forum);
 		}
-		writer.endArray();
-		writer.endObject();
+		out.endArray();
+		out.endObject();
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
 	 * Ritorna una stringa JSON contenente i threads ordinati temporalmente decrescentemente.
 	 * @param params
 	 * @return
 	 * @throws Exception
 	 */
-	protected void getThreads(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		int page = getPage(params);
+	protected void getThreads(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+		int page = getIntValue(params, "page", 0);
 		int pageSize = getPageSize(params);
-		String forum = getForum(params);
-		
+		String forum = getStringValue(params, "forum", null);
+
 		ThreadsDTO result = persistence.getThreads(forum, pageSize, page, false);
-		
-		writer.beginObject();
-		writer.name("page").value(page);
-		writer.name("pageSize").value(pageSize);
-		writer.name("forum").value(forum);
-		writer.name("resultSize").value(result.getMessages().size());
-		writer.name("totalSize").value(result.getMaxNrOfMessages());
-		writer.name("threads");
-		
-		writer.beginArray();
+
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
+		out.beginObject();
+		out.name("page").value(page);
+		out.name("pageSize").value(pageSize);
+		out.name("forum").value(forum);
+		out.name("resultSize").value(result.getMessages().size());
+		out.name("totalSize").value(result.getMaxNrOfMessages());
+		out.name("threads");
+
+		out.beginArray();
 		for (ThreadDTO threadDTO : result.getMessages()) {
-			encodeThread(threadDTO, writer);
+			encodeThread(threadDTO, out);
 		}
-		writer.endArray();
-		
-		writer.endObject(); // "threads"
+		out.endArray();
+
+		out.endObject(); // "threads"
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
-	 * Ritorna una stringa JSON contenente i messaggi ordinati temporalmente decrescentemente. 
+	 * Ritorna una stringa JSON contenente i messaggi ordinati temporalmente decrescentemente.
 	 * @param params
 	 * @return
 	 * @throws Exception
 	 */
-	protected void getMessages(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		int page = getPage(params);
+	protected void getMessages(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+		int page = getIntValue(params, "page", 0);
 		int pageSize = getPageSize(params);
-		String forum = getForum(params);
-		String author = null;
-		
-		String[] nick = params.get("nick");
-		if (nick != null && nick.length > 0) {
-			author = nick[0];
-		}
-		
-		MessagesDTO result = persistence.getMessages(forum, author, pageSize, page, false);
-		
-		writer.beginObject();
-		writer.name("page").value(page);
-		writer.name("pageSize").value(pageSize);
-		writer.name("forum").value(forum);
-		writer.name("resultSize").value(result.getMessages().size());
-		writer.name("totalSize").value(result.getMaxNrOfMessages());
-		writer.name("messages");
-		
-		writer.beginArray();
+		String forum = getStringValue(params, "forum", null);
+
+		String nick = getStringValue(params, "nick", null);
+		MessagesDTO result = persistence.getMessages(forum, nick, pageSize, page, false);
+
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
+		out.beginObject();
+		out.name("page").value(page);
+		out.name("pageSize").value(pageSize);
+		out.name("forum").value(forum);
+		out.name("resultSize").value(result.getMessages().size());
+		out.name("totalSize").value(result.getMaxNrOfMessages());
+		out.name("messages");
+
+		out.beginArray();
 		for (MessageDTO messageDTO : result.getMessages()) {
-			encodeMessage(messageDTO, writer);
+			encodeMessage(messageDTO, out);
 		}
-		writer.endArray();
-		
-		writer.endObject(); // "messages"
+		out.endArray();
+
+		out.endObject(); // "messages"
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
-	 * Ritorna una stringa JSON contenente i messaggi di un singolo thread. 
+	 * Ritorna una stringa JSON contenente i messaggi di un singolo thread.
 	 * @param params
 	 * @return
 	 * @throws Exception
 	 */
-	protected void getThread(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		long threadId = getThreadId(params);
+	protected void getThread(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+		long threadId = getLongValue(params, "threadId", -1);
 		if (threadId == -1) {
-			throw new IOException("missing parameter 'threadId'");
+			writeErrorMessage(writer, "Manca il parametro 'threadId'", time);
+			return;
 		}
-		
+
 		List<MessageDTO> result = persistence.getMessagesByThread(threadId);
-		
-		writer.beginObject();
-		writer.name("threadId").value(threadId);
-		writer.name("resultSize").value(result.size());
-		writer.name("messages");
-		
-		writer.beginArray();
+
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
+		out.beginObject();
+		out.name("threadId").value(threadId);
+		out.name("resultSize").value(result.size());
+		out.name("messages");
+
+		out.beginArray();
 		for (MessageDTO messageDTO : result) {
-			encodeMessage(messageDTO, writer);
+			encodeMessage(messageDTO, out);
 		}
-		writer.endArray();
-		
-		writer.endObject(); // "messages"
+		out.endArray();
+
+		out.endObject(); // "messages"
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
-	 * Ritorna una stringa JSON contenente un singolo messaggio 
+	 * Ritorna una stringa JSON contenente un singolo messaggio
 	 * @param params
 	 * @return
 	 * @throws Exception
 	 */
-	protected void getMessage(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		long msgId = getMsgId(params);
+	protected void getMessage(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+		long msgId = getLongValue(params, "msgId", -1);
 		if (msgId == -1) {
-			throw new IOException("missing parameter 'msgId'");
+			writeErrorMessage(writer, "Manca il parametro 'msgId'", time);
+			return;
 		}
-		
+
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
 		MessageDTO result = persistence.getMessage(msgId);
-		encodeMessage(result, writer);
+		encodeMessage(result, out);
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
 	 * Ritorna una stringa JSON contenente l'autore
 	 * @param params
 	 * @return
 	 * @throws Exception
 	 */
-	protected void getAuthor(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		String[] nick = params.get("nick");
-		if (nick == null || nick.length == 0) {
-			throw new IOException("missing parameter 'nick'");
+	protected void getAuthor(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+		String nick = getStringValue(params, "nick", null);
+		if (nick == null) {
+			writeErrorMessage(writer, "Manca il parametro  'nick'", time);
+			return;
 		}
-		
-		AuthorDTO result = persistence.getAuthor(nick[0]);
-		writer.beginObject();
-		encodeAuthor(result, writer);
-		writer.endObject();
+
+		AuthorDTO result = persistence.getAuthor(nick);
+
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
+		out.beginObject();
+		encodeAuthor(result, out);
+		out.endObject();
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
 	 * Ritorna una stringa JSON contenente gli autori
 	 * @param params
 	 * @return
 	 * @throws Exception
 	 */
-	protected void getAuthors(JsonWriter writer, Map<String, String[]> params) throws IOException {
+	protected void getAuthors(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
 		boolean onlyActive = false;
-		String[] paramOnlyActive = params.get("onlyActive");
-		if (paramOnlyActive != null && paramOnlyActive.length > 0) {
-			onlyActive = Boolean.parseBoolean(paramOnlyActive[0]);
+		String paramOnlyActive = getStringValue(params, "onlyActive", null);
+		if (paramOnlyActive != null) {
+			onlyActive = Boolean.parseBoolean(paramOnlyActive);
 		}
-		
+
 		List<AuthorDTO> result = persistence.getAuthors(onlyActive);
-		
-		writer.beginObject();
-		writer.name("resultSize").value(result.size());
-		writer.name("authors");
-		
-		writer.beginArray();
+
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
+		out.beginObject();
+		out.name("resultSize").value(result.size());
+		out.name("authors");
+
+		out.beginArray();
 		for (AuthorDTO authorDTO : result) {
-			writer.beginObject();
-			encodeAuthor(authorDTO, writer);
-			writer.endObject();
+			out.beginObject();
+			encodeAuthor(authorDTO, out);
+			out.endObject();
 		}
-		writer.endArray();
-		
-		writer.endObject(); // "authors"
+		out.endArray();
+
+		out.endObject(); // "authors"
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
 	 * Ritorna una stringa JSON contenente le quotes dell'autore
 	 * @param params
 	 * @return
 	 * @throws Exception
 	 */
-	protected void getQuotes(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		String[] nick = params.get("nick");
-		if (nick == null || nick.length == 0) {
-			throw new IOException("missing parameter 'nick'");
+	protected void getQuotes(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+		String nick = getStringValue(params, "nick", null);
+		if (nick == null) {
+			writeErrorMessage(writer, "Manca il parametro  'nick'", time);
+			return;
 		}
-		
-		AuthorDTO author = persistence.getAuthor(nick[0]);
+
+		AuthorDTO author = persistence.getAuthor(nick);
 		List<QuoteDTO> result = persistence.getQuotes(author);
-		
-		writer.beginObject();
-		writer.name("resultSize").value(result.size());
-		writer.name("quotes");
-		writer.beginArray();
+
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
+		out.beginObject();
+		out.name("resultSize").value(result.size());
+		out.name("quotes");
+		out.beginArray();
 		for (QuoteDTO quote : result) {
-			writer.beginObject();
-			writer.name("quote");
-			writer.beginObject();
-			writer.name("id").value(quote.getId());
-			writer.name("content").value(quote.getContent());
-			writer.endObject();
-			writer.endObject();
+			out.beginObject();
+			out.name("quote");
+			out.beginObject();
+			out.name("id").value(quote.getId());
+			out.name("content").value(quote.getContent());
+			out.endObject();
+			out.endObject();
 		}
-		writer.endArray();
-		
-		writer.endObject(); // "quotes"
+		out.endArray();
+
+		out.endObject(); // "quotes"
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
 	 * Ritorna una stringa JSON contenente tutte le emoticons
-	 * @param writer
+	 * @param out
 	 * @param params
 	 * @throws IOException
 	 */
-	protected void getEmos(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		writer.beginObject();
-		
-		writer.name("classic");
-		writer.beginObject();
-		Emoticons emoticons = Emoticons.getInstance();
-		writer.name("resultSize").value(emoticons.serieClassica.size());
-		writer.name("emos");
-		writer.beginArray();
-		for (Emoticon e : emoticons.serieClassica) {
-			writer.beginObject();
-			writer.name("emo");
-			writer.beginObject();
-			writer.name("id").value(e.sequence);
-			writer.name("url").value("images/emo/" + e.imgName + ".gif");
-			writer.endObject();
-			writer.endObject();
-		}
-		writer.endArray();
-		writer.endObject(); // classic
+	protected void getEmos(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
 
-		writer.name("extended");
-		writer.beginObject();
-		writer.name("resultSize").value(emoticons.serieEstesa.size());
-		writer.name("emos");
-		writer.beginArray();
-		for (Emoticon e : emoticons.serieEstesa) {
-			writer.beginObject();
-			writer.name("emo");
-			writer.beginObject();
-			writer.name("id").value(e.sequence);
-			writer.name("url").value("images/emoextended/" + e.imgName + ".gif");
-			writer.endObject();
-			writer.endObject();
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
+		out.beginObject();
+
+		out.name("classic");
+		out.beginObject();
+		Emoticons emoticons = Emoticons.getInstance();
+		out.name("resultSize").value(emoticons.serieClassica.size());
+		out.name("emos");
+		out.beginArray();
+		for (Emoticon e : emoticons.serieClassica) {
+			out.beginObject();
+			out.name("emo");
+			out.beginObject();
+			out.name("id").value(e.sequence);
+			out.name("url").value("images/emo/" + e.imgName + ".gif");
+			out.endObject();
+			out.endObject();
 		}
-		writer.endArray();
-		writer.endObject(); // extendedEmo
-		
-		writer.endObject();
+		out.endArray();
+		out.endObject(); // classic
+
+		out.name("extended");
+		out.beginObject();
+		out.name("resultSize").value(emoticons.serieEstesa.size());
+		out.name("emos");
+		out.beginArray();
+		for (Emoticon e : emoticons.serieEstesa) {
+			out.beginObject();
+			out.name("emo");
+			out.beginObject();
+			out.name("id").value(e.sequence);
+			out.name("url").value("images/emoextended/" + e.imgName + ".gif");
+			out.endObject();
+			out.endObject();
+		}
+		out.endArray();
+		out.endObject(); // extendedEmo
+
+		out.endObject();
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
 	 * fornisce l'ultimo id della tabella
-	 * @param writer
+	 * @param out
 	 * @param params
 	 * @throws IOException
 	 */
-	protected void getLastId(JsonWriter writer, Map<String, String[]> params) throws IOException {
+	protected void getLastId(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
 		long id = persistence.getLastId();
-		writer.beginObject();
-		writer.name("id").value(id);
-		writer.endObject();
+
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
+		out.beginObject();
+		out.name("id").value(id);
+		out.endObject();
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
 	 * Posta un messaggio (Nuovo o editato).
 	 * @param params
 	 * @return
 	 * @throws Exception
 	 */
-	protected void addMessage(JsonWriter writer, Map<String, String[]> params) throws IOException {
-		
-		String[] type = params.get("type");
-		if (type == null || type.length == 0) {
-			throw new IOException("no action specified");
+	protected void addMessage(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException, NoSuchAlgorithmException {
+
+		String type = getStringValue(params, "type", null);
+		if (type == null) {
+			writeErrorMessage(writer, "Manca il parametro 'type'", time);
+			return;
 		}
-		
+
 		MessageDTO message = new MessageDTO();
-		
+
 		// text
-		String[] text = params.get("text");
-		if (text == null || text.length == 0) {
-			throw new IOException("No text");
+		String text = getStringValue(params, "text", null);
+		if (text == null || text.length() < 5) {
+			writeErrorMessage(writer, "Un po di fantasia, scrivi almeno 5 caratteri ...", time);
+			return;
 		}
-		if (text[0].length() < 5) {
-			throw new IOException("Un po di fantasia, scrivi almeno 5 caratteri ...");
+		if (text.length() > Messages.MAX_MESSAGE_LENGTH) {
+			writeErrorMessage(writer, "Sei piu' logorroico di una Wakka, stai sotto i " + Messages.MAX_MESSAGE_LENGTH + " caratteri !", time);
+			return;
 		}
-		if (text[0].length() > Messages.MAX_MESSAGE_LENGTH) {
-			throw new IOException("Sei piu' logorroico di una Wakka, stai sotto i " + Messages.MAX_MESSAGE_LENGTH + " caratteri !");
-		}
-		message.setText(InputSanitizer.sanitizeText(text[0]));
-		
+		message.setText(InputSanitizer.sanitizeText(text));
+
 		// subject
-		String[] subject = params.get("subject");
-		if (subject == null || subject.length == 0) {
-			throw new IOException("No subject");
+		String subject = getStringValue(params, "subject", null);
+		if (subject == null || subject.length() < 3) {
+			writeErrorMessage(writer, "Oggetto di almeno di 3 caratteri, cribbio !", time);
+			return;
 		}
-		if (subject[0].length() < 3) {
-			throw new IOException("Oggetto di almeno di 3 caratteri, cribbio !");
+		if (subject.length() > Messages.MAX_SUBJECT_LENGTH) {
+			writeErrorMessage(writer, "LOL oggetto piu' lungo di " + Messages.MAX_SUBJECT_LENGTH + " caratteri !", time);
+			return;
 		}
-		if (subject[0].length() > Messages.MAX_SUBJECT_LENGTH) {
-			throw new IOException("LOL oggetto piu' lungo di " + Messages.MAX_SUBJECT_LENGTH + " caratteri !");
-		}
-		message.setSubject(InputSanitizer.sanitizeSubject(subject[0]));
-		
+		message.setSubject(InputSanitizer.sanitizeSubject(subject));
+
 		// author - non e' possibile postare da ANOnimi !
-		String[] nick = params.get("nick");
-		if (nick == null || nick.length == 0) {
-			throw new IOException("no username specified");
+		String nick = getStringValue(params, "nick", null);
+		if (nick == null) {
+			writeErrorMessage(writer, "Non puoi postare da ANOnimo", time);
+			return;
 		}
-		String[] password = params.get("password");
-		if (password == null || password.length == 0) {
-			throw new IOException("no password specified");
+		String password = getStringValue(params, "password", "");
+		if (password == null) {
+			writeErrorMessage(writer, "Manca la password", time);
+			return;
 		}
-		AuthorDTO author = persistence.getAuthor(nick[0]);
-		try {
-			if (!PasswordUtils.hasUserPassword(author, password[0])) {
-				throw new IOException("wrong password");
-			}
-		} catch (NoSuchAlgorithmException e) {
-			throw new IOException("cannot check password");
+		AuthorDTO author = persistence.getAuthor(nick);
+		if (!PasswordUtils.hasUserPassword(author, password)) {
+			writeErrorMessage(writer, "Password errata", time);
+			return;
 		}
 		message.setAuthor(author);
-		
-		// forum
-		String[] forum = params.get("forum");
-		if (forum != null && forum.length > 0 && !forum.equals(IPersistence.FORUM_ASHES)) {
-			if (!persistence.getForums().contains(forum[0])) {
-				throw new IOException("Ma che cacchio di forum e' '" + forum + "' ?!?");
-			} else {
-				message.setForum(InputSanitizer.sanitizeForum(forum[0]));
+
+		if (type.equals("new")) {
+			// forum
+			String forum = getStringValue(params, "forum", null);
+			if (forum != null && !forum.equals(IPersistence.FORUM_ASHES)) {
+				if (!persistence.getForums().contains(forum)) {
+					writeErrorMessage(writer, "Ma che cacchio di forum e' '" + forum + "' ?!?", time);
+					return;
+				} else {
+					message.setForum(InputSanitizer.sanitizeForum(forum));
+				}
 			}
-		}
-		
-		if (type[0].equals("new")) {
 			author.setMessages(author.getMessages() + 1);
 			message.setDate(new Date());
 			persistence.updateAuthor(author);
-		} else if (type[0].equals("edit") || type[0].equals("quote") || type[0].equals("reply")) {
+		} else if (type.equals("edit") || type.equals("quote") || type.equals("reply")) {
 			// msgId / parentId
-			long msgId = getMsgId(params);
+			long msgId = getLongValue(params, "msgId", -1);
 			if (msgId == -1) {
-				throw new IOException("msgId not specified");
+				writeErrorMessage(writer, "Manca il parametro 'msgId'", time);
+				return;
 			}
-			if (type[0].equals("edit")) {
-				message.setId(msgId);
+
+			// evita il post in un altro forum !
+			MessageDTO oldMessage = persistence.getMessage(msgId);
+			message.setForum(oldMessage.getForum());
+
+			if (type.equals("edit")) {
 				// check se l'autore e' lo stesso
-				AuthorDTO messageAuthor = persistence.getMessage(msgId).getAuthor();
-				if (messageAuthor != null && !nick.equals(messageAuthor.getNick())) {
-					throw new IOException("Imbroglione, non puoi modificare questo messaggio !");
+				AuthorDTO messageAuthor = oldMessage.getAuthor();
+				if (messageAuthor != null && !nick.equalsIgnoreCase(messageAuthor.getNick())) {
+					writeErrorMessage(writer, "Imbroglione, non puoi modificare questo messaggio !", time);
+					return;
 				}
-				// testo
-				message.setText(message.getText() + "<BR><BR><b>**Modificato dall'autore il " + 
+				// nuovo testo & subject
+				oldMessage.setText(message.getText() + "<BR><BR><b>**Modificato dall'autore il " +
 						new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>");
+				oldMessage.setSubject(message.getSubject());
+				message = oldMessage;
 			} else { // quote / reply
 				message.setDate(new Date());
 				message.setParentId(msgId);
+				message.setThreadId(oldMessage.getThreadId());
 			}
 		} else {
-			throw new IOException("type '" + type[0] + "'not recognized");
+			writeErrorMessage(writer, "Tipo '" + type + "' non valido", time);
+			return;
 		}
-		
+
 		message = persistence.insertMessage(message);
-		
-		writer.beginObject();
-		writer.name("id").value(message.getId());
-		writer.endObject();
+
+		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+
+		out.beginObject();
+		out.name("id").value(message.getId());
+		out.endObject();
+
+		closeJsonWriter(out, time);
 	}
-	
+
 	/**
 	 * Scrive l'exception in formato JSON direttamente nella response.
 	 * @param e
 	 * @param res
 	 * @throws IOException
 	 */
-	private void handleException(Throwable e, HttpServletRequest req, HttpServletResponse res, long time) throws IOException {
-		
-		Writer resWriter = res.getWriter();
-		
-		String callback = req.getParameter("callback");
-		if (callback != null) {
-			resWriter.write(callback + "(");
-		}
-		
-		JsonWriter writer = initWriter(ResultCode.ERROR, resWriter);
-		
-		writer.beginObject();
-		writer.name("message").value(e.getLocalizedMessage());
-		writer.name("stackTrace");
-		writer.beginArray();
-		for (String sf : ExceptionUtils.getStackFrames(e)) {
-			writer.value(sf.replaceAll("^\t", ""));
-		}
-		writer.endArray();
-		writer.endObject();
+	private void handleException(Throwable e, Writer writer, long time) throws IOException {
 
-		writer.name("executionTimeMs").value(System.currentTimeMillis() - time);
-		writer.endObject();
-		
-		if (callback != null) {
-			resWriter.write(")");
+		JsonWriter out = initJsonWriter(ResultCode.ERROR, writer);
+
+		out.beginObject();
+		out.name("message").value(ExceptionUtils.getMessage(e));
+		out.name("stackTrace");
+		out.beginArray();
+		for (String sf : ExceptionUtils.getStackFrames(e)) {
+			out.value(sf.replaceAll("^\t", ""));
 		}
-		
-		writer.flush();
-		writer.close();
-		
+		out.endArray();
+		out.endObject();
+
+		closeJsonWriter(out, time);
+
 	}
-	
+
+	private void writeErrorMessage(Writer writer, String message, long time) throws IOException {
+
+		JsonWriter out = initJsonWriter(ResultCode.ERROR, writer);
+
+		out.beginObject();
+		out.name("message").value(message);
+
+		out.name("executionTimeMs").value(System.currentTimeMillis() - time);
+		out.endObject();
+
+		closeJsonWriter(out, time);
+
+	}
+
 	/**
 	 * Codifica JSON un ThreadDTO
 	 * @param threadDTO
-	 * @param writer
+	 * @param out
 	 * @throws Exception
 	 */
-	private void encodeThread(ThreadDTO threadDTO, JsonWriter writer) throws IOException {
-		writer.beginObject();
-		writer.name("thread");
-		writer.beginObject();
-		writer.name("id").value(threadDTO.getId());
-		writer.name("date").value(threadDTO.getDate().getTime());
-		writer.name("subject").value(threadDTO.getSubject());
-		writer.name("forum").value(threadDTO.getForum());
-		writer.name("numberOfMessages").value(threadDTO.getNumberOfMessages());
+	private void encodeThread(ThreadDTO threadDTO, JsonWriter out) throws IOException {
+		out.beginObject();
+		out.name("thread");
+		out.beginObject();
+		out.name("id").value(threadDTO.getId());
+		out.name("date").value(threadDTO.getDate().getTime());
+		out.name("subject").value(threadDTO.getSubject());
+		out.name("forum").value(threadDTO.getForum());
+		out.name("numberOfMessages").value(threadDTO.getNumberOfMessages());
 		AuthorDTO author = threadDTO.getAuthor();
 		if (author.isValid()) {
-			encodeAuthor(author, writer);
+			encodeAuthor(author, out);
 		}
-		writer.endObject();
-		writer.endObject();
+		out.endObject();
+		out.endObject();
 	}
-	
+
 	/**
 	 * Codifica JSON un MessageDTO
 	 * @param threadDTO
-	 * @param writer
+	 * @param out
 	 * @throws Exception
 	 */
-	private void encodeMessage(MessageDTO messageDTO, JsonWriter writer) throws IOException {
-		writer.beginObject();
-		writer.name("message");
-		writer.beginObject();
-		writer.name("id").value(messageDTO.getId());
-		writer.name("date").value(messageDTO.getDate().getTime());
-		writer.name("subject").value(messageDTO.getSubject());
-		writer.name("forum").value(messageDTO.getForum() == null ? "" : messageDTO.getForum());
-		writer.name("parentId").value(messageDTO.getParentId());
-		writer.name("threadId").value(messageDTO.getThreadId());
-		writer.name("text").value(messageDTO.getText());
+	private void encodeMessage(MessageDTO messageDTO, JsonWriter out) throws IOException {
+		out.beginObject();
+		out.name("message");
+		out.beginObject();
+		out.name("id").value(messageDTO.getId());
+		out.name("date").value(messageDTO.getDate().getTime());
+		out.name("subject").value(messageDTO.getSubject());
+		out.name("forum").value(messageDTO.getForum() == null ? "" : messageDTO.getForum());
+		out.name("parentId").value(messageDTO.getParentId());
+		out.name("threadId").value(messageDTO.getThreadId());
+		out.name("text").value(messageDTO.getText());
 		AuthorDTO author = messageDTO.getAuthor();
 		if (author.isValid()) {
-			encodeAuthor(author, writer);
+			encodeAuthor(author, out);
 		}
-		writer.endObject();
-		writer.endObject();
+		out.endObject();
+		out.endObject();
 	}
-	
+
 	/**
 	 * Codifica JSON un AuthorDTO
 	 * @param threadDTO
-	 * @param writer
+	 * @param out
 	 * @throws Exception
 	 */
-	private void encodeAuthor(AuthorDTO author, JsonWriter writer) throws IOException {
-		writer.name("author");
-		writer.beginObject();
-		writer.name("nick").value(author.getNick());
-		writer.name("messages").value(author.getMessages());
-		writer.name("active").value(StringUtils.isNotEmpty(author.getHash()));
+	private void encodeAuthor(AuthorDTO author, JsonWriter out) throws IOException {
+		out.name("author");
+		out.beginObject();
+		out.name("nick").value(author.getNick());
+		out.name("messages").value(author.getMessages());
+		out.name("active").value(StringUtils.isNotEmpty(author.getHash()));
 		if (author.getAvatar() != null) {
-			writer.name("avatar").value(new BASE64Encoder().encode(author.getAvatar()));
+			out.name("avatar").value(new BASE64Encoder().encode(author.getAvatar()));
 		}
-		writer.endObject();
+		out.endObject();
 	}
-	
+
 	/**
 	 * Inizializza un writer JSON con quel resultCode e un oggetto "content".
 	 * @param resultCode
@@ -584,44 +637,52 @@ public class JSonServlet extends HttpServlet {
 	 * @return
 	 * @throws IOException
 	 */
-	private JsonWriter initWriter(ResultCode resultCode, Writer out) throws IOException {
-		JsonWriter writer = new JsonWriter(out);
-		writer.setHtmlSafe(true);
-		writer.setIndent("  ");
-		writer.beginObject();
-		writer.name("resultCode").value(resultCode.toString());
-		writer.name("content");
-		return writer;
+	private JsonWriter initJsonWriter(ResultCode resultCode, Writer writer) throws IOException {
+		JsonWriter out = new JsonWriter(writer);
+		out.setHtmlSafe(true);
+		out.setIndent("  ");
+		out.beginObject();
+		out.name("resultCode").value(resultCode.toString());
+		out.name("content");
+		return out;
 	}
-	
+
 	/**
-	 * Chiude un writer JSON precedentemente aperto tramite {@link #initWriter(ResultCode, Writer)}
-	 * @param writer
+	 * Chiude un writer JSON precedentemente aperto tramite {@link #initJsonWriter(ResultCode, Writer)}
+	 * @param out
 	 * @throws IOException
 	 */
-	private void closeWriter(JsonWriter writer, long time) throws IOException {
-		writer.name("executionTimeMs").value(System.currentTimeMillis() - time);
-		writer.endObject();
-		writer.flush();
-		writer.close();
+	private void closeJsonWriter(JsonWriter out, long time) throws IOException {
+		out.name("executionTimeMs").value(System.currentTimeMillis() - time);
+		out.endObject();
+		out.flush();
+		out.close();
 	}
-	
-	private int getPage(Map<String, String[]> params) {
-		String[] paramPage = params.get("page");
-		if (paramPage != null && paramPage.length > 0) {
-			return Integer.parseInt(paramPage[0]);
+
+	private int getIntValue(Map<String, String[]> params, String name, int defaultValue) {
+		String[] param = params.get(name);
+		if (param != null && param.length > 0 && StringUtils.isNotEmpty(param[0])) {
+			return Integer.parseInt(param[0]);
 		}
-		return 0;
+		return defaultValue;
 	}
-	
-	private String getForum(Map<String, String[]> params) {
-		String[] paramForum = params.get("forum");
-		if (paramForum != null && paramForum.length > 0) {
-			 return paramForum[0];
+
+	private long getLongValue(Map<String, String[]> params, String name, long defaultValue) {
+		String[] param = params.get(name);
+		if (param != null && param.length > 0 && StringUtils.isNotEmpty(param[0])) {
+			return Long.parseLong(param[0]);
 		}
-		return null;
+		return defaultValue;
 	}
-	
+
+	private String getStringValue(Map<String, String[]> params, String name, String defaultValue) {
+		String[] param = params.get(name);
+		if (param != null && param.length > 0 && StringUtils.isNotEmpty(param[0])) {
+			return param[0];
+		}
+		return defaultValue;
+	}
+
 	private int getPageSize(Map<String, String[]> params) {
 		String[] paramPageSize = params.get("pageSize");
 		if (paramPageSize != null && paramPageSize.length > 0) {
@@ -629,23 +690,7 @@ public class JSonServlet extends HttpServlet {
 		}
 		return DEFAULT_PAGE_SIZE;
 	}
-	
-	private long getThreadId(Map<String, String[]> params) {
-		String[] paramThreadId = params.get("threadId");
-		if (paramThreadId == null || paramThreadId.length == 0) {
-			return -1;
-		}
-		return Long.parseLong(paramThreadId[0]);
-	}	
-	
-	private long getMsgId(Map<String, String[]> params) {
-		String[] msgId = params.get("msgId");
-		if (msgId == null || msgId.length == 0) {
-			return -1;
-		}
-		return Long.parseLong(msgId[0]);
-	}
-	
+
 	/**
 	 * Result code per la risposta
 	 * @author giambo
@@ -664,9 +709,9 @@ public class JSonServlet extends HttpServlet {
 			return humanCode + ":" + code;
 		}
 	}
-	
+
 	private void printUsage(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		getServletContext().getRequestDispatcher("/pages/jsonUsage.html").forward(req, res);
 	}
-	
+
 }
