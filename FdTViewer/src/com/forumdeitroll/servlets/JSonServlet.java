@@ -24,6 +24,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import sun.misc.BASE64Encoder;
 
 import com.forumdeitroll.PasswordUtils;
+import com.forumdeitroll.SingleValueCache;
 import com.forumdeitroll.markup.Emoticon;
 import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.InputSanitizer;
@@ -37,7 +38,6 @@ import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
 import com.google.gson.stream.JsonWriter;
 
-// TODO: hanldeException fa cacare a spruzzo
 public class JSonServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -47,7 +47,13 @@ public class JSonServlet extends HttpServlet {
 	private static final int MAX_PAGE_SIZE = 100;
 
 	private IPersistence persistence;
-
+	
+	private SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
+		@Override protected List<String> update() {
+			return persistence.getForums();
+		}
+	};
+	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -107,7 +113,7 @@ public class JSonServlet extends HttpServlet {
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
-		List<String> forums = persistence.getForums();
+		List<String> forums = cachedForums.get();
 		out.beginObject();
 		out.name("forums");
 		out.beginArray();
@@ -471,11 +477,12 @@ public class JSonServlet extends HttpServlet {
 			// forum
 			String forum = getStringValue(params, "forum", null);
 			if (forum != null && !forum.equals(IPersistence.FORUM_ASHES)) {
+				forum = InputSanitizer.sanitizeForum(forum);
 				if (!persistence.getForums().contains(forum)) {
 					writeErrorMessage(writer, "Ma che cacchio di forum e' '" + forum + "' ?!?", time);
 					return;
 				} else {
-					message.setForum(InputSanitizer.sanitizeForum(forum));
+					message.setForum(forum);
 				}
 			}
 			author.setMessages(author.getMessages() + 1);
@@ -710,6 +717,13 @@ public class JSonServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Reindirizza alla pagina che spiega come funziona tutto l'ambaradan
+	 * @param req
+	 * @param res
+	 * @throws ServletException
+	 * @throws IOException
+	 */
 	private void printUsage(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		getServletContext().getRequestDispatcher("/pages/jsonUsage.html").forward(req, res);
 	}
