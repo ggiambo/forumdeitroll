@@ -622,17 +622,8 @@ public class MessageTag extends BodyTagSupport {
 			embeddYt = loggedUser.getPreferences().get(User.PREF_EMBEDDYT);
 		}
 		if (StringUtils.isEmpty(embeddYt) || (embedCount > MAX_EMBED)) {
-			long myYtCounter = 0l;
-			if (ytCounter == Long.MAX_VALUE) {
-				ytCounter = 0l;
-			} else {
-				ytCounter++;
-			}
-			myYtCounter = ytCounter;
 			line.append("<a href=\"http://www.youtube.com/watch?v=").append(youcode).append("\" ");
-			line.append("id=\"yt_").append(myYtCounter).append("\" ");
-			line.append("onmouseover='YTgetInfo_").append(myYtCounter).append("= YTgetInfo(\"");
-			line.append(myYtCounter).append("\",\"").append(youcode).append("\")'>");
+			line.append("onmouseover='YTCreateScriptTag(this, \"").append(youcode).append("\")'>");
 			line.append("<img src='http://img.youtube.com/vi/").append(youcode).append("/2.jpg'></a>");
 		} else {
 			// un glande classico: l'embed
@@ -643,7 +634,6 @@ public class MessageTag extends BodyTagSupport {
 		}
 	}
 
-	Long ytCounter = 0l;
 	private void youtube() {
 		p += YT.length;
 		int yt_end = scanFor(YT_END);

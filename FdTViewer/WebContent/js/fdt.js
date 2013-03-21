@@ -329,17 +329,29 @@ $("body").on("keypress", function(e) {
 	}
 });
 
-var YTgetInfo = function(myYtCounter, youcode) {
+var YTCounter = 0;
+var YTTitleCache = {};
+
+var YTCreateScriptTag = function(elem, youcode) {
+	if (YTTitleCache[youcode]) {
+		elem.appendChild(document.createTextNode(YTTitleCache[youcode]));
+		return;
+	}
+	YTCounter++;
+	var myId = YTCounter;
+	elem.id = 'yt_' + myId;
+	elem.onmouseover = null;
+	window['YTCallback_' + myId] = function(ytResponse) {
+		var title = ytResponse.entry.title.$t;
+		window.YTTitleCache[youcode] = title;
+		elem.appendChild(document.createTextNode(title));
+	};
 	var script = document.createElement('script');
 	script.type = 'text/javascript';
-	script.src = 'http://gdata.youtube.com/feeds/api/videos/' + youcode + '?v=2&alt=json-in-script&callback=YTgetInfo_' + myYtCounter;
-	var youlink = document.getElementById('yt_'+myYtCounter);
-	youlink.onmouseover = null;
+	script.src = 'http://gdata.youtube.com/feeds/api/videos/' +
+		youcode + '?v=2&alt=json-in-script&callback=YTCallback_' + myId;
 	document.body.appendChild(script);
-	return function(ytResponse) {
-		var title = ytResponse.entry.title.$t;
-		youlink.appendChild(document.createTextNode(title));
-	};
+	
 };
 
 function pedonizeThreadTree(msgId) {
