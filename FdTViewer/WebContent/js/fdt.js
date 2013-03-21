@@ -335,6 +335,7 @@ var YTTitleCache = {};
 var YTCreateScriptTag = function(elem, youcode) {
 	if (YTTitleCache[youcode]) {
 		elem.appendChild(document.createTextNode(YTTitleCache[youcode]));
+		elem.onmouseover = null;
 		return;
 	}
 	YTCounter++;
