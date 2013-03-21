@@ -278,7 +278,7 @@ public class Messages extends MainServlet {
 
 		// testo al massimo di 10000 caratteri ...
 		if (text.length() > MAX_MESSAGE_LENGTH) {
-			return "Sei piu' logorroico di una Wakka, stai sotto i 10000 caratteri !";
+			return "Sei piu' logorroico di una Wakka, stai sotto i " + MAX_MESSAGE_LENGTH + " caratteri !";
 		}
 
 		// subject almeno di 5 caratteri, cribbio !
@@ -292,7 +292,7 @@ public class Messages extends MainServlet {
 			return "Oggetto di almeno di 3 caratteri, cribbio !";
 		}
 		if (subject.length() > MAX_SUBJECT_LENGTH) {
-			return "LOL oggetto pié lungo di " + MAX_SUBJECT_LENGTH + " caratteri !";
+			return "LOL oggetto piu' lungo di " + MAX_SUBJECT_LENGTH + " caratteri !";
 		}
 
 		// qualcuno prova a creare un forum ;) ?
