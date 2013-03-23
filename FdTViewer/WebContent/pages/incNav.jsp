@@ -37,7 +37,7 @@
 		</c:if>
 		
 		<li>
-			<a href="/faqs.html" title="FAQ" class="faq"><img src="images/info_icon.png" alt="FAQ" /></a>
+			<a href="pages/faqs.html" title="FAQ" class="faq"><img src="images/info_icon.png" alt="FAQ" /></a>
 		</li>
 
 		<%-- "Cronologia" --%>

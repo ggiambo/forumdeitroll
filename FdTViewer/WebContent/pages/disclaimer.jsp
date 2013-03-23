@@ -55,7 +55,7 @@
 			<p>In alcuni casi, potrebbero avere accesso ai dati soggetti esterni tra cui ISP, fornitori di servizi tecnici di terze parti e elementi referenziati di terze parti.</p>
 			<p>Inoltre vi &egrave; presente all'interno del sito del contenuto inserito da utenti terzi che potenzialmente pu&ograve; referenziare contenuti estranei (immagini, video) del quale non si risponde circa il trattamento di dati personali.</p>
 			<br>
-			<a href="/faqs.html">LEGGI LE FAQ</a>
+			<a href="pages/faqs.html">LEGGI LE FAQ</a>
 			<br/>
 			<a href="http://www.flickr.com/groups/mlpitaly/">ESCI</a>
 			<a style="float:right;" href='Messages?disclaimer=OK&originalURL=<%=java.net.URLEncoder.encode((String)request.getAttribute("originalURL"), "UTF-8") %>'>ENTRA</a>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FdT Markup</title>
+<style>
+body {
+	padding: 1em 2em 1em 2em;
+}
+h1 {
+	text-align: right;
+	font-size: 1.5em;
+}
+h2 {
+	font-size: 1.2em;
+}
+p, li {
+	font-family: Palatino, Georgia, Times, serif;
+}
+code {
+	font-family: "Andale Mono", Courier, "Courier New", monospace;
+	font-size: .8em;
+}
+a {
+	text-decoration: none;
+}
+ul li {
+	list-style-type: none;
+}
+</style>
+</head>
+<body>
+<h1>FdT markup</h1>
+<p>Il markup del fdt &egrave; un frullato di html e bbcode, personalizzato
+a uso e abuso dei troll.</p>
+<h2>Descrizione del markup</h2>
+<p>I tag <code>&lt;b&gt;/&lt;i&gt;/&lt;s&gt;/&lt;u&gt;</code> sono permessi,
+vengono interpretati case-insensitive, e chiusi propriamente alla fine del
+post.</p>
+<p>Il tag <code>[code]</code> pu&ograve; ha diversi comportamenti in base al
+contesto, ovvero:</p>
+<ul>
+	<li><code>[code]...[/code]</code> sulla stessa linea produce del testo
+	monospaziato inline(&lt;span&gt; stilizzato)</li>
+	<li><code>[code]...[/code]</code> su pi&ugrave; linee produce un blocco
+	di codice &lt;pre&gt;, la linea viene interrotta prima dell'apertura del
+	tag</li>
+	<li><code>[code $lang]...[/code]</code> produce un blocco di codice come
+	sopra, ma la sintassi viene colorata da uno script che analizza il valore
+	di <code>$lang</code>.</li>
+</ul>
+<p>All'interno del tag <code>[code]</code> non viene interpretato il contenuto
+del messaggio, fatto salvo i casi
+<code>&lt;b&gt;/&lt;i&gt;/&lt;s&gt;/&lt;u&gt;</code>.</p>
+<p>Il tag <code>[url]</code> &egrave; renderizzato esattamente come nel
+<a href=http://www.bbcode.org/reference.php>bbcode</a>, ovvero:</p>
+<ul>
+	<li><code>[url]$link[/url]</code> produce un link ipertestuale il cui testo
+	visualizzato &egrave; il link stesso, se e solo se $link &egrave;
+	effettivamente un link<a href="#a-1"><sup>1</sup></a>.</li>
+	<li><code>[url=$link]$desc[/url]</code> produce un link ipertestuale il cui
+	testo visualizzato &egrave; il valore $desc.</li>
+</ul>
+<p>Il tag<code>[img]</code> viene usato per linkare un immagine esterna al
+sito, la sintassi &egrave; <code>[img]$url[/url]</code> dove viene verificato
+che $url sia un link valido<a href="#a-1"><sup>1</sup></a>.</p>
+<p>Il tag <code>[yt]</code> viene usato per incorporare un video da youtube,
+identificato dal video-id.La sintassi supporta diversi contenuti:</p>
+<ul>
+	<li><code>[yt]$id[/yt]</code></li>
+	<li><code>[yt]$link_a_youtube[/yt]</code></li>
+</ul>
+<p>Se viene postato un link a youtube viene prodotto automaticamente un
+incorporamento<a href="#a-1"><sup>1</sup></a>.</p>
+<p>Il tag <code>[spoiler]</code> nasconde il testo contenuto con una barra
+nera, il testo viene poi visualizzato passando il mouse sopra la barra.</p>
+<p>Il tag <code>[color]</code> permette di colorare il testo in modo
+personalizzato, la sintassi &egrave; <code>[color $colore]...[/color]</code>
+dove per <code>$colore</code> si intende un colore nel formato
+<code>#RRGGBB</code>.</p>
+<p>&Egrave; possibile scrivere del testo ad apice (es: <sup>questo</sup>)
+utilizzando il caret (carattere <code>^</code>) all'inizio della parola.</p>
+<p>Per ogni parola(delimitata da spazi od a capo) viene eseguita una
+identificazione per capire se si tratta di un <a href="#a-1">link</a>; in
+caso positivo viene automaticamente convertita in un link ipertestuale alla
+risorsa indicata.</p>
+<p>Esistono inoltre alcune sequenze che vengono convertite in emoticons,
+sotto viene riportata una lista aggiornata al 23 marzo 2013<a href="#a-2"><sup>2</sup></a>.</p>
+
+<h2>Appendice</h2>
+<p><a id="a-1"><sup>1</sup></a> I link validi vengono verificati come segue:
+</p>
+<ul>
+	<li>Inizia con <code>www.</code> (viene prefissato con <code>http://</code>
+	)</li>
+	<li>Inizia con <code>http://</code></li>
+	<li>Inizia con <code>https://</code></li>
+	<li>Inizia con <code>mailto:</code></li>
+	<li>Inizia con <code>ftp://</code></li>
+	<li>Viene rilevato un link interno al sito, attualmente se inizia con:
+		<ul>
+			<li><code>Threads?action=</code></li>
+			<li><code>Polls?action=</code></li>
+			<li><code>Messages?action=</code></li>
+			<li><code>Misc?action=</code></li>
+			<li><code>Misc?action=</code></li>
+			<li>Come nei casi sopra, ma il link inizia con
+			<code>http://www.forumdeitroll.com/,
+			https://www.forumdeitroll.com/, http://forumdeitroll.com/
+			o https://forumdeitroll.com/</code></li>
+		</ul>
+	</li>
+	<li>Si tratta di un link ad un messaggio o thread nel vecchio forum, viene
+	fatto un reindirizzamento come segue:
+		<ul>
+			<li><code>http://www.forumdeitroll.it/m.aspx?m_id=$id</code> -&gt;
+			<code>Messages?action=getById&amp;msgId=$id</code></li>
+			<li><code>http://www.forumdeitroll.it/ms.aspx</code> -&gt;
+			<code>Threads?action=getByMessage&amp;msgId=$id</code></li>
+		</ul>
+	</li>
+	<li>Si tratta di un link a <a href=http://www.youtube.com>youtube</a>,
+	viene fatto un incorporamento del video.</li>
+</ul>
+
+<p><a id="a-2"><sup>2</sup></a><strong>Lista delle emoticons</strong></p>
+<ul>
+<li><code> :)</code> -&gt; <img alt='Sorride' title='Sorride' class='emoticon' src='http://forumdeitroll.com/images/emo/1.gif'>
+<li><code> :d</code> -&gt; <img alt='A bocca aperta' title='A bocca aperta' class='emoticon' src='http://forumdeitroll.com/images/emo/2.gif'>
+<li><code> ;)</code> -&gt; <img alt='Occhiolino' title='Occhiolino' class='emoticon' src='http://forumdeitroll.com/images/emo/3.gif'>
+<li><code> :o</code> -&gt; <img alt='Sorpresa' title='Sorpresa' class='emoticon' src='http://forumdeitroll.com/images/emo/4.gif'>
+<li><code> :p</code> -&gt; <img alt='Con la lingua fuori' title='Con la lingua fuori' class='emoticon' src='http://forumdeitroll.com/images/emo/5.gif'>
+<li><code> :\</code> -&gt; <img alt='A bocca storta' title='A bocca storta' class='emoticon' src='http://forumdeitroll.com/images/emo/6.gif'>
+<li><code> :@</code> -&gt; <img alt='Arrabbiato' title='Arrabbiato' class='emoticon' src='http://forumdeitroll.com/images/emo/7.gif'>
+<li><code> :s</code> -&gt; <img alt='Perplesso' title='Perplesso' class='emoticon' src='http://forumdeitroll.com/images/emo/8.gif'>
+<li><code> :$</code> -&gt; <img alt='Imbarazzato' title='Imbarazzato' class='emoticon' src='http://forumdeitroll.com/images/emo/9.gif'>
+<li><code> :(</code> -&gt; <img alt='Triste' title='Triste' class='emoticon' src='http://forumdeitroll.com/images/emo/10.gif'>
+<li><code>:'(</code> -&gt; <img alt='In lacrime' title='In lacrime' class='emoticon' src='http://forumdeitroll.com/images/emo/11.gif'>
+<li><code> :|</code> -&gt; <img alt='Deluso' title='Deluso' class='emoticon' src='http://forumdeitroll.com/images/emo/12.gif'>
+<li><code> 8)</code> -&gt; <img alt='Ficoso' title='Ficoso' class='emoticon' src='http://forumdeitroll.com/images/emo/13.gif'>
+<li><code> o)</code> -&gt; <img alt='Angioletto' title='Angioletto' class='emoticon' src='http://forumdeitroll.com/images/emo/angelo.gif'>
+<li><code>(anonimo)</code> -&gt; <img alt='Anonimo' title='Anonimo' class='emoticon' src='http://forumdeitroll.com/images/emo/anonimo.gif'>
+<li><code> @^</code> -&gt; <img alt='Indiavolato' title='Indiavolato' class='emoticon' src='http://forumdeitroll.com/images/emo/diavoletto.gif'>
+<li><code>(ghost)</code> -&gt; <img alt='Fantasma' title='Fantasma' class='emoticon' src='http://forumdeitroll.com/images/emo/fantasmino.gif'>
+<li><code>(geek)</code> -&gt; <img alt='Geek' title='Geek' class='emoticon' src='http://forumdeitroll.com/images/emo/geek.gif'>
+<li><code>(idea)</code> -&gt; <img alt='Idea!' title='Idea!' class='emoticon' src='http://forumdeitroll.com/images/emo/idea.gif'>
+<li><code>(love)</code> -&gt; <img alt='Innamorato' title='Innamorato' class='emoticon' src='http://forumdeitroll.com/images/emo/love.gif'>
+<li><code>(amiga)</code> -&gt; <img alt='Fan Amiga' title='Fan Amiga' class='emoticon' src='http://forumdeitroll.com/images/emo/loveamiga.gif'>
+<li><code>(apple)</code> -&gt; <img alt='Fan Apple' title='Fan Apple' class='emoticon' src='http://forumdeitroll.com/images/emo/loveapple.gif'>
+<li><code>(atari)</code> -&gt; <img alt='Fan Atari' title='Fan Atari' class='emoticon' src='http://forumdeitroll.com/images/emo/loveatari.gif'>
+<li><code>(c64)</code> -&gt; <img alt='Fan Commodore64' title='Fan Commodore64' class='emoticon' src='http://forumdeitroll.com/images/emo/lovec64.gif'>
+<li><code>(linux)</code> -&gt; <img alt='Fan Linux' title='Fan Linux' class='emoticon' src='http://forumdeitroll.com/images/emo/lovelinux.gif'>
+<li><code>(win)</code> -&gt; <img alt='Fan Windows' title='Fan Windows' class='emoticon' src='http://forumdeitroll.com/images/emo/lovewin.gif'>
+<li><code>(newbie)</code> -&gt; <img alt='Newbie, inesperto' title='Newbie, inesperto' class='emoticon' src='http://forumdeitroll.com/images/emo/newbie.gif'>
+<li><code> :-o</code> -&gt; <img alt='Annoiato' title='Annoiato' class='emoticon' src='http://forumdeitroll.com/images/emo/noia3.gif'>
+<li><code>(nolove)</code> -&gt; <img alt='Disinnamorato' title='Disinnamorato' class='emoticon' src='http://forumdeitroll.com/images/emo/nolove.gif'>
+<li><code> p)</code> -&gt; <img alt='Pirata' title='Pirata' class='emoticon' src='http://forumdeitroll.com/images/emo/pirata.gif'>
+<li><code>(cylon)</code> -&gt; <img alt='Cylon' title='Cylon' class='emoticon' src='http://forumdeitroll.com/images/emo/robot.gif'>
+<li><code>(rotfl)</code> -&gt; <img alt='Rotola dal ridere' title='Rotola dal ridere' class='emoticon' src='http://forumdeitroll.com/images/emo/rotfl.gif'>
+<li><code>(troll1)</code> -&gt; <img alt='Troll occhiolino' title='Troll occhiolino' class='emoticon' src='http://forumdeitroll.com/images/emo/troll1.gif'>
+<li><code>(troll2)</code> -&gt; <img alt='Troll chiacchierone' title='Troll chiacchierone' class='emoticon' src='http://forumdeitroll.com/images/emo/troll2.gif'>
+<li><code>(troll3)</code> -&gt; <img alt='Troll occhi di fuori' title='Troll occhi di fuori' class='emoticon' src='http://forumdeitroll.com/images/emo/troll3.gif'>
+<li><code>(troll4)</code> -&gt; <img alt='Troll di tutti i colori' title='Troll di tutti i colori' class='emoticon' src='http://forumdeitroll.com/images/emo/troll4.gif'>
+<li><code>(troll)</code> -&gt; <img alt='Troll' title='Troll' class='emoticon' src='http://forumdeitroll.com/images/emo/troll.gif'>
+<li><code>$keroppi</code> -&gt; <img alt='Keroppi' title='Keroppi' class='emoticon' src='http://forumdeitroll.com/images/emoextended/keroppi.gif'>
+<li><code>$lich</code> -&gt; <img alt='Licchione' title='Licchione' class='emoticon' src='http://forumdeitroll.com/images/emoextended/lich.gif'>
+<li><code>$ranona</code> -&gt; <img alt='Ranona' title='Ranona' class='emoticon' src='http://forumdeitroll.com/images/emoextended/ranona.gif'>
+<li><code>$angioletto</code> -&gt; <img alt='Angioletto 2' title='Angioletto 2' class='emoticon' src='http://forumdeitroll.com/images/emoextended/angioletto2.gif'>
+<li><code>$proott</code> -&gt; <img alt='Proott !!' title='Proott !!' class='emoticon' src='http://forumdeitroll.com/images/emoextended/proott.gif'>
+<li><code>$cool</code> -&gt; <img alt='Ficoso 2' title='Ficoso 2' class='emoticon' src='http://forumdeitroll.com/images/emoextended/cool2.gif'>
+<li><code>$anonimato</code> -&gt; <img alt='Anonimo Animato' title='Anonimo Animato' class='emoticon' src='http://forumdeitroll.com/images/emoextended/anonimato.gif'>
+<li><code>$ghost</code> -&gt; <img alt='Ghost Animato' title='Ghost Animato' class='emoticon' src='http://forumdeitroll.com/images/emoextended/ghost.gif'>
+<li><code>$piange</code> -&gt; <img alt='Piagnina' title='Piagnina' class='emoticon' src='http://forumdeitroll.com/images/emoextended/piange.gif'>
+<li><code>$foco</code> -&gt; <img alt='Datte f&ograve;co' title='Datte f&ograve;co' class='emoticon' src='http://forumdeitroll.com/images/emoextended/foco.gif'>
+<li><code>$poop</code> -&gt; <img alt='Evacua' title='Evacua' class='emoticon' src='http://forumdeitroll.com/images/emoextended/poop.gif'>
+</ul>
+</body>
+</html>

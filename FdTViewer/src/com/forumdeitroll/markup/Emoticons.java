@@ -119,5 +119,17 @@ public class Emoticons {
 		addAll(serieClassica);
 		addAll(serieEstesa);
 	}};
+	
+	// usato per aggiornare pagina di markup
+	public static void main(String[] args) throws Exception {
+		int count = 0;
+		for (Emoticon e : getInstance().tutte) {
+			System.out.print("<li><code>");
+			System.out.print(e.sequence);
+			System.out.print("</code> -&gt; ");
+			System.out.print(e.htmlReplacement.replace("src='", "src='http://forumdeitroll.com/"));
+			System.out.println();
+		}
+	}
 }
 
