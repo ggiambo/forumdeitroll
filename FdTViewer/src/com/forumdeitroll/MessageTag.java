@@ -353,6 +353,19 @@ public class MessageTag extends BodyTagSupport {
 	private boolean exponential() {
 		boolean ret = false;
 		int pcaret = word.indexOf("^");
+		if (pcaret == 0) {
+			int i;
+			for (i = 1; i < word.length() - 1; i++) {
+				if (word.charAt(i) != '_') {
+					break;
+				}
+			}
+			if (i == word.length() - 1) {
+				if (word.charAt(i) == '^') {
+					return false;
+				}
+			}
+		}
 		int wlen = word.length();
 		while (pcaret != -1 && pcaret != wlen - 1) {
 			word.replace(pcaret, word.length(), String.format("<sup>%s</sup>", word.substring(word.indexOf("^") + 1)));
