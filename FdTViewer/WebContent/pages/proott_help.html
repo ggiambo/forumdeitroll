@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+	<head>
+		<title>Motorino dei Troll (v2.1) &mdash; Patente</title>
+		<style type='text/css'>
+			body {
+				font-family: arial, sans-serif;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Guida del Motorino dei Troll (v2.1)</h1>
+		
+		<h2>Roba generale</h2>
+
+		<p>Inserite la query come in un normale motore di ricerca:
+
+		<xmp>stazione di luino</xmp>
+
+		questa query trover&agrave; tutti i thread contenenti <i>stazione</i>
+		o <i>luino</i>.
+
+		Se volete che le parole della query compaiano vicine tra loro nel
+		testo racchiudete la query tra doppi apici:
+
+		<xmp>"stazione di luino"</xmp>
+
+
+		<h2>Interfaccia</h2>
+
+		Dovrebbe essere piuttosto autoesplicativa.
+
+		<p>Vengono visualizzati 50 risultati per pagina (se pensate che questo
+		non sia il numero appropriato di risultati per pagina scrivetelo sul
+		forumdeitroll), in alto a destra potete vedere una stima sbagliata del numero
+		totale dei risultati per la query. In fondo potete trovare i link alle
+		altre pagine di risultati per la vostra query.
+
+		<p>Ogni risultato ha un link <i>Roba simile</i>, questo vi
+		porter&agrave; ad una pagina con thread simili a quello selezionato.
+		I thread simili vengono trovati estraendo le parole pi&ugrave;
+		importanti del thread selezionato ed usandole come query.
+		Se siete curiosi, il parametro <i>l</i> che viene passato a
+		search.cgi.pl quando usate <i>Roba simile</i> &egrave; un indice
+		intero al mio motore di ricerca che identifica un thread.
+
+		<h2>Ricerca per utente</h2>
+
+		<xmp>troll:avvelenato</xmp>
+
+		se il nickname contiene spazi racchiudetelo tra doppi apici:
+
+		<xmp>troll:"the lich"</xmp>
+
+		se volete cercare tutti i thread a cui un utente non ha partecipate usate:
+
+		<xmp>-troll:"the lich"</xmp>
+
+
+		<h2>Ricerca per titolo</h2>
+
+		Utilizzare:
+
+		<xmp>title:"parole nel titolo"</xmp>
+
+		l'operatore '-' pu&ograve; essere utilizzato con title come con troll.
+
+		<h2>Ricerca per forum</h2>
+
+		&Egrave; possibile cercare solo in un forum specifico, selezionare il forum desiderato dal form o scrivere forum:"&lt;nome del forum desiderato&gt;" nella query. Si prega di notare che:
+
+		<ol>
+		  <li>I messaggi nei forum diversi da quello principale precedenti settembre 2009 non sono inclusi nell'indice
+		  <li>I messaggi del forum principale successivi a settembre 2009 sono catalogati nel forum "giusti"
+		  <li>I messaggi del forum principale precedenti a settembre 2009 non appartengono a nessun forum (dovrei effettuare una reindicizzazione per correggere questo bug, devo farlo da settembre 2009 e non ho mai avuto voglia, per questo motivo questa feature esiste dal settembre 2009 ma e` stata resa pubblica solo a dicembre 2010)
+		</ol>
+
+		<h2>Orinamento dei risultati</h2>
+
+		Le opzioni di orinamento disponibili sono:
+
+		<ul>
+		  <li>rank: ordina i risultati per rilevanza, la rilevanza &egrave; calcolata con un algoritmo in cui sono stati infilati numeri a caso
+		  <li>date/rdate: ordina i risultati per data di inizio del thread (rdate inverte)
+		  <li>edate/redate: ordina i risultati per data di fine del thread (redate inverte)
+		  <li>msgnum: ordina i risultati per numero di messaggi
+		</ul>
+
+		Per default i risultati sono ordinati per data di fine del thread (inversa). Scrivere sort:&lt;opzione di sort> nella query ha lo stesso effetto che selezionare l'opzione di sort nel form.
+
+		<h2>Suggerimenti</h2>
+
+		Se volete suggerire una feature scrivete pure sul forumdeitroll,
+		sar&ograve; felice di inserirla nella lista delle cose da ignorare.
+
+		<h2>FAQ</h2>
+
+		<ul>
+			<li><b>ciabatta interruttore, che fare?</b></li>
+
+			<li><b>se chiedo i risultati ordinati per data i messaggi non sono completamente ordinati per data</b><br>
+			vedi sezione <i>Informazioni Avanzate</i>
+			</li>
+
+			<li><b>c'&egrave; un bug</b>
+			segnalalo sul forum dei troll o con un messaggi privato
+		</ul>
+
+		<h2>Informazioni Avanzate</h2>
+
+		Ogni query ha due parti.
+		<ul>
+			<li>le opzioni
+			<li>i termini liberi
+		</ul>
+
+		Le opzioni possono essere specificate secondo questa grammatica:
+
+		<xmp>
+opzione ::= modificatore? nome ":" valore
+modificatore ::= "-" | "+" | "$" | "~" (default: "+")
+nome ::= "resources" | "text" | "opener-user" | "user" | "title" | "troll" | "otroll" | "sort" | "start-date" | "end-date"
+valore ::= "\"\"" sequenza-di-caratteri "\"\"" | "\"" sequenza-di-caratteri "\"" | sequenza-di-caratteri-senza-spazi
+		</xmp>
+
+		Se i termini liberi della query sono tra doppi apici vengono trasformati in:
+
+		<xmp>$title:"&lt;termini-liberi&gt;" +text:""&lt;termini-liberi&gt;""</xmp>
+
+		se i termini liberi della query sono senza doppi apici vengono trasformati in:
+
+		<xmp>$title:"&lt;termini-liberi&gt;" ~text:"&lt;termini-liberi&gt;"</xmp>
+
+		<h3>Nome delle opzioni</h3>
+		<ul>
+			<li><i>text</i> cerca nel testo
+			<li><i>troll</i> e <i>title</i> sono stati spiegato sopra
+			<li><i>otroll</i> &egrave; come <i>troll</i> ma ristretto agli utenti che hanno aperto il thread
+			<li><i>user</i> e <i>opener-user</i> sono sinonimi di <i>troll</i> e <i>otroll</i>
+			<li><i>resources</i> cerca nelle immagini/video/link estratte dalla pagina
+		</ul>
+
+
+		<h3>Valore delle opzioni</h3>
+
+		<p>I doppi apici nel valore vengono utilizzati per poter includere nel valore della opzione degli spazi. 
+		<p>I doppi doppi apici invece specificano che il valore dell'opzione deve essere matchato come frase (i termini vicini tra loro e in ordine). I doppi doppi apici hanno senso soltato per le opzioni <i>title</i> e <i>text</i>.
+
+		<p>L'opzione <i>sort</i> &egrave; speciale e pu&ograve; come valore soltanto <i>date</i>, <i>rdate</i>, <i>msgnum</i> e <i>rank</i> (il suo valore di default). Qualunque altra cosa verr&agrave; ignorata.
+
+		<h3>Modificatori</h3>
+
+		<p>Il modificatore di default &egrave; '+' e indica che la condizione specificata deve essere obbligatoriamente soddisfatta. 
+
+		<p>Il modificatore '-' specifica che la condizione specificata <b>non</b> deve essere soddisfatta.
+
+		<p>Il modificatore '$' specifica che la condizione deve essere utilizzata per calcolare il ranking.
+
+		<p>Il modificatore '~' tenter&agrave; di matchare la sua condizione nel modo pi&ugrave; stretto possibile ricorrendo a match progressivamente meno stretti per riempire i risultati. Una sola di queste opzioni pu&ograve; essere utilizzata per ogni query.
+
+		<p>Nessuno dei modificatori ha significato per l'opzione <i>sort</i>.
+
+		<h3>Modificatore '~' e ordinamento dei risultati</h3>
+		<p>Una opzione con il modificatore '~' ha la precedenza sull'opzione <i>sort</i> il che significa che richiedendo un ordinamento cronologico alcuni risultati non saranno in ordinamento cronologico. La pagina dei risultati contiene un div nascosto con il log di come sono stati costruiti i risultati a partire dalla query, grazie a questo log e alle informazioni contenute in questa pagina potete costruire query che abbiano risultati perfettamente in ordine cronologico. Se ritieni che questo comportamento non sia quello corretto se ne pu&ograve; parlare.
+
+	</body>
+</html>

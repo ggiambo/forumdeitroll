@@ -78,12 +78,15 @@
 						.chain(result['list-of-resources'])
 						.uniq()
 						.map(function(l) {
+							if (opts.smegma && /(jpg|png|gif|bmp|svg)$/i.test(l)) {
+								return "<a target='_blank' rel='nofollow noreferrer' title=\""+encodeURI(l)+"\" href=\"" + encodeURI(l) + "\"><img src=\"" + encodeURI(l) + "\"></a>"
+							}
 							return "<a target='_blank' rel='nofollow noreferrer' title=\""+encodeURI(l)+"\" href=\"" + encodeURI(l) + "\">" + l + "</a>"
 						})
 						.value()
 						if (resources.length > 0) { %>
 						<br>
-						<i>link e immagini dal thread</i>
+						<i>Link e immagini dal thread</i>
 						<br>
 						<%= resources.join("<br>") %>
 					<% } %>

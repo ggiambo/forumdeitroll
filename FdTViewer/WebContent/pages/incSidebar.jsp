@@ -30,6 +30,8 @@
 			</select>
 		</div>
 		<input type="submit" value="Cerca"/>
+		<br>
+		<a href="javascript:showAdvancedSearch()">Ricerca avanzata</a>
 	</form>
 	
 	<label for="getById">Per id:</label>

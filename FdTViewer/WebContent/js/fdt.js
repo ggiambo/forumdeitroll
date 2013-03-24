@@ -537,8 +537,10 @@ function infiniteScroll(page) {
 		}
 	};
 }
+var proottOpts = {};
 
 function runTemplate(data) {
+	data.opts = proottOpts;
 	var html = templateSearch(data);
 	if (data.currentPage == 0) {
 		document.getElementById('main').innerHTML = html;
@@ -548,7 +550,6 @@ function runTemplate(data) {
 	$(window).on("scroll", infiniteScroll(data.nextPage));
 	lockSearch = null;
 }
-
 
 function searchAjax(page) {
 	refreshable = 0;
@@ -577,6 +578,8 @@ function searchAjax(page) {
 			"&q=" + encodeURIComponent(q) +
 			"&sort=" + encodeURIComponent(sort) +
 			"&p=" + page;
+		proottOpts.query = q;
+		proottOpts.sort = sort;
 		$.get(query, function(data) {
 			if ($('#loading').length > 0) {
 				$('#loading').remove();
@@ -608,4 +611,59 @@ function searchAjax(page) {
 		alert("searchAjax3: "+e.message);
 	}
 	return false;
+}
+
+var proottTmpl = null;
+
+var proottBindings = {
+	'asStart click' : function() {
+		proottOpts.query = document.getElementById('asQ').value;
+		document.forms.sidebarSearchForm.search.value = proottOpts.query;
+		searchAjax();
+	},
+	'asStart2 click' : function() {
+		proottOpts.query = document.getElementById('asQ').value;
+		document.forms.sidebarSearchForm.search.value = proottOpts.query;
+		searchAjax();
+	},
+	'asShowImages click' : function() {
+		proottOpts.smegma = document.getElementById('asShowImages').checked;
+	},
+	'asQ keypress' : function(evt) {
+		if (evt.which === 13) {
+			proottOpts.query = document.getElementById('asQ').value;
+			document.forms.sidebarSearchForm.search.value = proottOpts.query;
+			searchAjax();
+		}
+	}
+};
+
+function addAdvancedSearchBindings() {
+	for (var key in proottBindings) {
+		var fun = proottBindings[key];
+		var id = key.split(" ")[0];
+		var event = key.split(" ")[1];
+		$('#' + id).on(event, fun);
+	}
+}
+
+function showAdvancedSearch() {
+	if (proottTmpl) {
+		try {
+			document.getElementById('main').innerHTML = proottTmpl(proottOpts);
+			addAdvancedSearchBindings();
+		} catch (e) {
+			alert("showAdvancedSearch1: "+e.message);
+		}
+	} else {
+		$.get('templates/proott.tmpl?v=' + Math.random(), function(tmplSource) {
+			try {
+				proottTmpl = _.template(tmplSource);
+				document.getElementById('main').innerHTML = proottTmpl(proottOpts);
+				addAdvancedSearchBindings();
+			} catch (e) {
+				alert("showAdvancedSearch2: "+e.message);
+			}
+		});
+	}
 }
