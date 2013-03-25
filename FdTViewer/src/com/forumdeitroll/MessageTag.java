@@ -400,7 +400,8 @@ public class MessageTag extends BodyTagSupport {
 			String nickname = line.substring(scrittoda + "Scritto da: ".length());
 			if (nickname.startsWith(": ")) // "- Scritto da: "
 				nickname = nickname.substring(2);
-			simpleReplaceFirst(line, nickname, String.format("<a href=\"User?action=getUserInfo&nick=%s\">%s</a>", escape(nickname), nickname));
+			if (nickname.length() > 0 && scrittoda == (quoteLvl - 1) * QUOTE_SP.length())
+				simpleReplaceFirst(line, nickname, String.format("<a href=\"User?action=getUserInfo&nick=%s\">%s</a>", escape(nickname), nickname));
 		}
 		
 		if (quoteLvl != 0) {
@@ -820,6 +821,7 @@ public class MessageTag extends BodyTagSupport {
 
 	private static final String QUOTE = "&gt;";
 	private static final String SP_QUOTE = " &gt;";
+	private static final String QUOTE_SP = "&gt; ";
 
 	//----- test -----
 
