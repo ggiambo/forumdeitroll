@@ -1,5 +1,6 @@
 package com.forumdeitroll;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -11,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.forumdeitroll.markup.Emoticons;
+import com.forumdeitroll.markup.RenderOptions;
+import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.servlets.MainServlet;
 import com.forumdeitroll.servlets.Messages;
@@ -49,12 +52,39 @@ public class MessageTag extends BodyTagSupport {
 	public int doAfterBody() throws JspTagException {
 		try {
 			loggedUser = (AuthorDTO) pageContext.getRequest().getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
-			body = getBodyContent().getString().toCharArray();
-			getBodyContent().getEnclosingWriter().write(getMessage().toString());
+//			body = getBodyContent().getString().toCharArray();
+//			getBodyContent().getEnclosingWriter().write(getMessage().toString());
+			RenderOptions opts = new RenderOptions();
+			opts.collapseQuotes =
+				"checked".equals(
+					loggedUser != null
+						? loggedUser.getPreferences().get(User.PREF_COLLAPSE_QUOTES)
+						: null);
+			opts.embedYoutube =
+				! StringUtils.isEmpty(
+					loggedUser != null
+						? loggedUser.getPreferences().get(User.PREF_EMBEDDYT)
+						: "yes");
+			opts.showImagesPlaceholder =
+				StringUtils.isEmpty(
+					loggedUser != null
+						? loggedUser.getPreferences().get(User.PREF_SHOWANONIMG)
+						: "yes");
+			opts.authorIsAnonymous =
+				author != null && StringUtils.isEmpty(author.getNick());
+			Renderer.render(
+				getBodyContent().getReader(),
+				getBodyContent().getEnclosingWriter(),
+				opts);
 		} catch (Exception e) {
 			LOG.error("Errore durante il rendering del post "+e.getMessage(), e);
 			LOG.error("BODY:\n"+getBodyContent().getString());
-			throw new JspTagException(e);
+//			throw new JspTagException(e);
+			try {
+				getBodyContent().getEnclosingWriter().print("Impossibile visualizzare il messaggio! Segnala questo post alla suora! E di corsa!");
+			} catch (IOException e1) {
+				throw new JspTagException(e);
+			}
 		}
 		return SKIP_BODY;
 	}

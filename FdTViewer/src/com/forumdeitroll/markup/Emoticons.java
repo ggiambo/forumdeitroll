@@ -13,7 +13,7 @@ public class Emoticons {
 		return me;
 	}
 	
-	private static final int MAX_EMOTICONS = 200;
+	public static final int MAX_EMOTICONS = 200;
 	
 	public int replace(StringBuilder word, int emotiCount) {
 		int count = 0;
