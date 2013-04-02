@@ -72,6 +72,9 @@ public class Word {
 			}
 		}
 
+		if (pcaret == -1 || pcaret >= end)
+			return false;
+		
 		int ncaret = 0;
 		int fromIndex = 0;
 		
@@ -87,7 +90,7 @@ public class Word {
 			
 			pcaret = io.indexOf(CARET, fromIndex);
 			
-			if (pcaret == -1)
+			if (pcaret == -1 || pcaret >= end)
 				break;
 			
 		} while (true);
@@ -100,6 +103,7 @@ public class Word {
 			ncaret--;
 		}
 		
+		io.skip(end);
 		return true;
 	}
 
