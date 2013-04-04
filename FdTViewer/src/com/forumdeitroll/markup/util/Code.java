@@ -34,7 +34,7 @@ public class Code {
 		}
 		if (io.startWith(CODE_OPEN)) {
 			int end = io.indexOf(CLOSE_SQUARE_BRACKET, CODE_OPEN.length);
-			if (end != -1 && end > 10)
+			if (end == -1 || (end != -1 && end > (CODE_OPEN.length + 12)))
 				return false;
 			// [code $lang] ... [/code]
 			for (int i = CODE_OPEN.length; i < end; i++)
