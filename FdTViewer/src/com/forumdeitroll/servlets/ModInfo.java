@@ -19,8 +19,11 @@ public class ModInfo extends MainServlet {
 
 		final IPMemStorage.Record record = IPMemStorage.get(m_id);
 		final ModInfoBean modInfo = new ModInfoBean(m_id, record);
+		final MessageDTO msg = getPersistence().getMessage(Long.parseLong(m_id));
+		msg.modInfoException();
 
 		req.setAttribute("modInfo", modInfo);
+		req.setAttribute("msg", msg);
 
 		setAntiXssToken(req);
 		return "modinfo.jsp";

@@ -10,7 +10,7 @@ public class ThreadDTO {
 	private AuthorDTO author = new AuthorDTO(null);
 	private String forum = null;
 	private int setNumberOfMessages = -1;
-	private boolean isVisible = true;
+	private int isVisible = 1;
 	private int rank = 0;
 
 	public boolean isValid() {
@@ -37,7 +37,9 @@ public class ThreadDTO {
 	}
 
 	public String getSubject() {
-		return ((forum != null) && (forum.equals(IPersistence.FORUM_ASHES))) ? "Cenere alla cenere, polvere alla polvere" :  subject;
+		if ((forum != null) && (forum.equals(IPersistence.FORUM_ASHES))) return "Cenere alla cenere, polvere alla polvere";
+		if (isVisible < 0) return "(messaggio bannato)";
+		return subject;
 	}
 
 	public void setSubject(String subject) {
@@ -69,13 +71,13 @@ public class ThreadDTO {
 	}
 
 	public boolean isVisible() {
-		return isVisible;
+		return isVisible > 0;
 	}
 
-	public void setIsVisible(boolean isVisible) {
+	public void setIsVisible(int isVisible) {
 		this.isVisible = isVisible;
 	}
-	
+
 	public int getRank() {
 		return rank;
 	}
@@ -98,4 +100,11 @@ public class ThreadDTO {
 		return sb.toString();
 	}
 
+	protected int getVisible() {
+		return isVisible;
+	}
+
+	public void modInfoException() {
+		if (isVisible < 0) isVisible = 0;
+	}
 }

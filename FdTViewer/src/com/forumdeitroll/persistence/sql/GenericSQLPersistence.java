@@ -45,7 +45,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	private BasicDataSource dataSource;
 
 	private static final Logger LOG = Logger.getLogger(GenericSQLPersistence.class);
-	
+
 	void setupDataSource(String connectURI, String user, String password) {
 		dataSource = new BasicDataSource();
 		dataSource.setMaxActive(15);
@@ -60,7 +60,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		dataSource.setValidationQuery("SELECT 1");
 		dataSource.setValidationQueryTimeout(30);
 	}
-	
+
 	protected final synchronized Connection getConnection() {
 		try {
 			return dataSource.getConnection();
@@ -149,12 +149,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			}
 			ps.setInt(i++, limit);
 			ps.setInt(i++, limit*page);
-			
+
 			int threadsCount = countThreads(forum, conn);
 			if (hideProcCatania && forum == null) {
 				threadsCount -= countThreads(FORUM_PROC, conn);
 			}
-			
+
 			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount);
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads", e);
@@ -163,7 +163,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return new ThreadsDTO();
 	}
-	
+
 	@Override
 	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, boolean hideProcCatania) {
 		Connection conn = null;
@@ -227,8 +227,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			}
 			query.append("ORDER BY `id` DESC ")
 				.append("LIMIT ? OFFSET ?");
-			
-			
+
+
 			ps = conn.prepareStatement(query.toString());
 			int i = 1;
 			ps.setString(i++, author);
@@ -818,7 +818,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return false;
 	}
-	
+
 	private void notifyPvt(AuthorDTO recipient, PrivateMsgDTO privateMsg, boolean read) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -839,7 +839,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	@Override
 	public void notifyUnread(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
 		notifyPvt(recipient, privateMsg, false);
@@ -1028,7 +1028,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return getPreferences(user);
 	}
-	
+
 	@Override
 	public long createPoll(PollDTO pollDTO) {
 		Connection conn = null;
@@ -1038,7 +1038,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			Timestamp now = new Timestamp(System.currentTimeMillis());
 			conn = getConnection();
 			conn.setAutoCommit(false);
-			ps = conn.prepareStatement("INSERT INTO poll (title, author, text, creationDate, updateDate) VALUES (?, ?, ?, ?, ?)", 
+			ps = conn.prepareStatement("INSERT INTO poll (title, author, text, creationDate, updateDate) VALUES (?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, pollDTO.getTitle());
 			ps.setString(2, pollDTO.getAuthor());
@@ -1068,7 +1068,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return -1;
 	}
-	
+
 	@Override
 	public boolean updatePollQuestion(PollQuestion pollQuestion, AuthorDTO user) {
 		Connection conn = null;
@@ -1110,17 +1110,17 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public PollsDTO getPollsByDate(int limit, int page) {
 		return  getPollsBy("creationDate", limit, page);
 	}
-	
+
 	@Override
 	public PollsDTO getPollsByLastVote(int limit, int page) {
 		return  getPollsBy("updateDate", limit, page);
 	}
-	
+
 	public PollsDTO getPollsBy(String by, int limit, int page) {
 		List<PollDTO> res = new ArrayList<PollDTO>();
 		int nrOfPolls = 0;
@@ -1147,7 +1147,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return new PollsDTO(res, nrOfPolls);
 	}
-	
+
 	@Override
 	public PollDTO getPoll(long pollId) {
 		Connection conn = null;
@@ -1167,7 +1167,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<NotificationDTO> getNotifications(String fromNick, String toNick) {
 		List<NotificationDTO> res = new ArrayList<NotificationDTO>();
@@ -1209,7 +1209,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return res;
 	}
-	
+
 	@Override
 	public void removeNotification(String fromNick, String toNick, long id) {
 		Connection conn = null;
@@ -1236,7 +1236,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	@Override
 	public void createNotification(String fromNick, String toNick, long msgId) {
 		Connection conn = null;
@@ -1256,7 +1256,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	private List<String> getPollVoterNicks(Connection conn, long pollId) {
 		List<String> ret = new ArrayList<String>();
 		PreparedStatement ps = null;
@@ -1367,7 +1367,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			message.setAuthor(getAuthor(rs.getString("author")));
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
-			message.setIsVisible(rs.getBoolean("visible"));
+			message.setIsVisible(rs.getInt("visible"));
 			message.setRank(rs.getInt("rank"));
 
 			if (search) {
@@ -1390,7 +1390,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
 			message.setNumberOfMessages(getNumberOfMessages(message.getId()));
-			message.setIsVisible(rs.getBoolean("visible"));
+			message.setIsVisible(rs.getInt("visible"));
 			message.setRank(rs.getInt("rank"));
 			messages.add(message);
 		}
@@ -1568,14 +1568,14 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public void restoreOrHideMessage(long msgId, boolean visible) {
+	public void restoreOrHideMessage(long msgId, int visible) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE messages SET visible = ? WHERE id = ?");
-			ps.setBoolean(1, visible);
+			ps.setInt(1, visible);
 			ps.setLong(2, msgId);
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -1636,7 +1636,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	@Override
 	public int like(long msgId, String nick, boolean upvote) {
 		Connection conn = null;
@@ -1648,19 +1648,19 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(1, nick);
 			ps.setLong(2, msgId);
 			rs = ps.executeQuery();
-			
+
 			boolean hasVoted = rs.next();
 			boolean oldVote = hasVoted && rs.getBoolean(1);
-			
+
 			rs.close();
 			ps.close();
-			
-			
+
+
 			if (hasVoted && oldVote == upvote) {
 				// doppio voto, stessa direzione
 				return 0;
 			}
-			
+
 			int voteValue =
 					hasVoted
 						? upvote
@@ -1669,13 +1669,13 @@ public abstract class GenericSQLPersistence implements IPersistence {
 						: upvote
 							? 1
 							: -1;
-			
+
 			conn.setAutoCommit(false);
 			ps = conn.prepareStatement("UPDATE messages SET rank = rank " + (upvote ? "+" : "-") + (hasVoted ? "2" : "1")+ " WHERE id = ?");
 			ps.setLong(1, msgId);
 			ps.executeUpdate();
 			ps.close();
-			
+
 			if (!hasVoted) {
 				ps = conn.prepareStatement("INSERT INTO likes (nick, msgId, vote) VALUES (?, ?, ?)");
 				ps.setString(1, nick);
@@ -1700,7 +1700,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	private void increaseNumberOfMessages(String forum, boolean isNewThread) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1801,7 +1801,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	public boolean blockTorExitNodes() {
 		return "checked".equals(getSysinfoValue("blockTorExitNodes"));
 	}
-	
+
 	public long getLastId() {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1819,7 +1819,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	public List<BookmarkDTO> getBookmarks(AuthorDTO owner) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1847,7 +1847,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 		return ret;
 	}
-	
+
 	public boolean existsBookmark(BookmarkDTO bookmark) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1866,7 +1866,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	public void addBookmark(BookmarkDTO bookmark) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1885,7 +1885,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	public void deleteBookmark(BookmarkDTO bookmark) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1903,7 +1903,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	public void editBookmark(BookmarkDTO bookmark) {
 		Connection conn = null;
 		PreparedStatement ps = null;

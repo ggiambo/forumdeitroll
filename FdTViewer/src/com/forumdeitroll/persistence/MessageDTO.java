@@ -27,7 +27,9 @@ public class MessageDTO extends ThreadDTO {
 	}
 
 	public String getText() {
-		return ((getForum() != null) && (getForum().equals(IPersistence.FORUM_ASHES))) ? "Cenere alla cenere, polvere alla polvere" : text;
+		if ((getForum() != null) && (getForum().equals(IPersistence.FORUM_ASHES))) return "Cenere alla cenere, polvere alla polvere";
+		if (getVisible() < 0) return "(messaggio bannato)";
+		return text;
 	}
 
 	public void setText(String text) {

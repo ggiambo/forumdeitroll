@@ -88,7 +88,7 @@ public interface IPersistence extends Serializable {
 	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients);
 
 	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg);
-	
+
 	public void notifyUnread(AuthorDTO recipient, PrivateMsgDTO privateMsg);
 
 	public boolean checkForNewPvts(AuthorDTO author);
@@ -115,7 +115,7 @@ public interface IPersistence extends Serializable {
 
 	public PollDTO getPoll(long pollId);
 
-	public void restoreOrHideMessage(long msgId, boolean visible);
+	public void restoreOrHideMessage(long msgId, int visible);
 
 	public void setSysinfoValue(String key, String value);
 
@@ -128,19 +128,19 @@ public interface IPersistence extends Serializable {
 	public void removeNotification(String fromNick, String toNick, long id);
 
 	public void createNotification(String fromNick, String toNick, long id);
-	
+
 	public long getLastId();
-	
+
 	public List<BookmarkDTO> getBookmarks(AuthorDTO owner);
-	
+
 	public boolean existsBookmark(BookmarkDTO bookmark);
-	
+
 	public void addBookmark(BookmarkDTO bookmark);
-	
+
 	public void deleteBookmark(BookmarkDTO bookmark);
 
 	public void editBookmark(BookmarkDTO bookmark);
-	
+
 	/**
 	 * Like/unlike di un messaggio (+1/-1). Ritorna true se l'operazione e' permessa.
 	 * @param msgId

@@ -74,7 +74,7 @@ public class Messages extends MainServlet {
 			req.setAttribute("notifications", getPersistence().getNotifications(null, author.getNick()));
 		}
 	}
-	
+
 	/**
 	 * I messaggi di questa pagina (Dimensione PAGE_SIZE) in ordine di data
 	 * @param req
@@ -163,7 +163,7 @@ public class Messages extends MainServlet {
 				// Ma che c'� frega ma che ce 'mporta ...
 			}
 		}
-		
+
 		return "messages.jsp";
 	}
 
@@ -178,10 +178,10 @@ public class Messages extends MainServlet {
 	String search(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		final String search = req.getParameter("search");
 		final String sort = req.getParameter("sort");
-		
+
 		addSpecificParam(req, "search", search);
 		addSpecificParam(req, "sort", sort);
-		
+
 		setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
 
 //		List<MessageDTO> messages = getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req));
@@ -190,7 +190,7 @@ public class Messages extends MainServlet {
 		setAntiXssToken(req);
 		return "messages.jsp";
 	}
-	
+
 	/**
 	 * Popola il div per la risposta/quota messaggio
 	 * @param req
@@ -255,7 +255,7 @@ public class Messages extends MainServlet {
 
 		//jstl non accede ai campi stitici
 		req.setAttribute("MAX_MESSAGE_LENGTH", MAX_MESSAGE_LENGTH);
-		
+
 		getServletContext().getRequestDispatcher("/pages/messages/incReplyMessage.jsp").forward(req, res);
 		return null;
 	}
@@ -349,9 +349,9 @@ public class Messages extends MainServlet {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
-		
+
 		text = InputSanitizer.sanitizeText(text);
-		
+
 		writer.name("content").value(MessageTag.getMessageStatic(text, null, author, null));
 		writer.endObject();
 		writer.flush();
@@ -442,7 +442,7 @@ public class Messages extends MainServlet {
 		writer.flush();
 		writer.close();
 	}
-	
+
 	protected void insertMessageAjaxFail(final HttpServletResponse res, final String error) throws IOException {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
@@ -497,6 +497,7 @@ public class Messages extends MainServlet {
 		}
 
 		UserProfile profile = null;
+		boolean bannato = false;
 		try {
 			// un errore nel profiler non preclude la funzionalita' del forum, ma bisogna tenere d'occhio i logs
 			UserProfile candidate = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
@@ -509,18 +510,18 @@ public class Messages extends MainServlet {
 						"E` stato riconosciuto come bannato il seguente profilo utente: "+new Gson().toJson(candidate));
 				Logger.getLogger(Messages.class).info(
 						"Il profilo utente a cui e` stato associato è "+new Gson().toJson(profile));
-				return null;
+				bannato = true;
 			}
 		} catch (Exception e) {
 			Logger.getLogger(Messages.class).error("ERRORE IN PROFILAZIONE!! "+e.getClass().getName() + ": "+e.getMessage(), e);
 			insertMessageAjaxFail(res, "Errore durante l'inserimento del messaggio. La suora sa perché.");
-			return null;
+			bannato = true;
 		}
 
 		req.getSession().removeAttribute("captcha");
 
 		String text = req.getParameter("text");
-		
+
 		text = InputSanitizer.sanitizeText(text);
 
 		// reply o messaggio nuovo ?
@@ -530,6 +531,7 @@ public class Messages extends MainServlet {
 		msg.setParentId(parentId);
 		msg.setDate(new Date());
 		msg.setText(text);
+		if (bannato) msg.setIsVisible(-1);
 		msg.setSubject(InputSanitizer.sanitizeSubject(req.getParameter("subject")));
 		if (parentId > 0) {
 			long id = Long.parseLong(req.getParameter("id"));
@@ -689,7 +691,7 @@ public class Messages extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String hideMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    	return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), false);
+        return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
 	}
 
 	/**
@@ -697,10 +699,10 @@ public class Messages extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String restoreHiddenMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-    	return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), true);
+        return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 1);
 	}
 
-	private String restoreOrHideMessage(HttpServletRequest req, HttpServletResponse res, long msgId, boolean visible)  throws Exception {
+	private String restoreOrHideMessage(HttpServletRequest req, HttpServletResponse res, long msgId, int visible)  throws Exception {
     	AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
     	if (loggedUser == null) {
     		return getMessages(req, res, NavigationMessage.error("Non furmigare !"));
@@ -730,7 +732,7 @@ public class Messages extends MainServlet {
 		res.getWriter().write(quote.getContent()+'\n'+quote.getNick());
 		return null;
 	}
-	
+
 	/**
 	 * up/downVote
 	 */

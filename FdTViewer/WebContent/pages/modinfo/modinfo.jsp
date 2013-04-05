@@ -27,6 +27,11 @@
 				<div style="clear: both;"></div>
 			</div>
 		</div>
+		<h2>Messaggio</h2>
+		<div class="messagesBox msgEven">
+			<c:set var="index" value="0" scope="request"/>
+			<jsp:include page="../incMessage.jsp"/>
+		</div>
 	</div>
 </div>
 <div id="footer"></div>
