@@ -20,6 +20,9 @@
 
 <div id="main">
 	<div class="userPanelCaption">Panopticon</div>
+	<form action="UserProfiler" method="post">
+		<input type="submit" name="action" value="cleanup">
+	</form>
 	<c:forEach items="${profiles}" var="profile" varStatus="index">
 		<div class="userPanel">
 			<p>uuid: ${profile.uuid}</p>

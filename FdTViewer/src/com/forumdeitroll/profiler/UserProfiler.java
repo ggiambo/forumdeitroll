@@ -3,6 +3,7 @@ package com.forumdeitroll.profiler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.TreeSet;
 import java.util.UUID;
 
@@ -216,5 +217,16 @@ public class UserProfiler {
 		to.setBannato(to.isBannato() || from.isBannato());
 		profiles.remove(from);
 		return to;
+	}
+	
+	public void cleanup() {
+		synchronized (profiles) {
+			for (ListIterator<UserProfile> pIt = profiles.listIterator(); pIt.hasNext();) {
+				UserProfile profile = pIt.next();
+				if (!profile.isBannato()) {
+					pIt.remove();
+				}
+			}
+		}
 	}
 }

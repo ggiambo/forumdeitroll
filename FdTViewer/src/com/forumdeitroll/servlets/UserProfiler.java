@@ -284,4 +284,16 @@ public class UserProfiler extends MainServlet {
 		}
 		return page(req);
 	}
+	
+	@Action(method=Action.Method.POST)
+	String cleanup(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
+		if (!isAdmin) {
+			return null;
+		}
+		if (profiler.isProfilerEnabled) {
+			profiler.cleanup();
+		}
+		return page(req);
+	}
 }
