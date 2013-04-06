@@ -1,6 +1,8 @@
 package com.forumdeitroll;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -55,7 +57,10 @@ public class MessageTag extends BodyTagSupport {
 //			body = getBodyContent().getString().toCharArray();
 //			getBodyContent().getEnclosingWriter().write(getMessage().toString());
 			RenderOptions opts = new RenderOptions();
+			opts.renderImages = ! isRenderingSignature();
+			opts.renderYoutube = ! isRenderingSignature();
 			opts.collapseQuotes =
+				! isRenderingSignature() &&
 				"checked".equals(
 					loggedUser != null
 						? loggedUser.getPreferences().get(User.PREF_COLLAPSE_QUOTES)
@@ -92,19 +97,41 @@ public class MessageTag extends BodyTagSupport {
 	// ----- message parsing -----
 
 	// per la preview
-	public static String getMessageStatic(String body, String search, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
-		MessageTag messageTag = new MessageTag();
-		messageTag.setSearch(search);
-		messageTag.setAuthor(author);
-		messageTag.body = body.toCharArray();
-		messageTag.loggedUser = loggedUser;
-		try {
-			return messageTag.getMessage().toString();
-		} catch (Exception e) {
-			LOG.error("Errore durante il rendering del post "+e.getMessage(), e);
-			LOG.error("BODY:\n"+new String(messageTag.body));
-			throw new JspTagException(e);
-		}
+	public static String getMessagePreview(String body, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
+		RenderOptions opts = new RenderOptions();
+		opts.collapseQuotes =
+			"checked".equals(
+				loggedUser != null && loggedUser.getNick() != null
+					? loggedUser.getPreferences().get(User.PREF_COLLAPSE_QUOTES)
+					: null);
+		opts.embedYoutube =
+			! StringUtils.isEmpty(
+				loggedUser != null && loggedUser.getNick() != null
+					? loggedUser.getPreferences().get(User.PREF_EMBEDDYT)
+					: "yes");
+		opts.showImagesPlaceholder =
+			StringUtils.isEmpty(
+				loggedUser != null && loggedUser.getNick() != null
+					? loggedUser.getPreferences().get(User.PREF_SHOWANONIMG)
+					: "yes");
+		opts.authorIsAnonymous =
+			author != null && StringUtils.isEmpty(author.getNick());
+		StringReader in = new StringReader(body);
+		StringWriter out = new StringWriter();
+		Renderer.render(in, out, opts);
+		return out.toString();
+//		MessageTag messageTag = new MessageTag();
+//		messageTag.setSearch(search);
+//		messageTag.setAuthor(author);
+//		messageTag.body = body.toCharArray();
+//		messageTag.loggedUser = loggedUser;
+//		try {
+//			return messageTag.getMessage().toString();
+//		} catch (Exception e) {
+//			LOG.error("Errore durante il rendering del post "+e.getMessage(), e);
+//			LOG.error("BODY:\n"+new String(messageTag.body));
+//			throw new JspTagException(e);
+//		}
 	}
 
 	private AuthorDTO loggedUser;

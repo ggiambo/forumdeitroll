@@ -1,6 +1,8 @@
 package com.forumdeitroll.servlets;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -26,6 +28,8 @@ import org.apache.log4j.Logger;
 import com.forumdeitroll.MessageTag;
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.markup.InputSanitizer;
+import com.forumdeitroll.markup.RenderOptions;
+import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
@@ -352,7 +356,8 @@ public class Messages extends MainServlet {
 
 		text = InputSanitizer.sanitizeText(text);
 
-		writer.name("content").value(MessageTag.getMessageStatic(text, null, author, null));
+		
+		writer.name("content").value(MessageTag.getMessagePreview(text, author, author));
 		writer.endObject();
 		writer.flush();
 		writer.close();
@@ -370,7 +375,17 @@ public class Messages extends MainServlet {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
-		writer.name("content").value(MessageTag.getMessageStatic(msg.getText(), null, msg.getAuthor(), null));
+		
+		RenderOptions opts = new RenderOptions();
+		opts.authorIsAnonymous = msg.getAuthor() == null;
+		opts.collapseQuotes = "yes".equals(req.getParameter(User.PREF_COLLAPSE_QUOTES));
+		opts.embedYoutube = "yes".equals(req.getParameter(User.PREF_EMBEDDYT));
+		opts.showImagesPlaceholder = "yes".equals(req.getParameter(User.PREF_SHOWANONIMG));
+		StringReader in = new StringReader(msg.getText());
+		StringWriter out = new StringWriter();
+		Renderer.render(in, out, opts);
+		
+		writer.name("content").value(out.toString());
 		writer.endObject();
 		writer.flush();
 		writer.close();
