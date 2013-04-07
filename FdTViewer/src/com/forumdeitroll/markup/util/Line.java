@@ -33,7 +33,7 @@ public class Line {
 			if (quoteLvl == 0 && scrittoda == 0) {
 				quoteLvl++;
 			} else {
-				int prefixlen = quoteLvl * (QUOTE.length + 1);
+				int prefixlen = BR.length + quoteLvl * (QUOTE.length + 1);
 				if (quoteLvl > 0 && (prefixlen == scrittoda || (prefixlen - 1) == scrittoda)) {
 					quoteLvl++;
 				}
@@ -95,7 +95,7 @@ public class Line {
 			if (quoteLvl == 0 && scrittoda == 0) {
 				quoteLvl++;
 			} else {
-				int prefixlen = quoteLvl * (QUOTE.length + 1);
+				int prefixlen = BR.length + quoteLvl * (QUOTE.length + 1);
 				if (quoteLvl > 0 && (prefixlen == scrittoda || (prefixlen - 1) == scrittoda)) {
 					quoteLvl++;
 				}
