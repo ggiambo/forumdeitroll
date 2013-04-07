@@ -109,7 +109,9 @@ public class Word {
 
 	private static boolean autolink(RenderIO io, RenderState state, RenderOptions opts, int end) throws IOException {
 		if (Links.isLink(io.buffer, 0, end)) {
-			int[] boundaries = YouTube.extractYoucode(io.buffer, 0, end);
+			int[] boundaries = opts.renderYoutube
+				? YouTube.extractYoucode(io.buffer, 0, end)
+				: null;
 			if (boundaries != null && state.embedCount < YouTube.MAX_EMBED) {
 				if (opts.embedYoutube) {
 					YouTube.writeYtEmbed(io.out, io.buffer, boundaries[0], boundaries[1] - boundaries[0]);
