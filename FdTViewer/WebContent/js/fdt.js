@@ -63,6 +63,7 @@ function preview(parentId) {
 				// swap bottoni
 				$("#reply_" + parentId + " :input[name='preview']").hide();
 				$("#reply_" + parentId + " :input[name='edit']").show();
+				$("#reply_" + parentId + " .quote-container").on('click', openQuotes);
 			} else if (data.resultCode == "MSG") {
 				alert(data.content);
 			} else if (data.resultCode == "ERROR") {
