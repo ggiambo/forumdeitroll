@@ -526,6 +526,7 @@ public class Messages extends MainServlet {
 				Logger.getLogger(Messages.class).info(
 						"Il profilo utente a cui e` stato associato è "+new Gson().toJson(profile));
 				bannato = true;
+				return null;
 			}
 		} catch (Exception e) {
 			Logger.getLogger(Messages.class).error("ERRORE IN PROFILAZIONE!! "+e.getClass().getName() + ": "+e.getMessage(), e);
