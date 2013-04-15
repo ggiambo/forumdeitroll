@@ -356,7 +356,7 @@ public class Messages extends MainServlet {
 
 		text = InputSanitizer.sanitizeText(text);
 
-		
+
 		writer.name("content").value(MessageTag.getMessagePreview(text, author, author));
 		writer.endObject();
 		writer.flush();
@@ -375,7 +375,7 @@ public class Messages extends MainServlet {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
-		
+
 		RenderOptions opts = new RenderOptions();
 		opts.authorIsAnonymous = msg.getAuthor() == null;
 		opts.collapseQuotes = "yes".equals(req.getParameter(User.PREF_COLLAPSE_QUOTES));
@@ -384,7 +384,7 @@ public class Messages extends MainServlet {
 		StringReader in = new StringReader(msg.getText());
 		StringWriter out = new StringWriter();
 		Renderer.render(in, out, opts);
-		
+
 		writer.name("content").value(out.toString());
 		writer.endObject();
 		writer.flush();
@@ -526,7 +526,6 @@ public class Messages extends MainServlet {
 				Logger.getLogger(Messages.class).info(
 						"Il profilo utente a cui e` stato associato è "+new Gson().toJson(profile));
 				bannato = true;
-				return null;
 			}
 		} catch (Exception e) {
 			Logger.getLogger(Messages.class).error("ERRORE IN PROFILAZIONE!! "+e.getClass().getName() + ": "+e.getMessage(), e);
@@ -547,7 +546,9 @@ public class Messages extends MainServlet {
 		msg.setParentId(parentId);
 		msg.setDate(new Date());
 		msg.setText(text);
-		if (bannato) msg.setIsVisible(-1);
+		if (bannato) {
+			msg.setIsVisible(-1);
+		}
 		msg.setSubject(InputSanitizer.sanitizeSubject(req.getParameter("subject")));
 		if (parentId > 0) {
 			long id = Long.parseLong(req.getParameter("id"));
@@ -572,6 +573,10 @@ public class Messages extends MainServlet {
 					getPersistence().updateAuthor(author);
 				}
 			}
+
+			if (bannato) {
+				restoreTitleFromParent(msg, parentId);
+			}
 		} else {
 			// nuovo messaggio
 			String forum = req.getParameter("forum");
@@ -579,6 +584,9 @@ public class Messages extends MainServlet {
 				forum = null;
 			} else {
 				forum = InputSanitizer.sanitizeForum(forum);
+			}
+			if (bannato) {
+				forum = IPersistence.FORUM_ASHES;
 			}
 			msg.setForum(forum);
 			msg.setThreadId(-1);
@@ -650,6 +658,12 @@ public class Messages extends MainServlet {
 		writer.flush();
 		writer.close();
 		return null;
+	}
+
+	protected void restoreTitleFromParent(final MessageDTO msg, final long parentId) {
+		final MessageDTO parent = getPersistence().getMessage(parentId);
+		if (parent == null) return;
+		msg.setSubject(parent.getSubjectReal());
 	}
 
 	protected void forShame(final AuthorDTO author, final String shameTitle, final String shameMessage) {
