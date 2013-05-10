@@ -422,7 +422,7 @@ public class Messages extends MainServlet {
 		final AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
 		String nick = req.getParameter("nick");
 		String pass = req.getParameter("pass");
-		if (loggedUser != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
+		if (loggedUser != null && loggedUser.getNick() != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
 			// posta come utente loggato
 			return loggedUser;
 		} else if ((loggedUser != null) && StringUtils.isEmpty(nick)) {
