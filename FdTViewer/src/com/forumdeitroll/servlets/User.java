@@ -33,7 +33,7 @@ public class User extends MainServlet {
 	public static final int MAX_SIZE_AVATAR_BYTES = 512*1024;
 	public static final long MAX_SIZE_AVATAR_WIDTH = 100;
 	public static final long MAX_SIZE_AVATAR_HEIGHT = 100;
-	
+
 	public static final int MAX_SIZE_SIGNATURE_BYTES = 512*1024;
 	public static final long MAX_SIZE_SIGNATURE_WIDTH = 530;
 	public static final long MAX_SIZE_SIGNATURE_HEIGHT = 50;
@@ -473,11 +473,15 @@ public class User extends MainServlet {
 				UserProfiler.getInstance().isProfilerEnabled = true;
 			}
 			req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
+
+			String javascript = req.getParameter("javascript");
+			getPersistence().setSysinfoValue("javascript", javascript);
+			req.setAttribute("javascript", javascript);
 		}
 
 		return "user.jsp";
 	}
-	
+
 	/**
 	 * Mostra le notifiche
 	 * @param req
@@ -491,14 +495,14 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
 		}
-		
+
 		setWebsiteTitle(req, "Notifiche @ Forum dei Troll");
 		req.setAttribute("notificationsFrom", getPersistence().getNotifications(loggedUser.getNick(), null));
 		req.setAttribute("notificationsTo", getPersistence().getNotifications(null, loggedUser.getNick()));
-		
+
 		return "notifications.jsp";
 	}
-	
+
 	/**
 	 * Mostra le notifiche
 	 * @param req
@@ -512,15 +516,15 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
 		}
-		
+
 		setWebsiteTitle(req, "Notifiche @ Forum dei Troll");
-		
+
 		long notificationId = Long.parseLong(req.getParameter("notificationId"));
 		getPersistence().removeNotification(loggedUser.getNick(), null, notificationId);
-		
+
 		return getNotifications(req, res);
 	}
-	
+
 	/**
 	 * Notifica un utente
 	 * @param req
@@ -540,7 +544,7 @@ public class User extends MainServlet {
 			writer.close();
 			return null;
 		}
-		
+
 		String toNick = req.getParameter("toNick");
 		if (StringUtils.isEmpty(toNick)) {
 			writer.beginObject();
@@ -551,7 +555,7 @@ public class User extends MainServlet {
 			writer.close();
 			return null;
 		}
-		
+
 		long msgId;
 		try {
 			msgId = Long.parseLong(req.getParameter("msgId"));
@@ -564,7 +568,7 @@ public class User extends MainServlet {
 			writer.close();
 			return null;
 		}
-		
+
 		if (getPersistence().getNotifications(loggedUser.getNick(), null).size() > 9) {
 			writer.beginObject();
 			writer.name("resultCode").value("ERROR");
@@ -574,14 +578,14 @@ public class User extends MainServlet {
 			writer.close();
 			return null;
 		}
-		
+
 		getPersistence().createNotification(loggedUser.getNick(), toNick, msgId);
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
 		writer.endObject();
 		writer.flush();
 		writer.close();
-		
+
 		return null;
 	}
 
@@ -657,7 +661,7 @@ public class User extends MainServlet {
 		}
 		setNavigationMessage(req, NavigationMessage.info("Firma modificato con successo !"));
 		return "user.jsp";
-		
+
 	}
 
 	protected static final class AvailableTorRegistrations {

@@ -9,7 +9,7 @@
 
 <!DOCTYPE html>
 <html>
-	
+
 	<%-- c'e' sempre la possibilita' che i response headers siano gia' committati, ma vuol dire che abbiamo
 	outputtato +4k prima di arrivare qua. visto che prima di <head> c'e' solo <html> e gli header
 	e' una possibilita' molto remota --%>
@@ -18,7 +18,7 @@
 	<head>
 		<% String tmst = ""; %>
 		<c:if test="${not empty loggedUser && loggedUser.preferences['autoRefresh'] == 'checked' && refreshable == 1}">
-			<% tmst = "[" + new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date()) + "] ";%>	
+			<% tmst = "[" + new java.text.SimpleDateFormat("HH:mm").format(new java.util.Date()) + "] ";%>
 		</c:if>
 		<c:choose>
 			<c:when test="${websiteTitle != ''}">
@@ -67,7 +67,7 @@
 			</c:if>
 
 			<jsp:include page="incNav.jsp"/>
-			
+
 			<%-- notifiche --%>
 			<c:if test="${not empty notifications && (servlet eq 'Messages' or servlet eq 'Threads')}">
 				<input type="hidden" name="notificationId" id="notificationId" />
@@ -80,7 +80,7 @@
 					</c:forEach>
 				</div>
 			</c:if>
-			
+
 			<%--- notifiche per moderatori --%>
 			<c:if test="${not empty loggedUser}">
 				<c:if test="${loggedUser.preferences['super'] == 'yes'}">
@@ -95,20 +95,20 @@
 			<%-- se forum e' Proc di Catania, mostra pedobear --%>
 			<c:set var="bodyContentClass" value="" scope="page" />
 			<c:if test="${param.forum == 'Proc di Catania'}">
-				<c:set var="bodyContentClass" value="pb" scope="page" />  
+				<c:set var="bodyContentClass" value="pb" scope="page" />
 			</c:if>
 			<div id="bodyContent" class="<c:out value='${bodyContentClass}' />">
-			
+
 				<%-- sidebar per la navigazione --%>
 				<jsp:include page="incSidebar.jsp"/>
-				
+
 				<%-- la pagina vera e propria --%>
 				<jsp:include page="${fn:toLowerCase(servlet)}/${page}" />
-				
+
 				<div style="clear: both;"></div>
 			</div>
 		</div>
-		
+
 		<%-- bottom line --%>
 		<div id="bottomLine">
 			<p id="copyRight">Copyright &copy; 2012-<%= ""+Calendar.getInstance().get(Calendar.YEAR) %> Fondazione Gatto Selvaggio</p>
@@ -116,7 +116,7 @@
 				<p id="genTime">Pagina generata in <%=System.currentTimeMillis() - (Long)request.getAttribute("currentTimeMillis")%> millisecondi</p>
 			</c:if>
 		</div>
-		
+
 		<%-- i vari scripts --%>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script src="js/underscore.1.4.4.min.js"></script>
@@ -147,6 +147,11 @@
 		<fdt:delayedScript dump="true">
 			questo non verra' stampato, ma se lo togli la taglib non viene eseguita
 		</fdt:delayedScript>
-		
+		<script type="text/javascript">
+		jQuery("document").ready(function(){
+			${javascript}
+		});
+		</script>
+
 	</body>
 </html>

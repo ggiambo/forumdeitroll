@@ -3,7 +3,7 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<div id="main">	
+<div id="main">
 	<div class="userPanel">
 		<div class="userPanelCaption">Pannello Utente</div>
 		<div class="userPanelContent">
@@ -70,7 +70,7 @@
 					<p>Limitazioni: dimensione massima consentita <%=""+User.MAX_SIZE_AVATAR_BYTES%> bytes, altezza <%=""+User.MAX_SIZE_AVATAR_HEIGHT %> pixels, larghezza <%=""+User.MAX_SIZE_AVATAR_WIDTH %> pixels</p>
 				</form>
 			</div>
-			
+
 			<div class="userPanelSection">
 				<h3>Firma</h3>
 				<form action="User?action=updateSignature" method="post" enctype="multipart/form-data">
@@ -98,7 +98,7 @@
 					<input type="submit" name="submitBtn" value="Elimina" class="sendUserPanel" />
 					<input type="submit" name="submitBtn" value="Modifica" class="sendUserPanel"/>
 					<div style="clear: both;"></div>
-				</form>		
+				</form>
 			</div>
 
 			<div class="userPanelSection">
@@ -177,7 +177,7 @@
 						<div style="clear: both;"></div>
 					</div>
 					<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
-						<hr/>								
+						<hr/>
 						<div class="inputUserPanel">
 							<input type="checkbox" name="<%=User.ADMIN_PREF_BLOCK_TOR%>" id="<%=User.ADMIN_PREF_BLOCK_TOR%>" ${blockTorExitNodes} />
 						</div>
@@ -192,8 +192,15 @@
 							<label for="<%=User.ADMIN_PREF_DISABLE_PROFILER%>" class="lbl">Disattiva il profiler:</label>
 						</div>
 						<div style="clear: both;"></div>
+						<div class="lblUserPanel">
+							<label for="javascript" class="lbl">Javascript:</label>
+						</div>
+						<div class="inputUserPanel">
+							<textarea name="javascript" id="javascript">${fn:replace(fn:replace(javascript,'<br>',''), '<BR>','')}</textarea>
+						</div>
+						<div style="clear: both;"></div>
 					</c:if>
-					
+
 					<input type="submit" value="Modifica" class="sendUserPanel" />
 				</form>
 				<div style="clear: both;"></div>

@@ -137,6 +137,9 @@ public abstract class MainServlet extends HttpServlet {
 		// random quote
 		req.setAttribute("randomQuote", getRandomQuoteDTO(req, res));
 
+		// javascript maGGico
+		req.setAttribute("javascript", persistence.getSysinfoValue("javascript"));
+
 		// user
 		String loggedUserNick = (String)req.getSession().getAttribute(LOGGED_USER_SESS_ATTR);
 		String sidebarStatus = null;
@@ -447,7 +450,7 @@ public abstract class MainServlet extends HttpServlet {
 						}
 					}
 					// Una key puo' avere value == null, cosi' da evitare la ricerca in futuro.
-					actionMethodCache.put(action, actionMethod); 
+					actionMethodCache.put(action, actionMethod);
 				}
 			}
 		} else {
