@@ -37,8 +37,11 @@ public class ThreadDTO {
 	}
 
 	public String getSubject() {
-		if ((forum != null) && (forum.equals(IPersistence.FORUM_ASHES))) return "Cenere alla cenere, polvere alla polvere";
 		if (isVisible < 0) return "(messaggio bannato)";
+		return subject;
+	}
+
+	public String getSubjectReal() {
 		return subject;
 	}
 
@@ -100,7 +103,7 @@ public class ThreadDTO {
 		return sb.toString();
 	}
 
-	protected int getVisible() {
+	public int getVisibleReal() {
 		return isVisible;
 	}
 

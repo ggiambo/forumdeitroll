@@ -136,11 +136,15 @@ public class ModInfo extends MainServlet {
 		}
 
 		try {
-			getPersistence().moveThreadTree(Long.parseLong(m_id), IPersistence.FORUM_ASHES);
+			final long id = Long.parseLong(m_id);
+			getPersistence().moveThreadTree(id, IPersistence.FORUM_ASHES);
+			getPersistence().restoreOrHideMessage(id, -1);
 		} catch (NumberFormatException e) {
 			setNavigationMessage(req, NavigationMessage.error("Errore durante l'esecuzione della richiesta: " + e.getMessage()));
 			return show(req, res);
 		}
+
+
 
 		return show(req, res);
 	}

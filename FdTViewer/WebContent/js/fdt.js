@@ -350,7 +350,7 @@ var YTCreateScriptTag = function(elem, youcode) {
 	};
 	var script = document.createElement('script');
 	script.type = 'text/javascript';
-	script.src = 'http://gdata.youtube.com/feeds/api/videos/' +
+	script.src = '//gdata.youtube.com/feeds/api/videos/' +
 		youcode + '?v=2&alt=json-in-script&callback=YTCallback_' + myId;
 	document.body.appendChild(script);
 	

@@ -10,9 +10,9 @@ public class Images {
 	
 	private static final char[] IMG = "[img]".toCharArray();
 	private static final char[] IMG_END = "[/img]".toCharArray();
-	private static final char[] ANONIMG_START = "<a href=\"".toCharArray();
+	private static final char[] ANONIMG_START = "<a rel='nofollow noreferrer' target='_blank' href=\"".toCharArray();
 	private static final char[] ANONIMG_END = "\">Immagine postata da ANOnimo</a>".toCharArray();
-	private static final char[] EMBEDDED_IMAGE_START = "<a rel='nofollow noreferrer' class='preview' href=\"".toCharArray();
+	private static final char[] EMBEDDED_IMAGE_START = "<a rel='nofollow noreferrer' target='_blank' class='preview' href=\"".toCharArray();
 	private static final char[] EMBEDDED_IMAGE_MID = "\"><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src=\"".toCharArray();
 	private static final char[] EMBEDDED_IMAGE_END = "\"></a>".toCharArray();
 	

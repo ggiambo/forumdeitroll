@@ -269,8 +269,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE messages set text = ?, subject = ? where id = ?");
 			int i = 1;
-			ps.setString(i++, message.getText());
-			ps.setString(i++, message.getSubject());
+			ps.setString(i++, message.getTextReal());
+			ps.setString(i++, message.getSubjectReal());
 			ps.setLong(i++, message.getId());
 			ps.execute();
 			return message.getId();
@@ -289,16 +289,17 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		try {
 			conn = getConnection();
 			conn.setAutoCommit(false);
-			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date, visible) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
 			ps.setLong(i++, message.getParentId());
 			ps.setLong(i++, message.getThreadId());
-			ps.setString(i++, message.getText());
-			ps.setString(i++, message.getSubject());
+			ps.setString(i++, message.getTextReal());
+			ps.setString(i++, message.getSubjectReal());
 			ps.setString(i++, message.getAuthor().getNick());
 			ps.setString(i++, message.getForum());
 			ps.setTimestamp(i++, new Timestamp(message.getDate().getTime()));
+			ps.setInt(i++, message.getVisibleReal());
 			ps.execute();
 			// update count
 			increaseNumberOfMessages(message.getForum(), false);
@@ -321,14 +322,15 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date) " +
-					"VALUES (-1, -1, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date, visible) " +
+					"VALUES (-1, -1, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
-			ps.setString(i++, message.getText());
-			ps.setString(i++, message.getSubject());
+			ps.setString(i++, message.getTextReal());
+			ps.setString(i++, message.getSubjectReal());
 			ps.setString(i++, message.getAuthor().getNick());
 			ps.setString(i++, message.getForum());
 			ps.setTimestamp(i++, new Timestamp(message.getDate().getTime()));
+			ps.setInt(i++, message.getVisibleReal());
 			ps.execute();
 			// update count
 			increaseNumberOfMessages(message.getForum(), true);

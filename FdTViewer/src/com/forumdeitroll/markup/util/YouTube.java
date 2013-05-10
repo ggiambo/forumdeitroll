@@ -51,7 +51,7 @@ public class YouTube {
 		}
 	}
 	
-	private static final char[] YT_EMBED_START = "<iframe width=\"400\" height=\"329\" src=\"http://www.youtube-nocookie.com/embed/".toCharArray();
+	private static final char[] YT_EMBED_START = "<iframe width=\"400\" height=\"329\" src=\"//www.youtube-nocookie.com/embed/".toCharArray();
 	private static final char[] YT_EMBED_END = "\" frameborder=\"0\" allowfullscreen></iframe>".toCharArray();
 	public static void writeYtEmbed(Writer out, char[] buffer, int offset, int length) throws IOException {
 		out.write(YT_EMBED_START);
@@ -78,7 +78,7 @@ public class YouTube {
 	private static final char[] YT_CLASSIC = ".youtube.com/watch?".toCharArray();
 	private static final char[] YT_SHORTENED = "youtu.be/".toCharArray();
 	private static final char[] INIT_YOUCODE1 = "?v=".toCharArray();
-	private static final char[] INIT_YOUCODE2 = "&amp;v=".toCharArray();
+	private static final char[] INIT_YOUCODE2 = "&v=".toCharArray();
 	private static final char[] AMPERSAND = "&".toCharArray();
 	private static final char[] OCTOTHORPE = "#".toCharArray();
 	
