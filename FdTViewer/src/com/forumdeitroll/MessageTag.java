@@ -3,22 +3,17 @@ package com.forumdeitroll;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.servlets.MainServlet;
-import com.forumdeitroll.servlets.Messages;
 import com.forumdeitroll.servlets.User;
 
 public class MessageTag extends BodyTagSupport {
