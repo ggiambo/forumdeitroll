@@ -141,6 +141,30 @@
 					<li><a href="?action=getLastId">?action=getLastId</a></li>
 				</ul>
 			</dd>
+			
+						
+			<dt>addMessage</dt>
+			<dd>Inserisce un messaggio.<br/>
+				<p class="u">Parametri:</p>
+				<ul>
+					<li><span class="param">nick</span>: Nome dell'utente. Obbligatorio
+					<li><span class="param">password</span>: Password. Obbligatorio
+					<li><span class="param">subject</span>: Soggetto, minimo 3 caratteri e massimo 40 caratteri. Obbligatorio
+					<li><span class="param">text</span>: Corpo del messaggio, minimo 5 caratteri e massimo 40000. Obbligatorio
+					<li><span class="param">forum</span>: Forum nel quale inserire il messaggio. Vedi sotto
+					<li><span class="param">type</span>: Tipo di inserimento. Obbligatorio. Puo' prendere i seguenti valori:
+					<ul>
+						<li><span class="param">new</span>: Nuovo messaggio, il parametro <span class="param">forum</span> e' obbligatorio.
+						<li><span class="param">edit</span>: Edit di un mesagggio, il parametro <span class="param">msgId</span> che identifica il messaggio editato e' obbligatorio.
+						<li><span class="param">quote</span>: Quota di messaggio, il parametro <span class="param">msgId</span> che identifica il messaggio quotato e' obbligatorio.
+						<li><span class="param">reply</span>: Risposta ad un messaggio, il parametro <span class="param">msgId</span> che identifica il messaggio al quale si risponde e' obbligatorio.
+					</ul>
+				</ul>
+				<p class="u">Esempi:</p>
+				<ul>
+					<li><a href="?action=getLastId">?action=getLastId</a></li>
+				</ul>
+			</dd>
 		</dl>
 		Tutte le <i>azioni</i> supportano il parametro "callback", necessario per bypassare la "same origin policy" (JSONP). 
 	</body>
