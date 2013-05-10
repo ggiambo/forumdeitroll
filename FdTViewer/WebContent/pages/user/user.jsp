@@ -196,7 +196,7 @@
 							<label for="javascript" class="lbl">Javascript:</label>
 						</div>
 						<div class="inputUserPanel">
-							<textarea name="javascript" id="javascript">${fn:replace(fn:replace(javascript,'<br>',''), '<BR>','')}</textarea>
+							<textarea name="javascript" id="javascript">${javascript}</textarea>
 						</div>
 						<div style="clear: both;"></div>
 					</c:if>
