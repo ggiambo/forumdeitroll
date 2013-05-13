@@ -114,16 +114,27 @@
 	<div style="clear:both; height: 1px; width: 100%;"></div>
 </div>
 <div id="buttons_${msg.id}">
-
+	<c:if test="${(msg.parentId != -1 and msg.parentId != msg.id and servlet == 'Threads') or (not empty loggedUser)}">
+		<div class="messagesButtonBarLeft">
+	</c:if>
+	<c:if test="${msg.parentId != -1 and msg.parentId != msg.id and servlet == 'Threads'}">
+		<%--pulsantino messaggio parent --%>
+		<div class="buttonBarButton">
+			<a class="buttonBarLink" href="#msg${msg.parentId}">
+				<span class="buttonBarImg buttonBarImgParent"></span>
+			</a>
+		</div>
+	</c:if>
 	<c:if test="${not empty loggedUser}">
 		<%-- Segnalibri --%>
-		<div class="messagesButtonBarLeft">
-			<div class="buttonBarButton">
-				<a class="buttonBarLink" href="Bookmarks?action=add&msgId=${msg.id}">
-					<span class="buttonBarImg buttonBarImgBookmark"></span>
-					Aggiungi ai segnalibri
-				</a>
-			</div>
+		<div class="buttonBarButton">
+			<a class="buttonBarLink" href="Bookmarks?action=add&msgId=${msg.id}">
+				<span class="buttonBarImg buttonBarImgBookmark"></span>
+				Aggiungi ai segnalibri
+			</a>
+		</div>
+	</c:if>
+	<c:if test="${(msg.parentId != -1 and msg.parentId != msg.id and servlet == 'Threads') or (not empty loggedUser)}">
 		</div>
 	</c:if>
 	<div class="messagesButtonBar">

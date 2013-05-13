@@ -396,6 +396,10 @@ span.buttonBarImgModifica {
 span.buttonBarImgBookmark {
 	background-position: -48px -178px;
 }
+span.buttonBarImgParent {
+	width: 12px;
+	background-position: 0px -48px;
+}
 span.buttonBarImgUpvote {
 	width: 12px;
 	background-position: 0px -48px;
