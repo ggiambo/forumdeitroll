@@ -176,6 +176,15 @@
 						</div>
 						<div style="clear: both;"></div>
 					</div>
+					<div>
+						<div class="inputUserPanel">
+							<input type="checkbox" name="<%=User.PREF_BLOCK_HEADER%>" id="<%=User.PREF_BLOCK_HEADER%>" ${loggedUser.preferences['blockHeader']} />
+						</div>
+						<div class="lblUserPanel">
+							<label for="<%=User.PREF_BLOCK_HEADER%>" class="lbl">Header fisso.</label>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
 					<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
 						<hr/>
 						<div class="inputUserPanel">

@@ -301,16 +301,19 @@ jQuery("document").ready(function(){
 		}
 	}, 120000);
 	
-	// header fisso
-    var nav = $('#nav');
-    var start = $(nav).offset().top;
-    $.event.add(window, "scroll", function() {
-        var p = $(window).scrollTop();
-        $(nav).css("position",( p > start) ? "fixed" : "static");
-        $(nav).css("top",( p > start) ? "0px" : "");
-    });
-	
 });
+
+function blockHeader() {
+	// header non scrolla
+	var nav = $('#nav');
+	var start = $(nav).offset().top;
+	$.event.add(window, "scroll", function() {
+		var p = $(window).scrollTop();
+		$(nav).css("position",( p > start) ? "fixed" : "static");
+		$(nav).css("top",( p > start) ? "0px" : "");
+	});
+	nav.css("border-bottom", "2px solid #93998E");
+}
 
 // tasto 'j' per saltare al prossimo messaggio, 'k' per quello precedente
 $("body").on("keypress", function(e) {
