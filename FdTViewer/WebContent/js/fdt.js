@@ -301,6 +301,15 @@ jQuery("document").ready(function(){
 		}
 	}, 120000);
 	
+	// header fisso
+    var nav = $('#nav');
+    var start = $(nav).offset().top;
+    $.event.add(window, "scroll", function() {
+        var p = $(window).scrollTop();
+        $(nav).css("position",( p > start) ? "fixed" : "static");
+        $(nav).css("top",( p > start) ? "0px" : "");
+    });
+	
 });
 
 // tasto 'j' per saltare al prossimo messaggio, 'k' per quello precedente
