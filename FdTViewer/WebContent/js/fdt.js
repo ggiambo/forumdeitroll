@@ -461,9 +461,21 @@ function openNotifyInput(msgId) {
 	
 }
 
-function showAdminButtons(msgId) {
-	$("#OpenMod_" + msgId).remove();
-	$("#buttons_" + msgId).find("div.buttonBarButtonAdmin").show();
+function showHideAdminButtons(msgId) {
+	var messagesButtonBar = $("#buttons_" + msgId + " > .messagesButtonBar");
+	messagesButtonBar.hide("slide", { direction: "right" }, 500, function() {
+		var modButtonsVisible = messagesButtonBar.data("modButtonsVisible") ? true : false;
+		if (modButtonsVisible) {
+			messagesButtonBar.find("div.buttonBarButton").show();
+			messagesButtonBar.find("div.buttonBarButtonAdmin").hide();
+			$("#OpenMod_" + msgId).show();
+		} else {
+			messagesButtonBar.find("div.buttonBarButton").hide();
+			messagesButtonBar.find("div.buttonBarButtonAdmin").show();
+		}
+		messagesButtonBar.data("modButtonsVisible", !modButtonsVisible);
+		messagesButtonBar.show("slide", { direction: "right" }, 500);
+	});
 }
 
 function createIrcbox() {

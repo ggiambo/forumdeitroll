@@ -141,7 +141,7 @@
 		<c:if test="${not empty loggedUser}">
 			<c:if test="${loggedUser.preferences['super'] == 'yes' || loggedUser.preferences['pedonizeThread'] == 'yes' || loggedUser.preferences['hideMessages'] == 'yes'}">
 				<div class="buttonBarButton buttonBarButtonAdmin" id="OpenMod_${msg.id}" style="display: inline">
-					<a class="buttonBarLink" href="#" onclick="showAdminButtons('${msg.id}'); return false">
+					<a class="buttonBarLink" href="#" onclick="showHideAdminButtons('${msg.id}'); return false">
 						<span class="buttonBarImgAdmin buttonBarImgOpenMod"></span>
 					</a>
 				</div>
