@@ -475,7 +475,13 @@ public class User extends MainServlet {
 			req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 
 			String javascript = req.getParameter("javascript");
-			getPersistence().setSysinfoValue("javascript", javascript);
+			if (StringUtils.isNotEmpty(javascript) && javascript.length() > 255) {
+				StringBuilder errMsg = new StringBuilder("javascript troppo lungo: ");
+				errMsg.append(javascript .length()).append(" caratteri, max 255");
+				setNavigationMessage(req, NavigationMessage.warn(errMsg.toString()));
+			} else {
+				getPersistence().setSysinfoValue("javascript", javascript);
+			}
 			req.setAttribute("javascript", javascript);
 		}
 

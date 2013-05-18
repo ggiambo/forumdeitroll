@@ -196,7 +196,7 @@
 							<label for="javascript" class="lbl">Javascript:</label>
 						</div>
 						<div class="inputUserPanel">
-							<textarea name="javascript" id="javascript">${javascript}</textarea>
+							<textarea name="javascript" id="javascript" maxlength="255">${javascript}</textarea>
 						</div>
 						<div style="clear: both;"></div>
 					</c:if>
