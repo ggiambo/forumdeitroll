@@ -231,23 +231,21 @@
 			</a>
 		</div>
 
-		<c:if test="${not empty loggedUser}">
-			<div class="buttonBarButton">
-				<%-- +1 --%>
-				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', true);return false;">
+		<div class="buttonBarButton">
+			<c:if test="${not empty loggedUser}">
+					<%-- +1 --%>
+				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', true);return false;" title="+1">
 					<span class="buttonBarImg buttonBarImgUpvote"></span>
 				</a>
 
 				<%-- -1 --%>
-				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', false);return false;">
+				<a class="buttonBarLink" href="#" onClick="like('${msg.id}', false);return false;" title="-1">
 					<span class="buttonBarImg buttonBarImgDownvote"></span>
 				</a>
-			</div>
-
-		</c:if>
-		<div class="buttonBarButton">
-			&nbsp;<span class="ranking" id="msg${msg.id}_ranking">${msg.rank}</span>
+			</c:if>
+			<span class="ranking" id="msg${msg.id}_ranking">${msg.rank}</span>
 		</div>
+
 	</div>
 
 </div>

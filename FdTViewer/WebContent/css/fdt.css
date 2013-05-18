@@ -412,7 +412,8 @@ span.buttonBarImgDownvote {
 span.ranking {
 	font-size: .8em;
 	vertical-align: top;
-	text-align: right;
+	text-align: center;
+	padding-left: 5px;
 }
 
 #sidebarSearchForm {
