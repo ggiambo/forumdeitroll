@@ -312,6 +312,7 @@ function blockHeader() {
 				  "left: 0;" +
 				  "z-index: 1;" +
 				  "box-shadow: 0px 10px 10px black;" +
+				  "width: 100%;" +
 				"}" +
 				"#bodyContent {" +
 			  	  "padding-top: 50px;" +
