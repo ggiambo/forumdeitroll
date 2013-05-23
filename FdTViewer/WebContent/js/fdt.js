@@ -305,14 +305,24 @@ jQuery("document").ready(function(){
 
 function blockHeader() {
 	// header non scrolla
-	var nav = $('#nav');
-	var start = $(nav).offset().top;
-	$.event.add(window, "scroll", function() {
-		var p = $(window).scrollTop();
-		$(nav).css("position",( p > start) ? "fixed" : "static");
-		$(nav).css("top",( p > start) ? "0px" : "");
-	});
-	nav.css("border-bottom", "2px solid #93998E");
+	var style = "<style id='blockHeader'>" +
+			"	#nav {" +
+				  "position: fixed;" +
+				  "top: 0;" +
+				  "left: 0;" +
+				  "z-index: 1;" +
+				  "box-shadow: 0px 10px 10px black;" +
+				"}" +
+				"#bodyContent {" +
+			  	  "padding-top: 50px;" +
+			  	"}" +
+			  "</style>";
+	document.body.innerHTML += style;
+}
+
+function sblockHeader() {
+	var style = document.getElementById("blockHeader");
+	style.parentNode.removeChild(style);
 }
 
 // tasto 'j' per saltare al prossimo messaggio, 'k' per quello precedente
