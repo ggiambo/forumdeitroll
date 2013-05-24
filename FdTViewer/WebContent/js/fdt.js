@@ -253,7 +253,7 @@ jQuery("document").ready(function(){
 	SyntaxHighlighter.all();
 
 	// collassa quotes
-	$('.quote-container').on('click', openQuotes);
+	$(document).ready(function() {$('.quote-container').on('click', openQuotes); });
 	
 	$("div.buttonBarButton").mouseenter(function() {
 		var buttonBarButton = $(this);
