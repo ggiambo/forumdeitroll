@@ -145,7 +145,7 @@
 			});
 			
 			jQuery("document").ready(function() {
-				<c:if test="${not empty loggedUser && loggedUser.preferences['blockHeader'] == 'checked'}">
+				<c:if test="${blockHeader == 'checked'}">
 					blockHeader();
 				</c:if>
 				${javascript}

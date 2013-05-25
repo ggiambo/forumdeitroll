@@ -143,6 +143,7 @@ public abstract class MainServlet extends HttpServlet {
 		// user
 		String loggedUserNick = (String)req.getSession().getAttribute(LOGGED_USER_SESS_ATTR);
 		String sidebarStatus = null;
+		String blockHeaderStatus = null;
 		if (!StringUtils.isEmpty(loggedUserNick)) {
 			// update loggedUser in session
 			AuthorDTO loggedUser = persistence.getAuthor(loggedUserNick);
@@ -154,6 +155,7 @@ public abstract class MainServlet extends HttpServlet {
 			req.setAttribute("hasPvts", getPersistence().checkForNewPvts(loggedUser));
 			// sidebar status come attributo nel reques
 			sidebarStatus = loggedUser.getPreferences().get("sidebarStatus");
+			blockHeaderStatus = loggedUser.getPreferences().get("blockHeader");
 		} else {
 			// status sidebar nel cookie ?
 			if (req.getCookies() != null) {
@@ -161,6 +163,8 @@ public abstract class MainServlet extends HttpServlet {
 					if ("sidebarStatus".equals(cookie.getName())) {
 						sidebarStatus = cookie.getValue();
 						break;
+					} else if ("blockHeader".equals(cookie.getName())) {
+						blockHeaderStatus = cookie.getValue();
 					}
 				}
 			}
@@ -169,6 +173,10 @@ public abstract class MainServlet extends HttpServlet {
 			sidebarStatus = "show";
 		}
 		req.setAttribute("sidebarStatus", sidebarStatus);
+		if (blockHeaderStatus == null) {
+			blockHeaderStatus = "";
+		}
+		req.setAttribute("blockHeader", blockHeaderStatus);
 
 
 		// execute action
@@ -282,6 +290,37 @@ public abstract class MainServlet extends HttpServlet {
 						res.addCookie(new Cookie("sidebarStatus", sidebarStatus));
 					}
 				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Setta nella session lo stato dell'header fisso
+	 */
+	@Action
+	String updateBlockHeaderStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String blockHeaderStatus = req.getParameter("blockHeader");
+		if (blockHeaderStatus == null) {
+			return null;
+		}
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
+		if (loggedUser != null && loggedUser.isValid()) {
+			getPersistence().setPreference(loggedUser, "blockHeader", blockHeaderStatus);
+			loggedUser.getPreferences().put("blockHeader", blockHeaderStatus);
+		} else {
+			boolean cookieSet = false;
+			if (req.getCookies() != null) {
+				for (Cookie cookie : req.getCookies()) {
+					if ("blockHeader".equals(cookie.getName())) {
+						cookie.setValue(blockHeaderStatus);
+						res.addCookie(new Cookie("blockHeader", blockHeaderStatus));
+						cookieSet = true;
+					}
+				}
+			}
+			if (!cookieSet) {
+				res.addCookie(new Cookie("blockHeader", blockHeaderStatus));
 			}
 		}
 		return null;

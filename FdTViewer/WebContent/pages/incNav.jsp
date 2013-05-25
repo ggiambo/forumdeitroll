@@ -9,7 +9,6 @@
 </fdt:delayedScript>
 
 <div id="nav">
-
 	<c:set var="forum" value="${specificParams['forum']}" />
 	<ul>
 		<%-- navigation message --%>
@@ -37,6 +36,14 @@
 		</c:if>
 		
 		<li>
+			<c:if test="${blockHeader == 'checked'}">
+				<img src="images/icon-pin-color.png" id="unblockHeaderControl" onclick="unblockHeader()" style="">
+				<img src="images/icon-pin-gray.png" id="blockHeaderControl" onclick="blockHeader()" style="display: none;">
+			</c:if>
+			<c:if test="${blockHeader == ''}">
+				<img src="images/icon-pin-color.png" id="unblockHeaderControl" onclick="unblockHeader()" style="display: none;">
+				<img src="images/icon-pin-gray.png" id="blockHeaderControl" onclick="blockHeader()" style="">
+			</c:if>
 			<a href="pages/faqs.html" title="FAQ" class="faq"><img src="images/info_icon.png" alt="FAQ" /></a>
 		</li>
 

@@ -319,6 +319,17 @@ function blockHeader() {
 			  	"}" +
 			  "</style>";
 	document.body.innerHTML += style;
+	document.getElementById("blockHeaderControl").style.display = 'none';
+	document.getElementById("unblockHeaderControl").style.display = '';
+	jQuery.ajax("Messages?action=updateBlockHeaderStatus&blockHeader=checked");
+}
+
+function unblockHeader() {
+	var style = document.getElementById("blockHeader");
+	style.parentNode.removeChild(style);
+	document.getElementById("blockHeaderControl").style.display = '';
+	document.getElementById("unblockHeaderControl").style.display = 'none';
+	jQuery.ajax("Messages?action=updateBlockHeaderStatus&blockHeader=");
 }
 
 function sblockHeader() {
