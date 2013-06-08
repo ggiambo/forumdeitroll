@@ -15,6 +15,8 @@ public class Line {
 	private static final char[] SCRITTO_DA_OLD = "- Scritto da: ".toCharArray();
 	private static final char[] SCRITTO_DA_NEW = "Scritto da: ".toCharArray();
 	
+	// bugfix quote + scritto da: http://localhost:8080/fdtduezero/Threads?action=getByThread&threadId=2749569#msg2749569
+	
 	public static void firstLine(RenderIO io, RenderState state, RenderOptions opts) throws IOException {
 		
 		int quoteLvl = 0;
@@ -29,7 +31,7 @@ public class Line {
 				? scrittoda
 				: io.indexOf(SCRITTO_DA_NEW, pq);
 		
-		if (scrittoda != -1) {
+		if (scrittoda == pq) {
 			if (quoteLvl == 0 && scrittoda == 0) {
 				quoteLvl++;
 			} else {
@@ -48,7 +50,7 @@ public class Line {
 			io.write(String.format("<span class='quoteLvl%d'>", (quoteLvl % 4 == 0 ? 4 : quoteLvl % 4)));
 		}
 		
-		if (scrittoda == -1) {
+		if (scrittoda != pq) {
 			io.copy(pq);
 			io.skip(pq);
 		} else {
@@ -91,7 +93,7 @@ public class Line {
 				? scrittoda
 				: io.indexOf(SCRITTO_DA_NEW, pq);
 		
-		if (scrittoda != -1) {
+		if (scrittoda == pq) {
 			if (quoteLvl == 0 && scrittoda == 0) {
 				quoteLvl++;
 			} else {
@@ -129,7 +131,7 @@ public class Line {
 		
 		state.quoteLevel = quoteLvl;
 		
-		if (scrittoda == -1) {
+		if (scrittoda != pq) {
 			io.copy(BR.length, pq - BR.length);
 			io.skip(pq);
 		} else {
