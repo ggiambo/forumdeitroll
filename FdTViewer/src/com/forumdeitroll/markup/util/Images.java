@@ -32,13 +32,13 @@ public class Images {
 				return false;
 			if (opts.authorIsAnonymous && opts.showImagesPlaceholder) {
 				io.write(ANONIMG_START);
-				Links.writeLinkFixed(io.out, io.buffer, IMG.length, end - IMG.length);
+				Links.writeUrl(io.out, io.buffer, IMG.length, end - IMG.length);
 				io.write(ANONIMG_END);
 			} else {
 				io.write(EMBEDDED_IMAGE_START);
-				Links.writeLinkFixed(io.out, io.buffer, IMG.length, end - IMG.length);
+				Links.writeUrl(io.out, io.buffer, IMG.length, end - IMG.length);
 				io.write(EMBEDDED_IMAGE_MID);
-				Links.writeLinkFixed(io.out, io.buffer, IMG.length, end - IMG.length);
+				Links.writeUrl(io.out, io.buffer, IMG.length, end - IMG.length);
 				io.write(EMBEDDED_IMAGE_END);
 			}
 			io.skip(end + IMG_END.length);

@@ -21,7 +21,7 @@ public class Url {
 			if (!Links.isLink(io.buffer, URL.length, end - URL.length))
 				return false;
 			// [url]$link[/url]
-			Links.writeLink(io, URL.length, end - URL.length, URL.length, end - URL.length);
+			Links.writeLinkTag(io, URL.length, end - URL.length, URL.length, end - URL.length);
 			io.skip(end + URL_END.length);
 			return true;
 		}
@@ -36,10 +36,10 @@ public class Url {
 				return false;
 			if (endDesc == end + 1)
 				// [url=$link][/url]
-				Links.writeLink(io, URL_OPEN.length, end - URL_OPEN.length, URL_OPEN.length, end - URL_OPEN.length);
+				Links.writeLinkTag(io, URL_OPEN.length, end - URL_OPEN.length, URL_OPEN.length, end - URL_OPEN.length);
 			else
 				// [url=$link]$desc[/url]
-				Links.writeLink(io, URL_OPEN.length, end - URL_OPEN.length, end + 1, endDesc - end - 1);
+				Links.writeLinkTag(io, URL_OPEN.length, end - URL_OPEN.length, end + 1, endDesc - end - 1);
 			io.skip(endDesc + URL_END.length);
 			return true;
 		}

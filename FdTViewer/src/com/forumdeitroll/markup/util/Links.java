@@ -73,7 +73,7 @@ public class Links {
 		return false;
 	}
 	
-	public static void writeLinkFixed(Writer out, char[] buffer, int offset, int length) throws IOException {
+	public static void writeUrl(Writer out, char[] buffer, int offset, int length) throws IOException {
 		// the buffer region has to be always checked before with isLink, undefined behaviour ensues otherwise
 		// www.
 		if (0 == Chars.indexOf(buffer, offset, length, initseq[0], 0, initseq[0].length, 0, false, true)) {
@@ -116,9 +116,9 @@ public class Links {
 	
 	private static final int MAX_DESC_LENGTH = 50;
 	
-	public static void writeLink(RenderIO io, int offset, int length, int descOffset, int descLength) throws IOException {
+	public static void writeLinkTag(RenderIO io, int offset, int length, int descOffset, int descLength) throws IOException {
 		io.write("<a rel='nofollow noreferrer' target='_blank' href=\"");
-		writeLinkFixed(io.out, io.buffer, offset, length);
+		writeUrl(io.out, io.buffer, offset, length);
 		io.write("\" title=\"");
 		EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
 		io.write("\" alt=\"");

@@ -121,7 +121,7 @@ public class Word {
 				state.embedCount++;
 				return true;
 			} else {
-				Links.writeLink(io, 0, end, 0, end);
+				Links.writeLinkTag(io, 0, end, 0, end);
 				return true;	
 			}
 			
