@@ -106,6 +106,10 @@ public class Word {
 		io.skip(end);
 		return true;
 	}
+	
+	private static char[] FDT_IT_THREAD_URL_INIT = "http://www.forumdeitroll.it/ms.aspx?m_id=".toCharArray();
+	
+	private static char[] FDT_IT_MESSAGE_URL_INIT = "http://www.forumdeitroll.it/m.aspx?m_id=".toCharArray();
 
 	private static boolean autolink(RenderIO io, RenderState state, RenderOptions opts, int end) throws IOException {
 		if (Links.isLink(io.buffer, 0, end)) {
@@ -120,9 +124,27 @@ public class Word {
 				}
 				state.embedCount++;
 				return true;
-			} else {
+			}
+			// nel vecchio forum non esisteva il tag [url], i link interni di cui fare rewrite sono solo autolinks
+			else if (io.startWith(FDT_IT_THREAD_URL_INIT)) {
+				io.write("<a rel='nofollow noreferrer' target='_blank' href=\"Threads?action=getByThread&threadId=");
+				EntityEscaper.writeEscaped(io.out, io.buffer, FDT_IT_THREAD_URL_INIT.length, end - FDT_IT_THREAD_URL_INIT.length);
+				io.write("\">");
+				EntityEscaper.writeEscaped(io.out, io.buffer, 0, end);
+				io.write("</a>");
+				return true;
+			}
+			else if (io.startWith(FDT_IT_MESSAGE_URL_INIT)) {
+				io.write("<a rel='nofollow noreferrer' target='_blank' href=\"Threads?action=getByMessage&msgId=");
+				EntityEscaper.writeEscaped(io.out, io.buffer, FDT_IT_MESSAGE_URL_INIT.length, end - FDT_IT_MESSAGE_URL_INIT.length);
+				io.write("\">");
+				EntityEscaper.writeEscaped(io.out, io.buffer, 0, end);
+				io.write("</a>");
+				return true;
+			}
+			else {
 				Links.writeLinkTag(io, 0, end, 0, end);
-				return true;	
+				return true;
 			}
 			
 		}
