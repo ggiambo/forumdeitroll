@@ -11,6 +11,7 @@ public class Line {
 	private static final char[] BR = "<BR>".toCharArray();
 	private static final char[] QUOTE = "&gt;".toCharArray();
 	private static final char[] SP_QUOTE = " &gt;".toCharArray();
+	private static final char[] SPACE = " ".toCharArray();
 	
 	private static final char[] SCRITTO_DA_OLD = "- Scritto da: ".toCharArray();
 	private static final char[] SCRITTO_DA_NEW = "Scritto da: ".toCharArray();
@@ -26,6 +27,9 @@ public class Line {
 			pq += q.length;
 			q = SP_QUOTE;
 			quoteLvl++;
+		}
+		if (io.indexOf(SPACE, pq) == pq) {
+			pq++;
 		}
 		int scrittoda = (scrittoda=io.indexOf(SCRITTO_DA_OLD, pq)) != -1
 				? scrittoda
@@ -89,10 +93,12 @@ public class Line {
 			q = SP_QUOTE;
 			quoteLvl++;
 		}
+		if (io.indexOf(SPACE, pq) == pq) {
+			pq++;
+		}
 		int scrittoda = (scrittoda=io.indexOf(SCRITTO_DA_OLD, pq)) != -1
 				? scrittoda
 				: io.indexOf(SCRITTO_DA_NEW, pq);
-		
 		if (scrittoda == pq) {
 			if (quoteLvl == 0 && scrittoda == 0) {
 				quoteLvl++;
