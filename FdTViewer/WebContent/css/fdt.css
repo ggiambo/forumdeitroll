@@ -109,7 +109,7 @@ h1 {
 
 #main {
 	float: left;
-	width: 600px;
+	width: 68%;
 	padding: 10px;
 	padding: 0px;
 	margin-left: 5px;
@@ -131,7 +131,7 @@ h2 {
 	background: none repeat scroll 0 0 #D6D6D6;
 	float: left;
 	padding: 10px;
-	width: 220px;
+	width: 22%;
 	font-size: 95%;
 	overflow: hidden;
 	white-space: nowrap;
@@ -396,7 +396,7 @@ span.buttonBarImgModifica {
 }
 
 span.buttonBarImgBookmark {
-	background-position: -48px -178px;
+	background-position: -144px -144px;
 }
 span.buttonBarImgParent {
 	width: 12px;
@@ -641,7 +641,7 @@ div.msgCaptcha div div.msgCaptchaInput {
 div.messagesBox {
 	border: 1px solid lightGray;
 	margin: 8px 5px;
-	width: 600px;
+	width: 99%;
 	box-shadow: 2px 2px 3px gray;
 	height: auto !important;
 	overflow: hidden;
@@ -649,7 +649,7 @@ div.messagesBox {
 
 div.messagesBoxInvisible {
 	margin: 8px 5px;
-	width: 600px;
+	width: 99%;
 	box-shadow: 3px 3px 5px darkred;
 	height: auto !important;
 	overflow: hidden;
