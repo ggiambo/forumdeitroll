@@ -471,7 +471,12 @@ public class JSonServlet extends HttpServlet {
 			writeErrorMessage(writer, "Password errata", time);
 			return;
 		}
-		message.setAuthor(author);
+		String anonymous = getStringValue(params, "anonymous", null);
+		if (StringUtils.isEmpty(anonymous)) {
+			message.setAuthor(author);
+		} else {
+			message.setAuthor(new AuthorDTO(author));
+		}
 
 		if (type.equals("new")) {
 			// forum
