@@ -35,7 +35,7 @@ $(document).ready(function() {
 
 function geodata(elem, ip) {
 	$("body").css("cursor", "progress");
-	jQuery.getJSON("http://freegeoip.net/json/" + ip + "?callback=?",
+	jQuery.getJSON("Misc?action=freegeoip&ip=" + ip + "&callback=?",
 		function(result) {
 			var box = $('#geoIpContainer');
 			var position = $(elem).offset();

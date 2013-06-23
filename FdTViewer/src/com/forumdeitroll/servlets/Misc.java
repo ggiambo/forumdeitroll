@@ -106,6 +106,8 @@ public class Misc extends HttpServlet {
 			getUserSignatureImage(req, res);
 		} else if ("searchAjax".equals(action)) {
 			searchAjax(req, res);
+		} else if ("freegeoip".equals(action)) {
+			freegeoip(req, res);
 		} else {
 			LOG.error("action '" + action + "' conosciuta");
 		}
@@ -237,6 +239,30 @@ public class Misc extends HttpServlet {
 		in.close();
 		
 		res.setContentType("application/json");
+		res.getOutputStream().write(out.toByteArray());
+	}
+	
+	/**
+	 * wrapper del servizio di freegeoip, per aggirare la same-origin policy a partire da firefox 22/23 
+	 * http://freegeoip.net/json/{ip}
+	 * @param req
+	 * @param res
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	private void freegeoip(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		String ip = req.getParameter("ip");
+		String callback = req.getParameter("callback");
+		String endpoint = "http://freegeoip.net/json/" + ip + "?callback=" + callback;
+		InputStream in = new URL(endpoint).openStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		byte[] buffer = new byte[512];
+		int count;
+		while ((count = in.read(buffer)) != -1) {
+			out.write(buffer, 0, count);
+		}
+		in.close();
+		res.setContentType("text/javascript");
 		res.getOutputStream().write(out.toByteArray());
 	}
 }
