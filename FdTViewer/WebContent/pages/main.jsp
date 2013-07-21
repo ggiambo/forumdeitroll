@@ -99,8 +99,10 @@
 			</c:if>
 			<div id="bodyContent" class="<c:out value='${bodyContentClass}' />">
 
-				<%-- sidebar per la navigazione --%>
-				<jsp:include page="incSidebar.jsp"/>
+				<c:if test="${excludeSidebar != 'true'}">
+					<%-- sidebar per la navigazione --%>
+					<jsp:include page="incSidebar.jsp"/>
+				</c:if>
 
 				<%-- la pagina vera e propria --%>
 				<jsp:include page="${fn:toLowerCase(servlet)}/${page}" />

@@ -149,4 +149,6 @@ public interface IPersistence extends Serializable {
 	 * @return
 	 */
 	public int like(long msgId, String nick, boolean upvote);
+	
+	public List<DigestArticleDTO> getReadersDigest();
 }

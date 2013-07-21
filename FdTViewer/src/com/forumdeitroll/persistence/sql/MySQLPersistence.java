@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import com.forumdeitroll.persistence.DigestArticleDTO;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
 
@@ -71,5 +72,102 @@ public class MySQLPersistence extends GenericSQLPersistence {
 			close(rs, ps, conn);
 		}
 		return result;
+	}
+	
+	/**
+Da /opt/fdt/digest (riportata per versionamento):
+
+DROP TABLE digest;
+
+CREATE TABLE digest
+(
+    `threadId` INT(11),
+    `author` TINYTEXT,
+    `subject` TINYTEXT,
+    `opener_text` LONGTEXT,
+    `excerpt` LONGTEXT,
+    `nrOfMessages` INT(6),
+    `startDate` datetime,
+    `lastDate` datetime
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+INSERT INTO digest
+SELECT id, author, subject, text, NULL, nrOfMessages, startdate, lastdate
+FROM messages, (
+    SELECT threadId, COUNT(threadId) as nrOfMessages, MIN(date) as startdate, MAX(date) as lastdate
+    FROM messages
+    WHERE `date` >= DATE_SUB(SYSDATE(), INTERVAL 1 MONTH)
+    GROUP BY threadId
+    ORDER BY COUNT(threadId) DESC
+    LIMIT 0,50
+) AS a
+WHERE id = a.threadId;
+
+UPDATE digest
+SET excerpt = (
+    SELECT `text`
+    FROM messages
+    WHERE messages.threadId = digest.threadId
+    GROUP BY parentId
+    ORDER BY parentId DESC
+    LIMIT 0, 1
+);
+
+DROP TABLE digest_participant;
+
+CREATE TABLE digest_participant
+(
+    `threadId` INT(11),
+    `author` TINYTEXT
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+INSERT INTO digest_participant
+SELECT DISTINCT messages.`threadId`, messages.`author`
+FROM messages, digest
+WHERE messages.threadId = digest.threadId;
+
+
+	 */
+	
+	@Override
+	public List<DigestArticleDTO> getReadersDigest() {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<DigestArticleDTO> results = new ArrayList<DigestArticleDTO>();
+		DigestArticleDTO current = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT digest.*, digest_participant.* FROM digest, digest_participant WHERE digest.threadId = digest_participant.threadId");
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				if (current == null || current.getThreadId() != rs.getLong("digest.threadId")) {
+					current = new DigestArticleDTO();
+					current.setThreadId(rs.getLong("digest.threadId"));
+					current.setAuthor(rs.getString("digest.author"));
+					current.setSubject(rs.getString("digest.subject"));
+					current.setOpenerText(rs.getString("digest.opener_text"));
+					current.setExcerpt(rs.getString("digest.excerpt"));
+					current.setStartDate(rs.getDate("digest.startdate"));
+					current.setLastDate(rs.getDate("digest.lastdate"));
+					current.setNrOfMessages(rs.getInt("digest.nrOfMessages"));
+					if (rs.getString("digest_participant.author") != null && !current.getParticipants().contains(rs.getString("digest_participant.author"))) {
+						current.getParticipants().add(rs.getString("digest_participant.author"));	
+					}
+					results.add(current);
+				} else {
+					if (rs.getString("digest_participant.author") != null && !current.getParticipants().contains(rs.getString("digest_participant.author"))) {
+						current.getParticipants().add(rs.getString("digest_participant.author"));	
+					}
+				}
+			}
+			
+		} catch (SQLException e) {
+			LOG.error("Impossibile leggere i dati dal db", e);
+			return null;
+		} finally {
+			close(rs, ps, conn);
+		}
+		return results;
 	}
 }

@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import com.forumdeitroll.persistence.DigestArticleDTO;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
 
@@ -49,5 +50,10 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 			close(rs, ps, conn);
 		}
 		return result;
+	}
+	
+	@Override
+	public List<DigestArticleDTO> getReadersDigest() {
+		throw new UnsupportedOperationException();
 	}
 }

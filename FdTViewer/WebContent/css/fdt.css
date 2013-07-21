@@ -1521,3 +1521,36 @@ span.fakeLink {
 #loading {
 	font-weight: bold;
 }
+
+div.articleBox {
+	border: 1px solid lightGray;
+	margin: 8px 5px;
+	box-shadow: 2px 2px 3px gray;
+	overflow: auto;
+	padding: 8px;
+	clear: none;
+}
+
+div.articleBox.horizontal {
+	float: left;
+	width: 59%;
+	height: 500px;
+}
+div.articleBox.vertical {
+	float: right;
+	width: 33%;
+	height: 1000px;
+	margin-right: 15px;
+}
+
+div.articleBox>b {
+	padding: 8px 5px;
+}
+
+p.digestTitle {
+	font-family: Garamond, Times, serif;
+	font-size: 32pt;
+	text-align: center;
+	font-weight: bolder;
+	letter-spacing: 5pt;
+}
