@@ -6,6 +6,7 @@
 <div id="main" style="width: 100%;">
 
 	<p class="digestTitle">The Troll's Digest</p>
+	<p class="digestSubtitle">updated daily</p>
 
 	<c:forEach items="${articles}" var="article" varStatus="articleStatus">
 		<% String style = ""; %>
@@ -30,7 +31,10 @@
 		
 		<div class="articleBox <%=style%>">
 			<c:if test="${article.author != null}">
-				<a href="User?action=getUserInfo&nick=${article.author}">${article.author}</a>
+				<a href="User?action=getUserInfo&nick=${article.author}">
+					<img class="avatar" src="Misc?action=getAvatar&nick=${article.author }">
+					${article.author}
+				</a>
 			</c:if>
 			<c:if test="${article.author == null}">
 				Un anonimo
@@ -71,6 +75,8 @@
 				<br>
 			</c:if>
 			
+			<br>
+			<br>
 		</div>
 	</c:forEach>
 </div>
