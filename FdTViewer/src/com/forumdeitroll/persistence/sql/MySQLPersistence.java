@@ -138,7 +138,11 @@ WHERE messages.threadId = digest.threadId;
 		DigestArticleDTO current = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT digest.*, digest_participant.* FROM digest, digest_participant WHERE digest.threadId = digest_participant.threadId");
+			ps = conn.prepareStatement(
+				"SELECT digest.*, digest_participant.* " +
+				"FROM digest, digest_participant " +
+				"WHERE digest.threadId = digest_participant.threadId " +
+				"ORDER BY digest.nrOfMessages * (unix_timestamp(startdate) - unix_timestamp(lastdate))");
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				if (current == null || current.getThreadId() != rs.getLong("digest.threadId")) {
