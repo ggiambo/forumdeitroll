@@ -110,7 +110,6 @@ h1 {
 #main {
 	float: left;
 	width: 68%;
-	padding: 10px;
 	padding: 0px;
 	margin-left: 5px;
 }
@@ -1531,15 +1530,17 @@ div.articleBox {
 	clear: none;
 }
 
-div.articleBox.horizontal {
-	float: left;
-	width: 59%;
-	height: 500px;
-}
-div.articleBox.vertical {
+div.articleContainer.vertical {
 	float: right;
 	width: 33%;
-	height: 1000px;
+}
+
+div.articleContainer.horizontal {
+	float: left;
+	width: 66.5%;
+}
+
+div.articleBox.vertical {
 	margin-right: 15px;
 }
 
