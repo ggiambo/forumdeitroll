@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
 <% String style = ""; %>
@@ -25,6 +26,13 @@
 </c:if>
 
 <div class="articleBox <%=style%>">
+	<c:set var="article" value="${article}" scope="page"/>
+	<%= new org.ocpsoft.prettytime.PrettyTime(java.util.Locale.ITALIAN).format(
+		(
+			(com.forumdeitroll.persistence.DigestArticleDTO)
+			pageContext.getAttribute("article")
+		).getStartDate()
+	) %>
 	<c:if test="${article.author != null}">
 		<a href="User?action=getUserInfo&nick=${article.author}">
 			<img class="avatar" src="Misc?action=getAvatar&nick=${article.author }">
@@ -32,7 +40,7 @@
 		</a>
 	</c:if>
 	<c:if test="${article.author == null}">
-		Un anonimo
+		un anonimo
 	</c:if>
 	ha scritto il thread
 	<b>

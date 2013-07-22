@@ -17,6 +17,7 @@ define 'FdTViewer' do
 	compile.with transitive("jfree:jfreechart:jar:1.0.13");
 	compile.with transitive("net.sf.uadetector:uadetector-core:jar:0.3.0")
 	compile.with transitive("net.sf.uadetector:uadetector-resources:jar:2012.06")
+	compile.with transitive("prettytime-3.0.2.Final.jar:3.0.2")
 
 	compile.with "deps/simplecaptcha-1.2.1.jar";
 
