@@ -41,6 +41,9 @@ public class Images {
 				Links.writeUrl(io.out, io.buffer, IMG.length, end - IMG.length);
 				io.write(EMBEDDED_IMAGE_END);
 			}
+			io.write("<a href=\"https://www.google.com/searchbyimage?&image_url=");
+			Links.writeUrl(io.out, io.buffer, IMG.length, end - IMG.length);
+			io.write("\" alt='Ricerca immagini simili' title='Ricerca immagini simili' rel='nofollow noreferrer' target='_blank'><img src=\"https://www.google.com/favicon.ico\" style='width: 16px; height: 16px;'></a>");
 			io.skip(end + IMG_END.length);
 			state.immyCount++;
 			return true;
