@@ -1568,3 +1568,9 @@ p.digestSubtitle {
 	font-weight: bolder;
 	letter-spacing: 5pt;
 }
+
+.favicon {
+	width: 16px;
+	height: 16px;
+	margin-right: 6px;
+}

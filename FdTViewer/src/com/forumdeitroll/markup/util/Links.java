@@ -129,7 +129,7 @@ public class Links {
 				if (-1 != Chars.indexOf(io.buffer, offset, length, domain, 0, domain.length, 0, true, false)) {
 					io.write("<img src=\"http://");
 					io.write(domain);
-					io.write("/favicon.ico\" style=\"width: 16px; height: 16px; margin-right: 6px\">");
+					io.write("/favicon.ico\" class=favicon>");
 					break;
 				}
 			}
