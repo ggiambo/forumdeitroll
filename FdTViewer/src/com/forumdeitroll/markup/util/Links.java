@@ -128,7 +128,11 @@ public class Links {
 			for (char[] domain : FaviconWhiteList.DOMAINS) {
 				if (-1 != Chars.indexOf(io.buffer, offset, length, domain, 0, domain.length, 0, true, false)) {
 					io.write("<img src=\"http://");
-					io.write(domain);
+					if (Chars.equals(domain, "repubblica.it".toCharArray())) {
+						io.write("www.repubblica.it"); // workaround repubblica.it non serve favicon senza www. davanti
+					} else {
+						io.write(domain);
+					}
 					io.write("/favicon.ico\" class=favicon>");
 					break;
 				}

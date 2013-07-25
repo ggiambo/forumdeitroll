@@ -80,4 +80,14 @@ public class Chars {
     			return true;
     	return false;
     }
+    
+    public static boolean equals(char[] buffer, int offset, int length, char[] buffer2, int offset2, int length2) {
+    	if (length - length2 != 0) return false;
+    	return indexOf(buffer, offset, length, buffer2, offset2, length2, 0, false, true) == 0;
+    }
+    
+    public static boolean equals(char[] buffer, char[] buffer2) {
+    	if (buffer.length != buffer2.length) return false;
+    	return indexOf(buffer, 0, buffer.length, buffer2, 0, buffer2.length, 0, false, true) == 0;
+    }
 }
