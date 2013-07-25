@@ -124,14 +124,15 @@ public class Links {
 		io.write("\" alt=\"");
 		EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
 		io.write("\">");
-		for (char[] domain : FaviconWhiteList.DOMAINS) {
-			if (-1 != Chars.indexOf(io.buffer, offset, length, domain, 0, domain.length, 0, true, false)) {
-				io.write("<img src=\"http://");
-				io.write(domain);
-				io.write("/favicon.ico\" style=\"width: 16px; height: 16px;\">");
-				break;
+		if (offset == descOffset) // autolink
+			for (char[] domain : FaviconWhiteList.DOMAINS) {
+				if (-1 != Chars.indexOf(io.buffer, offset, length, domain, 0, domain.length, 0, true, false)) {
+					io.write("<img src=\"http://");
+					io.write(domain);
+					io.write("/favicon.ico\" style=\"width: 16px; height: 16px;\">&nbsp;");
+					break;
+				}
 			}
-		}
 		if (descLength > MAX_DESC_LENGTH) {
 			EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, MAX_DESC_LENGTH);
 			io.write("...");
