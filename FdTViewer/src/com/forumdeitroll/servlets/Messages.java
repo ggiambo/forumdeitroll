@@ -48,7 +48,7 @@ public class Messages extends MainServlet {
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR> *(&gt;\\ ?)*");
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
-	public static final int MAX_SUBJECT_LENGTH = 40;
+	public static final int MAX_SUBJECT_LENGTH = 80;
 
 	protected static final Set<String> BANNED_IPs = new HashSet<String>();
 
