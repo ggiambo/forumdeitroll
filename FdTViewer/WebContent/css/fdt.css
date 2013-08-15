@@ -1512,6 +1512,16 @@ div.firma {
     text-align: right;
 }
 
+div.firmaCompatta {
+	font-size: 0.8em;
+	font-style: italic;
+	clear: both;
+    text-align: right;
+    position: relative;
+    left: 6px;
+    top: 9px;
+}
+
 span.fakeLink {
 	color: #0000ee;
 	cursor: pointer;

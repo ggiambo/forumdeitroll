@@ -178,6 +178,15 @@
 					</div>
 					<div>
 						<div class="inputUserPanel">
+							<input type="checkbox" name="<%=User.PREF_COMPACT_SIGNATURE%>" id="<%=User.PREF_COMPACT_SIGNATURE%>" ${loggedUser.preferences['compactSignature']} />
+						</div>
+						<div class="lblUserPanel">
+							<label for="<%=User.PREF_COMPACT_SIGNATURE%>" class="lbl">Mostra firma compattata.</label>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+					<div>
+						<div class="inputUserPanel">
 							<input type="checkbox" name="<%=User.PREF_BLOCK_HEADER%>" id="<%=User.PREF_BLOCK_HEADER%>" ${loggedUser.preferences['blockHeader']} />
 						</div>
 						<div class="lblUserPanel">

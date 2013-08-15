@@ -46,6 +46,7 @@ public class User extends MainServlet {
 	public static final String PREF_MSG_MAX_HEIGHT = "msgMaxHeight";
 	public static final String PREF_AUTO_REFRESH = "autoRefresh";
 	public static final String PREF_HIDE_SIGNATURE = "hideSignature";
+	public static final String PREF_COMPACT_SIGNATURE = "compactSignature";
 	public static final String PREF_BLOCK_HEADER = "blockHeader";
 
 	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
@@ -448,7 +449,7 @@ public class User extends MainServlet {
 
 		// setta le preferences
 		for (String key : new String[] {PREF_SHOWANONIMG, PREF_EMBEDDYT, PREF_COLLAPSE_QUOTES, PREF_HIDE_PROC_CATANIA, PREF_HIDE_BANNERONE, 
-				PREF_MSG_MAX_HEIGHT, PREF_AUTO_REFRESH, PREF_HIDE_SIGNATURE, PREF_BLOCK_HEADER}) {
+				PREF_MSG_MAX_HEIGHT, PREF_AUTO_REFRESH, PREF_HIDE_SIGNATURE, PREF_COMPACT_SIGNATURE, PREF_BLOCK_HEADER}) {
 			String value = req.getParameter(key);
 			if (StringUtils.isNotEmpty(value)) {
 				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, "checked"));

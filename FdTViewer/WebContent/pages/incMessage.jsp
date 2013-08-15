@@ -98,7 +98,15 @@
 	</div>
 
 	<c:if test="${(not empty msg.author.preferences['signature'] || not empty msg.author.signatureImage) && (empty loggedUser || (not empty loggedUser && loggedUser.preferences['hideSignature'] != 'checked'))}">
-		<div class="firma" id="firma_${msg.id}">
+		<c:choose>
+			<c:when test="${ msg.author.preferences['compactSignature'] == 'checked'}">
+				<c:set var="signatureClass" value="firmaCompatta"/>
+			</c:when>
+			<c:otherwise>
+				<c:set var="signatureClass" value="firma"/>
+			</c:otherwise>
+		</c:choose>
+		<div class="${signatureClass}" id="firma_${msg.id}">
 			<c:if test="${not empty msg.author.preferences['signature']}">
 				<fdt:msg search="" signature="true" author="${msg.author}">${msg.author.preferences['signature']}</fdt:msg>
 			</c:if>
