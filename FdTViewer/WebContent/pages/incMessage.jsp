@@ -1,3 +1,4 @@
+<%@page import="com.forumdeitroll.servlets.User"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
@@ -101,6 +102,7 @@
 		<c:choose>
 			<c:when test="${ msg.author.preferences['compactSignature'] == 'checked'}">
 				<c:set var="signatureClass" value="firmaCompatta"/>
+				<div style="clear:both; height: <%=""+User.MAX_SIZE_SIGNATURE_HEIGHT %>px; width: 100%;"></div>
 			</c:when>
 			<c:otherwise>
 				<c:set var="signatureClass" value="firma"/>
