@@ -1,6 +1,8 @@
 package com.forumdeitroll.servlets;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,6 +29,8 @@ import com.forumdeitroll.SingleValueCache;
 import com.forumdeitroll.markup.Emoticon;
 import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.InputSanitizer;
+import com.forumdeitroll.markup.RenderOptions;
+import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
@@ -35,6 +39,7 @@ import com.forumdeitroll.persistence.PersistenceFactory;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
+import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 
 public class JSonServlet extends HttpServlet {
@@ -169,9 +174,19 @@ public class JSonServlet extends HttpServlet {
 		int page = getIntValue(params, "page", 0);
 		int pageSize = getPageSize(params);
 		String forum = getStringValue(params, "forum", null);
-
+		String renderOpts = getStringValue(params, "renderOpts", null);
+		RenderOptions opts = renderOpts != null ? new Gson().fromJson(renderOpts, RenderOptions.class) : null;
+		
 		String nick = getStringValue(params, "nick", null);
 		MessagesDTO result = persistence.getMessages(forum, nick, pageSize, page, false);
+		
+		if (opts != null) {
+			for (MessageDTO message : result.getMessages()) {
+				StringWriter out = new StringWriter();
+				Renderer.render(new StringReader(message.getText()), out, opts);
+				message.setText(out.toString());
+			}
+		}
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
