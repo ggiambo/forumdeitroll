@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -17,12 +18,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.util.URLEncoder;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import sun.misc.BASE64Encoder;
 
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.SingleValueCache;
@@ -638,7 +636,7 @@ public class JSonServlet extends HttpServlet {
 		out.name("messages").value(author.getMessages());
 		out.name("active").value(StringUtils.isNotEmpty(author.getHash()));
 		if (author.getAvatar() != null) {
-			out.name("avatar").value("//forumdeitroll.com/Misc?action=getAvatar&nick=" + new URLEncoder().encode(author.getNick()) );
+			out.name("avatar").value("//forumdeitroll.com/Misc?action=getAvatar&nick=" + URLEncoder.encode(author.getNick()) );
 		}
 		out.endObject();
 	}
