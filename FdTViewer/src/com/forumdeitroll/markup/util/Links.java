@@ -144,7 +144,7 @@ public class Links {
 			EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
 		}
 		io.write("</a>");
-		io.write("<a href=\"http://anonym.to/?");
+		io.write("<a rel='nofollow noreferrer' target='_blank' href=\"http://anonym.to/?");
 		writeUrl(io.out, io.buffer, offset, length);
 		io.write("\" alt='Link anonimizzato(referer)' title='Link anonimizzato(referer)'><img src='images/emoextended/anonimato.gif' style='border: 1px solid black; background-color: gray;'></a>");
 	}
