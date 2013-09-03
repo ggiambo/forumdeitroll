@@ -22,7 +22,7 @@ public class Color {
 			for (int i = COLOR.length; i < end; i++)
 				if (! Chars.isAlphanum(io.buffer[i]))
 					return false;
-			io.write("<span style='color: ");
+			io.write("<span style='color: #");
 			io.copy(COLOR.length, end - COLOR.length);
 			io.write("'>");
 			io.skip(end + 1);
