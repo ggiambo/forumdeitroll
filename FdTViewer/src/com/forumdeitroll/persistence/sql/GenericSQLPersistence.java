@@ -1,5 +1,7 @@
 package com.forumdeitroll.persistence.sql;
 
+import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,6 +39,7 @@ import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
+import com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv;
 
 public abstract class GenericSQLPersistence implements IPersistence {
 
@@ -269,8 +272,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE messages set text = ?, subject = ? where id = ?");
 			int i = 1;
-			ps.setString(i++, message.getTextReal());
-			ps.setString(i++, message.getSubjectReal());
+			ps.setString(i++, mb4safe(message.getTextReal()));
+			ps.setString(i++, mb4safe(message.getSubjectReal()));
 			ps.setLong(i++, message.getId());
 			ps.execute();
 			return message.getId();
@@ -294,8 +297,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			int i = 1;
 			ps.setLong(i++, message.getParentId());
 			ps.setLong(i++, message.getThreadId());
-			ps.setString(i++, message.getTextReal());
-			ps.setString(i++, message.getSubjectReal());
+			ps.setString(i++, mb4safe(message.getTextReal()));
+			ps.setString(i++, mb4safe(message.getSubjectReal()));
 			ps.setString(i++, message.getAuthor().getNick());
 			ps.setString(i++, message.getForum());
 			ps.setTimestamp(i++, new Timestamp(message.getDate().getTime()));
@@ -325,8 +328,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date, visible) " +
 					"VALUES (-1, -1, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
-			ps.setString(i++, message.getTextReal());
-			ps.setString(i++, message.getSubjectReal());
+			ps.setString(i++, mb4safe(message.getTextReal()));
+			ps.setString(i++, mb4safe(message.getSubjectReal()));
 			ps.setString(i++, message.getAuthor().getNick());
 			ps.setString(i++, message.getForum());
 			ps.setTimestamp(i++, new Timestamp(message.getDate().getTime()));
@@ -755,8 +758,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 										"(sender, content, senddate, subject, replyTo) " +
 										"VALUES  (?,?,sysdate(),?,?)", Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, author.getNick());
-			ps.setString(2, privateMsg.getText());
-			ps.setString(3, privateMsg.getSubject());
+			ps.setString(2, mb4safe(privateMsg.getText()));
+			ps.setString(3, mb4safe(privateMsg.getSubject()));
 			ps.setLong(4, privateMsg.getReplyTo());
 			ps.execute();
 
@@ -1042,7 +1045,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn.setAutoCommit(false);
 			ps = conn.prepareStatement("INSERT INTO poll (title, author, text, creationDate, updateDate) VALUES (?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
-			ps.setString(1, pollDTO.getTitle());
+			ps.setString(1, mb4safe(pollDTO.getTitle()));
 			ps.setString(2, pollDTO.getAuthor());
 			ps.setString(3, pollDTO.getText());
 			ps.setTimestamp(4, now);
@@ -1057,7 +1060,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				ps = conn.prepareStatement("INSERT INTO poll_question (pollId, sequence, text, votes) VALUES (?, ?, ?, ?)");
 				ps.setLong(1, pollId);
 				ps.setInt(2, question.getSequence());
-				ps.setString(3, question.getText());
+				ps.setString(3, mb4safe(question.getText()));
 				ps.setInt(4, 0);
 				ps.execute();
 			}
@@ -1321,7 +1324,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement("INSERT INTO quotes (nick, content) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
 			ps.setString(i++, quote.getNick());
-			ps.setString(i++, quote.getContent());
+			ps.setString(i++, mb4safe(quote.getContent()));
 			ps.execute();
 			// get generated id
 			rs = ps.getGeneratedKeys();
@@ -1878,7 +1881,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement("INSERT INTO bookmarks(nick, msgId, subject) VALUES (?,?,?)");
 			ps.setString(1, bookmark.getNick());
 			ps.setLong(2, bookmark.getMsgId());
-			ps.setString(3, bookmark.getSubject());
+			ps.setString(3, mb4safe(bookmark.getSubject()));
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			LOG.error("Impossibile inserire il segnalibro -> "+bookmark.toString(), e);
