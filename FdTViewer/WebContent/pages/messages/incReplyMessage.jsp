@@ -67,6 +67,10 @@
 
 </fdt:delayedScript>
 
+<fdt:delayedScript dump="false">
+	var token = "${anti_xss_token}";
+</fdt:delayedScript>
+
 <c:set var="isReply" value="${!isEdit && message.parentId > 0}"/>
 <c:set var="isNewThread" value="${!isEdit && message.id == -1 && message.parentId == -1}"/>
 <c:set var="isNewMessage" value="${!isEdit && message.id == -1}"/>

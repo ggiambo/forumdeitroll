@@ -3,10 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
-<fdt:delayedScript dump="false">
-	var token = "${anti_xss_token}";
-</fdt:delayedScript>
-
 <c:choose>
 	<c:when test="${msg.visible}">
 		<c:set var="rowclass" value="msgVisible"/>

@@ -12,3 +12,7 @@
 		<fdt:pager handler="Messages"></fdt:pager>
 	</c:if>
 </div>
+
+<fdt:delayedScript dump="false">
+	var token = "${anti_xss_token}";
+</fdt:delayedScript>
