@@ -1,0 +1,35 @@
+#header,#headerimg {
+	display: none;
+}
+
+#body {
+	width: 99.9%;
+}
+
+#sidebar {
+	width: 20%;
+	padding: 0;
+	position: absolute;
+	z-index: 1;
+}
+
+#main {
+	float: right;
+	width: 97%;
+}
+
+div.messagesBox {
+	width: 98%;
+}
+
+div.msgInfo {
+	width: 300px;
+}
+
+div.msgInfo>* {
+	float: left;
+}
+
+.msgWrittenby,.msgAuthor {
+	display: inline;
+}

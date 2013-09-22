@@ -194,6 +194,15 @@
 						</div>
 						<div style="clear: both;"></div>
 					</div>
+					<div>
+						<div class="inputUserPanel">
+							<input type="checkbox" name="<%=User.PREF_LARGE_STYLE%>" id="<%=User.PREF_LARGE_STYLE%>" ${loggedUser.preferences['largeStyle']} />
+						</div>
+						<div class="lblUserPanel">
+							<label for="<%=User.PREF_LARGE_STYLE%>" class="lbl">Stile largo.</label>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
 					<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
 						<hr/>
 						<div class="inputUserPanel">

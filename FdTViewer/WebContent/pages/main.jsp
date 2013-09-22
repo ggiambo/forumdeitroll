@@ -35,6 +35,9 @@
 		<link href="css/sh/shThemeEclipse.css" rel="stylesheet" type="text/css" />
 		<link href="css/jquery-ui-1.8.17.custom.css" type="text/css" rel="stylesheet" />
 		<link href="css/fdt.css?v=<%=bootTime%>" type="text/css" rel="stylesheet" />
+		<c:if test="${not empty loggedUser && loggedUser.preferences['largeStyle'] == 'checked'}">
+			<link href="css/fdt-large.css?v=<%=bootTime%>" type="text/css" rel="stylesheet" />
+		</c:if>
 	</head>
 
 	<body>
