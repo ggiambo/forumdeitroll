@@ -112,9 +112,15 @@ public class Word {
 	private static char[] FDT_IT_MESSAGE_URL_INIT = "http://www.forumdeitroll.it/m.aspx?m_id=".toCharArray();
 
 	private static boolean autolink(RenderIO io, RenderState state, RenderOptions opts, int end) throws IOException {
-		if (Links.isLink(io.buffer, 0, end)) {
+		boolean enclosedWithParens = io.buffer[0] == '(' && io.buffer[end - 1] == ')';
+		int start = enclosedWithParens ? 1 : 0;
+		end = enclosedWithParens ? end - 1 : end;
+		if (Links.isLink(io.buffer, start, end - start)) {
+			if (enclosedWithParens) {
+				io.write("(");
+			}
 			int[] boundaries = opts.renderYoutube
-				? YouTube.extractYoucode(io.buffer, 0, end)
+				? YouTube.extractYoucode(io.buffer, start, end - start)
 				: null;
 			if (boundaries != null && state.embedCount < YouTube.MAX_EMBED) {
 				if (opts.embedYoutube) {
@@ -123,6 +129,9 @@ public class Word {
 					YouTube.writeYTImage(io.out, io.buffer, boundaries[0], boundaries[1] - boundaries[0]);
 				}
 				state.embedCount++;
+				if (enclosedWithParens) {
+					io.write(")");
+				}
 				return true;
 			}
 			// nel vecchio forum non esisteva il tag [url], i link interni di cui fare rewrite sono solo autolinks
@@ -130,23 +139,31 @@ public class Word {
 				io.write("<a rel='nofollow noreferrer' target='_blank' href=\"Threads?action=getByThread&threadId=");
 				EntityEscaper.writeEscaped(io.out, io.buffer, FDT_IT_THREAD_URL_INIT.length, end - FDT_IT_THREAD_URL_INIT.length);
 				io.write("\">");
-				EntityEscaper.writeEscaped(io.out, io.buffer, 0, end);
+				EntityEscaper.writeEscaped(io.out, io.buffer, start, end - start);
 				io.write("</a>");
+				if (enclosedWithParens) {
+					io.write(")");
+				}
 				return true;
 			}
 			else if (io.startWith(FDT_IT_MESSAGE_URL_INIT)) {
 				io.write("<a rel='nofollow noreferrer' target='_blank' href=\"Threads?action=getByMessage&msgId=");
 				EntityEscaper.writeEscaped(io.out, io.buffer, FDT_IT_MESSAGE_URL_INIT.length, end - FDT_IT_MESSAGE_URL_INIT.length);
 				io.write("\">");
-				EntityEscaper.writeEscaped(io.out, io.buffer, 0, end);
+				EntityEscaper.writeEscaped(io.out, io.buffer, start, end - start);
 				io.write("</a>");
+				if (enclosedWithParens) {
+					io.write(")");
+				}
 				return true;
 			}
 			else {
-				Links.writeLinkTag(io, 0, end, 0, end);
+				Links.writeLinkTag(io, start, end - start, start, end - start);
+				if (enclosedWithParens) {
+					io.write(")");
+				}
 				return true;
 			}
-			
 		}
 		return false;
 	}

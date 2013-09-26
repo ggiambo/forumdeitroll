@@ -92,7 +92,7 @@ public class Chars {
     }
     
     public static boolean isAlphanum(char[] buffer, int offset, int length) {
-    	for (int i = offset; i < offset + length; i++) {
+    	for (int i = 0; i < length; i++) {
     		if (!isAlphanum(buffer[offset + i])) {
     			return false;
     		}
