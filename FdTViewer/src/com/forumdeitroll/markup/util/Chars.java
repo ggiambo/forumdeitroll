@@ -90,4 +90,13 @@ public class Chars {
     	if (buffer.length != buffer2.length) return false;
     	return indexOf(buffer, 0, buffer.length, buffer2, 0, buffer2.length, 0, false, true) == 0;
     }
+    
+    public static boolean isAlphanum(char[] buffer, int offset, int length) {
+    	for (int i = offset; i < offset + length; i++) {
+    		if (!isAlphanum(buffer[offset + i])) {
+    			return false;
+    		}
+    	}
+    	return true;
+    }
 }

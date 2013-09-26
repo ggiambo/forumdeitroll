@@ -66,14 +66,14 @@ public class Links {
 			p = Chars.indexOf(buffer, offset, length, tld, 0, tld.length, 1, true, false);
 			if (p != -1) {
 				if (p == Chars.indexOf(buffer, offset, length, slash, 0, slash.length, 1, true, false) - tld.length + 1) {
-					return true;
+					return Chars.isAlphanum(buffer, offset, p);
 				}
 			}
 			// .com
 			p = Chars.indexOf(buffer, offset, length, tld, 0, tld.length - 1, 1, true, false);
 			if (p != -1) {
 				if (p == Chars.indexOf(buffer, offset, length, dot, 0, dot.length, 0, false, false)) {
-					return true;
+					return Chars.isAlphanum(buffer, offset, p);
 				}
 			}
 		}
