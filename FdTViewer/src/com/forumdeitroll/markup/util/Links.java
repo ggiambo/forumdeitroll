@@ -39,6 +39,13 @@ public class Links {
 		".mil/".toCharArray(),
 	};
 	
+	private static final char[][] fdt_domains_initseq = new char[][] {
+		"http://www.forumdeitroll.com/".toCharArray(),
+		"https://www.forumdeitroll.com/".toCharArray(),
+		"http://forumdeitroll.com/".toCharArray(),
+		"https://forumdeitroll.com/".toCharArray()
+	};
+	
 	private static final char[] BR = "<BR>".toCharArray();
 	
 	public static boolean isLink(char[] buffer, int offset, int length) {
@@ -68,6 +75,21 @@ public class Links {
 				if (p == Chars.indexOf(buffer, offset, length, dot, 0, dot.length, 0, false, false)) {
 					return true;
 				}
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isInternalLink(char[] buffer, int offset, int length) {
+		// the buffer region has to be always checked before with isLink, undefined behaviour ensues otherwise
+		for (int i = 3; i < 7; i++) {
+			if (0 == Chars.indexOf(buffer, offset, length, initseq[i], 0, initseq[i].length, 0, false, true)) {
+				return true;
+			}
+		}
+		for (int i = 0; i < fdt_domains_initseq.length; i++) {
+			if (0 == Chars.indexOf(buffer, offset, length, fdt_domains_initseq[i], 0, fdt_domains_initseq[i].length, 0, false, true)) {
+				return true;
 			}
 		}
 		return false;
@@ -144,8 +166,10 @@ public class Links {
 			EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
 		}
 		io.write("</a>");
-		io.write(" <a rel='nofollow noreferrer' target='_blank' href=\"http://anonym.to/?");
-		writeUrl(io.out, io.buffer, offset, length);
-		io.write("\" alt='Link anonimizzato(referer)' title='Link anonimizzato(referer)'><img src='images/anonymlink.png'></a>");
+		if (!isInternalLink(io.buffer, offset, length)) {
+			io.write(" <a rel='nofollow noreferrer' target='_blank' href=\"http://anonym.to/?");
+			writeUrl(io.out, io.buffer, offset, length);
+			io.write("\" alt='Link anonimizzato(referer)' title='Link anonimizzato(referer)'><img src='images/anonymlink.png'></a>");
+		}
 	}
 }
