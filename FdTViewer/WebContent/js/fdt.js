@@ -735,7 +735,7 @@ function saveTag(event,msgId) {
 		data : 'action=saveTag&value=' + encodeURIComponent(value) + '&msgId=' + msgId,
 		success : function(data) {
 			if (data.resultCode == "OK") {
-				alert('Tag aggiunto (lo vedrai al refresh della pagina)!');
+				$(event.target).before('<span><span class=tag>'+encodeURIComponent(value)+'</span><span class=del-tag onclick=deleteTag(event,'+data.content+','+msgId+')>&nbsp;&nbsp;&nbsp;&nbsp;</span></span>');
 			} else {
 				alert('Qualcosa è andato storto!');
 			}
