@@ -12,6 +12,7 @@ import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.ThreadTree;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.MessageDTO;
+import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
 import com.forumdeitroll.servlets.Action.Method;
@@ -81,6 +82,7 @@ public class Threads extends MainServlet {
 		addSpecificParam(req, "forum",  forum);
 		Long threadId = Long.parseLong(stringThreadId);
 		List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
+		getPersistence().getTags(new MessagesDTO(msgs,0));
 		req.setAttribute("root", new ThreadTree(msgs).getRoot());
 		setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
 		setNavigationMessage(req, NavigationMessage.info("Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>"));
