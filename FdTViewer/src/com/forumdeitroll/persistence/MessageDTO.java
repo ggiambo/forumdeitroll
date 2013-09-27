@@ -1,5 +1,7 @@
 package com.forumdeitroll.persistence;
 
+import java.util.ArrayList;
+
 
 public class MessageDTO extends ThreadDTO {
 
@@ -9,7 +11,17 @@ public class MessageDTO extends ThreadDTO {
 
 	private double searchRelevance = -1.0;
 	private int searchCount = -1;
+	
+	private ArrayList<TagDTO> tags = null;
 
+	public ArrayList<TagDTO> getTags() {
+		return tags;
+	}
+	
+	public void setTags(ArrayList<TagDTO> tags) {
+		this.tags = tags;
+	}
+	
 	public long getParentId() {
 		return parentId;
 	}

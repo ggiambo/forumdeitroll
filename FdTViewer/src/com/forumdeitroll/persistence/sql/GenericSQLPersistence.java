@@ -34,6 +34,7 @@ import com.forumdeitroll.persistence.PollDTO;
 import com.forumdeitroll.persistence.PollQuestion;
 import com.forumdeitroll.persistence.PollsDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
+import com.forumdeitroll.persistence.TagDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
@@ -1922,6 +1923,156 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			LOG.error("Impossibile modificare il segnalibro -> "+bookmark.toString(), e);
+			throw new RuntimeException(e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	@Override
+	public TagDTO addTag(TagDTO tag) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			long t_id = 0;
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT t_id FROM tagnames WHERE value = ?");
+			ps.setString(1, tag.getValue());
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				t_id = rs.getLong(1);
+			}
+			close(rs, ps, null);
+			if (t_id == 0) {
+				ps = conn.prepareStatement("INSERT INTO tagnames(value) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+				ps.setString(1, tag.getValue());
+				ps.execute();
+				rs = ps.getGeneratedKeys();
+				rs.next();
+				t_id = rs.getLong(1);
+				close(rs, ps, null);
+			}
+			ps = conn.prepareStatement("SELECT t_id, m_id, author FROM tags_bind WHERE t_id = ? AND m_id = ?");
+			ps.setLong(1, t_id);
+			ps.setLong(2, tag.getM_id());
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				tag.setT_id(t_id);
+				tag.setAuthor(rs.getString(3));
+				return tag;
+			}
+			close(rs, ps, null);
+			ps = conn.prepareStatement("INSERT INTO tags_bind(t_id,m_id,author) VALUES (?,?,?)");
+			ps.setLong(1, t_id);
+			ps.setLong(2, tag.getM_id());
+			ps.setString(3, tag.getAuthor());
+			ps.execute();
+			tag.setT_id(t_id);
+			return tag;
+		} catch (SQLException e) {
+			LOG.error("Impossibile aggiungere il tag -> "+tag, e);
+			throw new RuntimeException(e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	@Override
+	public void deleTag(TagDTO tag) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("DELETE FROM tags_bind WHERE t_id = ? AND m_id = ? AND author = ?");
+			ps.setLong(1, tag.getT_id());
+			ps.setLong(2, tag.getM_id());
+			ps.setString(3, tag.getAuthor());
+			int res = ps.executeUpdate();
+			if (res != 1) {
+				// se non sei l'owner del tag oppure stai furmigando
+				// i tag non vengono mai eliminati da tagnames
+				throw new RuntimeException("Hai eliminato "+res+" recordz da tags_bind!");
+			}
+			return;
+		} catch (SQLException e) {
+			LOG.error("Impossibile eliminare il tag", e);
+			throw new RuntimeException(e);
+		} finally {
+			close(null, ps, conn);
+		}
+	}
+	
+	@Override
+	public void getTags(MessagesDTO messages) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			StringBuilder query = new StringBuilder("SELECT tagnames.t_id, m_id, author, value FROM tagnames, tags_bind WHERE tagnames.t_id = tags_bind.t_id AND m_id IN (");
+			for (MessageDTO message : messages.getMessages()) {
+				query.append(message.getId()).append(",");
+			}
+			query.replace(query.length()-1, query.length(), ") ORDER BY m_id");
+			ps = conn.prepareStatement(query.toString());
+			rs = ps.executeQuery();
+			long currentMid = -1;
+			MessageDTO currentMessage = null;
+			while (rs.next()) {
+				TagDTO tag = new TagDTO();
+				tag.setT_id(rs.getLong(1));
+				tag.setM_id(rs.getLong(2));
+				tag.setAuthor(rs.getString(3));
+				tag.setValue(rs.getString(4));
+				if (tag.getM_id() != currentMid) {
+					for (MessageDTO message : messages.getMessages()) {
+						if (message.getId() == tag.getM_id()) {
+							currentMessage = message;
+							currentMid = tag.getM_id();
+							break;
+						}
+					}
+					currentMessage.setTags(new ArrayList<TagDTO>());
+				}
+				currentMessage.getTags().add(tag);
+			}
+		} catch (SQLException e) {
+			LOG.error("Impossibile recuperare i tag", e);
+			throw new RuntimeException(e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	@Override
+	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, boolean hideProcCatania) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement(
+				"SELECT messages.* " +
+				"FROM messages,tags_bind " +
+				"WHERE m_id = messages.id " +
+				"AND t_id = ? " +
+				(hideProcCatania ? " AND (forum IS NULL OR forum != '"+FORUM_PROC+"') " : "")+
+				"ORDER BY m_id DESC " +
+				"LIMIT ? OFFSET ?");
+			ps.setLong(1, t_id);
+			ps.setInt(2, limit);
+			ps.setInt(3, limit*page);
+			List<MessageDTO> messages = getMessages(ps.executeQuery(), false);
+			close(rs, ps, null);
+			ps = conn.prepareStatement("SELECT COUNT(*) FROM tags_bind WHERE t_id = ?");
+			ps.setLong(1, t_id);
+			rs = ps.executeQuery();
+			rs.next();
+			int nrOfMessages = rs.getInt(1);
+			return new MessagesDTO(messages, nrOfMessages);
+		} catch (SQLException e) {
+			LOG.error("Impossibile recuperare i threads", e);
 			throw new RuntimeException(e);
 		} finally {
 			close(rs, ps, conn);

@@ -714,3 +714,47 @@ function showAdvancedSearch() {
 		});
 	}
 }
+
+function openCloseAddTag(event) {
+	var input = $(event.target).find('input[type="text"]');
+	if (input.css('display') === 'none') {
+		input.css('display', '');
+		input.focus();
+	} else {
+		input.css('display', 'none');
+	}
+}
+
+function saveTag(event,msgId) {
+	if (event.which !== 13) return;
+	$(event.target).css('display','none');
+	var value = event.target.value;
+	$.ajax({
+		method : 'POST',
+		url : 'Messages',
+		data : 'action=saveTag&value=' + encodeURIComponent(value) + '&msgId=' + msgId,
+		success : function(data) {
+			if (data.resultCode == "OK") {
+				alert('Tag aggiunto (lo vedrai al refresh della pagina)!');
+			} else {
+				alert('Qualcosa è andato storto!');
+			}
+		}
+	});
+}
+
+function deleteTag(event, t_id, m_id) {
+	$.ajax({
+		method: 'POST',
+		url : 'Messages',
+		data : 'action=deleTag&t_id=' + t_id + '&m_id=' + m_id,
+		success: function(data) {
+			if (data.resultCode == "OK") {
+				event.target.parentNode.parentNode.removeChild(event.target.parentNode);
+			} else {
+				alert('Qualcosa è andato storto!');
+			}
+		}
+	})
+	
+}

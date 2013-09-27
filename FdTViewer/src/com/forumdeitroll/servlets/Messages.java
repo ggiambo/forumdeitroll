@@ -32,6 +32,7 @@ import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
+import com.forumdeitroll.persistence.TagDTO;
 import com.forumdeitroll.profiler.UserProfile;
 import com.forumdeitroll.profiler.UserProfiler;
 import com.forumdeitroll.servlets.Action.Method;
@@ -806,10 +807,82 @@ public class Messages extends MainServlet {
 		}
 		return null;
 	}
+	
+	@Action(method=Method.POST)
+	String saveTag(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		try {
+			if (login(req) == null || !login(req).isValid()) return null;
+			res.setContentType("application/json");
+			String value = req.getParameter("value");
+			long msgId = Long.parseLong(req.getParameter("msgId"));
+			TagDTO tag = new TagDTO();
+			tag.setM_id(msgId);
+			tag.setAuthor(login(req).getNick());
+			tag.setValue(value);
+			tag = getPersistence().addTag(tag);
+			JsonWriter writer = new JsonWriter(res.getWriter());
+			writer.beginObject();
+			writer.name("resultCode").value("OK");
+			writer.name("content").value(tag.getT_id());
+			writer.endObject();
+			writer.flush();
+			writer.close();
+		} catch (Exception e) {
+			Logger.getLogger(Messages.class).error(e);
+			JsonWriter writer = new JsonWriter(res.getWriter());
+			writer.beginObject();
+			writer.name("resultCode").value("KO");
+			writer.endObject();
+			writer.flush();
+			writer.close();
+		}
+		return null;
+	}
+	
+	@Action(method=Method.POST)
+	String deleTag(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		try {
+			if (login(req) == null || !login(req).isValid()) return null;
+			res.setContentType("application/json");
+			TagDTO tag = new TagDTO();
+			tag.setAuthor(login(req).getNick());
+			tag.setT_id(Long.parseLong(req.getParameter("t_id")));
+			tag.setM_id(Long.parseLong(req.getParameter("m_id")));
+			getPersistence().deleTag(tag);
+			JsonWriter writer = new JsonWriter(res.getWriter());
+			writer.beginObject();
+			writer.name("resultCode").value("OK");
+			writer.endObject();
+			writer.flush();
+			writer.close();
+		} catch (Exception e) {
+			Logger.getLogger(Messages.class).error(e);
+			JsonWriter writer = new JsonWriter(res.getWriter());
+			writer.beginObject();
+			writer.name("resultCode").value("KO");
+			writer.endObject();
+			writer.flush();
+			writer.close();
+		}
+		return null;
+	}
+	
+	@Action(method=Method.GET)
+	String getMessagesByTag(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		long t_id = Long.parseLong(req.getParameter("t_id"));
+		MessagesDTO messages = getPersistence().getMessagesByTag(PAGE_SIZE, getPageNr(req), t_id, hideProcCatania(req));
+		req.setAttribute("messages", messages.getMessages());
+		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
+		req.setAttribute("resultSize", messages.getMessages().size());
+		setWebsiteTitle(req, "Ricerca per tag @ Forum dei troll");
+		setAntiXssToken(req);
+		return "messages.jsp";
+	}
 
 	private String getMessages(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
 		String forum = req.getParameter("forum");
 		MessagesDTO messages = getPersistence().getMessages(forum, null, PAGE_SIZE, getPageNr(req), hideProcCatania(req));
+		getPersistence().getTags(messages);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());

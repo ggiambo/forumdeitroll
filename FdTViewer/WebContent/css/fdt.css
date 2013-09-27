@@ -1584,3 +1584,39 @@ p.digestSubtitle {
 	height: 16px;
 	margin-right: 6px;
 }
+
+span.add-tag {
+	display: inline;
+	background-image: url("images/ui-icons_222222_256x240.png");
+	background-position: -144px 0px;
+	width: 16px;
+	height: 14px;
+	background-repeat: no-repeat;
+	vertical-align: middle;
+	border-style: none;
+	cursor: pointer;
+}
+
+span.tag {
+	background-color: #CFA;
+	color: #222;
+	border-radius: 3px;
+	padding: 2px;
+}
+
+span.tag>a {
+	text-decoration: none;
+	color: black;
+}
+
+span.del-tag {
+	display: inline;
+	background-image: url("images/ui-icons_222222_256x240.png");
+	background-position: -80px -128px;
+	width: 16px;
+	height: 14px;
+	background-repeat: no-repeat;
+	vertical-align: middle;
+	border-style: none;
+	cursor: pointer;
+}

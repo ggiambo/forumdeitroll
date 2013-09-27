@@ -83,7 +83,29 @@
 			<a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a>
 		</b>
 	</span>
-
+	
+	<span class=tags>
+		<c:forEach var="tag" items="${msg.tags}">
+			<span>
+				<span class=tag title="aggiunto da ${tag.author}">
+					<a href="Messages?action=getMessagesByTag&t_id=${tag.t_id}">${tag.value}</a>
+				</span>
+				<c:if test="${not empty loggedUser && tag.author == loggedUser.nick }">
+					<span class=del-tag onclick=deleteTag(event,${tag.t_id},${tag.m_id}) title="Elimina questo tag">
+						&nbsp;&nbsp;
+					</span>
+				</c:if>
+				&nbsp;
+			</span>
+		</c:forEach>
+	</span>
+	
+	<c:if test="${not empty loggedUser}">
+	<span class=add-tag onclick=openCloseAddTag(event) title="Aggiungi un tag">&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type=text onkeypress="saveTag(event,'${msg.id}')" style=display:none>
+	</span>
+	</c:if>
+	
 	<c:if test="${msg.searchRelevance >= 0}">
 		<div class="searchInfo">
 			<pre><!-- Ciao wakko :-) -->Rilevanza: <fmt:formatNumber value="${msg.searchRelevance}" pattern="#0.00" />. Messaggi nel thread: ${msg.searchCount - 1}</pre>

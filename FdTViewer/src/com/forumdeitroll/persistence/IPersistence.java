@@ -1,6 +1,7 @@
 package com.forumdeitroll.persistence;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -151,4 +152,12 @@ public interface IPersistence extends Serializable {
 	public int like(long msgId, String nick, boolean upvote);
 	
 	public List<DigestArticleDTO> getReadersDigest();
+	
+	public TagDTO addTag(TagDTO tag);
+	
+	public void deleTag(TagDTO tag);
+	
+	public void getTags(MessagesDTO messages);
+	
+	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, boolean hideProcCatania);
 }
