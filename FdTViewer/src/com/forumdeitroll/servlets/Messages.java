@@ -871,6 +871,7 @@ public class Messages extends MainServlet {
 	String getMessagesByTag(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		long t_id = Long.parseLong(req.getParameter("t_id"));
 		MessagesDTO messages = getPersistence().getMessagesByTag(PAGE_SIZE, getPageNr(req), t_id, hideProcCatania(req));
+		getPersistence().getTags(messages);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
