@@ -88,7 +88,9 @@
 		<c:forEach var="tag" items="${msg.tags}">
 			<span>
 				<span class=tag title="aggiunto da ${tag.author}">
-					<a href="Messages?action=getMessagesByTag&t_id=${tag.t_id}">${tag.value}</a>
+					<a href="Messages?action=getMessagesByTag&t_id=${tag.t_id}">
+						<c:out value="${tag.value}" escapeXml="true"/>
+					</a>
 				</span>
 				<c:if test="${not empty loggedUser && tag.author == loggedUser.nick }">
 					<span class=del-tag onclick=deleteTag(event,${tag.t_id},${tag.m_id}) title="Elimina questo tag">
