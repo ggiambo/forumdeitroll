@@ -728,7 +728,7 @@ function openCloseAddTag(event) {
 var tmplTag =
 		_.template("<span>" +
 			"<span class=tag><%-value%></span>" +
-			"<span class=del-tag onclick=deleteTag(event,<%=t_id%>, <%=m_id%>)>" +
+			"<span class=del-tag onclick=deleteTag(event,<%=t_id%>,<%=m_id%>)>" +
 				"&nbsp;&nbsp;&nbsp;&nbsp;" +
 			"</span>"+
 		"</span>");
@@ -743,7 +743,8 @@ function saveTag(event,msgId) {
 		data : 'action=saveTag&value=' + encodeURIComponent(value) + '&msgId=' + msgId,
 		success : function(data) {
 			if (data.resultCode == "OK") {
-				$(event.target).before(tmplTag({value:value, t_id:data.content, m_id:msgId}));
+				var html = tmplTag({value:value, t_id:data.content, m_id:msgId});
+				$(event.target).before(html);
 			} else {
 				alert('Qualcosa è andato storto!');
 			}
