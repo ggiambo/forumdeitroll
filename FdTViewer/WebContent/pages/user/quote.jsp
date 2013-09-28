@@ -32,7 +32,7 @@
 									<img src="images/delete.png" alt="Chiudi" />
 								</c:otherwise>
 							</c:choose>
-							<input name="quote_${item.id}" value="${fn:escapeXml(item.content)}" maxlength="100" class="fraseCelebreUserPanel" />
+							<input name="quote_${item.id}" value="${fn:escapeXml(item.content)}" maxlength="256" class="fraseCelebreUserPanel" />
 							<input type="button" value="Salva" onClick="$('#quoteId').val(${item.id});submit();" class="sendFraseCelebreUserPanel" />
 						</div>
 					</c:forEach>
