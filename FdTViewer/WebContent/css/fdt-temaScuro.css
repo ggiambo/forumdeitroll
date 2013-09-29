@@ -1,48 +1,61 @@
 #bodyContent {
-background-color: #222;
+	background-color: #222;
 }
+
 #bodyContent a {
-color: #9999ff !important;
+	color: #9999ff !important;
 }
-div.msgOdd, div.msgEven {
-background-color: #222 !important;
-color: #eee;
+
+div.msgOdd,div.msgEven {
+	background-color: #222 !important;
+	color: #eee;
 }
+
 div.msgInfo {
-background-color: #222 !important;
-box-shadow: none !important;
+	background-color: #222 !important;
+	box-shadow: none !important;
 }
+
 span.quoteLvl1 {
-color: #ccf !important;
+	color: #ccf !important;
 }
+
 span.quoteLvl2 {
-color: #77f !important;
+	color: #77f !important;
 }
+
 span.quoteLvl3 {
-color: #99f !important;
+	color: #99f !important;
 }
+
 span.quoteLvl4 {
-color: #55f !important;
+	color: #55f !important;
 }
+
 .msgReply {
-background-color: #222 !important;
+	background-color: #222 !important;
 }
+
 .msgReply label {
-color: white;
-box-shadow: none !important;
+	color: white;
+	box-shadow: none !important;
 }
+
 .emotibox {
-background-color: #222 !important;
-border: 0 !important;
+	background-color: #222 !important;
+	border: 0 !important;
 }
-.msgReply textarea, #subject {
-color: #eee;
-background-color: #222;
+
+.msgReply textarea,#subject {
+	color: #eee;
+	background-color: #222;
 }
+
 #nav {
-background-color: #222 !important;
-color: white;
+	background-color: #222 !important;
+	color: white;
 }
+
 #nav a {
-color: #9999ff !important;
+	color: #9999ff !important;
 }
