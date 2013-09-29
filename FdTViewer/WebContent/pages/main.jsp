@@ -38,6 +38,9 @@
 		<c:if test="${not empty loggedUser && loggedUser.preferences['largeStyle'] == 'checked'}">
 			<link href="css/fdt-large.css?v=<%=bootTime%>" type="text/css" rel="stylesheet" />
 		</c:if>
+		<c:if test="${not empty loggedUser && not empty loggedUser.preferences['theme']}">
+			<link href="css/fdt-tema${loggedUser.preferences['theme']}.css?v=<%=bootTime%>" type="text/css" rel="stylesheet" />
+		</c:if>
 	</head>
 
 	<body>

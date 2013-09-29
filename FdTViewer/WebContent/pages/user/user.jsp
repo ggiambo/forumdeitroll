@@ -203,6 +203,23 @@
 						</div>
 						<div style="clear: both;"></div>
 					</div>
+					<div>
+						<div class="inputUserPanel">
+							<select name="<%=User.PREF_THEME%>" id="<%=User.PREF_THEME%>">
+								<c:forEach items="<%=User.PREF_THEMES%>" var="theme">
+								    <option ${loggedUser.preferences['theme'] == theme ? 'selected="selected"' 
+								             : ''
+								             } value="<c:out value="${theme}"/>">
+								        <c:out value="${theme}"/>
+								    </option>
+								</c:forEach>
+							</select> 
+						</div>
+						<div class="lblUserPanel">
+							<label for="<%=User.PREF_THEME%>" class="lbl">Tema</label>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
 					<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
 						<hr/>
 						<div class="inputUserPanel">

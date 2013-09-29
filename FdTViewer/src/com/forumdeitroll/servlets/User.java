@@ -2,6 +2,7 @@ package com.forumdeitroll.servlets;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,6 +50,8 @@ public class User extends MainServlet {
 	public static final String PREF_COMPACT_SIGNATURE = "compactSignature";
 	public static final String PREF_BLOCK_HEADER = "blockHeader";
 	public static final String PREF_LARGE_STYLE = "largeStyle";
+	public static final String PREF_THEME = "theme";
+	public static final List<String> PREF_THEMES = Arrays.asList("Classico", "Scuro");
 
 	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
 	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
@@ -463,7 +466,11 @@ public class User extends MainServlet {
 					loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "sidebarStatus", "show"));
 				}
 			}
+		}
 
+		String theme = req.getParameter(PREF_THEME);
+		if (StringUtils.isNotEmpty(theme)) {
+			loggedUser.setPreferences(getPersistence().setPreference(loggedUser, PREF_THEME, theme));
 		}
 
 		if ((loggedUser != null) && "yes".equals(loggedUser.getPreferences().get("super"))) {
