@@ -22,11 +22,14 @@ public class H2Persistence extends GenericSQLPersistence {
 
 	public void init(Properties databaseConfig) throws Exception {
 		Class.forName("org.h2.Driver");
+		String type = databaseConfig.getProperty("type");
 		String path = databaseConfig.getProperty("path");
 		String username = databaseConfig.getProperty("username");
 		String password = databaseConfig.getProperty("password");
 		String dbname = databaseConfig.getProperty("dbname");
-		String url = "jdbc:h2:file:" + path + "/" + dbname + ";AUTO_SERVER=TRUE";
+		String extraparams = databaseConfig.getProperty("extraparams");
+		extraparams = extraparams == null ? "" :  extraparams;
+		String url = "jdbc:h2:" + type + ":" + path + "/" + dbname + ";" + extraparams;
 		super.setupDataSource(url, username, password);
 	}
 
