@@ -1979,20 +1979,33 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 	
 	@Override
-	public void deleTag(TagDTO tag) {
+	public void deleTag(TagDTO tag, boolean isAdmin) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
-			conn = getConnection();
-			ps = conn.prepareStatement("DELETE FROM tags_bind WHERE t_id = ? AND m_id = ? AND author = ?");
-			ps.setLong(1, tag.getT_id());
-			ps.setLong(2, tag.getM_id());
-			ps.setString(3, tag.getAuthor());
-			int res = ps.executeUpdate();
-			if (res != 1) {
-				// se non sei l'owner del tag oppure stai furmigando
-				// i tag non vengono mai eliminati da tagnames
-				throw new RuntimeException("Hai eliminato "+res+" recordz da tags_bind!");
+			if (isAdmin) {
+				conn = getConnection();
+				ps = conn.prepareStatement("DELETE FROM tags_bind WHERE t_id = ? AND m_id = ?");
+				ps.setLong(1, tag.getT_id());
+				ps.setLong(2, tag.getM_id());
+				int res = ps.executeUpdate();
+				if (res != 1) {
+					// e' difficile che un admin si metta a furmigare
+					// i tag non vengono mai eliminati da tagnames
+					throw new RuntimeException("Hai eliminato "+res+" recordz da tags_bind!");
+				}
+			} else {
+				conn = getConnection();
+				ps = conn.prepareStatement("DELETE FROM tags_bind WHERE t_id = ? AND m_id = ? AND author = ?");
+				ps.setLong(1, tag.getT_id());
+				ps.setLong(2, tag.getM_id());
+				ps.setString(3, tag.getAuthor());
+				int res = ps.executeUpdate();
+				if (res != 1) {
+					// se non sei l'owner del tag oppure stai furmigando
+					// i tag non vengono mai eliminati da tagnames
+					throw new RuntimeException("Hai eliminato "+res+" recordz da tags_bind!");
+				}
 			}
 			return;
 		} catch (SQLException e) {

@@ -155,7 +155,7 @@ public interface IPersistence extends Serializable {
 	
 	public TagDTO addTag(TagDTO tag);
 	
-	public void deleTag(TagDTO tag);
+	public void deleTag(TagDTO tag, boolean isAdmin);
 	
 	public void getTags(MessagesDTO messages);
 	

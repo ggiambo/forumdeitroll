@@ -848,7 +848,8 @@ public class Messages extends MainServlet {
 			tag.setAuthor(login(req).getNick());
 			tag.setT_id(Long.parseLong(req.getParameter("t_id")));
 			tag.setM_id(Long.parseLong(req.getParameter("m_id")));
-			getPersistence().deleTag(tag);
+			boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
+			getPersistence().deleTag(tag, isAdmin);
 			JsonWriter writer = new JsonWriter(res.getWriter());
 			writer.beginObject();
 			writer.name("resultCode").value("OK");

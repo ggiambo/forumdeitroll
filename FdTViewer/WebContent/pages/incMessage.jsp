@@ -92,7 +92,7 @@
 						<c:out value="${tag.value}" escapeXml="true"/>
 					</a>
 				</span>
-				<c:if test="${not empty loggedUser && tag.author == loggedUser.nick }">
+				<c:if test="${not empty loggedUser && tag.author == loggedUser.nick || loggedUser.preferences['super'] == 'yes'}">
 					<span class=del-tag onclick=deleteTag(event,${tag.t_id},${tag.m_id}) title="Elimina questo tag">
 						&nbsp;&nbsp;
 					</span>
