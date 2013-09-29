@@ -63,3 +63,11 @@ span.quoteLvl4 {
 #nav a {
 	color: #9999ff !important;
 }
+
+div.msgInfo {
+	width: 150px;
+}
+
+div.msgInfo>* {
+	float: none;
+}
