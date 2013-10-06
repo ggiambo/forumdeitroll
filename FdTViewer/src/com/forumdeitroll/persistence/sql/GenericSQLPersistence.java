@@ -1946,7 +1946,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, null);
 			if (t_id == 0) {
 				ps = conn.prepareStatement("INSERT INTO tagnames(value) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
-				ps.setString(1, tag.getValue());
+				ps.setString(1, mb4safe(tag.getValue()));
 				ps.execute();
 				rs = ps.getGeneratedKeys();
 				rs.next();
