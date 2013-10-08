@@ -120,6 +120,28 @@
 		
 		<li>|</li>
 		<li><a href="javascript:ircbox()">##fdt@freenode</a></li>
-		<li><a href="#" onclick="window.open('Minichat', 'la ciattina', 'width=left=100px,top=100px,height=500px,width=300px,menubar=no,toolbar=no,location=no,status=no')">la ciattina</a></li>
+		<li><a id=ciattina href="javascript:void(0)" onclick="window.open('Minichat', 'la ciattina', 'width=left=100px,top=100px,height=600px,width=400px,menubar=no,toolbar=no,location=no,status=no')">la ciattina</a></li>
+		<c:if test="${not empty loggedUser}">
+			<fdt:delayedScript>
+				(function() {
+					var lastCheck = localStorage['ciattina.lastCheck'];
+					if (!lastCheck) {
+						lastCheck = 0;
+					}
+					$.ajax({
+						method : 'POST',
+						url : 'Minichat',
+						data : 'action=check&lastCheck=' + lastCheck,
+						success : function(data) {
+							if (data.inMessageToRead) {
+								$('#ciattina').css('color', 'red');
+							} else if (data.messageToRead) {
+								$('#ciattina').css('color', '#07df90');
+							}
+						}
+					})
+				})();
+			</fdt:delayedScript>
+		</c:if>
 	</ul>
 </div>

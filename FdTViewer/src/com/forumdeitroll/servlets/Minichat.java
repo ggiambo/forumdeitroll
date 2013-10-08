@@ -102,4 +102,29 @@ public class Minichat extends MainServlet {
 		res.getWriter().flush();
 		return null;
 	}
+	
+	@Action(method=Method.POST)
+	String check(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO author = login(req);
+		if (author == null || !author.isValid() || author.isBanned()) {
+			return null;
+		}
+		Date lastCheck = new Date(Long.parseLong(req.getParameter("lastCheck")));
+		boolean inMessageToRead = false;
+		boolean messageToRead = false;
+		for (Message message : messages) {
+			if (message.content.toLowerCase().contains(author.getNick().toLowerCase())) {
+				if (message.when.after(lastCheck)) {
+					inMessageToRead = true;
+					break;
+				}
+			} else if (message.when.after(lastCheck)) {
+				messageToRead = true;
+			}
+		}
+		res.setContentType("application/json");
+		res.getWriter().println("{ \"inMessageToRead\" : "+inMessageToRead+", \"messageToRead\" : "+messageToRead+" }");
+		res.getWriter().flush();
+		return null;
+	}
 }

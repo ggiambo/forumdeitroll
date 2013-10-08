@@ -9,12 +9,15 @@
 		<script>
 var send = function(event, element) {
 	if (event.which !== 13) return;
+	if (element.value === '') return;
+	var content = element.value;
+	element.disabled = true;
 	profiler(function(profileData) {
 		$.ajax({
 			method : 'POST',
 			url : 'Minichat',
 			data : 'action=send&content=' +
-					encodeURIComponent(element.value) +
+					encodeURIComponent(content) +
 					'&jsonProfileData=' +
 					encodeURIComponent(JSON.stringify(profileData)),
 			success : window.location.reload.bind(window.location)
@@ -30,6 +33,23 @@ setInterval(function() {
 	$('#refresh').html("Refresh in "+counter+" secondi...");
 	counter--;
 }, 1000);
+$(document).ready(function() {
+	var el = document.getElementById('#content');
+	if (el) {
+		if (el.setSelectionRange) {
+			el.setSelectionRange(el.value.length, el.value.length);
+		} else {
+			var range = el.createTextRange();
+			range.collapse(true);
+			range.moveEnd('character', el.value.length);
+			range.moveStart('character', el.value.length);
+			range.select();
+		}
+	}
+	if (localStorage) {
+		localStorage['ciattina.lastCheck'] = new Date().getTime();
+	}
+});
 		</script>
 		<style>
 input {
@@ -37,6 +57,9 @@ input {
 }
 table {
 	width: 100%
+}
+td {
+	font-family: Arial, Helvetica;
 }
 td.when {
 	width: 1%;
@@ -58,7 +81,7 @@ tr:nth-child(even) {
 	<body>
 		<div id=refresh onclick=window.location.reload()>Refresh in 30 secondi...</div>
 		<c:if test="${loggedUser != null}">
-			<input type=text onkeypress=send(event,this) autofocus placeholder="Scrivi qualcosa...">
+			<input id=content type=text onkeypress=send(event,this) autofocus placeholder="Scrivi qualcosa...">
 			<br>
 		</c:if>
 		<table>
