@@ -120,5 +120,6 @@
 		
 		<li>|</li>
 		<li><a href="javascript:ircbox()">##fdt@freenode</a></li>
+		<li><a href="#" onclick="window.open('Minichat', 'la ciattina', 'width=left=100px,top=100px,height=500px,width=300px,menubar=no,toolbar=no,location=no,status=no')">la ciattina</a></li>
 	</ul>
 </div>
