@@ -98,12 +98,12 @@ public class Minichat extends MainServlet {
 	String send(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// legit request?
 		AuthorDTO author = login(req);
-		if (author == null || !author.isValid() || author.isBanned()) {
+		if (author != null && author.isBanned()) {
 			return null;
 		}
 		UserProfile candidate = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
 		candidate.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
-		candidate.setNick(author.getNick());
+		candidate.setNick(author != null ? author.getNick() : null);
 		UserProfile profile = UserProfiler.getInstance().guess(candidate);
 		if (profile.isBannato()) {
 			return null;
@@ -116,7 +116,7 @@ public class Minichat extends MainServlet {
 		Renderer.render(in, out, opts);
 
 		Message message = new Message();
-		message.author = author.getNick();
+		message.author = author != null ? author.getNick() : "";
 		message.content = out.getBuffer().toString();
 		message.when = new Date();
 		messages.add(message);

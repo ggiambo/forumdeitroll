@@ -47,6 +47,9 @@ var refresh = function() {
 				var row = table.insertRow(-1);
 				row.insertCell(0).appendChild(document.createTextNode(message.when));
 				row.cells[0].className = 'when';
+				if (!message.author) {
+					message.author = '';
+				}
 				row.insertCell(1).appendChild(document.createTextNode(message.author));
 				row.cells[1].className = 'who';
 				row.insertCell(2).innerHTML = message.content;
@@ -82,16 +85,11 @@ tr:nth-child(odd) {
 tr:nth-child(even) {
 	background-color: #eef;
 }
-#refresh {
-	cursor: pointer;
-}
 		</style>
 	</head>
 	<body>
-		<c:if test="${loggedUser != null}">
-			<input id=content type=text onkeypress=send(event,this) autofocus placeholder="Scrivi qualcosa...">
-			<br>
-		</c:if>
+		<input id=content type=text onkeypress=send(event,this) autofocus placeholder="Scrivi qualcosa...">
+		<br>
 		<table id=scrollback>
 			<tbody>
 				<c:forEach var="message" items="${messages}">
