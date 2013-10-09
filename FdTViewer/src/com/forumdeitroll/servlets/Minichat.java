@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
@@ -28,7 +30,7 @@ public class Minichat extends MainServlet {
 	private static final long serialVersionUID = -5851412573386020328L;
 
 	public static int MAX_MESSAGE_SIZE = 200;
-	public static int MAX_MESSAGE_NUMBER = 10;
+	public static int MAX_MESSAGE_NUMBER = 20;
 
 	public static class Message {
 		private String author, content;
@@ -92,7 +94,9 @@ public class Minichat extends MainServlet {
 			return null;
 		}
 		// pre-render html
-		StringReader in = new StringReader(InputSanitizer.sanitizeText(req.getParameter("content")));
+		String content = req.getParameter("content");
+		content = StringUtils.abbreviate(content, MAX_MESSAGE_SIZE);
+		StringReader in = new StringReader(InputSanitizer.sanitizeText(content));
 		StringWriter out = new StringWriter();
 		Renderer.render(in, out, opts);
 

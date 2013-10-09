@@ -49,7 +49,7 @@ var refresh = function() {
 				row.cells[0].className = 'when';
 				row.insertCell(1).appendChild(document.createTextNode(message.author));
 				row.cells[1].className = 'who';
-				row.insertCell(2).appendChild(document.createTextNode(message.content));
+				row.insertCell(2).innerHTML = message.content;
 			}
 		}
 	});
