@@ -1,5 +1,7 @@
 package com.forumdeitroll.servlets;
 
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Type;
@@ -19,11 +21,13 @@ import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.profiler.UserProfile;
 import com.forumdeitroll.profiler.UserProfiler;
 import com.forumdeitroll.servlets.Action.Method;
+import com.forumdeitroll.servlets.Minichat.Message;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 
 public class Minichat extends MainServlet {
 
@@ -31,6 +35,7 @@ public class Minichat extends MainServlet {
 
 	public static int MAX_MESSAGE_SIZE = 200;
 	public static int MAX_MESSAGE_NUMBER = 20;
+	private static String SCROLLBACK_FILE = "/tmp/ciattina_scrollback.json";
 
 	public static class Message {
 		private String author, content;
@@ -62,10 +67,20 @@ public class Minichat extends MainServlet {
 	}
 
 	private static LinkedList<Message> messages = new LinkedList<Message>();
-
+	private static TypeToken<LinkedList<Message>> messagesType = new TypeToken<LinkedList<Message>>(){};
+	
 	@Override
 	@Action(method=Method.GET)
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		if (messages.size() == 0) {
+			try {
+				FileReader fr = new FileReader(SCROLLBACK_FILE);
+				messages = new Gson().fromJson(fr, messagesType.getType());
+				fr.close();
+			} catch (Exception e) {
+				
+			}
+		}
 		req.setAttribute("messages", messages);
 		getServletContext().getRequestDispatcher("/pages/minichat/minichat.jsp").forward(req, res);
 		return null;
@@ -107,6 +122,9 @@ public class Minichat extends MainServlet {
 		messages.add(message);
 		if (messages.size() > MAX_MESSAGE_NUMBER)
 			messages.remove();
+		FileOutputStream fos = new FileOutputStream(SCROLLBACK_FILE);
+		fos.write(new Gson().toJson(messages).getBytes("UTF-8"));
+		fos.close();
 		res.setContentType("application/json");
 		res.getWriter().println("{ \"status\" : \"OK\" }");
 		res.getWriter().flush();
