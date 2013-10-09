@@ -120,7 +120,7 @@
 		
 		<li>|</li>
 		<li><a href="javascript:ircbox()">##fdt@freenode</a></li>
-		<li><a id=ciattina href="javascript:void(0)" onclick="window.open('Minichat', 'la ciattina', 'width=left=100px,top=100px,height=600px,width=400px,menubar=no,toolbar=no,location=no,status=no')">la ciattina</a></li>
+		<li><a id=ciattina href="javascript:void(0)" onclick="window.open('Minichat', 'la ciattina', 'left=100px,top=100px,height=600px,width=400px,menubar=no,toolbar=no,location=no,status=no')">la ciattina</a></li>
 		<c:if test="${not empty loggedUser}">
 			<fdt:delayedScript>
 				(function() {

@@ -1,3 +1,4 @@
+<%@page import="com.forumdeitroll.servlets.Minichat"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!doctype html>
@@ -20,43 +21,51 @@ var send = function(event, element) {
 					encodeURIComponent(content) +
 					'&jsonProfileData=' +
 					encodeURIComponent(JSON.stringify(profileData)),
-			success : window.location.reload.bind(window.location)
+			success : function() {
+				element.disabled = false;
+				element.value = '';
+				refresh();
+			}
 		});
 	});
 };
-var counter = 29;
-setInterval(function() {
-	if (counter === 0) {
-		window.location.reload();
-		return;
-	}
-	$('#refresh').html("Refresh in "+counter+" secondi...");
-	counter--;
-}, 1000);
-$(document).ready(function() {
-	var el = document.getElementById('#content');
-	if (el) {
-		if (el.setSelectionRange) {
-			el.setSelectionRange(el.value.length, el.value.length);
-		} else {
-			var range = el.createTextRange();
-			range.collapse(true);
-			range.moveEnd('character', el.value.length);
-			range.moveStart('character', el.value.length);
-			range.select();
+
+var refresh = function() {
+	var lastCheck = localStorage['ciattina.lastCheck'];
+	$.ajax({
+		method : 'POST',
+		url : 'Minichat',
+		data : 'action=refresh&lastCheck=' + lastCheck,
+		success : function(messages) {
+			localStorage['ciattina.lastCheck'] = new Date().getTime();
+			var table = document.getElementById('scrollback');
+			for (var idx in messages) {
+				var message = messages[idx];
+				if (table.rows.length == <%=Minichat.MAX_MESSAGE_NUMBER%>) {
+					table.deleteRow(0);
+				}
+				var row = table.insertRow(-1);
+				row.insertCell(0).appendChild(document.createTextNode(message.when));
+				row.cells[0].className = 'when';
+				row.insertCell(1).appendChild(document.createTextNode(message.author));
+				row.cells[1].className = 'who';
+				row.insertCell(2).appendChild(document.createTextNode(message.content));
+			}
 		}
-	}
-	if (localStorage) {
-		localStorage['ciattina.lastCheck'] = new Date().getTime();
-	}
+	});
+}
+$(document).ready(function() {
+	localStorage['ciattina.lastCheck'] = new Date().getTime();
 });
+setInterval(refresh, 30000);
 		</script>
 		<style>
 input {
 	width: 100%;
 }
-table {
-	width: 100%
+table#scrollback {
+	width: 100%;
+	overflow: auto;
 }
 td {
 	font-family: Arial, Helvetica;
@@ -79,12 +88,11 @@ tr:nth-child(even) {
 		</style>
 	</head>
 	<body>
-		<div id=refresh onclick=window.location.reload()>Refresh in 30 secondi...</div>
 		<c:if test="${loggedUser != null}">
 			<input id=content type=text onkeypress=send(event,this) autofocus placeholder="Scrivi qualcosa...">
 			<br>
 		</c:if>
-		<table>
+		<table id=scrollback>
 			<tbody>
 				<c:forEach var="message" items="${messages}">
 					<tr>

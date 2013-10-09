@@ -2,6 +2,8 @@ package com.forumdeitroll.servlets;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -16,6 +18,10 @@ import com.forumdeitroll.profiler.UserProfile;
 import com.forumdeitroll.profiler.UserProfiler;
 import com.forumdeitroll.servlets.Action.Method;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 public class Minichat extends MainServlet {
 
@@ -124,6 +130,30 @@ public class Minichat extends MainServlet {
 		}
 		res.setContentType("application/json");
 		res.getWriter().println("{ \"inMessageToRead\" : "+inMessageToRead+", \"messageToRead\" : "+messageToRead+" }");
+		res.getWriter().flush();
+		return null;
+	}
+	
+	private static class DateSerializer implements JsonSerializer<Date> {
+		@Override
+		public JsonElement serialize(Date arg0, Type arg1, JsonSerializationContext arg2) {
+			return new Gson().toJsonTree(new SimpleDateFormat("HH:mm").format(arg0));
+		}
+	}
+	
+	@Action(method=Method.POST)
+	String refresh(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		Date lastCheck = new Date(Long.parseLong(req.getParameter("lastCheck")));
+		LinkedList<Message> new_messages = new LinkedList<Message>();
+		for (Message message : messages) {
+			if (message.when.after(lastCheck)) {
+				new_messages.add(message);
+			}
+		}
+		res.setContentType("application/json");
+		GsonBuilder b = new GsonBuilder();
+		b.registerTypeAdapter(Date.class, new DateSerializer());
+		res.getWriter().println(b.create().toJson(new_messages));
 		res.getWriter().flush();
 		return null;
 	}
