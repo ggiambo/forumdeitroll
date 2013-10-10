@@ -65,7 +65,7 @@ setInterval(refresh, 30000);
 		</script>
 		<style>
 input#content {
-	width: 100%;
+	width: 95%;
 	position: fixed;
 	top: 0;
 }
