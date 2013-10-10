@@ -11,43 +11,43 @@ body {
 }
 
 div.msgOdd,div.msgEven {
-	background-color: #222 !important;
+	background-color: #222;
 	color: #eee;
 }
 
 div.msgInfo {
-	background-color: #222 !important;
-	box-shadow: none !important;
+	background-color: #222;
+	box-shadow: none;
 }
 
 span.quoteLvl1 {
-	color: #ccf !important;
+	color: #ccf;
 }
 
 span.quoteLvl2 {
-	color: #77f !important;
+	color: #77f;
 }
 
 span.quoteLvl3 {
-	color: #99f !important;
+	color: #99f;
 }
 
 span.quoteLvl4 {
-	color: #55f !important;
+	color: #55f;
 }
 
 .msgReply {
-	background-color: #222 !important;
+	background-color: #222;
 }
 
 .msgReply label {
 	color: white;
-	box-shadow: none !important;
+	box-shadow: none;
 }
 
 .emotibox {
-	background-color: #222 !important;
-	border: 0 !important;
+	background-color: #222;
+	border: 0;
 }
 
 .msgReply textarea,#subject {
@@ -56,12 +56,12 @@ span.quoteLvl4 {
 }
 
 #nav {
-	background-color: #222 !important;
+	background-color: #222;
 	color: white;
 }
 
-#nav a {
-	color: #9999ff !important;
+#nav li a, #nav li a:visited {
+	color: #9999ff;
 }
 
 div.msgInfo {
