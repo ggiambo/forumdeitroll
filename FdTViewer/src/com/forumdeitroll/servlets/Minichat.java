@@ -68,6 +68,7 @@ public class Minichat extends MainServlet {
 
 	private static LinkedList<Message> messages = new LinkedList<Message>();
 	private static TypeToken<LinkedList<Message>> messagesType = new TypeToken<LinkedList<Message>>(){};
+	private static Object lock = new Object();
 	
 	@Override
 	@Action(method=Method.GET)
@@ -119,12 +120,14 @@ public class Minichat extends MainServlet {
 		message.author = author != null ? author.getNick() : "";
 		message.content = out.getBuffer().toString();
 		message.when = new Date();
-		messages.add(message);
-		if (messages.size() > MAX_MESSAGE_NUMBER)
-			messages.remove();
-		FileOutputStream fos = new FileOutputStream(SCROLLBACK_FILE);
-		fos.write(new Gson().toJson(messages).getBytes("UTF-8"));
-		fos.close();
+		synchronized (lock) {
+			messages.add(message);
+			if (messages.size() > MAX_MESSAGE_NUMBER)
+				messages.remove();
+			FileOutputStream fos = new FileOutputStream(SCROLLBACK_FILE);
+			fos.write(new Gson().toJson(messages).getBytes("UTF-8"));
+			fos.close();
+		}
 		res.setContentType("application/json");
 		res.getWriter().println("{ \"status\" : \"OK\" }");
 		res.getWriter().flush();
