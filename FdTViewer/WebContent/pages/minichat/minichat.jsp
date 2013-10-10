@@ -64,8 +64,10 @@ $(document).ready(function() {
 setInterval(refresh, 30000);
 		</script>
 		<style>
-input {
+input#content {
 	width: 100%;
+	position: fixed;
+	top: 0;
 }
 table#scrollback {
 	width: 100%;
