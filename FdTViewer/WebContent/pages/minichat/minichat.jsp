@@ -72,6 +72,7 @@ table#scrollback {
 }
 td {
 	font-family: Arial, Helvetica;
+	padding: 0px, 2px, 0px, 2px;
 }
 td.when {
 	width: 1%;
