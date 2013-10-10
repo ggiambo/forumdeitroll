@@ -60,7 +60,7 @@ span.quoteLvl4 {
 	color: white;
 }
 
-#nav li a, #nav li a:visited {
+#nav li a, #nav li a:visited, #nav li a.selected {
 	color: #9999ff;
 }
 
