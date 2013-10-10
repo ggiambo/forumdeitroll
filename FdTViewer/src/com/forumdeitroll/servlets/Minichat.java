@@ -175,7 +175,7 @@ public class Minichat extends MainServlet {
 		res.setContentType("application/json");
 		GsonBuilder b = new GsonBuilder();
 		b.registerTypeAdapter(Date.class, new DateSerializer());
-		res.getWriter().println(b.create().toJson(new_messages));
+		res.getWriter().println("{ \"messages\" : "+b.create().toJson(new_messages) + ", \"tstamp\" : "+System.currentTimeMillis()+" }");
 		res.getWriter().flush();
 		return null;
 	}

@@ -36,8 +36,9 @@ var refresh = function() {
 		method : 'POST',
 		url : 'Minichat',
 		data : 'action=refresh&lastCheck=' + lastCheck,
-		success : function(messages) {
-			localStorage['ciattina.lastCheck'] = new Date().getTime();
+		success : function(response) {
+			var messages = response.messages;
+			localStorage['ciattina.lastCheck'] = response.tstamp;
 			var table = document.getElementById('scrollback');
 			for (var idx in messages) {
 				var message = messages[idx];
@@ -58,7 +59,7 @@ var refresh = function() {
 	});
 }
 $(document).ready(function() {
-	localStorage['ciattina.lastCheck'] = new Date().getTime();
+	localStorage['ciattina.lastCheck'] = <%= System.currentTimeMillis() %>;
 });
 setInterval(refresh, 30000);
 		</script>
