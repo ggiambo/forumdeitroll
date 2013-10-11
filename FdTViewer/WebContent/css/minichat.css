@@ -7,20 +7,20 @@ table#scrollback {
 	width: 100%;
 	overflow: auto;
 }
-td {
+table#scrollback td {
 	font-family: Arial, Helvetica;
 	padding-left: 2px;
 	padding-right: 2px;
 }
-td.when {
+table#scrollback td.when {
 	width: 1%;
 }
-td.who {
+table#scrollback td.who {
 	width: 5%;
 }
-tr:nth-child(odd) {
+table#scrollback tr:nth-child(odd) {
 	background-color: #efe;
 }
-tr:nth-child(even) {
+table#scrollback tr:nth-child(even) {
 	background-color: #eef;
 }
