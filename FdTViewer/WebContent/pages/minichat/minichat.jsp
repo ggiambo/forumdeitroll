@@ -1,95 +1,22 @@
 <%@page import="com.forumdeitroll.servlets.Minichat"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<%! static final long bootTime = System.currentTimeMillis(); %>
+
 <!doctype html>
 <html>
 	<head>
 		<title>la ciattina</title>
 		<script src=//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js></script>
 		<script type=text/javascript src=js/profiler.js></script>
+		<script type=text/javascript src="js/minichat.js?v=<%=bootTime%>" ></script>
+		<link type="text/css" href="css/minichat.css" rel="stylesheet" />
 		<script>
-var send = function(event, element) {
-	if (event.which !== 13) return;
-	if (element.value === '') return;
-	var content = element.value;
-	element.disabled = true;
-	profiler(function(profileData) {
-		$.ajax({
-			method : 'POST',
-			url : 'Minichat',
-			data : 'action=send&content=' +
-					encodeURIComponent(content) +
-					'&jsonProfileData=' +
-					encodeURIComponent(JSON.stringify(profileData)),
-			success : function() {
-				element.disabled = false;
-				element.value = '';
-				refresh();
-			}
-		});
-	});
-};
-
-var refresh = function() {
-	var lastCheck = localStorage['ciattina.lastCheck'];
-	$.ajax({
-		method : 'POST',
-		url : 'Minichat',
-		data : 'action=refresh&lastCheck=' + lastCheck,
-		success : function(response) {
-			var messages = response.messages;
-			localStorage['ciattina.lastCheck'] = response.tstamp;
-			var table = document.getElementById('scrollback');
-			for (var idx in messages) {
-				var message = messages[idx];
-				if (table.rows.length == <%=Minichat.MAX_MESSAGE_NUMBER%>) {
-					table.deleteRow(0);
-				}
-				var row = table.insertRow(-1);
-				row.insertCell(0).appendChild(document.createTextNode(message.when));
-				row.cells[0].className = 'when';
-				if (!message.author) {
-					message.author = '';
-				}
-				row.insertCell(1).appendChild(document.createTextNode(message.author));
-				row.cells[1].className = 'who';
-				row.insertCell(2).innerHTML = message.content;
-			}
-		}
-	});
-}
-$(document).ready(function() {
-	localStorage['ciattina.lastCheck'] = <%= System.currentTimeMillis() %>;
-});
-setInterval(refresh, 30000);
+			$(document).ready(function() {
+				init(<%= System.currentTimeMillis() %>, <%= Minichat.MAX_MESSAGE_NUMBER %>);
+			});
 		</script>
-		<style>
-input#content {
-	width: 95%;
-	position: fixed;
-	top: 0;
-}
-table#scrollback {
-	width: 100%;
-	overflow: auto;
-}
-td {
-	font-family: Arial, Helvetica;
-	padding: 0px, 2px, 0px, 2px;
-}
-td.when {
-	width: 1%;
-}
-td.who {
-	width: 5%;
-}
-tr:nth-child(odd) {
-	background-color: #efe;
-}
-tr:nth-child(even) {
-	background-color: #eef;
-}
-		</style>
 	</head>
 	<body>
 		<input id=content type=text onkeypress=send(event,this) autofocus placeholder="Scrivi qualcosa...">

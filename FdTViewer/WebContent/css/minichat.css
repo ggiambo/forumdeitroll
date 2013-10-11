@@ -1,0 +1,26 @@
+input#content {
+	width: 95%;
+	position: fixed;
+	top: 0;
+}
+table#scrollback {
+	width: 100%;
+	overflow: auto;
+}
+td {
+	font-family: Arial, Helvetica;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+td.when {
+	width: 1%;
+}
+td.who {
+	width: 5%;
+}
+tr:nth-child(odd) {
+	background-color: #efe;
+}
+tr:nth-child(even) {
+	background-color: #eef;
+}
