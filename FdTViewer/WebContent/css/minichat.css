@@ -1,7 +1,7 @@
 input#content {
 	width: 95%;
 	position: fixed;
-	top: 0;
+	bottom: 0;
 }
 table#scrollback {
 	width: 100%;

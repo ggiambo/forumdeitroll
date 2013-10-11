@@ -19,8 +19,6 @@
 		</script>
 	</head>
 	<body>
-		<input id=content type=text onkeypress=send(event,this) autofocus placeholder="Scrivi qualcosa...">
-		<br>
 		<table id=scrollback>
 			<tbody>
 				<c:forEach var="message" items="${messages}">
@@ -34,5 +32,7 @@
 				</c:forEach>
 			</tbody>
 		</table>
+		<br>
+		<input id=content type=text onkeypress=send(event,this) autofocus placeholder="Scrivi qualcosa...">
 	</body>
 </html>
