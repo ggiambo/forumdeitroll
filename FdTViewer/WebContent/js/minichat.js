@@ -1,3 +1,7 @@
+if (typeof localStorage === 'undefined') {
+	alert("Il tuo browser non supporta localStorage. Torna con qualcosa di piu' moderno.");
+	throw new Error();
+}
 
 var MAX_MESSAGE_NUMBER;
 
