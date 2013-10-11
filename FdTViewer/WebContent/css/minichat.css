@@ -2,6 +2,9 @@ input#content {
 	width: 95%;
 	position: fixed;
 	bottom: 0;
+	background-color: white;
+	border: 1px solid gray;
+	border-radius: 3px;
 }
 table#scrollback {
 	width: 100%;
@@ -11,6 +14,7 @@ table#scrollback td {
 	font-family: Arial, Helvetica;
 	padding-left: 2px;
 	padding-right: 2px;
+	border-radius: 3px;
 }
 table#scrollback td.when {
 	width: 1%;
