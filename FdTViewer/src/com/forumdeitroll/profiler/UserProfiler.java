@@ -7,9 +7,9 @@ import java.util.ListIterator;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import net.sf.uadetector.UADetectorServiceFactory;
-import net.sf.uadetector.UserAgent;
+import net.sf.uadetector.ReadableUserAgent;
 import net.sf.uadetector.UserAgentStringParser;
+import net.sf.uadetector.service.UADetectorServiceFactory;
 
 import org.apache.log4j.Logger;
 
@@ -37,11 +37,11 @@ public class UserProfiler {
 	}
 	
 	// cache di user agent gia' parsati
-	private HashMap<String, UserAgent> knownUA = new HashMap<String, UserAgent>();
-	private UserAgentStringParser uaParser = UADetectorServiceFactory.getUserAgentStringParser();
-	private UserAgent parseUA(String ua) {
+	private HashMap<String, ReadableUserAgent> knownUA = new HashMap<String, ReadableUserAgent>();
+	private UserAgentStringParser uaParser = UADetectorServiceFactory.getCachingAndUpdatingParser();
+	private ReadableUserAgent parseUA(String ua) {
 		if (knownUA.containsKey(ua)) return knownUA.get(ua);
-		UserAgent userAgent =uaParser.parse(ua);
+		ReadableUserAgent userAgent =uaParser.parse(ua);
 		knownUA.put(ua, userAgent);
 		return userAgent;
 	}
@@ -59,7 +59,7 @@ public class UserProfiler {
 	
 	// per rilevare un aggiornamento del browser vedo se è abbastanza simile ad altri
 	// UADetector prende i dati da http://user-agent-string.info/
-	private boolean closeEnough(UserAgent ua1, UserAgent ua2) {
+	private boolean closeEnough(ReadableUserAgent ua1, ReadableUserAgent ua2) {
 		return ua1.getFamily().equals(ua2.getFamily()) &&
 				ua1.getOperatingSystem().getName().equals(ua2.getOperatingSystem().getName());
 	}
