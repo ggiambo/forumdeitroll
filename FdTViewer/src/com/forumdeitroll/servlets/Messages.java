@@ -204,6 +204,8 @@ public class Messages extends MainServlet {
 	String newMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		MessageDTO msg = new MessageDTO();
 		msg.setForum(req.getParameter("forum"));
+		msg.setSubject(req.getParameter("subject"));
+		msg.setText(req.getParameter("text"));
 		req.setAttribute("message", msg);
 		setWebsiteTitle(req, "Nuovo messaggio @ Forum dei Troll");
 		// faccine - ordinate per key
