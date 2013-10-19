@@ -26,7 +26,14 @@
 						<td class="when">
 							<fmt:formatDate value="${message.when}" pattern="HH:mm"/>
 						</td>
-						<td class="who">${message.author}</td>
+						<td class="who">
+							<c:if test="${message.irc}">
+								<a href="http://webchat.freenode.net/?channels=%23%23fdt">${message.author}</a>
+							</c:if>
+							<c:if test="${!message.irc}">
+								${message.author}
+							</c:if>
+						</td>
 						<td><c:out value="${message.content}" escapeXml="false" /></td>
 					</tr>
 				</c:forEach>

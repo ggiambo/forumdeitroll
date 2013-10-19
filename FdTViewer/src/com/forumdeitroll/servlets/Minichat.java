@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.forumdeitroll.markup.InputSanitizer;
@@ -28,6 +29,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
+import com.sun.beans.editors.StringEditor;
 
 public class Minichat extends MainServlet {
 
@@ -40,7 +42,7 @@ public class Minichat extends MainServlet {
 	public static class Message {
 		private String author, content;
 		private Date when;
-
+		private boolean irc;
 		public void setAuthor(String author) {
 			this.author = author;
 		}
@@ -63,6 +65,14 @@ public class Minichat extends MainServlet {
 
 		public Date getWhen() {
 			return when;
+		}
+		
+		public void setIrc(boolean irc) {
+			this.irc = irc;
+		}
+		
+		public boolean isIrc() {
+			return irc;
 		}
 	}
 
@@ -109,15 +119,29 @@ public class Minichat extends MainServlet {
 		if (profile.isBannato()) {
 			return null;
 		}
+		
+		boolean irc = Boolean.TRUE.toString().equals(req.getParameter("irc"));
+		String irc_author = null;
+		
 		// pre-render html
 		String content = req.getParameter("content");
 		content = StringUtils.abbreviate(content, MAX_MESSAGE_SIZE);
+		if (irc) {
+			irc_author = content.substring(3, content.indexOf(':'));
+			content = content.substring(content.indexOf(':') + 1);
+		}
 		StringReader in = new StringReader(InputSanitizer.sanitizeText(content));
 		StringWriter out = new StringWriter();
 		Renderer.render(in, out, opts);
 
 		Message message = new Message();
-		message.author = author != null ? author.getNick() : "";
+		message.author =
+			irc
+			? irc_author
+			: author != null && !StringUtils.isEmpty(author.getNick())
+				? author.getNick()
+				: "";
+		message.irc = irc;
 		message.content = out.getBuffer().toString();
 		message.when = new Date();
 		synchronized (lock) {

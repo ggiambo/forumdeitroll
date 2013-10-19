@@ -48,7 +48,15 @@ var refresh = function() {
 				if (!message.author) {
 					message.author = '';
 				}
-				row.insertCell(1).appendChild(document.createTextNode(message.author));
+				if (message.irc) {
+					var text = document.createTextNode(message.author);
+					var link = document.createElement('A');
+					link.href = 'http://webchat.freenode.net/?channels=%23%23fdt';
+					link.appendChild(text);
+					row.insertCell(1).appendChild(link);
+				} else {
+					row.insertCell(1).appendChild(document.createTextNode(message.author));
+				}
 				row.cells[1].className = 'who';
 				row.insertCell(2).innerHTML = message.content;
 			}
