@@ -223,13 +223,15 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		try {
 			conn = getConnection();
 			StringBuilder query = new StringBuilder();
-			query.append("SELECT DISTINCT threadId ")
-				.append("FROM messages ")
-				.append("WHERE author = ? ");
+			query.append("SELECT MAX(a.id), b.threadId ")
+				.append("FROM messages a, messages b ")
+				.append("WHERE a.threadId = b.threadId ")
+				.append("AND b.author = ? ");
 			if (hideProcCatania) {
-				query.append("AND (forum IS NULL OR forum != '").append(FORUM_PROC).append("') ");
+				query.append("AND (b.forum IS NULL OR b.forum != '").append(FORUM_PROC).append("') ");
 			}
-			query.append("ORDER BY `id` DESC ")
+			query.append("GROUP BY a.threadId ")
+				.append("ORDER BY MAX(a.id) DESC ")
 				.append("LIMIT ? OFFSET ?");
 
 
