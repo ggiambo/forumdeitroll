@@ -97,7 +97,7 @@
 			<li><a id="Polls_createNewPoll" href="Polls?action=createNewPoll">Nuovo sondaggio</a></li>
 		</c:if>
 
-		<li>|</li>
+		<div style="float: right; ">
 		<c:choose>
 			<c:when test="${not empty loggedUser}">
 				<li>Loggato come <a href="User">${loggedUser.nick}</a></li>
@@ -112,9 +112,9 @@
 				<li><a href="User?action=registerAction">Registrati</a></li>
 			</c:otherwise>
 		</c:choose>
-		
+		</div>
+		<br>
 		<c:if test="${!empty page}">
-			<li>|</li>
 			<li id='pager'><fdt:pager handler="Messages"></fdt:pager></li>
 		</c:if>
 		
