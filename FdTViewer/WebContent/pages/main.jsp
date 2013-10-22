@@ -1,3 +1,5 @@
+<%@page import="java.util.Date"%>
+<%@page import="com.forumdeitroll.util.UniqueVisitorsCounter"%>
 <%@page import="java.util.Calendar"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true" %>
@@ -117,12 +119,20 @@
 			</div>
 		</div>
 
+		<%! static final UniqueVisitorsCounter count15min = new UniqueVisitorsCounter(15*60*1000); %>
+		<% count15min.add(request); %>
+		<%! static final UniqueVisitorsCounter count5min = new UniqueVisitorsCounter(5*60*1000); %>
+		<% count5min.add(request); %>
+		<%! static final UniqueVisitorsCounter count1min = new UniqueVisitorsCounter(1*60*1000); %>
+		<% count1min.add(request); %>
+		
 		<%-- bottom line --%>
 		<div id="bottomLine">
 			<p id="copyRight">Copyright &copy; 2012-<%= ""+Calendar.getInstance().get(Calendar.YEAR) %> Fondazione Gatto Selvaggio</p>
 			<c:if test="${currentTimeMillis != null}">
 				<p id="genTime">Pagina generata in <%=System.currentTimeMillis() - (Long)request.getAttribute("currentTimeMillis")%> millisecondi</p>
 			</c:if>
+			<p>Utenti attivi: <%=count1min.get()%> nell'ultimo minuto, <%=count5min.get()%> negli ultimi cinque minuti, <%=count15min.get()%> negli ultimi 15 minuti</p>
 		</div>
 
 		<%-- i vari scripts --%>
