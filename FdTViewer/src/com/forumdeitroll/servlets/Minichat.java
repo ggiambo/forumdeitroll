@@ -37,7 +37,7 @@ public class Minichat extends MainServlet {
 	private static String SCROLLBACK_FILE = "/tmp/ciattina_scrollback.json";
 
 	public static class Message {
-		private String author, content;
+		private String author, content, contentRaw;
 		private Date when;
 		private boolean irc;
 		public void setAuthor(String author) {
@@ -54,6 +54,14 @@ public class Minichat extends MainServlet {
 
 		public String getContent() {
 			return content;
+		}
+
+		public void setContentRaw(String contentRaw) {
+			this.contentRaw = contentRaw;
+		}
+
+		public String getContentRaw() {
+			return contentRaw;
 		}
 
 		public void setWhen(Date when) {
@@ -127,7 +135,8 @@ public class Minichat extends MainServlet {
 			irc_author = content.substring(3, content.indexOf(':'));
 			content = content.substring(content.indexOf(':') + 1);
 		}
-		StringReader in = new StringReader(InputSanitizer.sanitizeText(content));
+		String sc = InputSanitizer.sanitizeText(content);
+		StringReader in = new StringReader(sc);
 		StringWriter out = new StringWriter();
 		Renderer.render(in, out, opts);
 
@@ -140,6 +149,7 @@ public class Minichat extends MainServlet {
 				: "";
 		message.irc = irc;
 		message.content = out.getBuffer().toString();
+		message.contentRaw = sc;
 		message.when = new Date();
 		synchronized (lock) {
 			messages.add(message);
