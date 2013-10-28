@@ -56,6 +56,7 @@ public class UserProfilesStorage {
 	private static long FS_Store_timeout = 60 * 1000;
 	private static long Cleanup_timeout = 60 * 60 * 1000;
 	private static long UserProfile_expires = 2 * 24 * 60 * 60 * 1000;
+	private static long IpAddress_expires = 15 * 24 * 60 * 60 * 1000;
 	
 	public static void cleanup(ArrayList<UserProfile> profiles) {
 		for (ListIterator<UserProfile> profilesIter = profiles.listIterator(); profilesIter.hasNext();) {
@@ -67,6 +68,12 @@ public class UserProfilesStorage {
 					logger.info(profile.getNicknames());
 					logger.info(profile.getMsgIds());
 					profilesIter.remove();
+				}
+			} else {
+				// un indirizzo ip molto vecchio e' inutile e produce falsi positivi
+				if (profile.getUltimoRiconoscimentoUtente() + IpAddress_expires < System.currentTimeMillis()) {
+					logger.info("elimino dal profilo "+profile.getUuid()+" i seguenti ip: "+profile.getIpAddresses());
+					profile.getIpAddresses().clear();
 				}
 			}
 		}
