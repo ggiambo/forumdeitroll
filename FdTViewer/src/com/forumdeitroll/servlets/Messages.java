@@ -237,22 +237,22 @@ public class Messages extends MainServlet {
 				nrQuotes++;
 				StringBuilder newBegin = new StringBuilder("\r\n");
 				for (int j = 0; j < nrQuotes; j++) {
-					newBegin.append("> ");
+					newBegin.append("&gt; ");
 				}
 				text = m.replaceFirst(newBegin.toString());
 				m = PATTERN_QUOTE.matcher(text);
 			}
 
 			String author = msgDTO.getAuthor().getNick();
-			text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n> " + text + "\r\n";
+			text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n&gt; " + text + "\r\n";
 			if ("quote1".equals(type)) {
 				StringBuilder out = new StringBuilder();
 				for (String line : text.split("\r\n")) {
 					if (line.startsWith("Scritto da")
-							|| line.startsWith("> ")
+							|| line.startsWith("&gt; ")
 							&& line.length() > 2
-							&& line.charAt(2) != '>'
-							&& !line.startsWith("> Scritto da")
+							&& !line.startsWith("&gt; &gt;")
+							&& !line.startsWith("&gt; Scritto da")
 							) {
 						out.append(line).append("\r\n");
 					}
@@ -261,7 +261,11 @@ public class Messages extends MainServlet {
 			} else if ("quote4".equals(type)) {
 				StringBuilder out = new StringBuilder();
 				for (String line : text.split("\r\n")) {
-					if (!(line.startsWith("> > > > >") || line.startsWith("> > > > Scritto da"))) {
+					if (!line.startsWith("&gt; &gt; &gt; &gt; &gt;")
+						|| line.startsWith("&gt; Scritto da")
+						|| line.startsWith("&gt; &gt; Scritto da")
+						|| line.startsWith("&gt; &gt; &gt; Scritto da")
+						|| line.startsWith("&gt; &gt; &gt; &gt; Scritto da")) {
 						out.append(line).append("\r\n");
 					}
 				}
