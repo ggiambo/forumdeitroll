@@ -245,22 +245,40 @@
 
 		</c:if>
 
-		<%-- Rispondi --%>
-		<div class="buttonBarButton">
-			<a class="buttonBarLink" href="#" onClick="showReplyDiv('reply', '${msg.id}');return false;">
+		<div class="buttonBarButton" style="position: relative">
+			<a class="buttonBarLink" href="#" onClick="showDropDownReply(event, '${msg.id}'); return false">
 				<span class="buttonBarImg buttonBarImgRispondi"></span>
 				Rispondi
 			</a>
+			<ul id="replyMenu${msg.id}" class="replyMenu">
+				<li>
+					<a href="#" onClick="showReplyDiv('reply', '${msg.id}'); return false;">
+						Rispondi
+					</a>
+				</li>
+				<li>
+					<a href="#" onClick="showReplyDiv('quote', '${msg.id}'); return false;">
+						Quota tutto
+					</a>
+				</li>
+				<li>
+					<a href="#" onClick="showReplyDiv('quote1', '${msg.id}'); return false;">
+						Quota ultimo
+					</a>
+				</li>
+				<li>
+					<a href="#" onClick="showReplyDiv('quote4', '${msg.id}'); return false;">
+						Quota ultimi 4
+					</a>
+				</li>
+				<li>
+					<a href="#" onClick="hideDropDownReply(event, ${msg.id}); return false">
+						Chiudi
+					</a>
+				</li>
+			</ul>
 		</div>
-
-		<%-- Quota --%>
-		<div class="buttonBarButton">
-			<a class="buttonBarLink" href="#" onClick="showReplyDiv('quote', '${msg.id}');return false;">
-				<span class="buttonBarImg buttonBarImgQuota"></span>
-				Quota
-			</a>
-		</div>
-
+		
 		<div class="buttonBarButton">
 			<c:if test="${not empty loggedUser}">
 					<%-- +1 --%>
@@ -279,3 +297,4 @@
 	</div>
 
 </div>
+

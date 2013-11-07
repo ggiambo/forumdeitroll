@@ -1620,3 +1620,14 @@ span.del-tag {
 	border-style: none;
 	cursor: pointer;
 }
+
+ul.replyMenu {
+	z-index: 9999;
+	display: none;
+	position: absolute;
+}
+
+ul.replyMenu>li>a {
+	font-size: 0.8em;
+	text-decoration: none;
+}

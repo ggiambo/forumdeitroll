@@ -226,7 +226,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("parentId", parentId);
 		MessageDTO newMsg = new MessageDTO();
 		MessageDTO msgDTO = getPersistence().getMessage(parentId);
-		if ("quote".equals(type)) {
+		if ("quote".equals(type) || "quote1".equals(type) || "quote4".equals(type)) {
 			String text = msgDTO.getText().trim();
 
 			// quote
@@ -245,6 +245,28 @@ public class Messages extends MainServlet {
 
 			String author = msgDTO.getAuthor().getNick();
 			text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n> " + text + "\r\n";
+			if ("quote1".equals(type)) {
+				StringBuilder out = new StringBuilder();
+				for (String line : text.split("\r\n")) {
+					if (line.startsWith("Scritto da")
+							|| line.startsWith("> ")
+							&& line.length() > 2
+							&& line.charAt(2) != '>'
+							&& !line.startsWith("> Scritto da")
+							) {
+						out.append(line).append("\r\n");
+					}
+				}
+				text = out.toString();
+			} else if ("quote4".equals(type)) {
+				StringBuilder out = new StringBuilder();
+				for (String line : text.split("\r\n")) {
+					if (!(line.startsWith("> > > > >") || line.startsWith("> > > > Scritto da"))) {
+						out.append(line).append("\r\n");
+					}
+				}
+				text = out.toString();
+			}
 			newMsg.setText(text);
 		}
 		newMsg.setForum(msgDTO.getForum());

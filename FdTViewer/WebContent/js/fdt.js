@@ -28,6 +28,7 @@ function showReplyDiv(type, parentId) {
 			$("#msg" + parentId).append(data);
 			$("#reply_" + parentId + " :input[name='text']").focus();
 			$("body").css("cursor", "auto");
+			$('#replyMenu'+parentId).hide();
 	});
 }
 
@@ -766,4 +767,16 @@ function deleteTag(event, t_id, m_id) {
 		}
 	})
 	
+}
+
+function showDropDownReply(event, msgId) {
+	var offset = $(event.target).offset();
+	var el = $('#replyMenu' + msgId);
+	el.show();
+	el.menu();
+	el.css({top : '-75px', left : '-15px'});
+}
+
+function hideDropDownReply(event, msgId) {
+	$(event.target.parentNode.parentNode).hide();
 }
