@@ -1621,12 +1621,22 @@ span.del-tag {
 	cursor: pointer;
 }
 
+div.buttonBarRispondi {
+	position: relative;
+}
+
 ul.replyMenu {
 	z-index: 9999;
 	display: none;
 	position: absolute;
+	top: -80px;
+	left: -20px;
+	width: 100px;
 }
-
+ul.replyMenu>li.ui-menu-item {
+	height: 16px;
+	padding: 0;
+}
 ul.replyMenu>li>a {
 	font-size: 0.8em;
 	text-decoration: none;

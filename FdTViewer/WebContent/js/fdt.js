@@ -774,7 +774,6 @@ function showDropDownReply(event, msgId) {
 	var el = $('#replyMenu' + msgId);
 	el.show();
 	el.menu();
-	el.css({top : '-75px', left : '-15px'});
 }
 
 function hideDropDownReply(event, msgId) {

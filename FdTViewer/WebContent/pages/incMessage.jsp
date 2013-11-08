@@ -245,7 +245,7 @@
 
 		</c:if>
 
-		<div class="buttonBarButton" style="position: relative">
+		<div class="buttonBarButton buttonBarRispondi">
 			<a class="buttonBarLink" href="#" onClick="showDropDownReply(event, '${msg.id}'); return false">
 				<span class="buttonBarImg buttonBarImgRispondi"></span>
 				Rispondi
