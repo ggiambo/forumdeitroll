@@ -187,17 +187,15 @@ public abstract class MainServlet extends HttpServlet {
 		Method actionMethod = getActionMethod(action);
 		if (actionMethod == null) {
 			throw new IllegalArgumentException("Azione sconosciuta: " + action);
-		} else {
-			Action a = actionMethod.getAnnotation(Action.class);
-			if (a == null) {
-				throw new IllegalArgumentException("L'action " + action + " non e' definita");
-			}
-			if (a.method() == Action.Method.GETPOST || a.method() == method) {
-				return (String)actionMethod.invoke(this, new Object[] {req, res});
-			} else {
-				throw new IllegalArgumentException("Azione " + action + " non permette il metodo " + method);
-			}
 		}
+		Action a = actionMethod.getAnnotation(Action.class);
+		if (a == null) {
+			throw new IllegalArgumentException("L'action " + action + " non e' definita");
+		}
+		if (a.method() == Action.Method.GETPOST || a.method() == method) {
+			return (String)actionMethod.invoke(this, new Object[] {req, res});
+		}
+		throw new IllegalArgumentException("Azione " + action + " non permette il metodo " + method);
 	}
 
 	/**
@@ -242,9 +240,8 @@ public abstract class MainServlet extends HttpServlet {
 					getPersistence().updateAuthorPassword(author, pass);
 				}
 				return author;
-			} else {
-				return new AuthorDTO(null);
 			}
+			return new AuthorDTO(null);
 		}
 
 		// se non e` stato specificato nome utente e password tentiamo l'autenticazione tramite sessione
@@ -407,9 +404,8 @@ public abstract class MainServlet extends HttpServlet {
 			final QuoteDTO newquote = new QuoteDTO(quote);
 			newquote.setContent(StringEscapeUtils.escapeHtml4(quote.getContent()));
 			return newquote;
-		} else {
-			return new QuoteDTO();
 		}
+		return new QuoteDTO();
 	}
 
 	/**
@@ -434,6 +430,7 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	void addSpecificParam(HttpServletRequest req, String key, String value) {
+		@SuppressWarnings("unchecked")
 		Map<String, String> specificParams = (Map<String, String>)req.getAttribute("specificParams");
 		if (specificParams == null) {
 			specificParams = new HashMap<String, String>();
@@ -459,14 +456,12 @@ public abstract class MainServlet extends HttpServlet {
 		String forum = req.getParameter("forum");
 		if (IPersistence.FORUM_PROC.equals(forum)) {
 			return false; // nascondere la proc quando si consulta la proc :P ?
-		} else {
-			AuthorDTO loggedUser = login(req);
-			if (loggedUser.isValid()) {
-				return StringUtils.isNotEmpty(loggedUser.getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
-			} else {
-				return false; // utenti non registrati: mostra
-			}
 		}
+		AuthorDTO loggedUser = login(req);
+		if (loggedUser.isValid()) {
+			return StringUtils.isNotEmpty(loggedUser.getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+		}
+		return false; // utenti non registrati: mostra
 	}
 
 	/**

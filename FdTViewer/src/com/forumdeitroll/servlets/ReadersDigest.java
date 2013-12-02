@@ -9,6 +9,8 @@ import com.forumdeitroll.persistence.DigestArticleDTO;
 
 public class ReadersDigest extends MainServlet {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {

@@ -29,6 +29,7 @@ public class UserProfilesStorage {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static ArrayList<UserProfile> load() {
 		ArrayList<UserProfile> profiles = null;
 		if (new File(FdTConfig.getProperty("userProfile.path")).exists()) {

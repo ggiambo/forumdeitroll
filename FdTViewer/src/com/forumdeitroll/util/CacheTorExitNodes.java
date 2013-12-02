@@ -47,6 +47,7 @@ public class CacheTorExitNodes extends SingleValueCache<Set<String>> {
 		    }
 		    wr.close();
 		    rd.close();
+		    socket.close();
 		} catch (Exception e) {
 			LOG.error("Cannot read tor exit list ", e);
 		}

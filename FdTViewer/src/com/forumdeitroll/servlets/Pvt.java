@@ -2,9 +2,7 @@ package com.forumdeitroll.servlets;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -102,10 +100,9 @@ public class Pvt extends MainServlet {
 				return "pvts.jsp";	
 			}
 			return inbox(req, res);
-		} else {
-			setNavigationMessage(req, NavigationMessage.error("Fai il login o registrati (cit)"));
-			return "pvts.jsp";
 		}
+		setNavigationMessage(req, NavigationMessage.error("Fai il login o registrati (cit)"));
+		return "pvts.jsp";
 	}
 	
 	@Action(method=Method.POST)

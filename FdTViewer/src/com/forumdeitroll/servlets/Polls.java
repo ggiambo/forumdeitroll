@@ -215,9 +215,10 @@ public class Polls extends MainServlet {
         plot.setLabelGenerator(new StandardPieSectionLabelGenerator("Voti: {1} ({2})", NumberFormat.getNumberInstance(), NumberFormat.getPercentInstance()));
         
         // renderizza con i colori custom
-        List datasetKeys = dataset.getKeys();
+        @SuppressWarnings("unchecked")
+		List<Comparable<?>> datasetKeys = dataset.getKeys();
         for (int i = 0; i < datasetKeys.size(); i++) {
-        	plot.setSectionPaint((Comparable)datasetKeys.get(i), pieSliceColors[(i % pieSliceColors.length)]);
+        	plot.setSectionPaint(datasetKeys.get(i), pieSliceColors[(i % pieSliceColors.length)]);
         }
         
         // write chart

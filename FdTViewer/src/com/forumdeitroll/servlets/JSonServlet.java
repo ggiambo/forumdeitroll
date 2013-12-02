@@ -500,9 +500,8 @@ public class JSonServlet extends HttpServlet {
 				if (!persistence.getForums().contains(forum)) {
 					writeErrorMessage(writer, "Ma che cacchio di forum e' '" + forum + "' ?!?", time);
 					return;
-				} else {
-					message.setForum(forum);
 				}
+				message.setForum(forum);
 			}
 			author.setMessages(author.getMessages() + 1);
 			message.setDate(new Date());
@@ -651,7 +650,7 @@ public class JSonServlet extends HttpServlet {
 		out.name("messages").value(author.getMessages());
 		out.name("active").value(StringUtils.isNotEmpty(author.getHash()));
 		if (author.getAvatar() != null) {
-			out.name("avatar").value("//forumdeitroll.com/Misc?action=getAvatar&nick=" + URLEncoder.encode(author.getNick()) );
+			out.name("avatar").value("//forumdeitroll.com/Misc?action=getAvatar&nick=" + URLEncoder.encode(author.getNick(), "UTF-8") );
 		}
 		out.endObject();
 	}

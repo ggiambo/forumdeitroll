@@ -164,10 +164,9 @@ public class UserProfiler {
 			candidate.setUuid(UUID.randomUUID().toString());
 			profiles.add(candidate);
 			return candidate;	
-		} else {
-			merge(candidate, maybe);
-			return maybe;
 		}
+		merge(candidate, maybe);
+		return maybe;
 	}
 	
 	public void bind(UserProfile userProfile, String m_id) {

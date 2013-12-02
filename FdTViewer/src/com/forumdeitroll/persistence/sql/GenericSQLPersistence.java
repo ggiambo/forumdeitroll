@@ -34,13 +34,12 @@ import com.forumdeitroll.persistence.PollDTO;
 import com.forumdeitroll.persistence.PollQuestion;
 import com.forumdeitroll.persistence.PollsDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
-import com.forumdeitroll.persistence.TagDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
+import com.forumdeitroll.persistence.TagDTO;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
-import com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv;
 
 public abstract class GenericSQLPersistence implements IPersistence {
 
@@ -259,12 +258,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		if (message.getParentId() != -1) {
 			if (message.getId() == -1) {
 				return getMessage(insertReplyMessage(message));
-			} else {
-				return getMessage(insertEditMessage(message));
 			}
-		} else {
-			return getMessage(insertNewMessage(message));
+			return getMessage(insertEditMessage(message));
 		}
+		return getMessage(insertNewMessage(message));
 	}
 
 	private long insertEditMessage(MessageDTO message) {
@@ -344,6 +341,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			rs = ps.getGeneratedKeys();
 			rs.next();
 			long id = rs.getLong(1);
+			ps.close();
 			//  new message, update threadId and parentId
 			ps = conn.prepareStatement("UPDATE messages SET parentId=?, threadId=? WHERE id=?");
 			i = 1;
@@ -753,10 +751,14 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick = ? AND hash IS NOT NULL");
 				ps.setString(1, recipient);
 				rs = ps.executeQuery();
-				if (!rs.next()) throw new FdTException("Il destinatario "+StringEscapeUtils.escapeHtml4(recipient)+" non esiste.");
+				ps.close();
+				if (!rs.next()) {
+					rs.close();
+					throw new FdTException("Il destinatario "+StringEscapeUtils.escapeHtml4(recipient)+" non esiste.");
+				}
 			}
 
-
+			rs.close();
 			ps = conn.prepareStatement("INSERT INTO pvt_content" +
 										"(sender, content, senddate, subject, replyTo) " +
 										"VALUES  (?,?,sysdate(),?,?)", Statement.RETURN_GENERATED_KEYS);
@@ -787,6 +789,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				try {
 					ps.execute();
 				} catch (SQLException e) {
+					rs.close();
 					LOG.error("Probabilmente il recipient "+recipient+" non esiste.");
 					throw e;
 				}
@@ -1001,9 +1004,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		if (StringUtils.isEmpty(search)) {
 			final List<MessageDTO> r = Collections.emptyList();
 			return r;
-		} else {
-			return searchMessagesEx(search, sort, pageSize, pageNr);
 		}
+		return searchMessagesEx(search, sort, pageSize, pageNr);
 	}
 
 	public List<String> searchAuthor(String searchString) {
@@ -1096,6 +1098,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			}
 			// update
 			conn.setAutoCommit(false);
+			ps.close();
 			ps = conn.prepareStatement("UPDATE poll_question SET votes = votes + 1 WHERE pollId = ? and sequence = ?");
 			ps.setLong(1, pollQuestion.getPollId());
 			ps.setInt(2, pollQuestion.getSequence());
@@ -1449,34 +1452,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return -1;
 	}
 
-	private int countMessagesByAuthor(String author, String forum, Connection conn) {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			StringBuilder query = new StringBuilder("SELECT count(id) AS nr FROM messages WHERE author = ?");
-			int i = 1;
-			if ("".equals(forum)) {
-				query.append(" AND forum IS NULL");
-			} else if (forum != null) {
-				query.append(" AND forum = ?");
-			}
-			ps = conn.prepareStatement(query.toString());
-			ps.setString(i++, author);
-			if (StringUtils.isNotEmpty(forum)) {
-				ps.setString(i++, forum);
-			}
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				return rs.getInt("nr");
-			}
-		} catch (SQLException e) {
-			LOG.error("Cannot count messages", e);
-		} finally {
-			close(rs, ps, null);
-		}
-		return -1;
-	}
-
 	protected int getNumberOfMessages(long threadId) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -1819,7 +1794,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement("SELECT MAX(id) FROM messages");
 			rs = ps.executeQuery();
 			if (rs.next()) return rs.getLong(1);
-			else throw new SQLException("No rows in messages?????");
+			throw new SQLException("No rows in messages?????");
 		} catch (SQLException e) {
 			LOG.error("Cannot retrieve max(id) from messages table", e);
 			return 0;

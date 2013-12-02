@@ -37,18 +37,17 @@ public class YouTube {
 			}
 			io.skip(end + YT_END.length);
 			return true;
-		} else {
-			if (Links.isLink(io.buffer, YT.length, end - YT.length))
-				return false;
-			if (opts.embedYoutube) {
-				writeYtEmbed(io.out, io.buffer, YT.length, end - YT.length);
-			} else {
-				writeYTImage(io.out, io.buffer, YT.length, end - YT.length);
-			}
-			io.skip(end + YT_END.length);
-			state.embedCount++;
-			return true;
 		}
+		if (Links.isLink(io.buffer, YT.length, end - YT.length))
+			return false;
+		if (opts.embedYoutube) {
+			writeYtEmbed(io.out, io.buffer, YT.length, end - YT.length);
+		} else {
+			writeYTImage(io.out, io.buffer, YT.length, end - YT.length);
+		}
+		io.skip(end + YT_END.length);
+		state.embedCount++;
+		return true;
 	}
 	
 	private static final char[] YT_EMBED_START = "<iframe width=\"400\" height=\"329\" src=\"//www.youtube-nocookie.com/embed/".toCharArray();
@@ -105,18 +104,16 @@ public class YouTube {
 			if (end != -1 && end - p <= YOUCODE_MAX_LENGTH)
 				return new int[] {offset + p, offset + end};
 			return new int[] {offset + p, offset + length};
-		} else {
-			p = Chars.indexOf(buffer, offset, length, YT_SHORTENED, 0, YT_SHORTENED.length, 0, false, false);
-			if (p == -1)
-				return null;
-			p += YT_SHORTENED.length;
-			int end = Chars.indexOf(buffer, offset, length, OCTOTHORPE, 0, OCTOTHORPE.length, p, false, false);
-			if (end != -1) {
-				return new int[] {offset + p, offset + end};
-			} else {
-				return new int[] {offset + p, offset + length};
-			}
 		}
+		p = Chars.indexOf(buffer, offset, length, YT_SHORTENED, 0, YT_SHORTENED.length, 0, false, false);
+		if (p == -1)
+			return null;
+		p += YT_SHORTENED.length;
+		int end = Chars.indexOf(buffer, offset, length, OCTOTHORPE, 0, OCTOTHORPE.length, p, false, false);
+		if (end != -1) {
+			return new int[] {offset + p, offset + end};
+		}
+		return new int[] {offset + p, offset + length};
 	}
 	
 }

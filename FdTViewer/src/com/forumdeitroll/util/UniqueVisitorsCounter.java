@@ -44,16 +44,4 @@ public class UniqueVisitorsCounter {
 		add(ip);
 	}
 	
-	private static String rndIp() {
-		return
-			((int)(Math.random() * 255))
-			+ "." +
-			((int)(Math.random() * 255))
-			+ "." +
-			((int)(Math.random() * 255))
-			+ "." +
-			((int)(Math.random() * 255))
-		;
-	}
-	
 }

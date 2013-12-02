@@ -64,21 +64,20 @@ public class UserProfiler extends MainServlet {
 			out.print("{\"permr\":\"" + permr + "\", \"etag\":" + etag + "}\n");
 			out.close();
 			return null;
-		} else {
-			res.sendError(304); // not modified
-			return null;
 		}
+		res.sendError(304); // not modified
+		return null;
 	}
 	
 	private static void printRequest(HttpServletRequest request) {
 		logger.info(request.getMethod() + " " + request.getRequestURI() + " " + request.getProtocol());
-		for (Enumeration en = request.getParameterNames(); en.hasMoreElements();) {
-			String name = (String) en.nextElement();
+		for (Enumeration<String> en = request.getParameterNames(); en.hasMoreElements();) {
+			String name = en.nextElement();
 			String value = request.getParameter(name);
 			logger.info("Param  " + name + "=" + value);
 		}
-		for (Enumeration en = request.getHeaderNames(); en.hasMoreElements();) {
-			String name = (String) en.nextElement();
+		for (Enumeration<String> en = request.getHeaderNames(); en.hasMoreElements();) {
+			String name = en.nextElement();
 			String value = request.getHeader(name);
 			logger.info("Header " + name + ": " + value);
 		}

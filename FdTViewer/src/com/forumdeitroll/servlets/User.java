@@ -80,11 +80,10 @@ public class User extends MainServlet {
 		setWebsiteTitle(req, "Forum dei troll");
 		if (loggedUser != null && loggedUser.isValid()) {
 			return "user.jsp";
-		} else {
-			loginRatelimiter.increment(IPMemStorage.requestToIP(req));
-			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
-			return loginAction(req,  res);
 		}
+		loginRatelimiter.increment(IPMemStorage.requestToIP(req));
+		setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
+		return loginAction(req,  res);
 	}
 
 	/**
@@ -170,6 +169,7 @@ public class User extends MainServlet {
 		fileItemFactory.setSizeThreshold(MAX_SIZE_AVATAR_BYTES); // grandezza massima 512Kbytes
 		fileItemFactory.setRepository(new File(System.getProperty("java.io.tmpdir")));
 		ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
+		@SuppressWarnings("unchecked")
 		Iterator<FileItem> it = uploadHandler.parseRequest(req).iterator();
 		if (it.hasNext()) {
 			FileItem avatar = it.next();
@@ -632,7 +632,8 @@ public class User extends MainServlet {
 		fileItemFactory.setSizeThreshold(MAX_SIZE_SIGNATURE_BYTES); // grandezza massima 512Kbytes
 		fileItemFactory.setRepository(new File(System.getProperty("java.io.tmpdir")));
 		ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
-		for (Iterator<FileItem> it = uploadHandler.parseRequest(req).iterator(); it.hasNext(); ) {
+		for (@SuppressWarnings("unchecked")
+		Iterator<FileItem> it = uploadHandler.parseRequest(req).iterator(); it.hasNext(); ) {
 			FileItem item = it.next();
 			if (item.isFormField()) {
 				if (item.getFieldName().equals("submitBtn")) {

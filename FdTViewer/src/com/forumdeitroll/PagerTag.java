@@ -123,6 +123,8 @@ public class PagerTag extends TagSupport  {
 					out.write("last'><a href=\"");break;
 				case PAGE:
 					out.write("page'><a href=\"");break;
+				default:
+					break;
 				}
 				out.write(handler.getLink(page.n, req)); //visualizza 1, usa 0 e cosi' via
 				switch (page.type) {
@@ -136,6 +138,8 @@ public class PagerTag extends TagSupport  {
 					out.write("\">&#187;</a></li>");break;
 				case PAGE:
 					out.write(String.format("\">%d</a></li>", page.n + 1));break; //visualizza 1, usa 0 e cosi' via
+				default:
+					break;
 				}
 			}
 		}
@@ -200,14 +204,13 @@ public class PagerTag extends TagSupport  {
 				Integer resultSize = (Integer)req.getAttribute("resultSize");
 				if (resultSize != null && resultSize < MainServlet.PAGE_SIZE) {
 					return getCurrentPage(req);
-				} else {
-					Integer totalSize = (Integer)req.getAttribute("totalSize");
-					if (totalSize == null) {
-						// vabbeh, io ci ho provato :$ ...
-						totalSize = Integer.MAX_VALUE;
-					}
-					return ((totalSize - 1) / MainServlet.PAGE_SIZE);
+				} 
+				Integer totalSize = (Integer)req.getAttribute("totalSize");
+				if (totalSize == null) {
+					// vabbeh, io ci ho provato :$ ...
+					totalSize = Integer.MAX_VALUE;
 				}
+				return ((totalSize - 1) / MainServlet.PAGE_SIZE);
 			}
 			@Override
 			public String getLink(int pageNumber, HttpServletRequest req) {
@@ -218,6 +221,7 @@ public class PagerTag extends TagSupport  {
 					.append("?action=").append(action)
 					.append("&amp;page=").append(pageNumber);
 				if (req.getAttribute("specificParams") != null) {
+					@SuppressWarnings("unchecked")
 					Map<String, String> specificParams = (Map<String, String>) req.getAttribute("specificParams");
 					for (Map.Entry<String, String> entry: specificParams.entrySet()) {
 						if (entry.getValue() == null) {

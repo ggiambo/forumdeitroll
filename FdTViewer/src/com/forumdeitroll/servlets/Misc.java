@@ -113,7 +113,7 @@ public class Misc extends HttpServlet {
 		}
 	}
 	
-	private void redirectTo(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	private void redirectTo(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String url = req.getParameter("url");
 		url = StringEscapeUtils.unescapeHtml4(url);
 		url = url.replaceAll("&apos;", "'");
@@ -128,7 +128,7 @@ public class Misc extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	private void getAvatar(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	private void getAvatar(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String nick = req.getParameter("nick");
 		res.setHeader("Cache-Control", "max-age=3600");
 		AuthorDTO author = persistence.getAuthor(nick);
@@ -146,7 +146,7 @@ public class Misc extends HttpServlet {
 		out.close();
 	}
 	
-	private void getUserSignatureImage(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	private void getUserSignatureImage(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String nick = req.getParameter("nick");
 		res.setHeader("Cache-Control", "max-age=3600");
 		AuthorDTO author = persistence.getAuthor(nick);
@@ -163,7 +163,7 @@ public class Misc extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	private void getCaptcha(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	private void getCaptcha(HttpServletRequest req, HttpServletResponse res) {
 		Captcha captcha = new Captcha.Builder(150, 50)
 				.addText(new NumbersAnswerProducer(6))
 				.addBackground(new GradiatedBackgroundProducer(Color.MAGENTA, Color.CYAN))
@@ -185,7 +185,7 @@ public class Misc extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	private void logoutAction(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	private void logoutAction(HttpServletRequest req, HttpServletResponse res) {
 		req.getSession().invalidate();
 		res.setStatus(302);
 		res.setContentType("text/html");
@@ -220,7 +220,7 @@ public class Misc extends HttpServlet {
 		String sort = req.getParameter("sort");
 		String page = req.getParameter("p");
 		
-		String endpoint = "http://forumdeitroll.com/motorino/search?q=" + URLEncoder.encode(search);
+		String endpoint = "http://forumdeitroll.com/motorino/search?q=" + URLEncoder.encode(search, "UTF-8");
 		if (!StringUtils.isEmpty(sort)) {
 			endpoint += "&sort=" + sort; //date,rdate,rank
 		}

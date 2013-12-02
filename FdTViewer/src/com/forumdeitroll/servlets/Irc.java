@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.persistence.AuthorDTO;
@@ -22,8 +21,6 @@ import com.forumdeitroll.persistence.PersistenceFactory;
  */
 public class Irc extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
-	private static Logger LOG = Logger.getLogger(Irc.class);
 
 	private static String Topic = null;
 	private static String Lista_utenti = null;

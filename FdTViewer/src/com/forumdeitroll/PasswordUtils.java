@@ -59,11 +59,10 @@ public class PasswordUtils {
 			// nuova modalita` di hashing
 			if (user.getHash() == null) return false;
 			return user.getHash().equals(passwordHash(password, user.getSalt()));
-		} else {
-			// vecchia modalita` di hashing
-			if (user.getOldPassword() == null) return false;
-			return user.getOldPassword().equals(md5(password));
 		}
+		// vecchia modalita` di hashing
+		if (user.getOldPassword() == null) return false;
+		return user.getOldPassword().equals(md5(password));
 	}
 
     /**
