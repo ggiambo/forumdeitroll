@@ -29,7 +29,7 @@ CREATE TABLE `authors` (
   `password` tinytext NOT NULL,
   `salt` tinytext,
   `hash` tinytext,
-  `signature_image` mediumblob,
+  `signature_image` mediumblob
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -70,7 +70,8 @@ CREATE TABLE `messages` (
   KEY `author` (`author`),
   KEY `forum` (`forum`),
   FULLTEXT KEY `text` (`text`),
-  FULLTEXT KEY `search` (`subject`,`text`)
+  FULLTEXT KEY `search` (`subject`,`text`),
+  `rank` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM AUTO_INCREMENT=2722091 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -105,7 +106,7 @@ CREATE TABLE `poll` (
   `creationDate` datetime NOT NULL,
   `updateDate` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,7 +121,7 @@ CREATE TABLE `poll_question` (
   `sequence` int(11) NOT NULL,
   `text` varchar(256) NOT NULL,
   `votes` int(11) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -133,7 +134,7 @@ DROP TABLE IF EXISTS `poll_user`;
 CREATE TABLE `poll_user` (
   `nick` varchar(256) NOT NULL,
   `pollId` int(11) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -248,4 +249,10 @@ CREATE TABLE IF NOT EXISTS `tags_bind` (
 	`m_id` int(11) NOT NULL,
 	`author` tinytext NOT NULL,
 	PRIMARY KEY (`t_id`, `m_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `likes` (
+  `nick` tinytext NOT NULL,
+  `msgId` int(11) NOT NULL,
+  `vote` boolean NULL NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
