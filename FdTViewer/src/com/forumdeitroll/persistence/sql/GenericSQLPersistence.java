@@ -1995,6 +1995,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	
 	@Override
 	public void getTags(MessagesDTO messages) {
+		if (messages.getMessages().size() == 0) return;
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
