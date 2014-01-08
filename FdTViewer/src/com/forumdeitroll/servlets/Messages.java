@@ -209,6 +209,12 @@ public class Messages extends MainServlet {
 		req.setAttribute("message", msg);
 		setWebsiteTitle(req, "Nuovo messaggio @ Forum dei Troll");
 		// faccine - ordinate per key
+		final String ip = IPMemStorage.requestToIP(req);
+		if (getPersistence().blockTorExitNodes()) {
+			if (CacheTorExitNodes.check(ip)) {
+				req.setAttribute("warnTorUser", "true");
+			}
+		}
 		return "newMessage.jsp";
 	}
 
