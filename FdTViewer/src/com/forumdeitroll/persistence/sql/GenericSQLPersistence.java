@@ -736,6 +736,21 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return result;
 	}
 
+	private boolean existsRecipient(String recipient) throws SQLException {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		conn = getConnection();
+		ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick = ? AND hash IS NOT NULL");
+		ps.setString(1, recipient);
+		rs = ps.executeQuery();
+		boolean existsRecipient = rs.next();
+		rs.close();
+		ps.close();
+		return existsRecipient;
+		
+	}
+	
 	@Override
 	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients) {
 		Connection conn = null;
@@ -743,22 +758,15 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		ResultSet rs = null;
 		long pvt_id = -1;
 		try {
-			conn = getConnection();
-
 			//verifica esistenza dei destinatari
 			for (String recipient: recipients) {
 				if (recipient.equals("")) continue;
-				ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick = ? AND hash IS NOT NULL");
-				ps.setString(1, recipient);
-				rs = ps.executeQuery();
-				ps.close();
-				if (!rs.next()) {
-					rs.close();
+				if (!existsRecipient(recipient)) {
 					throw new FdTException("Il destinatario "+StringEscapeUtils.escapeHtml4(recipient)+" non esiste.");
 				}
 			}
 
-			rs.close();
+			conn = getConnection();
 			ps = conn.prepareStatement("INSERT INTO pvt_content" +
 										"(sender, content, senddate, subject, replyTo) " +
 										"VALUES  (?,?,sysdate(),?,?)", Statement.RETURN_GENERATED_KEYS);
@@ -775,9 +783,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			LOG.error("Cannot insert into pvt_content", e);
 			return false;
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps, conn);
 		}
 		try {
+			conn = getConnection();
 			for (String recipient: recipients) {
 				if (recipient.equals("")) continue;
 				ps = conn.prepareStatement("INSERT INTO pvt_recipient" +
