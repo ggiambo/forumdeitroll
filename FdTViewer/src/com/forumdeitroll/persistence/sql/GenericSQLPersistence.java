@@ -740,14 +740,15 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		conn = getConnection();
-		ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick = ? AND hash IS NOT NULL");
-		ps.setString(1, recipient);
-		rs = ps.executeQuery();
-		boolean existsRecipient = rs.next();
-		rs.close();
-		ps.close();
-		return existsRecipient;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT nick FROM authors WHERE nick = ? AND hash IS NOT NULL");
+			ps.setString(1, recipient);
+			rs = ps.executeQuery();
+			return rs.next();
+		} finally {
+			close(rs, ps, conn);
+		}
 		
 	}
 	
