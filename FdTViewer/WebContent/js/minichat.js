@@ -1,8 +1,3 @@
-if (typeof localStorage === 'undefined') {
-	alert("Il tuo browser non supporta localStorage. Torna con qualcosa di piu' moderno.");
-	throw new Error();
-}
-
 var MAX_MESSAGE_NUMBER;
 
 var send = function(event, element) {
@@ -10,6 +5,7 @@ var send = function(event, element) {
 	if (element.value === '') return;
 	var content = element.value;
 	element.disabled = true;
+	document.getElementById('btnInvia').disabled = true;
 	profiler(function(profileData) {
 		$.ajax({
 			method : 'POST',
@@ -21,21 +17,43 @@ var send = function(event, element) {
 			success : function() {
 				element.disabled = false;
 				element.value = '';
+				document.getElementById('btnInvia').disabled = false;
+				element.focus();
 				refresh();
 			}
 		});
 	});
 };
 
+var sendBtn = function() {
+	send({which:13}, document.getElementById("content"));
+};
+
+var set = function(key, value) {
+	if (typeof localStorage === 'undefined') {
+		window.ciattina_lastCheck = value;
+	} else {
+		localStorage[key] = value;
+	}
+};
+
+var get = function(key) {
+	if (typeof localStorage === 'undefined') {
+		return window.ciattina_lastCheck;
+	} else {
+		return localStorage[key];
+	}
+};
+
 var refresh = function() {
-	var lastCheck = localStorage['ciattina.lastCheck'];
+	var lastCheck = get('ciattina.lastCheck');
 	$.ajax({
 		method : 'POST',
 		url : 'Minichat',
 		data : 'action=refresh&lastCheck=' + lastCheck,
 		success : function(response) {
 			var messages = response.messages;
-			localStorage['ciattina.lastCheck'] = response.tstamp;
+			set('ciattina.lastCheck',response.tstamp);
 			var table = document.getElementById('scrollback');
 			for (var idx in messages) {
 				var message = messages[idx];
@@ -66,6 +84,6 @@ var refresh = function() {
 
 function init(currentTimeMillis, maxMessageNumber) {
 	MAX_MESSAGE_NUMBER = maxMessageNumber;
-	localStorage['ciattina.lastCheck'] = currentTimeMillis;
+	set('ciattina.lastCheck', currentTimeMillis);
 	setInterval(refresh, 30000);
 }

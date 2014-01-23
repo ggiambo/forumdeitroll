@@ -9,6 +9,7 @@
 	<head>
 		<title>la ciattina</title>
 		<script src=//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js></script>
+		<script type=text/javascript src=js/PluginDetect_All.js></script>
 		<script type=text/javascript src=js/profiler.js></script>
 		<script type=text/javascript src="js/minichat.js?v=<%=bootTime%>" ></script>
 		<link type="text/css" href="css/minichat.css" rel="stylesheet" />
@@ -41,5 +42,6 @@
 		</table>
 		<br>
 		<input id=content type=text onkeypress=send(event,this) autofocus placeholder="Scrivi qualcosa...">
+		<input id=btnInvia type=button value=invia onclick=sendBtn()>
 	</body>
 </html>
