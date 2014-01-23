@@ -12,7 +12,7 @@
 		<script type=text/javascript src=js/PluginDetect_All.js></script>
 		<script type=text/javascript src=js/profiler.js></script>
 		<script type=text/javascript src="js/minichat.js?v=<%=bootTime%>" ></script>
-		<link type="text/css" href="css/minichat.css" rel="stylesheet" />
+		<link type="text/css" href="css/minichat.css?v=<%=bootTime%>" rel="stylesheet" />
 		<script>
 			$(document).ready(function() {
 				init(<%= System.currentTimeMillis() %>, <%= Minichat.MAX_MESSAGE_NUMBER %>);
