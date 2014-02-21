@@ -1,0 +1,44 @@
+/* rimpicciolisce avatar anonimo */
+img[src='Misc?action=getAvatar&nick='] {
+    width: 50px;
+    height: 50px;
+}
+/* flat style */
+* {
+    box-shadow: none !important;
+}
+.msgInfo {
+    background-color: transparent !important;
+}
+.msgInfo>* {
+    float: right !important;
+}
+.msgDetails {
+   text-align: right;
+}
+.msgDetails>* {
+	margin-right: 5px;
+}
+/* link nei messaggi */
+.message a {
+    color: #00c;
+    text-decoration: none;
+}
+.message a:hover {
+    color: #00f;
+}
+.message a:active {
+    color: #d00;
+}
+.message {
+    color: #333;
+}
+.messagesBox {
+    margin: 4px 5px;
+}
+.avatarImg {
+    border-radius: 0 !important;
+}
+.messagesButtonBarLeft, .messagesButtonBar, .buttonBarButton {
+    border-radius: 0 !important;
+}

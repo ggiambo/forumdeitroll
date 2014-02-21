@@ -51,7 +51,7 @@ public class User extends MainServlet {
 	public static final String PREF_BLOCK_HEADER = "blockHeader";
 	public static final String PREF_LARGE_STYLE = "largeStyle";
 	public static final String PREF_THEME = "theme";
-	public static final List<String> PREF_THEMES = Arrays.asList("Classico", "Scuro");
+	public static final List<String> PREF_THEMES = Arrays.asList("Classico", "Scuro", "Flat");
 
 	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
 	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
