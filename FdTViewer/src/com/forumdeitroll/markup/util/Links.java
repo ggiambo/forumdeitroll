@@ -253,16 +253,12 @@ public class Links {
 					break;
 				}
 			}
-		if (descLength > MAX_DESC_LENGTH) {
-			if (desc != null) {
-				EntityEscaper.writeEscaped(io.out, desc.toCharArray(), 0, desc.length());
-			} else {
+		if (desc != null) {
+			EntityEscaper.writeEscaped(io.out, desc.toCharArray(), 0, desc.length());
+		} else {
+			if (descLength > MAX_DESC_LENGTH) {
 				EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, MAX_DESC_LENGTH);
 				io.write("...");
-			}
-		} else {
-			if (desc != null) {
-				EntityEscaper.writeEscaped(io.out, desc.toCharArray(), 0, desc.length());
 			} else {
 				EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
 			}
