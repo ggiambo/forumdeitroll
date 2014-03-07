@@ -170,7 +170,7 @@ public class JSonServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected void getMessages(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+	protected void getMessages(StringBuilderWriter writer, Map<String, String[]> params, long time) throws Exception {
 		int page = getIntValue(params, "page", 0);
 		int pageSize = getPageSize(params);
 		String forum = getStringValue(params, "forum", null);

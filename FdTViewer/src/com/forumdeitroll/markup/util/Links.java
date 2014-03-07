@@ -2,8 +2,11 @@ package com.forumdeitroll.markup.util;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import com.forumdeitroll.markup.RenderIO;
+import com.forumdeitroll.persistence.PersistenceFactory;
 
 public class Links {
 	private static final char[][] initseq = new char[][] {
@@ -137,14 +140,105 @@ public class Links {
 	}
 	
 	private static final int MAX_DESC_LENGTH = 50;
-	
-	public static void writeLinkTag(RenderIO io, int offset, int length, int descOffset, int descLength) throws IOException {
+
+	private static char[] THREAD_LINK_INITSEQ = "Threads?action=getByThread&threadId=".toCharArray();
+	private static char[] MESSAGE_LINK_SEQ = "#msg".toCharArray();
+	private static char[] AMPERSAND_SIGN = "&".toCharArray();
+	private static char[] OCTOTHORPE_SIGN = "#".toCharArray();
+
+	private static long extractThreadId(RenderIO io, int offset, int length) {
+		try {
+			int pos = Chars.indexOf(io.buffer, offset, length, THREAD_LINK_INITSEQ, 0, THREAD_LINK_INITSEQ.length, 0, false, false);
+			if (pos == -1) {
+				return 0;
+			}
+			offset += pos;
+			length -= pos;
+			// casistiche:
+			// Threads?action=getByThread&threadId=0000000
+			offset = offset + THREAD_LINK_INITSEQ.length;
+			length = length - THREAD_LINK_INITSEQ.length;
+			boolean endsWithThreadId = Chars.isNumeric(io.buffer, offset, length);
+			if (endsWithThreadId) {
+				return Long.parseLong(new String(io.buffer, offset, length));
+			}
+			// Threads?action=getByThread&threadId=0000000&...
+			int offsetAmp = io.indexOf(AMPERSAND_SIGN, offset);
+			if (offsetAmp == -1 || (offsetAmp - offset) > 12) {
+				// Threads?action=getByThread&threadId=0000000#...
+				int offsetOct = io.indexOf(OCTOTHORPE_SIGN, offset);
+				if (offsetOct == -1 || (offsetOct - offset) > 12) {
+					return 0;
+				} else {
+					// Threads?action=getByThread&threadId=0000000#msg000000
+					int offsetMsgId = io.indexOf(MESSAGE_LINK_SEQ, offset);
+					if (offsetMsgId != -1) {
+						offsetMsgId += MESSAGE_LINK_SEQ.length;
+						int lengthMsgId = length + pos + THREAD_LINK_INITSEQ.length;
+						lengthMsgId -= offsetMsgId;
+						if (Chars.isNumeric(io.buffer, offsetMsgId, lengthMsgId)) {
+							return Long.parseLong(new String(io.buffer, offsetMsgId, lengthMsgId));
+						}
+					}
+					// non e' link a messaggio, provo a parsare il threadId
+					if (Chars.isNumeric(io.buffer, offset, (offsetOct - offset))) {
+						return Long.parseLong(new String(io.buffer, offset, (offsetOct - offset)));
+					} else {
+						return 0;
+					}
+				}
+			} else {
+				if (Chars.isNumeric(io.buffer,offset, offsetAmp - offset)) {
+					return Long.parseLong(new String(io.buffer, offset, (offsetAmp - offset)));
+				} else {
+					return 0;
+				}
+			}
+		} catch (NumberFormatException e) {
+			// non succede, ma se succede almeno non spacca il render
+			return 0;
+		}
+	}
+
+	private static ConcurrentHashMap<Long, String> titleCache =
+		new ConcurrentHashMap<Long, String>();
+	private static String getMessageTitle(long id) throws Exception {
+		if (titleCache.containsKey(id)) {
+			return titleCache.get(id);
+		}
+		try {
+			String title = PersistenceFactory.getInstance().getMessageTitle(id);
+			titleCache.put(id, title);
+			return title;
+		} catch (Exception e) {
+			return null;
+		}
+		
+	}
+
+	public static void writeLinkTag(RenderIO io, int offset, int length, int descOffset, int descLength) throws Exception {
+		boolean internalLink = isInternalLink(io.buffer, offset, length);
 		io.write("<a rel='nofollow noreferrer' target='_blank' href=\"");
 		writeUrl(io.out, io.buffer, offset, length);
+		String desc = null;
+		if (internalLink && offset == descOffset) {
+			long id = extractThreadId(io, offset, length);
+			if (id != 0) {
+				desc = getMessageTitle(id);
+			}
+		}
 		io.write("\" title=\"");
-		EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
+		if (desc != null) {
+			EntityEscaper.writeEscaped(io.out, desc.toCharArray(), 0, desc.length());
+		} else {
+			EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
+		}
 		io.write("\" alt=\"");
-		EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
+		if (desc != null) {
+			EntityEscaper.writeEscaped(io.out, desc.toCharArray(), 0, desc.length());
+		} else {
+			EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
+		}
 		io.write("\">");
 		if (offset == descOffset) // autolink
 			for (char[] domain : FaviconWhiteList.DOMAINS) {
@@ -160,13 +254,21 @@ public class Links {
 				}
 			}
 		if (descLength > MAX_DESC_LENGTH) {
-			EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, MAX_DESC_LENGTH);
-			io.write("...");
+			if (desc != null) {
+				EntityEscaper.writeEscaped(io.out, desc.toCharArray(), 0, desc.length());
+			} else {
+				EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, MAX_DESC_LENGTH);
+				io.write("...");
+			}
 		} else {
-			EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
+			if (desc != null) {
+				EntityEscaper.writeEscaped(io.out, desc.toCharArray(), 0, desc.length());
+			} else {
+				EntityEscaper.writeEscaped(io.out, io.buffer, descOffset, descLength);
+			}
 		}
 		io.write("</a>");
-		if (!isInternalLink(io.buffer, offset, length)) {
+		if (!internalLink) {
 			io.write(" <a rel='nofollow noreferrer' target='_blank' href=\"http://anonym.to/?");
 			writeUrl(io.out, io.buffer, offset, length);
 			io.write("\" alt='Link anonimizzato(referer)' title='Link anonimizzato(referer)'><img src='images/anonymlink.png'></a>");

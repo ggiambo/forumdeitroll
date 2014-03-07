@@ -99,4 +99,14 @@ public class Chars {
     	}
     	return true;
     }
+
+    public static boolean isNumeric(char[] buffer, int offset, int length) {
+    	for (int i =0; i < length; i++) {
+    		char c = buffer[offset + i];
+    		if (c < '0' || c > '9') {
+    			return false;
+    		}
+    	}
+    	return true;
+    }
 }

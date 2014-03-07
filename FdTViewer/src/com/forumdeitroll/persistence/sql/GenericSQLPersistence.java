@@ -2079,4 +2079,25 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
+
+	public String getMessageTitle(long id) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT subject FROM messages WHERE `id` = ?");
+			ps.setLong(1, id);
+			rs = ps.executeQuery();
+			if (rs.next())
+				return rs.getString(1);
+			else
+				return null;
+		} catch (SQLException e) {
+			LOG.error("Impossibile recuperare i threads", e);
+			throw new RuntimeException(e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
 }

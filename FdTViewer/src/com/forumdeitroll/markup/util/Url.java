@@ -13,7 +13,7 @@ public class Url {
 	
 	private static final char[] CLOSE_SQUARE_BRACKET = "]".toCharArray();
 	
-	public static boolean url(RenderIO io, RenderState state) throws IOException {
+	public static boolean url(RenderIO io, RenderState state) throws Exception {
 		if (io.startWith(URL)) {
 			int end = io.indexOf(URL_END, URL.length);
 			if (end == -1)

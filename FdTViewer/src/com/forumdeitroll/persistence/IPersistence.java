@@ -159,4 +159,6 @@ public interface IPersistence extends Serializable {
 	public void getTags(MessagesDTO messages);
 	
 	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, boolean hideProcCatania);
+
+	public String getMessageTitle(long id);
 }

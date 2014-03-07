@@ -17,7 +17,7 @@ public class Word {
 			"[".toCharArray(),
 			"<".toCharArray() };
 
-	public static boolean word(RenderIO io, RenderState state, RenderOptions opts) throws IOException {
+	public static boolean word(RenderIO io, RenderState state, RenderOptions opts) throws Exception {
 
 		if (io.startWith(STOPWORDS[0])) // <BR>
 			return false;
@@ -111,7 +111,7 @@ public class Word {
 	
 	private static char[] FDT_IT_MESSAGE_URL_INIT = "http://www.forumdeitroll.it/m.aspx?m_id=".toCharArray();
 
-	private static boolean autolink(RenderIO io, RenderState state, RenderOptions opts, int end) throws IOException {
+	private static boolean autolink(RenderIO io, RenderState state, RenderOptions opts, int end) throws Exception {
 		boolean enclosedWithParens = io.buffer[0] == '(' && io.buffer[end - 1] == ')';
 		int start = enclosedWithParens ? 1 : 0;
 		end = enclosedWithParens ? end - 1 : end;

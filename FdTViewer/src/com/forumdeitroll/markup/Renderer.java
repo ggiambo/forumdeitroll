@@ -22,7 +22,7 @@ public class Renderer {
 	
 	//TODO: quotes, Scritto da <link>
 	
-	public static void render(Reader in, Writer out, RenderOptions opts) throws IOException {
+	public static void render(Reader in, Writer out, RenderOptions opts) throws Exception {
 		RenderIO io = new RenderIO(in, out, opts.buffersize);
 		RenderState state = new RenderState();
 		
