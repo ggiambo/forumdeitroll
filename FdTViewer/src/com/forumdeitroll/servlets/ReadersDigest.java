@@ -17,7 +17,7 @@ public class ReadersDigest extends MainServlet {
 		List<DigestArticleDTO> articles = getPersistence().getReadersDigest();
 		req.setAttribute("excludeSidebar", "true");
 		req.setAttribute("articles", articles);
-		setWebsiteTitle(req, "The Troll's Digest");
+		setWebsiteTitlePrefix(req, "The Troll's Digest");
 		return "readersdigest.jsp";
 	}
 	

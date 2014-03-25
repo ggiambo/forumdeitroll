@@ -77,7 +77,7 @@ public class User extends MainServlet {
 		}
 
 		AuthorDTO loggedUser = login(req);
-		setWebsiteTitle(req, "Forum dei troll");
+		setWebsiteTitlePrefix(req, "");
 		if (loggedUser != null && loggedUser.isValid()) {
 			return "user.jsp";
 		}
@@ -94,7 +94,7 @@ public class User extends MainServlet {
 	 */
 	@Action
 	String loginAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		setWebsiteTitle(req, "Login @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Login");
 		return "login.jsp";
 	}
 
@@ -212,7 +212,7 @@ public class User extends MainServlet {
 	@Action
 	String registerAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.removeAttribute(LOGGED_USER_REQ_ATTR);
-		setWebsiteTitle(req, "Registrazione @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Registrazione");
 		return "register.jsp";
 	}
 
@@ -519,7 +519,7 @@ public class User extends MainServlet {
 			return loginAction(req,  res);
 		}
 
-		setWebsiteTitle(req, "Notifiche @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Notifiche");
 		req.setAttribute("notificationsFrom", getPersistence().getNotifications(loggedUser.getNick(), null));
 		req.setAttribute("notificationsTo", getPersistence().getNotifications(null, loggedUser.getNick()));
 
@@ -540,7 +540,7 @@ public class User extends MainServlet {
 			return loginAction(req,  res);
 		}
 
-		setWebsiteTitle(req, "Notifiche @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Notifiche");
 
 		long notificationId = Long.parseLong(req.getParameter("notificationId"));
 		getPersistence().removeNotification(loggedUser.getNick(), null, notificationId);

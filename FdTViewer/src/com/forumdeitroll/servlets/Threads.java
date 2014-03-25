@@ -84,7 +84,7 @@ public class Threads extends MainServlet {
 		List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
 		getPersistence().getTags(new MessagesDTO(msgs,0));
 		req.setAttribute("root", new ThreadTree(msgs).getRoot());
-		setWebsiteTitle(req, getPersistence().getMessage(threadId).getSubject() + " @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, getPersistence().getMessage(threadId).getSubject());
 		setNavigationMessage(req, NavigationMessage.info("Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>"));
 
 		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
@@ -126,9 +126,9 @@ public class Threads extends MainServlet {
 		req.setAttribute("resultSize", messages.getMessages().size());
 		addSpecificParam(req, "forum",  forum);
 		if (forum == null) {
-			setWebsiteTitle(req, "Forum dei troll");
+			setWebsiteTitlePrefix(req, "");
 		} else {
-			setWebsiteTitle(req, forum.equals("") ? "Forum principale @ Forum dei troll" : (forum + " @ Forum dei troll"));
+			setWebsiteTitlePrefix(req, forum.equals("") ? "Forum principale" : forum);
 		}
 		setNavigationMessage(req, NavigationMessage.info("Discussioni aggiornate"));
 		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
@@ -159,9 +159,9 @@ public class Threads extends MainServlet {
 		req.setAttribute("resultSize", messages.getMessages().size());
 		addSpecificParam(req, "forum", forum);
 		if (forum == null) {
-			setWebsiteTitle(req, "Forum dei troll");
+			setWebsiteTitlePrefix(req, "");
 		} else {
-			setWebsiteTitle(req, forum.equals("") ? "Forum principale @ Forum dei troll" : (forum + " @ Forum dei troll"));
+			setWebsiteTitlePrefix(req, forum.equals("") ? "Forum principale" : forum);
 		}
 		setNavigationMessage(req, message);
 		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));

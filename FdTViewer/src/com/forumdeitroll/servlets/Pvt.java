@@ -33,7 +33,7 @@ public class Pvt extends MainServlet {
 
 	@Action(method=Method.GET)
 	String inbox(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		setWebsiteTitle(req, "Messaggi privati - Ricevuti @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Messaggi privati - Ricevuti");
 		AuthorDTO author = login(req);
 		String page = req.getParameter("page");
 		int npage = 0;
@@ -50,7 +50,7 @@ public class Pvt extends MainServlet {
 
 	@Action(method=Method.GET)
 	String sendNew(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		setWebsiteTitle(req, "Messaggi privati - Scrivi nuovo @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Messaggi privati - Scrivi nuovo");
 		String recipients = req.getParameter("recipients");
 		if (!StringUtils.isEmpty(recipients)) {
 			req.setAttribute("recipients", "'" + recipients + "'");
@@ -122,7 +122,7 @@ public class Pvt extends MainServlet {
 	@Action(method=Method.GET)
 	String show(HttpServletRequest req, HttpServletResponse res)
 		throws Exception {
-		setWebsiteTitle(req, "Messaggi privati - Visualizza Messaggio @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Messaggi privati - Visualizza Messaggio");
 		long id = Long.parseLong(req.getParameter("id"));
 		PrivateMsgDTO pvt = new PrivateMsgDTO();
 		pvt.setId(id);
@@ -150,7 +150,7 @@ public class Pvt extends MainServlet {
 	
 	@Action(method=Method.GET)
 	String outbox(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		setWebsiteTitle(req, "Messaggi privati - Inviati @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Messaggi privati - Inviati");
 		AuthorDTO author = login(req);
 		if (author.isValid()) {
 			int npage = 0;
@@ -185,7 +185,7 @@ public class Pvt extends MainServlet {
 	}
 	
 	private String reply(HttpServletRequest req, boolean toAll)	throws Exception {
-		setWebsiteTitle(req, "Messaggi privati - Rispondi @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Messaggi privati - Rispondi");
 		long id = Long.parseLong(req.getParameter("id"));
 		PrivateMsgDTO pvt = new PrivateMsgDTO();
 		pvt.setId(id);

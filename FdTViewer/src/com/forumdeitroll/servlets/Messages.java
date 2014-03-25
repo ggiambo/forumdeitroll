@@ -102,7 +102,7 @@ public class Messages extends MainServlet {
 		addSpecificParam(req, "author", author);
 		String forum = req.getParameter("forum");
 		addSpecificParam(req, "forum", forum);
-		setWebsiteTitle(req, "Messaggi di " + author + " @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Messaggi di " + author);
 		setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + author + "</i>"));
 		MessagesDTO messages = getPersistence().getMessages(forum, author, PAGE_SIZE, getPageNr(req), hideProcCatania(req));
 		req.setAttribute("messages", messages.getMessages());
@@ -120,9 +120,9 @@ public class Messages extends MainServlet {
 	String getByForum(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String forum = req.getParameter("forum");
 		if (StringUtils.isEmpty(forum)) {
-			setWebsiteTitle(req, "Forum Principale @ Forum dei Troll");
+			setWebsiteTitlePrefix(req, "Forum Principale");
 		} else {
-			setWebsiteTitle(req, forum + " @ Forum dei Troll");
+			setWebsiteTitlePrefix(req, forum);
 		}
 
 		addSpecificParam(req, "forum", forum);
@@ -145,7 +145,7 @@ public class Messages extends MainServlet {
 	@Action
 	String getById(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		Long msgId = Long.parseLong(req.getParameter("msgId"));
-		setWebsiteTitle(req, "Singolo messaggio @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Singolo messaggio");
 		List<MessageDTO> messages = new ArrayList<MessageDTO>();
 		messages.add(getPersistence().getMessage(msgId));
 		req.setAttribute("messages", messages);
@@ -184,7 +184,7 @@ public class Messages extends MainServlet {
 		addSpecificParam(req, "search", search);
 		addSpecificParam(req, "sort", sort);
 
-		setWebsiteTitle(req, "Ricerca di " + search + " @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Ricerca di " + search);
 
 //		List<MessageDTO> messages = getPersistence().searchMessages(search, SearchMessagesSort.parse(sort), PAGE_SIZE, getPageNr(req));
 //		req.setAttribute("messages", messages);
@@ -207,7 +207,7 @@ public class Messages extends MainServlet {
 		msg.setSubject(req.getParameter("subject"));
 		msg.setText(req.getParameter("text"));
 		req.setAttribute("message", msg);
-		setWebsiteTitle(req, "Nuovo messaggio @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Nuovo messaggi");
 		// faccine - ordinate per key
 		final String ip = IPMemStorage.requestToIP(req);
 		if (getPersistence().blockTorExitNodes()) {
@@ -910,7 +910,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
-		setWebsiteTitle(req, "Ricerca per tag @ Forum dei troll");
+		setWebsiteTitlePrefix(req, "Ricerca per tag");
 		setAntiXssToken(req);
 		return "messages.jsp";
 	}
@@ -924,9 +924,9 @@ public class Messages extends MainServlet {
 		req.setAttribute("resultSize", messages.getMessages().size());
 		addSpecificParam(req, "forum", forum);
 		if (forum == null) {
-			setWebsiteTitle(req, "Forum dei troll");
+			setWebsiteTitlePrefix(req, "");
 		} else {
-			setWebsiteTitle(req, forum.equals("") ? "Forum principale @ Forum dei troll" : (forum + " @ Forum dei troll"));
+			setWebsiteTitlePrefix(req, forum.equals("") ? "Forum principale" : forum);
 		}
 		setNavigationMessage(req, message);
 		setAntiXssToken(req);

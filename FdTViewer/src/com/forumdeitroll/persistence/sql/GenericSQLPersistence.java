@@ -2100,4 +2100,25 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
+	
+	public List<String> getTitles() {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<String> ret = new ArrayList<String>();
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement("SELECT `value` FROM sysinfo WHERE `key` like 'title.%' ORDER BY `key` ASC");
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				ret.add(rs.getString(1));
+			}
+			return ret;
+		} catch (SQLException e) {
+			LOG.error("Impossibile leggere i titoli", e);
+			throw new RuntimeException(e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
 }

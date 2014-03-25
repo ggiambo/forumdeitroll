@@ -161,4 +161,10 @@ public interface IPersistence extends Serializable {
 	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, boolean hideProcCatania);
 
 	public String getMessageTitle(long id);
+	
+	/**
+	 * Ritorna la lista dei titoli modificati del FdT
+	 * @return
+	 */
+	public List<String> getTitles();
 }

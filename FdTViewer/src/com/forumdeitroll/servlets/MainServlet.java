@@ -351,8 +351,18 @@ public abstract class MainServlet extends HttpServlet {
 	 * @param req
 	 * @param websiteTitle
 	 */
-	protected void setWebsiteTitle(HttpServletRequest req, String websiteTitle) {
-		req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(websiteTitle));
+	protected void setWebsiteTitlePrefix(HttpServletRequest req, String prefix) {
+		if (StringUtils.isNotEmpty(prefix)) {
+			prefix = prefix + " @ ";
+		}
+		if (Math.random() > .5) {
+			req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(prefix + "Forum dei Troll"));
+		} else {
+			List<String> titles = persistence.getTitles();
+			double pos = Math.random() * (titles.size() - 1);
+			String title = prefix + "Forum " + titles.get((int) pos);
+			req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(title));
+		}
 	}
 
 	public static class NavigationMessage {

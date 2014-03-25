@@ -15,7 +15,7 @@ public class ModInfo extends MainServlet {
 	protected String show(final HttpServletRequest req, final HttpServletResponse res) throws Exception {
 		final String m_id = req.getParameter("m_id");
 
-		setWebsiteTitle(req, "Moderazione " + m_id + " @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Moderazione " + m_id);
 
 		final IPMemStorage.Record record = IPMemStorage.get(m_id);
 		final ModInfoBean modInfo = new ModInfoBean(m_id, record);

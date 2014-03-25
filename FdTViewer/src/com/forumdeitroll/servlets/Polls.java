@@ -72,7 +72,7 @@ public class Polls extends MainServlet {
 		PollsDTO polls = getPersistence().getPollsByDate(PAGE_SIZE, getPageNr(req));
 		req.setAttribute("polls", polls.getPolls());
 		req.setAttribute("totalSize", polls.getMaxNrOfPolls()); // TODO
-		setWebsiteTitle(req, "Sondaggi @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Sondaggi");
 		return "polls.jsp";
 	}
 	
@@ -88,7 +88,7 @@ public class Polls extends MainServlet {
 		PollsDTO polls = getPersistence().getPollsByLastVote(PAGE_SIZE, getPageNr(req));
 		req.setAttribute("polls", polls.getPolls());
 		req.setAttribute("totalSize", polls.getMaxNrOfPolls()); // TODO
-		setWebsiteTitle(req, "Sondaggi @ Forum dei Troll");
+		setWebsiteTitlePrefix(req, "Sondaggi");
 		return "polls.jsp";
 	}
 	
