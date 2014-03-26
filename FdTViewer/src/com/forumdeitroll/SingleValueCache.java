@@ -19,6 +19,10 @@ public abstract class SingleValueCache<V> {
 		return (v == null) || ((System.currentTimeMillis() - timestamp) > interval);
 	}
 
+	public void invalidate() {
+		v = null;
+	}
+
 	public V get() {
 		if (expired()) {
 			synchronized (this) {
