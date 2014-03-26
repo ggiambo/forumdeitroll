@@ -2108,7 +2108,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<String> ret = new ArrayList<String>();
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement("SELECT `value` FROM sysinfo WHERE `key` like 'title.%' ORDER BY `key` ASC");
+			ps = conn.prepareStatement("SELECT value FROM sysinfo WHERE `key` like 'title.%' ORDER BY `key` ASC");
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				ret.add(rs.getString(1));
@@ -2116,6 +2116,28 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			return ret;
 		} catch (SQLException e) {
 			LOG.error("Impossibile leggere i titoli", e);
+			throw new RuntimeException(e);
+		} finally {
+			close(rs, ps, conn);
+		}
+	}
+	
+	public void setTitles(List<String> titles) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			conn.createStatement().execute("DELETE FROM sysinfo WHERE `key` like 'title.%'");
+			int index = 0;
+			for (String title : titles) {
+				ps = conn.prepareStatement("INSERT INTO sysinfo (`key`, value) VALUES (?, ?)");
+				ps.setString(1, "title." + index++);
+				ps.setString(2, title);
+				ps.execute();
+			}
+		} catch (SQLException e) {
+			LOG.error("Impossibile salvare i titoli", e);
 			throw new RuntimeException(e);
 		} finally {
 			close(rs, ps, conn);

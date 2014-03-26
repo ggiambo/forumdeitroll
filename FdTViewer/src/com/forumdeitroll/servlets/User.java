@@ -2,6 +2,7 @@ package com.forumdeitroll.servlets;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -55,6 +56,7 @@ public class User extends MainServlet {
 
 	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
 	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
+	public static final String ADMIN_WEBSITE_TITLES = "websiteTitles";
 
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
@@ -67,6 +69,7 @@ public class User extends MainServlet {
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
 		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
+		req.setAttribute(ADMIN_WEBSITE_TITLES, getPersistence().getTitles());
 	}
 
 	@Action
@@ -500,6 +503,19 @@ public class User extends MainServlet {
 				getPersistence().setSysinfoValue("javascript", javascript);
 			}
 			req.setAttribute("javascript", javascript);
+			
+			String[] websiteTitles = req.getParameterValues(ADMIN_WEBSITE_TITLES);
+			List<String> titles = new ArrayList<String>();
+			if (websiteTitles != null) {
+				for (String title : websiteTitles) {
+					if (StringUtils.isNotEmpty(title)) {
+						titles.add(title);
+					}
+				}
+				getPersistence().setTitles(titles);
+			}
+			req.setAttribute(ADMIN_WEBSITE_TITLES, titles);
+			
 		}
 
 		return "user.jsp";

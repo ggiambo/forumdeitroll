@@ -243,6 +243,22 @@
 							<textarea name="javascript" id="javascript" maxlength="255">${javascript}</textarea>
 						</div>
 						<div style="clear: both;"></div>
+						<div class="lblUserPanel">
+							<label for="websiteTitle" class="lbl">Titoli:</label>
+						</div>
+						<div class="inputUserPanel" id="websiteTitles">
+							<c:choose>
+								<c:when test="${empty websiteTitles}">
+								</c:when>
+								<c:otherwise>
+									<c:forEach items="${websiteTitles}" var="websiteTitle">
+										<input name="<%=User.ADMIN_WEBSITE_TITLES%>" value="${websiteTitle}" maxlength="32" /><br/>
+									</c:forEach>
+								</c:otherwise>
+							</c:choose>
+							<img src="images/add.png" id="addWebsiteTitle" alt="Aggiungi titolo"/>
+						</div>
+						<div style="clear: both;"></div>
 					</c:if>
 
 					<input type="submit" value="Modifica" class="sendUserPanel" />

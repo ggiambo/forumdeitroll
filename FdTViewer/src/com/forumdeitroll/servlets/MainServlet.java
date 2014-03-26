@@ -359,9 +359,13 @@ public abstract class MainServlet extends HttpServlet {
 			req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(prefix + "Forum dei Troll"));
 		} else {
 			List<String> titles = persistence.getTitles();
-			double pos = Math.random() * (titles.size() - 1);
-			String title = prefix + "Forum " + titles.get((int) pos);
-			req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(title));
+			int pos = (int)(Math.random() * titles.size() - 1);
+			if (pos < 0) {
+				req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4("Forum dei Troll"));
+			} else {
+				String title = prefix + "Forum " + titles.get(pos);
+				req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(title));
+			}
 		}
 	}
 

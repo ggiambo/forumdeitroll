@@ -167,4 +167,6 @@ public interface IPersistence extends Serializable {
 	 * @return
 	 */
 	public List<String> getTitles();
+	
+	public void setTitles(List<String> titles);
 }
