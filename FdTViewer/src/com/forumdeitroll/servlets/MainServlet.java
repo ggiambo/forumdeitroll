@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -54,6 +55,12 @@ public abstract class MainServlet extends HttpServlet {
 	protected SingleValueCache<List<QuoteDTO>> cachedQuotes = new SingleValueCache<List<QuoteDTO>>(60 * 60 * 1000) {
 		@Override protected List<QuoteDTO> update() {
 			return getPersistence().getAllQuotes();
+		}
+	};
+
+	protected SingleValueCache<List<String>> cachedTitles = new SingleValueCache<List<String>>(60 * 60 * 1000) {
+		@Override protected List<String> update() {
+			return getPersistence().getTitles();
 		}
 	};
 
@@ -358,12 +365,11 @@ public abstract class MainServlet extends HttpServlet {
 		if (Math.random() > .5) {
 			req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(prefix + "Forum dei Troll"));
 		} else {
-			List<String> titles = persistence.getTitles();
-			int pos = (int)(Math.random() * titles.size() - 1);
-			if (pos < 0) {
-				req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4("Forum dei Troll"));
+			List<String> titles = cachedTitles.get();
+			if (titles.isEmpty()) {
+				req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(prefix + "Forum dei Troll"));
 			} else {
-				String title = prefix + "Forum " + titles.get(pos);
+				String title = prefix + "Forum " + titles.get(new Random().nextInt(titles.size()));
 				req.setAttribute("websiteTitle", StringEscapeUtils.escapeHtml4(title));
 			}
 		}

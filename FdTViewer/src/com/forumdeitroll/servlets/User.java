@@ -513,6 +513,7 @@ public class User extends MainServlet {
 					}
 				}
 				getPersistence().setTitles(titles);
+				cachedTitles.invalidate();
 			}
 			req.setAttribute(ADMIN_WEBSITE_TITLES, titles);
 			
