@@ -91,6 +91,8 @@ public abstract class MainServlet extends HttpServlet {
 			doAfter(req, res);
 			// forward
 			if (page != null) {
+				if (req.getAttribute("websiteTitle") == null)
+					setWebsiteTitlePrefix(req, "");
 				req.setAttribute("page", page);
 				getServletContext().getRequestDispatcher("/pages/main.jsp").forward(req, res);
 			}
