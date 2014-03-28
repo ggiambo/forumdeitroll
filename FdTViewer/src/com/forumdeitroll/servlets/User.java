@@ -43,7 +43,7 @@ public class User extends MainServlet {
 	public static final String PREF_SHOWANONIMG = "showAnonImg";
 	public static final String PREF_EMBEDDYT = "embeddYt";
 	public static final String PREF_COLLAPSE_QUOTES = "collapseQuotes";
-	public static final String PREF_HIDE_PROC_CATANIA = "hideProcCatania";
+	public static final String PREF_HIDDEN_FORUMS = "hiddenForums";
 	public static final String PREF_HIDE_BANNERONE = "hideBannerone";
 	public static final String PREF_MSG_MAX_HEIGHT = "msgMaxHeight";
 	public static final String PREF_AUTO_REFRESH = "autoRefresh";
@@ -53,6 +53,8 @@ public class User extends MainServlet {
 	public static final String PREF_LARGE_STYLE = "largeStyle";
 	public static final String PREF_THEME = "theme";
 	public static final List<String> PREF_THEMES = Arrays.asList("Classico", "Scuro", "Flat");
+
+	public static final String ALL_FORUMS = "allForums";
 
 	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
 	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
@@ -70,6 +72,7 @@ public class User extends MainServlet {
 		req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
 		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 		req.setAttribute(ADMIN_WEBSITE_TITLES, getPersistence().getTitles());
+		req.setAttribute(ALL_FORUMS, getPersistence().getForums());
 	}
 
 	@Action
@@ -82,6 +85,7 @@ public class User extends MainServlet {
 		AuthorDTO loggedUser = login(req);
 		setWebsiteTitlePrefix(req, "");
 		if (loggedUser != null && loggedUser.isValid()) {
+			req.setAttribute(PREF_HIDDEN_FORUMS, getPersistence().getHiddenForums(loggedUser));
 			return "user.jsp";
 		}
 		loginRatelimiter.increment(IPMemStorage.requestToIP(req));
@@ -455,7 +459,7 @@ public class User extends MainServlet {
 		}
 
 		// setta le preferences
-		for (String key : new String[] {PREF_SHOWANONIMG, PREF_EMBEDDYT, PREF_COLLAPSE_QUOTES, PREF_HIDE_PROC_CATANIA, PREF_HIDE_BANNERONE, 
+		for (String key : new String[] {PREF_SHOWANONIMG, PREF_EMBEDDYT, PREF_COLLAPSE_QUOTES, PREF_HIDE_BANNERONE,
 				PREF_MSG_MAX_HEIGHT, PREF_AUTO_REFRESH, PREF_HIDE_SIGNATURE, PREF_COMPACT_SIGNATURE, PREF_BLOCK_HEADER, PREF_LARGE_STYLE}) {
 			String value = req.getParameter(key);
 			if (StringUtils.isNotEmpty(value)) {
@@ -470,6 +474,14 @@ public class User extends MainServlet {
 				}
 			}
 		}
+
+		String[] hiddenForums = req.getParameterValues(PREF_HIDDEN_FORUMS);
+		List<String> forumsToHide = new ArrayList<String>();
+		if (hiddenForums != null) {
+			forumsToHide.addAll(Arrays.asList(hiddenForums));
+		}
+		getPersistence().setHiddenForums(loggedUser, forumsToHide);
+		req.setAttribute(PREF_HIDDEN_FORUMS, getPersistence().getHiddenForums(loggedUser));
 
 		String theme = req.getParameter(PREF_THEME);
 		if (StringUtils.isNotEmpty(theme)) {
@@ -503,7 +515,7 @@ public class User extends MainServlet {
 				getPersistence().setSysinfoValue("javascript", javascript);
 			}
 			req.setAttribute("javascript", javascript);
-			
+
 			String[] websiteTitles = req.getParameterValues(ADMIN_WEBSITE_TITLES);
 			List<String> titles = new ArrayList<String>();
 			if (websiteTitles != null) {
@@ -516,7 +528,7 @@ public class User extends MainServlet {
 				cachedTitles.invalidate();
 			}
 			req.setAttribute(ADMIN_WEBSITE_TITLES, titles);
-			
+
 		}
 
 		return "user.jsp";

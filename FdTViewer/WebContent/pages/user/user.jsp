@@ -133,10 +133,23 @@
 					</div>
 					<div>
 						<div class="inputUserPanel">
-							<input type="checkbox" name="<%=User.PREF_HIDE_PROC_CATANIA%>" id="<%=User.PREF_HIDE_PROC_CATANIA%>" ${loggedUser.preferences['hideProcCatania']} />
+							<select name="<%=User.PREF_HIDDEN_FORUMS%>" multiple>
+								<c:forEach items="${allForums}" var="forum">
+									<c:set var="prefKey" value="hideForum.${forum}" />
+									** ${loggedUser.preferences[prefKey]} **
+									<c:choose>
+										<c:when test="${not empty loggedUser.preferences[prefKey]}">
+											<option value="${forum}" selected>${forum}</option>
+										</c:when>
+										<c:otherwise>
+											<option value="${forum}">${forum}</option>
+										</c:otherwise>
+									</c:choose>
+								</c:forEach>
+							</select>
 						</div>
 						<div class="lblUserPanel">
-							<label for="<%=User.PREF_HIDE_PROC_CATANIA%>" class="lbl">Nascondi Thread della Procura</label>
+							<label for="<%=User.PREF_HIDDEN_FORUMS%>" class="lbl">Nascondi Thread di questi forum</label>
 						</div>
 						<div style="clear: both;"></div>
 					</div>
@@ -207,13 +220,13 @@
 						<div class="inputUserPanel">
 							<select name="<%=User.PREF_THEME%>" id="<%=User.PREF_THEME%>">
 								<c:forEach items="<%=User.PREF_THEMES%>" var="theme">
-								    <option ${loggedUser.preferences['theme'] == theme ? 'selected="selected"' 
+								    <option ${loggedUser.preferences['theme'] == theme ? 'selected="selected"'
 								             : ''
 								             } value="<c:out value="${theme}"/>">
 								        <c:out value="${theme}"/>
 								    </option>
 								</c:forEach>
-							</select> 
+							</select>
 						</div>
 						<div class="lblUserPanel">
 							<label for="<%=User.PREF_THEME%>" class="lbl">Tema</label>

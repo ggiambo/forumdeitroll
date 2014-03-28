@@ -104,7 +104,7 @@ public class Messages extends MainServlet {
 		addSpecificParam(req, "forum", forum);
 		setWebsiteTitlePrefix(req, "Messaggi di " + author);
 		setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + author + "</i>"));
-		MessagesDTO messages = getPersistence().getMessages(forum, author, PAGE_SIZE, getPageNr(req), hideProcCatania(req));
+		MessagesDTO messages = getPersistence().getMessages(forum, author, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
@@ -127,7 +127,7 @@ public class Messages extends MainServlet {
 
 		addSpecificParam(req, "forum", forum);
 		setNavigationMessage(req, NavigationMessage.info("Cronologia messaggi"));
-		MessagesDTO messages = getPersistence().getMessages(forum, null, PAGE_SIZE, getPageNr(req), false);
+		MessagesDTO messages = getPersistence().getMessages(forum, null, PAGE_SIZE, getPageNr(req), null);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
@@ -841,7 +841,7 @@ public class Messages extends MainServlet {
 		}
 		return null;
 	}
-	
+
 	@Action(method=Method.POST)
 	String saveTag(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		try {
@@ -872,7 +872,7 @@ public class Messages extends MainServlet {
 		}
 		return null;
 	}
-	
+
 	@Action(method=Method.POST)
 	String deleTag(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		try {
@@ -901,11 +901,11 @@ public class Messages extends MainServlet {
 		}
 		return null;
 	}
-	
+
 	@Action(method=Method.GET)
 	String getMessagesByTag(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		long t_id = Long.parseLong(req.getParameter("t_id"));
-		MessagesDTO messages = getPersistence().getMessagesByTag(PAGE_SIZE, getPageNr(req), t_id, hideProcCatania(req));
+		MessagesDTO messages = getPersistence().getMessagesByTag(PAGE_SIZE, getPageNr(req), t_id, hiddenForums(req));
 		getPersistence().getTags(messages);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
@@ -917,7 +917,7 @@ public class Messages extends MainServlet {
 
 	private String getMessages(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
 		String forum = req.getParameter("forum");
-		MessagesDTO messages = getPersistence().getMessages(forum, null, PAGE_SIZE, getPageNr(req), hideProcCatania(req));
+		MessagesDTO messages = getPersistence().getMessages(forum, null, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		getPersistence().getTags(messages);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());

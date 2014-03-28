@@ -13,12 +13,11 @@ import org.apache.log4j.Logger;
 
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.PersistenceFactory;
-import com.forumdeitroll.servlets.Messages;
 
 public abstract class DatabaseMigration {
-	
+
 	private static final Logger LOG = Logger.getLogger(DatabaseMigration.class);
-	
+
 	private static final Pattern PATTERN_URL = Pattern.compile("<a.+?href=\"(.+?)\".+?</a>");
 	private static final Pattern PATTERN_EMO = Pattern.compile("<IMG SRC=\"images/emo/(.+?)\\.gif\".*?>");
 	private static final Pattern PATTERN_YT = Pattern.compile("<div class='ytvideo'>.*?'http://www.youtube.com/v/(.+?)'.*?</div>");
@@ -27,13 +26,13 @@ public abstract class DatabaseMigration {
 	private static final Pattern PATTERN_BLOCKQUOTE = Pattern.compile("<blockquote><pre width='34px' style='border: 1px dashed gray'><b>(.+?)</b></pre></blockquote>");
 
 	private static final Map<String, String[]> EMO_MAP = null; // Messages.getEmoMap();
-	
+
 	public static void main(String[] args) {
 
 		int chunkSize = 1000;
-		
+
 		DecimalFormat percentFormat = new DecimalFormat("000");
-		
+
 		GenericSQLPersistence pers = null;
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -41,15 +40,15 @@ public abstract class DatabaseMigration {
 		try {
 			pers = (GenericSQLPersistence) PersistenceFactory.getInstance();
 			conn = pers.getConnection();
-			
+
 			stmt = conn.prepareStatement("select count(id) from messages");
 			rs = stmt.executeQuery();
 			rs.next();
 			double messages = rs.getDouble(1);
 			LOG.info("Start database migration: " + messages + " messages");
-			
+
 			int i = 0;
-			List<MessageDTO> msgs = pers.getMessages(null, null, chunkSize, i, false).getMessages();
+			List<MessageDTO> msgs = pers.getMessages(null, null, chunkSize, i, null).getMessages();
 			stmt = conn.prepareStatement("update messages set text = ? where id = ?");
 			String newText;
 			while (msgs != null && msgs.size() > 0) {
@@ -71,11 +70,11 @@ public abstract class DatabaseMigration {
 					}
 				}
 				i++;
-				msgs = pers.getMessages(null, null, chunkSize, i, false).getMessages();
+				msgs = pers.getMessages(null, null, chunkSize, i, null).getMessages();
 				double percent = (i*chunkSize) / messages;
 				LOG.info("Migrating database: " + percentFormat.format(percent*100) + "% done");
-			}			
-			
+			}
+
 		} catch (Exception e) {
 			LOG.fatal(e);
 			return;
@@ -86,10 +85,10 @@ public abstract class DatabaseMigration {
 		}
 		LOG.info("End database migration");
 	}
-	
+
 	private static String updateText(String text) {
 		Matcher m;
-		
+
 		// img
 		m = PATTERN_IMG.matcher(text);
 		while (m.find()) {
@@ -97,7 +96,7 @@ public abstract class DatabaseMigration {
 			text = m.replaceFirst(Matcher.quoteReplacement(replace));
 			m = PATTERN_IMG.matcher(text);
 		}
-		
+
 		// links
 		m = PATTERN_URL.matcher(text);
 		while (m.find()) {
@@ -105,7 +104,7 @@ public abstract class DatabaseMigration {
 			text = m.replaceFirst(Matcher.quoteReplacement(replace));
 			m = PATTERN_URL.matcher(text);
 		}
-		
+
 		// faccine
 		m = PATTERN_EMO.matcher(text);
 		while (m.find()) {
@@ -113,7 +112,7 @@ public abstract class DatabaseMigration {
 			text = m.replaceFirst(Matcher.quoteReplacement(replace));
 			m = PATTERN_EMO.matcher(text);
 		}
-		
+
 		// youtube
 		m = PATTERN_YT.matcher(text);
 		while (m.find()) {
@@ -121,7 +120,7 @@ public abstract class DatabaseMigration {
 			text = m.replaceFirst(Matcher.quoteReplacement(replace));
 			m = PATTERN_YT.matcher(text);
 		}
-		
+
 		// quote
 		m = PATTERN_BLOCKQUOTE.matcher(text);
 		while (m.find()) {
@@ -129,7 +128,7 @@ public abstract class DatabaseMigration {
 			text = m.replaceFirst(Matcher.quoteReplacement(replace));
 			m = PATTERN_BLOCKQUOTE.matcher(text);
 		}
-		
+
 		return text;
 	}
 

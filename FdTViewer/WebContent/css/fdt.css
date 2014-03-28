@@ -918,6 +918,10 @@ div.userPanelSection input {
 	padding: 0 5px;
 }
 
+div.userPanelSection select {
+	width: 15em;
+}
+
 div.userPanelSection input.file {
 	border: 1px solid #7BAAE7;
 	width: 100%;

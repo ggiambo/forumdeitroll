@@ -2,7 +2,7 @@ package com.forumdeitroll.servlets;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -230,9 +230,8 @@ public abstract class MainServlet extends HttpServlet {
 	 * stato inserito un captcha giusto, null se autenticazione fallita.
 	 * @param req
 	 * @return
-	 * @throws NoSuchAlgorithmException
 	 */
-	protected AuthorDTO login(final HttpServletRequest req) throws NoSuchAlgorithmException {
+	protected AuthorDTO login(final HttpServletRequest req) {
 		// check username and pass, se inseriti
 		String nick = req.getParameter("nick");
 		String pass = req.getParameter("pass");
@@ -300,7 +299,7 @@ public abstract class MainServlet extends HttpServlet {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Setta nella session lo stato dell'header fisso
 	 */
@@ -474,16 +473,12 @@ public abstract class MainServlet extends HttpServlet {
 		return (token != null) && (inToken != null) && token.equals(inToken);
 	}
 
-	protected boolean hideProcCatania(HttpServletRequest req) throws NoSuchAlgorithmException {
-		String forum = req.getParameter("forum");
-		if (IPersistence.FORUM_PROC.equals(forum)) {
-			return false; // nascondere la proc quando si consulta la proc :P ?
-		}
+	protected List<String> hiddenForums(HttpServletRequest req) {
 		AuthorDTO loggedUser = login(req);
 		if (loggedUser.isValid()) {
-			return StringUtils.isNotEmpty(loggedUser.getPreferences().get(User.PREF_HIDE_PROC_CATANIA));
+			return getPersistence().getHiddenForums(loggedUser);
 		}
-		return false; // utenti non registrati: mostra
+		return null;
 	}
 
 	/**

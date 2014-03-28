@@ -74,7 +74,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public MessagesDTO getMessages(String forum, String author, int limit, int page, boolean hideProcCatania) {
+	public MessagesDTO getMessages(String forum, String author, int limit, int page, List<String> hiddenForums) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -86,8 +86,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				query.append(" WHERE forum IS NULL");
 				where = false;
 			} else if (forum == null) {
-				if (hideProcCatania) {
-					query.append(" WHERE (forum IS NULL OR forum != '").append(FORUM_PROC).append("') ");
+				if (hiddenForums != null && !hiddenForums.isEmpty()) {
+					query.append(" WHERE (forum IS NULL OR forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
 					where = false;
 				}
 			} else {
@@ -114,8 +114,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setInt(i++, limit*page);
 
 			int messagesCount = countMessages(forum, conn);
-			if (hideProcCatania && forum == null) {
-				messagesCount -= countMessages(FORUM_PROC, conn);
+			if (hiddenForums != null && !hiddenForums.isEmpty() && forum == null) {
+				for (String hiddenForum : hiddenForums) {
+					messagesCount -= countMessages(hiddenForum, conn);
+				}
 			}
 
 			return new MessagesDTO(getMessages(ps.executeQuery(), false), messagesCount);
@@ -128,7 +130,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public ThreadsDTO getThreads(String forum, int limit, int page, boolean hideProcCatania) {
+	public ThreadsDTO getThreads(String forum, int limit, int page, List<String> hiddenForums) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -139,8 +141,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			if ("".equals(forum)) {
 				query.append(" AND forum IS NULL");
 			} else if (forum == null) {
-				if (hideProcCatania) {
-					query.append(" AND (forum IS NULL OR forum != '").append(FORUM_PROC).append("') ");
+				if (hiddenForums != null && !hiddenForums.isEmpty()) {
+					query.append(" AND (forum IS NULL OR forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
 				}
 			} else {
 				query.append(" AND forum = ?");
@@ -154,8 +156,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setInt(i++, limit*page);
 
 			int threadsCount = countThreads(forum, conn);
-			if (hideProcCatania && forum == null) {
-				threadsCount -= countThreads(FORUM_PROC, conn);
+			if (hiddenForums != null && !hiddenForums.isEmpty() && forum == null) {
+				for (String hiddenForum : hiddenForums) {
+					threadsCount -= countMessages(hiddenForum, conn);
+				}
 			}
 
 			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount);
@@ -168,7 +172,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, boolean hideProcCatania) {
+	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, List<String> hiddenForums) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -182,8 +186,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			if ("".equals(forum)) {
 				query.append(" WHERE forum IS NULL");
 			} else if (forum == null) {
-				if (hideProcCatania) {
-					query.append(" WHERE (forum IS NULL OR forum != '").append(FORUM_PROC).append("')");
+				if (hiddenForums != null && !hiddenForums.isEmpty()) {
+					query.append(" WHERE (forum IS NULL OR forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
 				}
 			} else {
 				query.append(" WHERE forum = ?");
@@ -214,7 +218,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page, boolean hideProcCatania) {
+	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page, List<String> hiddenForums) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -226,8 +230,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				.append("FROM messages a, messages b ")
 				.append("WHERE a.threadId = b.threadId ")
 				.append("AND b.author = ? ");
-			if (hideProcCatania) {
-				query.append("AND (b.forum IS NULL OR b.forum != '").append(FORUM_PROC).append("') ");
+			if (hiddenForums != null && !hiddenForums.isEmpty()) {
+				query.append("AND (b.forum IS NULL OR b.forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
 			}
 			query.append("GROUP BY a.threadId ")
 				.append("ORDER BY MAX(a.id) DESC ")
@@ -749,9 +753,9 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} finally {
 			close(rs, ps, conn);
 		}
-		
+
 	}
-	
+
 	@Override
 	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients) {
 		Connection conn = null;
@@ -1915,7 +1919,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	@Override
 	public TagDTO addTag(TagDTO tag) {
 		Connection conn = null;
@@ -1964,7 +1968,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	@Override
 	public void deleTag(TagDTO tag, boolean isAdmin) {
 		Connection conn = null;
@@ -2002,7 +2006,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(null, ps, conn);
 		}
 	}
-	
+
 	@Override
 	public void getTags(MessagesDTO messages) {
 		if (messages.getMessages().size() == 0) return;
@@ -2045,22 +2049,23 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
 	@Override
-	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, boolean hideProcCatania) {
+	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, List<String> hiddenForums) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
-			ps = conn.prepareStatement(
-				"SELECT messages.* " +
-				"FROM messages,tags_bind " +
-				"WHERE m_id = messages.id " +
-				"AND t_id = ? " +
-				(hideProcCatania ? " AND (forum IS NULL OR forum != '"+FORUM_PROC+"') " : "")+
-				"ORDER BY m_id DESC " +
-				"LIMIT ? OFFSET ?");
+			StringBuilder query = new StringBuilder();
+			query.append("SELECT messages.* FROM messages,tags_bind ")
+				.append("WHERE m_id = messages.id ")
+				.append("AND t_id = ? ");
+			if (hiddenForums != null && !hiddenForums.isEmpty()) {
+				query.append(" AND (forum IS NULL OR forum not in ('").append(StringUtils.join(hiddenForums, "','")).append("') ");
+			}
+			query.append("ORDER BY m_id DESC LIMIT ? OFFSET ?");
+			ps = conn.prepareStatement(query.toString());
 			ps.setLong(1, t_id);
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*page);
@@ -2080,6 +2085,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		}
 	}
 
+	@Override
 	public String getMessageTitle(long id) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -2100,7 +2106,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
+	@Override
 	public List<String> getTitles() {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -2121,7 +2128,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(rs, ps, conn);
 		}
 	}
-	
+
+	@Override
 	public void setTitles(List<String> titles) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -2142,5 +2150,44 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} finally {
 			close(rs, ps, conn);
 		}
+	}
+
+	@Override
+	public List<String> getHiddenForums(AuthorDTO loggedUser) {
+		List<String> hiddenForums = new ArrayList<String>();
+		Map<String, String> prefs = getPreferences(loggedUser);
+		for (Map.Entry<String, String> pref : prefs.entrySet()) {
+			if (pref.getKey().startsWith("hideForum.")) {
+				hiddenForums.add(pref.getValue());
+			}
+		}
+		return hiddenForums;
+	}
+
+	@Override
+	public void setHiddenForums(AuthorDTO loggedUser, List<String> hiddenForums) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			// remove all
+			conn = getConnection();
+			ps = conn.prepareStatement("DELETE FROM preferences WHERE `key` like 'hideForum.%' AND nick = ?");
+			ps.setString(1, loggedUser.getNick());
+			ps.execute();
+			// insert all
+			for (String hiddenForum : hiddenForums) {
+				ps = conn.prepareStatement("INSERT INTO preferences (nick, `key`, value) VALUES (?, ?, ?)");
+				ps.setString(1, loggedUser.getNick());
+				ps.setString(2, "hideForum." + hiddenForum);
+				ps.setString(3, hiddenForum);
+				ps.execute();
+			}
+		} catch (SQLException e) {
+			LOG.error("Impossibile salvare i titoli", e);
+			throw new RuntimeException(e);
+		} finally {
+			close(null, ps, conn);
+		}
+
 	}
 }

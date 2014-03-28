@@ -50,9 +50,8 @@ public class PasswordUtils {
 	 * @param user
 	 * @param password
 	 * @return
-	 * @throws NoSuchAlgorithmException
 	 */
-	public static boolean hasUserPassword(AuthorDTO user, final String password) throws NoSuchAlgorithmException {
+	public static boolean hasUserPassword(AuthorDTO user, final String password) {
 		if (password == null) return false;
 		if (user.isBanned()) return false;
 		if (!StringUtils.isEmpty(user.getSalt())) {
@@ -69,7 +68,6 @@ public class PasswordUtils {
 	 * Calcola l'MD5 della password, stesso valore di MD5() di MySQL
 	 * @param input
 	 * @return
-	 * @throws NoSuchAlgorithmException
 	 */
 	private static String md5(String input) {
 		try {

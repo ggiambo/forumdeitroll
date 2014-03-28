@@ -24,7 +24,7 @@ public interface IPersistence extends Serializable {
 	 * @param hideProcCatania
 	 * @return
 	 */
-	public ThreadsDTO getThreads(String forum, int limit, int page, boolean hideProcCatania);
+	public ThreadsDTO getThreads(String forum, int limit, int page, List<String> hiddenForums);
 
 	/**
 	 *
@@ -34,9 +34,9 @@ public interface IPersistence extends Serializable {
 	 * @param hideProcCatania
 	 * @return
 	 */
-	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, boolean hideProcCatania);
+	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, List<String> hiddenForums);
 
-	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page, boolean hideProcCatania);
+	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page, List<String> hiddenForums);
 
 	public MessageDTO getMessage(long id);
 
@@ -48,7 +48,7 @@ public interface IPersistence extends Serializable {
 	 * @param hideProcCatania
 	 * @return
 	 */
-	public MessagesDTO getMessages(String forum, String author, int limit, int page, boolean hideProcCatania);
+	public MessagesDTO getMessages(String forum, String author, int limit, int page, List<String> hiddenForums);
 
 	public List<MessageDTO> getMessagesByThread(long threadId);
 
@@ -149,24 +149,32 @@ public interface IPersistence extends Serializable {
 	 * @return
 	 */
 	public int like(long msgId, String nick, boolean upvote);
-	
+
 	public List<DigestArticleDTO> getReadersDigest();
-	
+
 	public TagDTO addTag(TagDTO tag);
-	
+
 	public void deleTag(TagDTO tag, boolean isAdmin);
-	
+
 	public void getTags(MessagesDTO messages);
-	
-	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, boolean hideProcCatania);
+
+	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, List<String> hiddenForums);
 
 	public String getMessageTitle(long id);
-	
+
 	/**
 	 * Ritorna la lista dei titoli modificati del FdT
 	 * @return
 	 */
 	public List<String> getTitles();
-	
+
 	public void setTitles(List<String> titles);
+
+	/**
+	 * Gestione multihide
+	 */
+	public void setHiddenForums(AuthorDTO loggedUser, List<String> hiddenForum);
+
+	List<String> getHiddenForums(AuthorDTO loggedUser);
+
 }

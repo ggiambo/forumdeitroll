@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -51,13 +50,13 @@ public class JSonServlet extends HttpServlet {
 	private static final int MAX_PAGE_SIZE = 100;
 
 	private IPersistence persistence;
-	
+
 	private SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
 			return persistence.getForums();
 		}
 	};
-	
+
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -141,7 +140,7 @@ public class JSonServlet extends HttpServlet {
 		int pageSize = getPageSize(params);
 		String forum = getStringValue(params, "forum", null);
 
-		ThreadsDTO result = persistence.getThreads(forum, pageSize, page, false);
+		ThreadsDTO result = persistence.getThreads(forum, pageSize, page, null);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
@@ -176,10 +175,10 @@ public class JSonServlet extends HttpServlet {
 		String forum = getStringValue(params, "forum", null);
 		String renderOpts = getStringValue(params, "renderOpts", null);
 		RenderOptions opts = renderOpts != null ? new Gson().fromJson(renderOpts, RenderOptions.class) : null;
-		
+
 		String nick = getStringValue(params, "nick", null);
-		MessagesDTO result = persistence.getMessages(forum, nick, pageSize, page, false);
-		
+		MessagesDTO result = persistence.getMessages(forum, nick, pageSize, page, null);
+
 		if (opts != null) {
 			for (MessageDTO message : result.getMessages()) {
 				StringWriter out = new StringWriter();
@@ -435,7 +434,7 @@ public class JSonServlet extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	protected void addMessage(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException, NoSuchAlgorithmException {
+	protected void addMessage(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
 
 		String type = getStringValue(params, "type", null);
 		if (type == null) {
