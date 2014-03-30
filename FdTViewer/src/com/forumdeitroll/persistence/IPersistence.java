@@ -21,7 +21,7 @@ public interface IPersistence extends Serializable {
 	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
 	 * @param limit
 	 * @param page
-	 * @param hideProcCatania
+	 * @param hiddenForums
 	 * @return
 	 */
 	public ThreadsDTO getThreads(String forum, int limit, int page, List<String> hiddenForums);
@@ -31,7 +31,7 @@ public interface IPersistence extends Serializable {
 	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
 	 * @param limit
 	 * @param page
-	 * @param hideProcCatania
+	 * @param hiddenForums
 	 * @return
 	 */
 	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, List<String> hiddenForums);
@@ -45,7 +45,7 @@ public interface IPersistence extends Serializable {
 	 * @param forum se null tutti i messaggi, se stringa vuota tutti i messaggi con forum NULL ("Principale")
 	 * @param limit
 	 * @param page
-	 * @param hideProcCatania
+	 * @param hiddenForums
 	 * @return
 	 */
 	public MessagesDTO getMessages(String forum, String author, int limit, int page, List<String> hiddenForums);
