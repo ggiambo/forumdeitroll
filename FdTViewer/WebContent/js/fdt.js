@@ -132,7 +132,7 @@ function insert(openTag, closeTag, parentId) {
 }
 
 function insertIntoTextArea(openTag, closeTag, textArea) {
-	if (textArea.createTextRange) {
+	if (document.selection) {
 		textArea.focus(textArea.caretPos);
 		textArea.caretPos = document.selection.createRange().duplicate();
 		if (textArea.caretPos.text.length > 0) {
