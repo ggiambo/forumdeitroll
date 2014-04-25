@@ -175,6 +175,8 @@ public interface IPersistence extends Serializable {
 	 */
 	public void setHiddenForums(AuthorDTO loggedUser, List<String> hiddenForum);
 
-	List<String> getHiddenForums(AuthorDTO loggedUser);
+	public List<String> getHiddenForums(AuthorDTO loggedUser);
+
+	public List<AdDTO> getAllAds();
 
 }
