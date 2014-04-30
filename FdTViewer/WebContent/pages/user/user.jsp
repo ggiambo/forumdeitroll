@@ -233,47 +233,6 @@
 						</div>
 						<div style="clear: both;"></div>
 					</div>
-					<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
-						<hr/>
-						<div class="inputUserPanel">
-							<input type="checkbox" name="<%=User.ADMIN_PREF_BLOCK_TOR%>" id="<%=User.ADMIN_PREF_BLOCK_TOR%>" ${blockTorExitNodes} />
-						</div>
-						<div class="lblUserPanel">
-							<label for="<%=User.ADMIN_PREF_BLOCK_TOR%>" class="lbl">Blocca TOR exit nodes:</label>
-						</div>
-						<div style="clear: both;"></div>
-						<div class="inputUserPanel">
-							<input type="checkbox" name="<%=User.ADMIN_PREF_DISABLE_PROFILER%>" id="<%=User.ADMIN_PREF_DISABLE_PROFILER%>" ${disableUserProfiler} />
-						</div>
-						<div class="lblUserPanel">
-							<label for="<%=User.ADMIN_PREF_DISABLE_PROFILER%>" class="lbl">Disattiva il profiler:</label>
-						</div>
-						<div style="clear: both;"></div>
-						<div class="lblUserPanel">
-							<label for="javascript" class="lbl">Javascript:</label>
-						</div>
-						<div class="inputUserPanel">
-							<textarea name="javascript" id="javascript" maxlength="255">${javascript}</textarea>
-						</div>
-						<div style="clear: both;"></div>
-						<div class="lblUserPanel">
-							<label for="websiteTitle" class="lbl">Titoli:</label>
-						</div>
-						<div class="inputUserPanel" id="websiteTitles">
-							<c:choose>
-								<c:when test="${empty websiteTitles}">
-								</c:when>
-								<c:otherwise>
-									<c:forEach items="${websiteTitles}" var="websiteTitle">
-										<input name="<%=User.ADMIN_WEBSITE_TITLES%>" value="${websiteTitle}" maxlength="32" /><br/>
-									</c:forEach>
-								</c:otherwise>
-							</c:choose>
-							<img src="images/add.png" id="addWebsiteTitle" alt="Aggiungi titolo"/>
-						</div>
-						<div style="clear: both;"></div>
-					</c:if>
-
 					<input type="submit" value="Modifica" class="sendUserPanel" />
 				</form>
 				<div style="clear: both;"></div>
@@ -284,6 +243,9 @@
 				<a href="./Pvt?action=inbox" class="userPanelButton">Posta</a>
 				<a href="./User?action=getNotifications" class="userPanelButton">Notifiche</a>
 				<a href="./Bookmarks?action=list" class="userPanelButton">Segnalibri</a>
+				<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
+					<a href="./Admin" class="userPanelButton">Admin</a>
+				</c:if>
 				<div style="clear: both;"></div>
 			</div>
 		</div>

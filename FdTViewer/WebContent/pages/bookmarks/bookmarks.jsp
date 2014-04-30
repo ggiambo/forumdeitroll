@@ -20,7 +20,7 @@
 		<div class="userPanelContent">
 			<c:if test="${empty bookmarks}">
 				<div class="userPanelSection">
-					Non hai ancora aggiunto nessun segnalibro.<img src="images/emoextended/piange.gif" alt="" class="emoticon" />	
+					Non hai ancora aggiunto nessun segnalibro.<img src="images/emoextended/piange.gif" alt="" class="emoticon" />
 				</div>
 			</c:if>
 			<c:if test="${not empty bookmarks}">
@@ -65,6 +65,9 @@
 				<a href="./User?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
 				<a href="./Pvt?action=inbox" class="userPanelButton">Posta</a>
 				<a href="./User?action=getNotifications" class="userPanelButton">Notifiche</a>
+				<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
+					<a href="./Admin" class="userPanelButton">Admin</a>
+				</c:if>
 				<div style="clear: both;"></div>
 			</div>
 		</div>

@@ -19,28 +19,28 @@ import com.forumdeitroll.profiler.UserProfile;
 import com.google.gson.Gson;
 
 public class UserProfiler extends MainServlet {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(UserProfiler.class);
-	
+
 	private com.forumdeitroll.profiler.UserProfiler profiler =
 			com.forumdeitroll.profiler.UserProfiler.getInstance();
-	
+
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		profiler.isProfilerEnabled = 
+		profiler.isProfilerEnabled =
 				! "checked".equals(
 					getPersistence()
-						.getSysinfoValue(User.ADMIN_PREF_DISABLE_PROFILER));
+						.getSysinfoValue(Admin.ADMIN_PREF_DISABLE_PROFILER));
 	}
-	
+
 	@Action(method=Action.Method.GET)
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return browse(req, res);
 	}
-	
+
 	/**
 	 * La prima chiamata assegna un parametro permr usando una redirect 301, cachata dai browser (eccetto safari) anche in modalità incognito
 	 * La seconda verifica la presenza dell'etag o lo assegna (cache normale dei browser) da qui in poi il browser riceverà sempre un 304
@@ -68,7 +68,7 @@ public class UserProfiler extends MainServlet {
 		res.sendError(304); // not modified
 		return null;
 	}
-	
+
 	private static void printRequest(HttpServletRequest request) {
 		logger.info(request.getMethod() + " " + request.getRequestURI() + " " + request.getProtocol());
 		for (Enumeration<String> en = request.getParameterNames(); en.hasMoreElements();) {
@@ -82,7 +82,7 @@ public class UserProfiler extends MainServlet {
 			logger.info("Header " + name + ": " + value);
 		}
 	}
-	
+
 	/**
 	 * Verifica se il profilo dell'utente è in una banlist
 	 */
@@ -101,7 +101,7 @@ public class UserProfiler extends MainServlet {
 		out.print("\"}");
 		return null;
 	}
-	
+
 	@Action(method=Action.Method.GET)
 	String snoop(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
@@ -110,9 +110,9 @@ public class UserProfiler extends MainServlet {
 		}
 		return "snoop.jsp";
 	}
-	
+
 	public static ArrayList<UserProfile> unbanRequests = new ArrayList<UserProfile>();
-	
+
 	@Action(method=Action.Method.POST)
 	String requestUnban(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String jsonProfile = req.getParameter("jsonProfile");
@@ -122,7 +122,7 @@ public class UserProfiler extends MainServlet {
 		setNavigationMessage(req, NavigationMessage.info("Richiesta accodata"));
 		return snoop(req, res);
 	}
-	
+
 	@Action(method=Action.Method.POST)
 	String deleteRequest(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
@@ -186,12 +186,12 @@ public class UserProfiler extends MainServlet {
 		setNavigationMessage(req, NavigationMessage.info("Profilo "+banned.getUuid()+" pulito delle informazioni da sbannare"));
 		return page(req);
 	}
-	
+
 	private String page(HttpServletRequest req) {
 		req.setAttribute("profiles", profiler.profiles);
 		return "userProfiler.jsp";
 	}
-	
+
 	@Action(method=Action.Method.GET)
 	String browse(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
@@ -200,7 +200,7 @@ public class UserProfiler extends MainServlet {
 		}
 		return page(req);
 	}
-	
+
 	@Action(method=Action.Method.POST)
 	String merge(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
@@ -212,7 +212,7 @@ public class UserProfiler extends MainServlet {
 		profiler.mergeKnownProfiles(one, two);
 		return page(req);
 	}
-	
+
 	@Action(method=Action.Method.POST)
 	String switchBan(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
@@ -243,7 +243,7 @@ public class UserProfiler extends MainServlet {
 		setNavigationMessage(req, NavigationMessage.warn("Nessun profilo trovato con uuid "+uuid));
 		return page(req);
 	}
-	
+
 	@Action(method=Action.Method.POST)
 	String deleteAttribute(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
@@ -283,7 +283,7 @@ public class UserProfiler extends MainServlet {
 		}
 		return page(req);
 	}
-	
+
 	@Action(method=Action.Method.POST)
 	String cleanup(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
