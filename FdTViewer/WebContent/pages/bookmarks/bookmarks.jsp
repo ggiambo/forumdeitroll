@@ -66,7 +66,7 @@
 				<a href="./Pvt?action=inbox" class="userPanelButton">Posta</a>
 				<a href="./User?action=getNotifications" class="userPanelButton">Notifiche</a>
 				<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
-					<a href="./Admin" class="userPanelButton">Admin</a>
+					<a href="./Admin" class="userPanelButton" style="border-color: #FF910A;">Admin</a>
 				</c:if>
 				<div style="clear: both;"></div>
 			</div>
