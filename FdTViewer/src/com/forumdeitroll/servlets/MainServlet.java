@@ -447,11 +447,7 @@ public abstract class MainServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	List<AdDTO> getRandomAdDTOs(HttpServletRequest req, HttpServletResponse res) {
-		List<AdDTO> randomAds = new ArrayList<AdDTO>();
-		if (cachedAds.get().size() > 0) {
-			randomAds.addAll(cachedAds.get());
-		}
-		return randomAds;
+		return cachedAds.get();
 	}
 
 	/**

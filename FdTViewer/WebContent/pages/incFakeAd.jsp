@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 <jsp:useBean id="random" class="java.util.Random" scope="application" />
 
-<c:set var="fakeAdIndex" value="${random.nextInt(fn:length(randomAds))}"/>
+<c:set var="fakeAdIndex" value='<%=System.currentTimeMillis() % ((java.util.List)request.getAttribute("randomAds")).size()%>'/>
 <c:set var="randomFakeAd" value="${randomAds[fakeAdIndex]}"/>
 
 <div class="fakeAdContainer">
