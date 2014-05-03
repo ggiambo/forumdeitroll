@@ -179,4 +179,6 @@ public interface IPersistence extends Serializable {
 
 	public List<AdDTO> getAllAds();
 
+	public void saveAllAds(List<AdDTO> ads);
+
 }

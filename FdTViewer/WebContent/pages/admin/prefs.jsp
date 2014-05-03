@@ -49,6 +49,25 @@
 							<img src="images/add.png" id="addWebsiteTitle" alt="Aggiungi titolo"/>
 						</div>
 						<div style="clear: both;"></div>
+						<div class="lblUserPanel">
+							<label for="websiteTitle" class="lbl">Fake Ads:</label>
+						</div>
+						<div class="inputUserPanel" id="fakeAds">
+							<c:choose>
+								<c:when test="${empty fakeAds}">
+								</c:when>
+								<c:otherwise>
+									<c:forEach items="${fakeAds}" var="fakeAd">
+										<input name="fakeAds[${fakeAd.id}].title" value="${fakeAd.title}" maxlength="32" />
+										<input name="fakeAds[${fakeAd.id}].visurl" value="${fakeAd.visurl}" maxlength="32" />
+										<input name="fakeAds[${fakeAd.id}].content" value="${fakeAd.content}" maxlength="32" />
+										<br/>
+									</c:forEach>
+								</c:otherwise>
+							</c:choose>
+							<img src="images/add.png" id="addFakeAd" alt="Aggiungi fake Ads"/>
+						</div>
+						
 						<input type="submit" value="Modifica" class="sendUserPanel" />
 					</form>
 				</c:if>
