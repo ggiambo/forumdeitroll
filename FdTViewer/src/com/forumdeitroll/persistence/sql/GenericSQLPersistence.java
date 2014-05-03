@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import com.forumdeitroll.FdTException;
 import com.forumdeitroll.PagerTag;
 import com.forumdeitroll.PasswordUtils;
+import com.forumdeitroll.persistence.AdDTO;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.BookmarkDTO;
 import com.forumdeitroll.persistence.IPersistence;
@@ -590,6 +591,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return out;
 	}
 
+	@Override
 	public List<QuoteDTO> getAllQuotes() {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -2189,5 +2191,30 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			close(null, ps, conn);
 		}
 
+	}
+
+	@Override
+	public List<AdDTO> getAllAds() {
+		Connection conn = null;
+		ResultSet rs = null;
+		final List<AdDTO> out = new ArrayList<AdDTO>();
+
+		try {
+			conn = getConnection();
+			rs = conn.prepareStatement("SELECT * FROM ads").executeQuery();
+			while (rs.next()) {
+				final AdDTO dto = new AdDTO();
+				dto.setId(rs.getLong("id"));
+				dto.setTitle(rs.getString("title"));
+				dto.setVisurl(rs.getString("visurl"));
+				dto.setContent(rs.getString("content"));
+				out.add(dto);
+			}
+		} catch (SQLException e) {
+			LOG.error("Cannot get all quotes", e);
+		} finally {
+			close(rs, null, conn);
+		}
+		return out;
 	}
 }

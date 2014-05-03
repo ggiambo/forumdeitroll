@@ -5,8 +5,9 @@
 	<fdt:delayedScript dump="false">
 		var token = "${anti_xss_token}";
 	</fdt:delayedScript>
-	
+
 	<c:forEach items="${messages}" var="msg" varStatus="index">
+		<c:set var="index" value="${index.count}" scope="request"/>
 		<c:choose>
 			<c:when test="${index.index % 2 == 0}">
 				<c:set var="rowclass" value="msgEven"/>
@@ -25,10 +26,14 @@
 		</c:choose>
 		<div class="${messagesBoxClass} ${rowclass}">
 			<c:set var="msg" value="${msg}" scope="request"/>
-			<c:set var="index" value="${index.count}" scope="request"/>
 			<jsp:include page="../incMessage.jsp"/>
 		</div>
-	</c:forEach> 
+		<c:if test="${index.index % 4 == 0}">
+			<c:if test="${empty loggedUser or loggedUser.preferences['hideFakeAds'] != 'checked'}">
+				<jsp:include page="../incFakeAd.jsp"/>
+			</c:if>
+		</c:if>
+	</c:forEach>
 </div>
 
 <div id="footer">

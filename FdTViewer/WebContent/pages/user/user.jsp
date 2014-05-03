@@ -218,6 +218,15 @@
 					</div>
 					<div>
 						<div class="inputUserPanel">
+							<input type="checkbox" name="<%=User.PREF_HIDE_FAKE_ADS%>" id="<%=User.PREF_HIDE_FAKE_ADS%>" ${loggedUser.preferences['hideFakeAds']} />
+						</div>
+						<div class="lblUserPanel">
+							<label for="<%=User.PREF_HIDE_FAKE_ADS%>" class="lbl">Nascondi gli Ads</label>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+					<div>
+						<div class="inputUserPanel">
 							<select name="<%=User.PREF_THEME%>" id="<%=User.PREF_THEME%>">
 								<c:forEach items="<%=User.PREF_THEMES%>" var="theme">
 								    <option ${loggedUser.preferences['theme'] == theme ? 'selected="selected"'

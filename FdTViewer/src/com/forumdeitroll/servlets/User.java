@@ -51,6 +51,7 @@ public class User extends MainServlet {
 	public static final String PREF_BLOCK_HEADER = "blockHeader";
 	public static final String PREF_LARGE_STYLE = "largeStyle";
 	public static final String PREF_THEME = "theme";
+	public static final String PREF_HIDE_FAKE_ADS = "hideFakeAds";
 	public static final List<String> PREF_THEMES = Arrays.asList("Classico", "Scuro", "Flat");
 
 	public static final String ALL_FORUMS = "allForums";
@@ -452,7 +453,8 @@ public class User extends MainServlet {
 
 		// setta le preferences
 		for (String key : new String[] {PREF_SHOWANONIMG, PREF_EMBEDDYT, PREF_COLLAPSE_QUOTES, PREF_HIDE_BANNERONE,
-				PREF_MSG_MAX_HEIGHT, PREF_AUTO_REFRESH, PREF_HIDE_SIGNATURE, PREF_COMPACT_SIGNATURE, PREF_BLOCK_HEADER, PREF_LARGE_STYLE}) {
+				PREF_MSG_MAX_HEIGHT, PREF_AUTO_REFRESH, PREF_HIDE_SIGNATURE, PREF_COMPACT_SIGNATURE, PREF_BLOCK_HEADER,
+				PREF_LARGE_STYLE, PREF_HIDE_FAKE_ADS}) {
 			String value = req.getParameter(key);
 			if (StringUtils.isNotEmpty(value)) {
 				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, "checked"));
