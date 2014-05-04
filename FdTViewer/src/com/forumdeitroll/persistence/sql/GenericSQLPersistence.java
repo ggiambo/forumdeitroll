@@ -2211,7 +2211,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				out.add(dto);
 			}
 		} catch (SQLException e) {
-			LOG.error("Cannot get all quotes", e);
+			LOG.error("Cannot get all ads", e);
 		} finally {
 			close(rs, null, conn);
 		}
@@ -2219,41 +2219,28 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 	
 	@Override
-	public void saveAllAds(List<AdDTO> ads) {
+	public void setAllAds(List<AdDTO> ads) {
 		Connection conn = null;
 		PreparedStatement ps = null;
-		ResultSet rs = null;
 		
 		try {
 			conn = getConnection();
 			conn.setAutoCommit(false);
-			
-			ps = conn.prepareStatement("UPDATE ads SET title=?, visurl=?, content=? WHERE id=?");
-			for (AdDTO ad : ads) {
-				if (ad.getId() > 0) {
-					ps.setString(1, ad.getTitle());
-					ps.setString(2, ad.getVisurl());
-					ps.setString(3, ad.getContent());
-					ps.setLong(4, ad.getId());
-					ps.execute();
-				}
-			}
-			
+			// delete all
+			conn.prepareStatement("DELETE FROM ads").execute();
+			// insert new
 			ps = conn.prepareStatement("INSERT INTO ads (title, visurl, content) VALUES (?, ?, ?)");
 			for (AdDTO ad : ads) {
-				if (ad.getId() < 0) {
-					ps.setString(1, ad.getTitle());
-					ps.setString(2, ad.getVisurl());
-					ps.setString(3, ad.getContent());
-					ps.execute();
-				}
+				ps.setString(1, ad.getTitle());
+				ps.setString(2, ad.getVisurl());
+				ps.setString(3, ad.getContent());
+				ps.execute();
 			}
-			
 			conn.commit();
 		} catch (SQLException e) {
-			LOG.error("Cannot get all quotes", e);
+			LOG.error("Cannot save all ads", e);
 		} finally {
-			close(rs, null, conn);
+			close(null, ps, conn);
 		}
 	}
 }

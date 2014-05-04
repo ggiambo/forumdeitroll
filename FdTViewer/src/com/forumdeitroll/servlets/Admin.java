@@ -1,6 +1,8 @@
 package com.forumdeitroll.servlets;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -167,7 +169,15 @@ public class Admin extends MainServlet {
 		}
 		List<AdDTO> allAds = new ArrayList<AdDTO>();
 		allAds.addAll(ads.values());
-		getPersistence().saveAllAds(allAds);
+		// ordina cosi' come sono sulla GUI -> cosi' saranno salvati nel database
+		Collections.sort(allAds, new Comparator<AdDTO>() {
+			@Override
+			public int compare(AdDTO ad1, AdDTO ad2) {
+				long res = ad1.getId() - ad2.getId();
+				return (int) res;
+			}
+		});
+		getPersistence().setAllAds(allAds);
 		cachedAds.invalidate();
 		req.setAttribute(ADMIN_FAKE_ADS, allAds);
 
