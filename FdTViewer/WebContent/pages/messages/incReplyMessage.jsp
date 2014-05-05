@@ -92,7 +92,7 @@
 	<div class="emotibox">
 		<div class="emo">
 			<c:forEach items="<%=Emoticons.getInstance().serieClassica%>" var="emo" varStatus="index">
-				<img onmousedown="insert('<%=((Emoticon)pageContext.getAttribute("emo")).sequence.replace("\\", "\\\\").replace("'", "\\'")%>', '', '${message.parentId}')" title="${emo.altText}" src="images/emo/${emo.imgName}.gif" style="cursor: pointer;"/>
+				<img onmousedown="insert('${emo.safeSequence}', '', '${message.parentId}')" title="${emo.altText}" src="images/emo/${emo.imgName}.gif" style="cursor: pointer;"/>
 				<c:if test="${index.count % 13 == 0}"><br/></c:if>
 			</c:forEach>
 		</div>

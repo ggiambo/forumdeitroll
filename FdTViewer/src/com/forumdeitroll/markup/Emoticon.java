@@ -26,6 +26,9 @@ public class Emoticon {
 	public String getSequence() {
 		return sequence;
 	}
+	public String getSafeSequence() {
+		return sequence.replace("\\", "\\\\").replace("'", "\\'");
+	}
 	public String getInitialSequence() {
 		return initialSequence;
 	}
