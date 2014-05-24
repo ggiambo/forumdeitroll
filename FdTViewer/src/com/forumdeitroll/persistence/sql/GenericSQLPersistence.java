@@ -2201,7 +2201,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 		try {
 			conn = getConnection();
-			rs = conn.prepareStatement("SELECT * FROM ads").executeQuery();
+			rs = conn.prepareStatement("SELECT * FROM ads ORDER BY id").executeQuery();
 			while (rs.next()) {
 				final AdDTO dto = new AdDTO();
 				dto.setId(rs.getLong("id"));
@@ -2211,10 +2211,36 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				out.add(dto);
 			}
 		} catch (SQLException e) {
-			LOG.error("Cannot get all quotes", e);
+			LOG.error("Cannot get all ads", e);
 		} finally {
 			close(rs, null, conn);
 		}
 		return out;
+	}
+	
+	@Override
+	public void setAllAds(List<AdDTO> ads) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			// delete all
+			conn.prepareStatement("DELETE FROM ads").execute();
+			// insert new
+			ps = conn.prepareStatement("INSERT INTO ads (title, visurl, content) VALUES (?, ?, ?)");
+			for (AdDTO ad : ads) {
+				ps.setString(1, ad.getTitle());
+				ps.setString(2, ad.getVisurl());
+				ps.setString(3, ad.getContent());
+				ps.execute();
+			}
+			conn.commit();
+		} catch (SQLException e) {
+			LOG.error("Cannot save all ads", e);
+		} finally {
+			close(null, ps, conn);
+		}
 	}
 }

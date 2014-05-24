@@ -21,7 +21,7 @@
 			<c:if test="${from == 'sendNew' }">
 				<jsp:include page="incPvtSendNew.jsp"/>
 			</c:if>
-			
+
 			<c:if test="${from == 'show' }">
 				<jsp:include page="incPvtShow.jsp"/>
 			</c:if>
@@ -31,6 +31,9 @@
 				<a href="./User?action=getQuotes" class="userPanelButton">Frasi Celebri</a>
 				<a href="./User?action=getNotifications" class="userPanelButton">Notifiche</a>
 				<a href="./Bookmarks?action=list" class="userPanelButton">Segnalibri</a>
+				<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
+					<a href="./Admin" class="userPanelButton" style="border-color: #FF910A;">Admin</a>
+				</c:if>
 				<div style="clear: both;"></div>
 			</div>
 		</div> <%-- /Content --%>

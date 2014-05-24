@@ -38,16 +38,19 @@
 					</c:forEach>
 				</form>
 				<div style="clear: both;"></div>
-			</div>	
+			</div>
 			<div class="userPanelSection">
 				<h3>Altre Azioni</h3>
 				<a href="./User" class="userPanelButton">User Panel</a>
 				<a href="./Pvt?action=inbox" class="userPanelButton">Posta</a>
 				<a href="./User?action=getNotifications" class="userPanelButton">Notifiche</a>
 				<a href="./Bookmarks?action=list" class="userPanelButton">Segnalibri</a>
+				<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
+					<a href="./Admin" class="userPanelButton" style="border-color: #FF910A;">Admin</a>
+				</c:if>
 				<div style="clear: both;"></div>
 			</div>
-			
+
 		</div>
 	</div>
 </div>

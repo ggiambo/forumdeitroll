@@ -21,7 +21,6 @@ import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
-import com.forumdeitroll.profiler.UserProfiler;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
@@ -57,10 +56,6 @@ public class User extends MainServlet {
 
 	public static final String ALL_FORUMS = "allForums";
 
-	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
-	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
-	public static final String ADMIN_WEBSITE_TITLES = "websiteTitles";
-
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
 	public static final int LOGIN_TIME_LIMIT = 3 * 60 * 1000;
@@ -70,9 +65,6 @@ public class User extends MainServlet {
 
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
-		req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
-		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
-		req.setAttribute(ADMIN_WEBSITE_TITLES, getPersistence().getTitles());
 		req.setAttribute(ALL_FORUMS, getPersistence().getForums());
 	}
 
@@ -488,49 +480,6 @@ public class User extends MainServlet {
 		String theme = req.getParameter(PREF_THEME);
 		if (StringUtils.isNotEmpty(theme)) {
 			loggedUser.setPreferences(getPersistence().setPreference(loggedUser, PREF_THEME, theme));
-		}
-
-		if ((loggedUser != null) && "yes".equals(loggedUser.getPreferences().get("super"))) {
-			String blockTorExitNodes = req.getParameter(ADMIN_PREF_BLOCK_TOR);
-			if (!StringUtils.isEmpty(blockTorExitNodes)) {
-				getPersistence().setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "checked");
-			} else {
-				getPersistence().setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "");
-			}
-			req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
-			String disableUserProfiler = req.getParameter(ADMIN_PREF_DISABLE_PROFILER);
-			if (!StringUtils.isEmpty(disableUserProfiler)) {
-				getPersistence().setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "checked");
-				UserProfiler.getInstance().isProfilerEnabled = false;
-			} else {
-				getPersistence().setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "");
-				UserProfiler.getInstance().isProfilerEnabled = true;
-			}
-			req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
-
-			String javascript = req.getParameter("javascript");
-			if (StringUtils.isNotEmpty(javascript) && javascript.length() > 255) {
-				StringBuilder errMsg = new StringBuilder("javascript troppo lungo: ");
-				errMsg.append(javascript .length()).append(" caratteri, max 255");
-				setNavigationMessage(req, NavigationMessage.warn(errMsg.toString()));
-			} else {
-				getPersistence().setSysinfoValue("javascript", javascript);
-			}
-			req.setAttribute("javascript", javascript);
-
-			String[] websiteTitles = req.getParameterValues(ADMIN_WEBSITE_TITLES);
-			List<String> titles = new ArrayList<String>();
-			if (websiteTitles != null) {
-				for (String title : websiteTitles) {
-					if (StringUtils.isNotEmpty(title)) {
-						titles.add(title);
-					}
-				}
-				getPersistence().setTitles(titles);
-				cachedTitles.invalidate();
-			}
-			req.setAttribute(ADMIN_WEBSITE_TITLES, titles);
-
 		}
 
 		return "user.jsp";
