@@ -204,7 +204,13 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			while (rs.next()) {
 				result.add(getMessage(rs.getLong(1)));
 			}
-			return new ThreadsDTO(result, countThreads(forum, conn));
+			int threadsCount = countThreads(forum, conn);
+			if (hiddenForums != null && !hiddenForums.isEmpty() && forum == null) {
+				for (String hiddenForum : hiddenForums) {
+					threadsCount -= countMessages(hiddenForum, conn);
+				}
+			}
+			return new ThreadsDTO(result, threadsCount);
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads by last post", e);
 		} finally {
