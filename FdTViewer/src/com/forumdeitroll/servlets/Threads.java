@@ -132,7 +132,7 @@ public class Threads extends MainServlet {
 		}
 		setNavigationMessage(req, NavigationMessage.info("Discussioni aggiornate"));
 		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
-		return "threadsByLastPost.jsp";
+		return "threads.jsp";
 	}
 
 	/**

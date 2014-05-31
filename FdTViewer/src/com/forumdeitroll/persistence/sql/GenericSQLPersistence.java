@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -200,17 +201,25 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			}
 			ps.setInt(i++, limit);
 			ps.setInt(i++, limit*page);
+			
 			rs = ps.executeQuery();
+			long[] msgIds = new long[limit];
+			i = 0;
 			while (rs.next()) {
-				result.add(getMessage(rs.getLong(1)));
+				msgIds[i++] = rs.getLong(1);
 			}
+			rs.close();
+			ps.close();
+			ps = conn.prepareStatement("select * from messages where `id` in " + Arrays.toString(msgIds).replace('[', '(').replace(']', ')') + " order by `id` desc");
+			rs = ps.executeQuery();
+			
 			int threadsCount = countThreads(forum, conn);
 			if (hiddenForums != null && !hiddenForums.isEmpty() && forum == null) {
 				for (String hiddenForum : hiddenForums) {
 					threadsCount -= countMessages(hiddenForum, conn);
 				}
 			}
-			return new ThreadsDTO(result, threadsCount);
+			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount);
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads by last post", e);
 		} finally {
@@ -1412,12 +1421,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		List<ThreadDTO> messages = new ArrayList<ThreadDTO>();
 		while (rs.next()) {
 			ThreadDTO message = new ThreadDTO();
-			message.setId(rs.getLong("id"));
+			message.setId(rs.getLong("threadid"));
 			message.setSubject(rs.getString("subject"));
 			message.setAuthor(getAuthor(rs.getString("author")));
 			message.setForum(rs.getString("forum"));
 			message.setDate(rs.getTimestamp("date"));
-			message.setNumberOfMessages(getNumberOfMessages(message.getId()));
+			message.setNumberOfMessages(getNumberOfMessages(rs.getLong("threadId")));
 			message.setIsVisible(rs.getInt("visible"));
 			message.setRank(rs.getInt("rank"));
 			messages.add(message);
