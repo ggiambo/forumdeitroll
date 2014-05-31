@@ -21,7 +21,7 @@
 			</span>
 			 (${thread.numberOfMessages}
 			<c:choose>
-				<c:when test="${thread.numberOfMessages > 1}">
+				<c:when test="${thread.numberOfMessages != 1}">
 					messaggi)
 				</c:when>
 				<c:otherwise>
