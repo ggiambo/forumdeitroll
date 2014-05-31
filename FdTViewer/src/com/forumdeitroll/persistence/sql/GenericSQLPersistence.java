@@ -324,8 +324,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			// get generated id
 			rs = ps.getGeneratedKeys();
 			rs.next();
+			long id = rs.getLong(1);
+			updateLastIdInThread(conn, message.getThreadId(), id);
 			conn.commit();
-			return rs.getLong(1);
+			return id;
 		} catch (SQLException e) {
 			LOG.error("Cannot insert message " + message.toString(), e);
 		} finally {
@@ -340,6 +342,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		ResultSet rs = null;
 		try {
 			conn = getConnection();
+			conn.setAutoCommit(false);
 			ps = conn.prepareStatement("INSERT INTO messages (parentId, threadId, text, subject, author, forum, date, visible) " +
 					"VALUES (-1, -1, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
@@ -364,6 +367,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setLong(i++, id);
 			ps.setLong(i++, id);
 			ps.execute();
+			insertThread(conn, id);
+			conn.commit();
 			return id;
 		} catch (SQLException e) {
 			LOG.error("Cannot insert message " + message.toString(), e);
@@ -2251,6 +2256,34 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			LOG.error("Cannot save all ads", e);
 		} finally {
 			close(null, ps, conn);
+		}
+	}
+
+	private void insertThread(Connection conn, long threadId) {
+		PreparedStatement ps = null;
+		try {
+			ps = conn.prepareStatement("INSERT INTO threads VALUES (?,?)");
+			ps.setLong(1, threadId);
+			ps.setLong(2, threadId);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			LOG.error("Cannot insert thread", e);
+		} finally {
+			close(null, ps, null);
+		}
+	}
+
+	private void updateLastIdInThread(Connection conn, long threadId, long lastId) {
+		PreparedStatement ps = null;
+		try {
+			ps = conn.prepareStatement("UPDATE threads set lastId = ? where threadId = ?");
+			ps.setLong(1, lastId);
+			ps.setLong(2, threadId);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			LOG.error("Cannot update last id in thread", e);
+		} finally {
+			close(null, ps, null);
 		}
 	}
 }
