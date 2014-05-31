@@ -183,18 +183,20 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn = getConnection();
 			StringBuilder query = new StringBuilder();
 			int i = 1;
-			query.append("select max(`id`) from messages ");
+			
+			query.append("select messages.* from messages, threads where lastId = id ");
 			if ("".equals(forum)) {
-				query.append(" WHERE forum IS NULL");
+				query.append(" AND forum IS NULL");
 			} else if (forum == null) {
 				if (hiddenForums != null && !hiddenForums.isEmpty()) {
-					query.append(" WHERE (forum IS NULL OR forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
+					query.append(" AND (forum IS NULL OR forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
 				}
 			} else {
-				query.append(" WHERE forum = ?");
+				query.append(" AND forum = ?");
 			}
-			query.append(" group by threadid order by max(`id`) desc ");
+			query.append(" order by lastId desc ");
 			query.append("    LIMIT ? OFFSET ? ");
+			
 			ps = conn.prepareStatement(query.toString());
 			if (StringUtils.isNotEmpty(forum)) {
 				ps.setString(i++, forum);
@@ -202,15 +204,6 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setInt(i++, limit);
 			ps.setInt(i++, limit*page);
 			
-			rs = ps.executeQuery();
-			long[] msgIds = new long[limit];
-			i = 0;
-			while (rs.next()) {
-				msgIds[i++] = rs.getLong(1);
-			}
-			rs.close();
-			ps.close();
-			ps = conn.prepareStatement("select * from messages where `id` in " + Arrays.toString(msgIds).replace('[', '(').replace(']', ')') + " order by `id` desc");
 			rs = ps.executeQuery();
 			
 			int threadsCount = countThreads(forum, conn);
