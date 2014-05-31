@@ -5,7 +5,7 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
 <div id="main">
-
+	
 	<c:forEach items="${messages}" var="thread" varStatus="index">
 		<c:choose>
 			<c:when test="${index.count % 2 == 0}">
@@ -41,7 +41,15 @@
 						-
 					</c:otherwise>
 				</c:choose>
-				Iniziato da
+				<c:choose>
+					<c:when test="${param['action'] == 'getThreadsByLastPost'}">
+						Ultimo messaggio di
+					</c:when>
+					<c:when test="${param['action'] == 'getThreads'}">
+						Iniziato da
+					</c:when>
+					<c:otherwise></c:otherwise>
+				</c:choose>
 				<span class="msgAuthor">
 					<c:choose>
 						<c:when test="${empty thread.author.nick}">
