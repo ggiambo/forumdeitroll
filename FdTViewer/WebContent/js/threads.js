@@ -60,3 +60,20 @@ function hideMessageInThread(msgId, element) {
 	triangleOpen.hide();
 	triangleOpen.parent().children("img.threadMessageClosed").show();
 }
+
+function nascondiQuotes(threadId) {
+	var tag = document.createElement('style');
+	tag.innerHTML =
+		'.thread'+threadId+' .quoteLvl1, '+
+		'.thread'+threadId+' .quoteLvl1 + br, '+
+		'.thread'+threadId+' .quoteLvl2, '+
+		'.thread'+threadId+' .quoteLvl2 + br, '+
+		'.thread'+threadId+' .quoteLvl3, '+
+		'.thread'+threadId+' .quoteLvl3 + br, '+
+		'.thread'+threadId+' .quoteLvl4, '+
+		'.thread'+threadId+' .quoteLvl4 + br, '+
+		'.thread'+threadId+' .quote-container, '+
+		'.thread'+threadId+' .quote-container + br '+
+		'{ visibility: collapse !important; display: none !important; }';
+	document.body.appendChild(tag);
+}
