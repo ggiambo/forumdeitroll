@@ -60,7 +60,13 @@
 								<c:param name="action" value="getByAuthor"/>
 								<c:param name="author" value="${thread.author.nick}"/>
 							</c:url>
-							<a href="<c:out value="${authorURL}" escapeXml="true" />">${thread.author.nick}</a>
+							<a href="<c:out value="${authorURL}" escapeXml="true" />">
+								${thread.author.nick}
+								<c:url value="Misc" var="avatarURL">
+									<c:param name="action" value="getAvatar"/>
+									<c:param name="nick" value="${thread.author.nick}"/>
+								</c:url>
+								<img src="${avatarURL}" style="width: 16px; height: 16px;"></a>
 						</c:otherwise>
 					</c:choose>
 				</span>

@@ -17,7 +17,9 @@
 						Non Autenticato
 					</c:when>
 					<c:otherwise>
-						<a href="Messages?action=getByAuthor&author=${msg.author.nick}">${msg.author.nick}</a>
+						<a href="Messages?action=getByAuthor&author=${msg.author.nick}">
+							${msg.author.nick}
+							<img src="Misc?action=getAvatar&nick=${msg.author.nick}" style='width: 16px; height: 16px'></a>
 					</c:otherwise>
 				</c:choose>
 			il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/> Ranking: ${msg.rank}
