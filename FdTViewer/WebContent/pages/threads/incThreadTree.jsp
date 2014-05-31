@@ -22,8 +22,8 @@
 				</c:choose>
 			il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/> Ranking: ${msg.rank}
 			<c:if test="${msg.threadId == msg.id}">
-				<a href="javascript:$('.thread${msg.threadId}msgopener').click()">Apri tutti</a>
-				<a href='javascript:nascondiQuotes(${msg.threadId})'>Nascondi quotes</a>
+				<a href="javascript:$('.thread${msg.threadId}msgopener').click(); return false;">Apri tutti</a>
+				<a href='javascript:nascondiQuotes(${msg.threadId}); return false;'>Nascondi quotes</a>
 			</c:if>
 		</div>
 		<c:if test="${not empty message.children}">
