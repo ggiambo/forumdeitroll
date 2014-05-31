@@ -181,9 +181,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		try {
 			conn = getConnection();
 			StringBuilder query = new StringBuilder();
-			query.append("SELECT MAX(`id`) AS mid FROM messages JOIN (");
-			query.append("    SELECT DISTINCT `threadId` FROM messages" );
 			int i = 1;
+			query.append("select max(`id`) from messages ");
 			if ("".equals(forum)) {
 				query.append(" WHERE forum IS NULL");
 			} else if (forum == null) {
@@ -193,12 +192,8 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			} else {
 				query.append(" WHERE forum = ?");
 			}
-			query.append("    ORDER BY `id` DESC ");
+			query.append(" group by threadid order by max(`id`) desc ");
 			query.append("    LIMIT ? OFFSET ? ");
-			query.append(") AS threadIds ");
-			query.append(" ON (threadIds.threadId = messages.threadId) ");
-			query.append(" GROUP BY messages.threadId ");
-			query.append(" ORDER BY mid DESC");
 			ps = conn.prepareStatement(query.toString());
 			if (StringUtils.isNotEmpty(forum)) {
 				ps.setString(i++, forum);
