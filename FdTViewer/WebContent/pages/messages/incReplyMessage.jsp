@@ -49,20 +49,35 @@
 
 	function showEmotiboxClassic() {
 		var emotiboxes = $("#reply_${message.parentId} .emotibox .emo");
-		$(emotiboxes[1]).hide();
 		$(emotiboxes[0]).show();
+		$(emotiboxes[1]).hide();
+		$(emotiboxes[2]).hide();
 		var tabs = $("#reply_${message.parentId} ul li");
-		$(tabs[1]).removeClass("selectedTab")
 		$(tabs[0]).addClass("selectedTab")
+		$(tabs[1]).removeClass("selectedTab")
+		$(tabs[2]).removeClass("selectedTab")
 	}
 
 	function showEmotiboxExtended() {
 		var emotiboxes = $("#reply_${message.parentId} .emotibox .emo");
 		$(emotiboxes[0]).hide();
 		$(emotiboxes[1]).show();
+		$(emotiboxes[2]).hide();
 		var tabs = $("#reply_${message.parentId} ul li");
 		$(tabs[0]).removeClass("selectedTab")
 		$(tabs[1]).addClass("selectedTab")
+		$(tabs[2]).removeClass("selectedTab")
+	}
+
+	function showSnippets() {
+		var emotiboxes = $("#reply_${message.parentId} .emotibox .emo");
+		$(emotiboxes[0]).hide();
+		$(emotiboxes[1]).hide();
+		$(emotiboxes[2]).show();
+		var tabs = $("#reply_${message.parentId} ul li");
+		$(tabs[0]).removeClass("selectedTab")
+		$(tabs[1]).removeClass("selectedTab")
+		$(tabs[2]).addClass("selectedTab")
 	}
 
 </fdt:delayedScript>
@@ -87,6 +102,7 @@
 	<ul class="tabs">
 		<li class="selectedTab" onClick="showEmotiboxClassic(); return false;"><a href="#">Serie classica</a></li>
 		<li><a href="#" onClick="showEmotiboxExtended(); return false;">Serie estesa</a></li>
+		<li><a href="#" onClick="showSnippets(); return false;">Snippets</a></li>
 	</ul>
 
 	<div class="emotibox">
@@ -101,6 +117,12 @@
 				<img onmousedown="insert('${emo.sequence}', '', '${message.parentId}')" title="${emo.altText}" src="images/emoextended/${emo.imgName}.gif" style="cursor: pointer;"/>
 				<c:if test="${index.count % 13 == 0}"><br/></c:if>
 			</c:forEach>
+		</div>
+		<div style="display: none" class="emo">
+		<br>
+			<% for (com.forumdeitroll.markup.Snippet snippet : com.forumdeitroll.markup.Snippet.list) { %>
+				<a href="#" style='text-decoration: none; color: black' onclick="insert('<%=snippet.sequence%>','','${message.parentId}'); return false;"><%=snippet.htmlReplacement%></a>
+			<% } %>
 		</div>
 		<div style="margin:3px 0px 3px 0px ">
 			<span onmousedown="insert('<b>', '</b>', '${message.parentId}')" class="msgButton btnBold" title="Grassetto (ma meno di Lich)">B</span>&nbsp;

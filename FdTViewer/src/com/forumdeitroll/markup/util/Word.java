@@ -7,6 +7,7 @@ import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.RenderIO;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.RenderState;
+import com.forumdeitroll.markup.Snippet;
 
 public class Word {
 
@@ -40,7 +41,7 @@ public class Word {
 			return true;
 		}
 
-		if (!emoticons(io, state, end)) {
+		if (!replacementSequences(io, state, end)) {
 			if (!autolink(io, state, opts, end)) {
 				if (!exponential(io, state, end)) {
 					io.copy(end);
@@ -168,19 +169,23 @@ public class Word {
 		return false;
 	}
 
-	private static char[][][] emoseqs = initEmoticons();
+	private static char[][][] replacementSeqs = initReplacementSequences();
 
-	private static char[][][] initEmoticons() {
-		emoseqs = new char[Emoticons.getInstance().tutte.size() * 2][][];
+	private static char[][][] initReplacementSequences() {
+		replacementSeqs = new char[Emoticons.getInstance().tutte.size() * 2 + Snippet.list.length * 2][][];
 		int index = 0;
 		for (Emoticon emo : Emoticons.getInstance().tutte) {
-			emoseqs[index++] = new char[][] { emo.sequence.toCharArray(), emo.htmlReplacement.toCharArray() };
-			emoseqs[index++] = new char[][] { emo.sequenceUpcase.toCharArray(), emo.htmlReplacement.toCharArray() };
+			replacementSeqs[index++] = new char[][] { emo.sequence.toCharArray(), emo.htmlReplacement.toCharArray() };
+			replacementSeqs[index++] = new char[][] { emo.sequenceUpcase.toCharArray(), emo.htmlReplacement.toCharArray() };
 		}
-		return emoseqs;
+		for (Snippet snippet : Snippet.list) {
+			replacementSeqs[index++] = new char[][] {snippet.sequence.toCharArray(), snippet.htmlReplacement.toCharArray()};
+			replacementSeqs[index++] = new char[][] {snippet.sequenceUpcase.toCharArray(), snippet.htmlReplacement.toCharArray()};
+		}
+		return replacementSeqs;
 	}
 
-	private static boolean emoticons(RenderIO io, RenderState state, int end)
+	private static boolean replacementSequences(RenderIO io, RenderState state, int end)
 			throws IOException {
 		int initialCount = state.emotiCount;
 
@@ -192,7 +197,7 @@ public class Word {
 				break;
 
 			boolean found = false;
-			for (char[][] pair : emoseqs) {
+			for (char[][] pair : replacementSeqs) {
 
 				if (state.emotiCount >= Emoticons.MAX_EMOTICONS)
 					break;
