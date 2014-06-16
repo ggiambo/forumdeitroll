@@ -126,7 +126,7 @@ public class Admin extends MainServlet {
 			errMsg.append(javascript .length()).append(" caratteri, max 255");
 			setNavigationMessage(req, NavigationMessage.warn(errMsg.toString()));
 		} else {
-			getPersistence().setSysinfoValue("javascript", "");
+			getPersistence().setSysinfoValue("javascript", javascript);
 		}
 		req.setAttribute("javascript", javascript);
 
