@@ -11,7 +11,6 @@
 				<h3>Preferenze Admin</h3>
 				<c:if test="${loggedUser.preferences['super'] eq 'yes'}">
 					<form action="Admin?action=updatePreferences" method="post">
-						<hr/>
 						<div class="inputUserPanel">
 							<input type="checkbox" name="<%=Admin.ADMIN_PREF_BLOCK_TOR%>" id="<%=Admin.ADMIN_PREF_BLOCK_TOR%>" ${blockTorExitNodes} />
 						</div>
