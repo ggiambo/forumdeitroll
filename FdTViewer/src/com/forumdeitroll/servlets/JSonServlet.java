@@ -38,6 +38,7 @@ import com.forumdeitroll.persistence.PersistenceFactory;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
+import com.forumdeitroll.util.VisitorCounters;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 
@@ -99,6 +100,7 @@ public class JSonServlet extends HttpServlet {
 		// write in response
 		res.setContentType("application/json; charset=UTF-8");
 		res.getWriter().write(writer.getBuilder().toString());
+		VisitorCounters.add(req);
 	}
 
 	@Override
