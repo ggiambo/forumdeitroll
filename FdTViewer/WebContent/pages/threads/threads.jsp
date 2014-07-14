@@ -17,7 +17,15 @@
 		</c:choose>
 		<div id="threadTree_${thread.id}" class="${rowclass} threadBox">
 			<span class="threadTitle">
-			<a href="Threads?action=getByThread&threadId=${thread.id}#msg${thread.id}">${thread.subject}</a>
+			<c:choose>
+				<c:when test="${param['action'] == 'getThreadsByLastPost'}">
+					<a href="Threads?action=getByThread&threadId=${thread.id}#msg${thread.lastId}">${thread.subject}</a>
+				</c:when>
+				<c:when test="${param['action'] == 'getThreads'}">
+					<a href="Threads?action=getByThread&threadId=${thread.id}">${thread.subject}</a>
+				</c:when>
+				<c:otherwise></c:otherwise>
+			</c:choose>
 			</span>
 			 (${thread.numberOfMessages}
 			<c:choose>

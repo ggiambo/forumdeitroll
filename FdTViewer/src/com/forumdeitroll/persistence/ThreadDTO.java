@@ -5,6 +5,7 @@ import java.util.Date;
 public class ThreadDTO {
 
 	private long id = -1;
+	private long lastId = -1;
 	private Date date = null;
 	private String subject = null;
 	private AuthorDTO author = new AuthorDTO(null);
@@ -26,6 +27,12 @@ public class ThreadDTO {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+	public long getLastId() {
+		return lastId;
+	}
+	public void setLastId(long lastId) {
+		this.lastId = lastId;
 	}
 
 	public Date getDate() {
@@ -93,6 +100,7 @@ public class ThreadDTO {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("id:").append(id).append(",");
+		sb.append("lastId:").append(lastId).append(",");
 		sb.append("date:").append(date).append(",");
 		sb.append("subject:").append(subject).append(",");
 		sb.append("author:").append(author).append(",");

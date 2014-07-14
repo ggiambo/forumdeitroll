@@ -164,7 +164,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				}
 			}
 
-			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount);
+			return new ThreadsDTO(getThreads(ps.executeQuery(), false), threadsCount);
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads", e);
 		} finally {
@@ -184,7 +184,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			StringBuilder query = new StringBuilder();
 			int i = 1;
 			
-			query.append("select messages.* from messages, threads where lastId = id ");
+			query.append("select messages.*, lastId from messages, threads where lastId = id ");
 			if ("".equals(forum)) {
 				query.append(" AND forum IS NULL");
 			} else if (forum == null) {
@@ -212,7 +212,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 					threadsCount -= countMessages(hiddenForum, conn);
 				}
 			}
-			return new ThreadsDTO(getThreads(ps.executeQuery()), threadsCount);
+			return new ThreadsDTO(getThreads(ps.executeQuery(), true), threadsCount);
 		} catch (SQLException e) {
 			LOG.error("Cannot get threads by last post", e);
 		} finally {
@@ -1415,11 +1415,14 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return messages;
 	}
 
-	protected List<ThreadDTO> getThreads(ResultSet rs) throws SQLException {
+	protected List<ThreadDTO> getThreads(ResultSet rs, boolean fetchLastId) throws SQLException {
 		List<ThreadDTO> messages = new ArrayList<ThreadDTO>();
 		while (rs.next()) {
 			ThreadDTO message = new ThreadDTO();
 			message.setId(rs.getLong("threadid"));
+			if (fetchLastId) {
+				message.setLastId(rs.getLong("lastId"));
+			}
 			message.setSubject(rs.getString("subject"));
 			message.setAuthor(getAuthor(rs.getString("author")));
 			message.setForum(rs.getString("forum"));
