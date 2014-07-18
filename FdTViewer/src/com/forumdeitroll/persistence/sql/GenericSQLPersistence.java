@@ -233,7 +233,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			query.append("SELECT DISTINCT lastId ")
 			.append("FROM messages, threads ")
 			.append("WHERE messages.threadId = threads.threadId ")
-			.append("AND messages.author = ?");
+			.append("AND messages.author = ? ");
 			if (hiddenForums != null && !hiddenForums.isEmpty()) {
 				query.append("AND (messages.forum IS NULL OR b.forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
 			}
