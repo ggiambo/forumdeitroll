@@ -230,14 +230,15 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		try {
 			conn = getConnection();
 			StringBuilder query = new StringBuilder();
-			query.append("SELECT DISTINCT lastId ")
-			.append("FROM messages, threads ")
+			query.append("SELECT threads.lastId ")
+			.append("FROM threads, messages ")
 			.append("WHERE messages.threadId = threads.threadId ")
 			.append("AND messages.author = ? ");
 			if (hiddenForums != null && !hiddenForums.isEmpty()) {
 				query.append("AND (messages.forum IS NULL OR b.forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
 			}
-			query.append("ORDER BY lastId DESC ")
+			query.append("GROUP BY threads.threadId ")
+				.append("ORDER BY lastId DESC ")
 				.append("LIMIT ? OFFSET ?");
 
 			ps = conn.prepareStatement(query.toString());
