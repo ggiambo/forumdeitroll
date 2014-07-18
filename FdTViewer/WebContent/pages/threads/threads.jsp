@@ -18,7 +18,7 @@
 		<div id="threadTree_${thread.id}" class="${rowclass} threadBox">
 			<span class="threadTitle">
 			<c:choose>
-				<c:when test="${param['action'] == 'getThreadsByLastPost'}">
+				<c:when test="${param['action'] == 'getThreadsByLastPost' || param['action'] == 'getAuthorThreadsByLastPost'}">
 					<a href="Threads?action=getByThread&threadId=${thread.id}#msg${thread.lastId}">${thread.subject}</a>
 				</c:when>
 				<c:when test="${param['action'] == 'getThreads'}">
@@ -50,7 +50,7 @@
 					</c:otherwise>
 				</c:choose>
 				<c:choose>
-					<c:when test="${param['action'] == 'getThreadsByLastPost'}">
+					<c:when test="${param['action'] == 'getThreadsByLastPost' || param['action'] == 'getAuthorThreadsByLastPost'}">
 						Ultimo messaggio di
 					</c:when>
 					<c:when test="${param['action'] == 'getThreads'}">

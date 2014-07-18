@@ -222,23 +222,23 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	@Override
-	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page, List<String> hiddenForums) {
+	public ThreadsDTO getAuthorThreadsByLastPost(String author, int limit, int page, List<String> hiddenForums) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		final List<ThreadDTO> result = new ArrayList<ThreadDTO>();
 		try {
 			conn = getConnection();
 			StringBuilder query = new StringBuilder();
-			query.append("SELECT threads.lastId ")
-			.append("FROM threads, messages ")
-			.append("WHERE messages.threadId = threads.threadId ")
-			.append("AND messages.author = ? ");
+			query.append("SELECT lastRow.*, threads.lastId ")
+			.append("FROM messages lastRow, threads, messages authorRows ")
+			.append("WHERE lastRow.id = threads.lastId ")
+			.append("AND threads.threadId = authorRows.threadId ")
+			.append("AND authorRows.author = ? ");
 			if (hiddenForums != null && !hiddenForums.isEmpty()) {
-				query.append("AND (messages.forum IS NULL OR b.forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
+				query.append("AND (authorRows.forum IS NULL OR b.forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
 			}
 			query.append("GROUP BY threads.threadId ")
-				.append("ORDER BY lastId DESC ")
+				.append("ORDER BY threads.lastId DESC ")
 				.append("LIMIT ? OFFSET ?");
 
 			ps = conn.prepareStatement(query.toString());
@@ -248,16 +248,14 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setInt(i++, limit*page);
 
 			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				result.add(getMessage(rs.getLong(1)));
-			}
+			
+			return new ThreadsDTO(getThreads(rs, true), Integer.MAX_VALUE);
 		} catch (SQLException e) {
 			LOG.error("Cannot get author threads by last post", e);
+			return null;
 		} finally {
 			close(rs, ps, conn);
 		}
-		return result;
 	}
 
 	@Override

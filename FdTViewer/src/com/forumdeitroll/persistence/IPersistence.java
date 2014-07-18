@@ -36,7 +36,7 @@ public interface IPersistence extends Serializable {
 	 */
 	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, List<String> hiddenForums);
 
-	public List<ThreadDTO> getAuthorThreadsByLastPost(String author, int limit, int page, List<String> hiddenForums);
+	public ThreadsDTO getAuthorThreadsByLastPost(String author, int limit, int page, List<String> hiddenForums);
 
 	public MessageDTO getMessage(long id);
 

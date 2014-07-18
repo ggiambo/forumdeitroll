@@ -144,11 +144,13 @@ public class Threads extends MainServlet {
 		if (!author.isValid()) {
 			throw new Exception("Furmigamento detected !");
 		}
-		List<ThreadDTO> messages = getPersistence().getAuthorThreadsByLastPost(author.getNick(), PAGE_SIZE, getPageNr(req), hiddenForums(req));
-		req.setAttribute("messages", messages);
-		req.setAttribute("resultSize", messages.size());
+		ThreadsDTO messages = getPersistence().getAuthorThreadsByLastPost(author.getNick(), PAGE_SIZE, getPageNr(req), hiddenForums(req));
+		req.setAttribute("messages", messages.getMessages());
+		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
+		req.setAttribute("resultSize", messages.getMessages().size());
 		setNavigationMessage(req, NavigationMessage.info("Discussioni nelle quali hai partecipato"));
-		return "threadsByLastPost.jsp";
+		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		return "threads.jsp";
 	}
 
 	private String getThreads(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
