@@ -235,7 +235,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			.append("AND threads.threadId = authorRows.threadId ")
 			.append("AND authorRows.author = ? ");
 			if (hiddenForums != null && !hiddenForums.isEmpty()) {
-				query.append("AND (authorRows.forum IS NULL OR b.forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
+				query.append("AND (authorRows.forum IS NULL OR authorRows.forum NOT IN ('").append(StringUtils.join(hiddenForums, "','")).append("')) ");
 			}
 			query.append("GROUP BY threads.threadId ")
 				.append("ORDER BY threads.lastId DESC ")
