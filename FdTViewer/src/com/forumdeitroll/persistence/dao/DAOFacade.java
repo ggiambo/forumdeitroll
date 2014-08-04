@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class DAOFacade implements IPersistence {
+public class DAOFacade /*implements IPersistence*/ {
 
 	private static final Logger LOG = Logger.getLogger(DAOFacade.class);
 
 	private AuthorsDAO authorsDAO;
-	private PreferencesDAO preferencesDAO;
+	private ThreadsDAO threadsDAO;
 
 	public void init(Properties databaseConfig) throws Exception {
 		Class.forName("com.mysql.jdbc.Driver");
@@ -30,7 +30,7 @@ public class DAOFacade implements IPersistence {
 		DSLContext jooq = setupDataSource(url, username, password);
 
 		authorsDAO = new AuthorsDAO(jooq);
-		preferencesDAO = new PreferencesDAO(jooq);
+		threadsDAO = new ThreadsDAO(jooq);
 
 	}
 
@@ -51,36 +51,36 @@ public class DAOFacade implements IPersistence {
 		return DSL.using(dataSource, SQLDialect.MYSQL);
 	}
 
-	@Override
+	//@Override
 	public AuthorDTO getAuthor(String nick) {
 		AuthorDTO user = authorsDAO.getAuthor(nick);
 		user.setPreferences(getPreferences(user));
 		return user;
 	}
 
-	@Override
+	//@Override
 	public List<AuthorDTO> getAuthors(boolean onlyActive) {
 		return authorsDAO.getAuthors(onlyActive);
 	}
 
-	@Override
+	//@Override
 	public AuthorDTO registerUser(String nick, String password) {
 		return authorsDAO.registerUser(nick, password);
 	}
 
-	@Override
+	//@Override
 	public void updateAuthor(AuthorDTO user) {
 		authorsDAO.updateAuthor(user);
 	}
 
-	@Override
+	//@Override
 	public boolean updateAuthorPassword(AuthorDTO author, String newPassword) {
 		return authorsDAO.updateAuthorPassword(author, newPassword);
 	}
 
-	@Override
+	//@Override
 	public Map<String, String> getPreferences(AuthorDTO user) {
-		return preferencesDAO.getPreferences(user);
+		return authorsDAO.getPreferences(user);
 	}
 }
 

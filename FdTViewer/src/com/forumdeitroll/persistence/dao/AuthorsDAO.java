@@ -2,57 +2,34 @@ package com.forumdeitroll.persistence.dao;
 
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.jooq.tables.records.AuthorsRecord;
-import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
-import org.jooq.Result;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
 
-public class AuthorsDAO extends GenericDAO<AuthorsRecord, AuthorDTO> {
+public class AuthorsDAO extends BaseDAO {
 
 	public AuthorsDAO(DSLContext jooq) {
 		super(jooq);
 	}
 
-	public AuthorDTO getAuthor(String nick) {
-
-		if (StringUtils.isEmpty(nick)) {
-			return new AuthorDTO(null);
-		}
-
-		AuthorsRecord record = jooq.selectFrom(AUTHORS)
-				.where(AUTHORS.NICK.upper().equal(nick.toUpperCase())).fetchAny();
-
-		if (record == null) {
-			return new AuthorDTO(null);
-		}
-
-		return recordToDto(record);
-	}
-
 	public List<AuthorDTO> getAuthors(boolean onlyActive) {
 
-		Result<AuthorsRecord> records;
+		List<String> nicks;
 		if (onlyActive) {
-			records = jooq.selectFrom(AUTHORS)
+			nicks = jooq.select(AUTHORS.HASH, AUTHORS.NICK)
 					.where(AUTHORS.HASH.isNotNull())
-					.fetch();
+					.fetch(AUTHORS.NICK);
 		} else {
-			records = jooq.selectFrom(AUTHORS)
-					.fetch();
+			nicks = jooq.select(AUTHORS.NICK)
+					.fetch(AUTHORS.NICK);
 		}
 
-		List<AuthorDTO> res = new ArrayList<AuthorDTO>(records.size());
-		for (AuthorsRecord record : records) {
-			res.add(recordToDto(record));
+		List<AuthorDTO> res = new ArrayList<AuthorDTO>(nicks.size());
+		for (String nick : nicks) {
+			res.add(getAuthor(nick));
 		}
 
 		return res;
@@ -60,21 +37,21 @@ public class AuthorsDAO extends GenericDAO<AuthorsRecord, AuthorDTO> {
 
 	public AuthorDTO registerUser(String nick, String password) {
 
-			// check se esiste gia'. Blah banf transazioni chissenefrega <-- (complimenti a chi ha scritto questo - sarrusofono)
-			if (getAuthor(nick).isValid()) {
-				return new AuthorDTO(null);
-			}
+		// check se esiste gia'. Blah banf transazioni chissenefrega <-- (complimenti a chi ha scritto questo - sarrusofono)
+		if (getAuthor(nick).isValid()) {
+			return new AuthorDTO(null);
+		}
 
-			AuthorDTO authorDTO = new AuthorDTO(null);
-			PasswordUtils.changePassword(authorDTO, password);
+		AuthorDTO authorDTO = new AuthorDTO(null);
+		PasswordUtils.changePassword(authorDTO, password);
 
 		jooq.insertInto(AUTHORS)
-			.set(AUTHORS.NICK, authorDTO.getNick())
-			.set(AUTHORS.PASSWORD, "") // <- campo "password", ospitava la vecchia "hash", non lo settiamo piu`
-			.set(AUTHORS.MESSAGES, 0)
-			.set(AUTHORS.SALT, authorDTO.getSalt())
-			.set(AUTHORS.HASH, authorDTO.getHash())
-			.execute();
+				.set(AUTHORS.NICK, authorDTO.getNick())
+				.set(AUTHORS.PASSWORD, "") // <- campo "password", ospitava la vecchia "hash", non lo settiamo piu`
+				.set(AUTHORS.MESSAGES, 0)
+				.set(AUTHORS.SALT, authorDTO.getSalt())
+				.set(AUTHORS.HASH, authorDTO.getHash())
+				.execute();
 
 		return getAuthor(nick);
 
@@ -105,21 +82,4 @@ public class AuthorsDAO extends GenericDAO<AuthorsRecord, AuthorDTO> {
 		return res == 1;
 	}
 
-	@Override
-	protected AuthorDTO recordToDto(AuthorsRecord record) {
-		AuthorDTO authorDTO = new AuthorDTO(null);
-		authorDTO.setAvatar(record.getAvatar());
-		authorDTO.setNick(record.getNick());
-		authorDTO.setHash(record.getHash());
-		authorDTO.setMessages(record.getMessages());
-		authorDTO.setOldPassword(record.getPassword());
-		authorDTO.setSalt(record.getSalt());
-		authorDTO.setSignatureImage(record.getSignatureImage());
-		return authorDTO;
-	}
-
-	@Override
-	protected AuthorsRecord dtoToRecord(AuthorDTO dto) {
-		return null; // TODO
-	}
 }
