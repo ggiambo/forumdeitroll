@@ -1,7 +1,10 @@
 package com.forumdeitroll.servlets;
 
+import static java.lang.Character.UnicodeBlock.*;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.lang.Character.UnicodeBlock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -62,6 +65,8 @@ public class User extends MainServlet {
 	public static final int LOGIN_NUMBER_LIMIT = 5;
 
 	protected final Ratelimiter<String> loginRatelimiter = new Ratelimiter<String>(LOGIN_TIME_LIMIT, LOGIN_NUMBER_LIMIT);
+
+	private static final List<UnicodeBlock> ALLOWED_UNICODE_BLOCKS = Arrays.asList(BASIC_LATIN, LATIN_1_SUPPLEMENT);
 
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
@@ -247,6 +252,12 @@ public class User extends MainServlet {
 		if (StringUtils.isEmpty(nick) || nick.length() > 40) {
 			setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick: Troppo lungo o troppo corto"));
 			return "register.jsp";
+		}
+		for (char c : nick.toCharArray()) {
+			if (!ALLOWED_UNICODE_BLOCKS.contains(Character.UnicodeBlock.of(c))) {
+				setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick: C'e' un carattere monello '" + c + "'"));
+				return "register.jsp";
+			}
 		}
 		String pass = req.getParameter("pass");
 		if (StringUtils.isEmpty(pass) || pass.length() > 20) {
