@@ -30,6 +30,10 @@ insert into tags_bind(t_id, m_id, author) values (1, 1,'Sfigato');
 insert into tags_bind(t_id, m_id, author) values (2, 9, 'admin');
 insert into tags_bind(t_id, m_id, author) values (1, 4, 'admin');
 
+insert into bookmarks(nick, msgid, subject) values ('admin', 1, 'Primissimo messaggio');
+insert into bookmarks(nick, msgid, subject) values ('Sfigato', 4, 'Stupido reply');
+insert into bookmarks(nick, msgid, subject) values ('Sfigato', 7, 'Mio messaggio');
+
 insert into ads (id, title, visurl, content) values (1, 'Saune Gay‎', 'www.luino.it/stazione/', 'Trova la sauna gay ideale vicino a casa tua !');
 insert into ads (id, title, visurl, content) values (2, 'Dildi Giganti', 'www.megadildo.it', 'Regala un sorriso al tuo bucio del cuxo !');
 insert into ads (id, title, visurl, content) values (3, 'Suore per tutti‎‎', 'www.suoregratis.it', 'La tua Suora personalizzata, a prezzi imbattibili !');

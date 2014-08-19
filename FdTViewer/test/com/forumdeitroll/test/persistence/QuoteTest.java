@@ -18,17 +18,17 @@ public class QuoteTest extends BaseTest {
 	public void test_getQuotes() {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("Sfigato");
-		List<QuoteDTO> quotes = persistence.getQuotes(author);
+		List<QuoteDTO> res = persistence.getQuotes(author);
 
-		assertNotNull(quotes);
-		assertEquals(2, quotes.size());
+		assertNotNull(res);
+		assertEquals(2, res.size());
 
-		QuoteDTO quote = quotes.get(0);
+		QuoteDTO quote = res.get(0);
 		assertEquals(1, quote.getId());
 		assertEquals("Sfigato", quote.getNick());
 		assertEquals("Che la fortuna sia con me !", quote.getContent());
 
-		quote = quotes.get(1);
+		quote = res.get(1);
 		assertEquals(2, quote.getId());
 		assertEquals("Sfigato", quote.getNick());
 		assertEquals("Un quadrifoglio esplosivo ...", quote.getContent());
@@ -37,10 +37,10 @@ public class QuoteTest extends BaseTest {
 
 	@Test
 	public void test_getAllQuotes() {
-		List<QuoteDTO> quotes = persistence.getAllQuotes();
+		List<QuoteDTO> res = persistence.getAllQuotes();
 
 		// sort by id
-		Collections.sort(quotes, new Comparator<QuoteDTO>() {
+		Collections.sort(res, new Comparator<QuoteDTO>() {
 			@Override
 			public int compare(QuoteDTO q1, QuoteDTO q2) {
 				double delta = q1.getId() - q2.getId();
@@ -48,20 +48,20 @@ public class QuoteTest extends BaseTest {
 			}
 		});
 
-		assertNotNull(quotes);
-		assertEquals(3, quotes.size());
+		assertNotNull(res);
+		assertEquals(3, res.size());
 
-		QuoteDTO quote = quotes.get(0);
+		QuoteDTO quote = res.get(0);
 		assertEquals(1, quote.getId());
 		assertEquals("Sfigato", quote.getNick());
 		assertEquals("Che la fortuna sia con me !", quote.getContent());
 
-		quote = quotes.get(1);
+		quote = res.get(1);
 		assertEquals(2, quote.getId());
 		assertEquals("Sfigato", quote.getNick());
 		assertEquals("Un quadrifoglio esplosivo ...", quote.getContent());
 
-		quote = quotes.get(2);
+		quote = res.get(2);
 		assertEquals(3, quote.getId());
 		assertEquals("admin", quote.getNick());
 		assertEquals("Il mio forum, il mio tessssoro !", quote.getContent());
@@ -79,22 +79,22 @@ public class QuoteTest extends BaseTest {
 
 		persistence.insertUpdateQuote(newQuote);
 
-		List<QuoteDTO> quotes = persistence.getQuotes(author);
+		List<QuoteDTO> res = persistence.getQuotes(author);
 
-		assertNotNull(quotes);
-		assertEquals(3, quotes.size());
+		assertNotNull(res);
+		assertEquals(3, res.size());
 
-		QuoteDTO quote = quotes.get(0);
+		QuoteDTO quote = res.get(0);
 		assertEquals(1, quote.getId());
 		assertEquals("Sfigato", quote.getNick());
 		assertEquals("Che la fortuna sia con me !", quote.getContent());
 
-		quote = quotes.get(1);
+		quote = res.get(1);
 		assertEquals(2, quote.getId());
 		assertEquals("Sfigato", quote.getNick());
 		assertEquals("Un quadrifoglio esplosivo ...", quote.getContent());
 
-		quote = quotes.get(2);
+		quote = res.get(2);
 		assertEquals(4, quote.getId());
 		assertEquals(newQuote.getNick(), quote.getNick());
 		assertEquals(author.getNick(), quote.getNick());
@@ -113,12 +113,12 @@ public class QuoteTest extends BaseTest {
 		existingQuote.setNick(author.getNick());
 
 		persistence.removeQuote(existingQuote);
-		List<QuoteDTO> quotes = persistence.getQuotes(author);
+		List<QuoteDTO> res = persistence.getQuotes(author);
 
-		assertNotNull(quotes);
-		assertEquals(1, quotes.size());
+		assertNotNull(res);
+		assertEquals(1, res.size());
 
-		QuoteDTO quote = quotes.get(0);
+		QuoteDTO quote = res.get(0);
 		assertEquals(1, quote.getId());
 		assertEquals("Sfigato", quote.getNick());
 		assertEquals("Che la fortuna sia con me !", quote.getContent());
