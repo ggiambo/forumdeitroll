@@ -66,7 +66,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		dataSource.setValidationQueryTimeout(30);
 	}
 
-	protected final synchronized Connection getConnection() {
+	protected synchronized Connection getConnection() {
 		try {
 			return dataSource.getConnection();
 		} catch (SQLException e) {
