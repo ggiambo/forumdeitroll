@@ -1,20 +1,20 @@
 package com.forumdeitroll.test.persistence;
 
+import com.forumdeitroll.persistence.IPersistence;
+import com.forumdeitroll.persistence.dao.DAOFacade;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+import org.junit.Before;
+import org.junit.BeforeClass;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.apache.commons.dbcp.BasicDataSource;
-import org.junit.Before;
-import org.junit.BeforeClass;
-
-import com.forumdeitroll.persistence.IPersistence;
-import com.forumdeitroll.persistence.sql.H2Persistence;
 
 public abstract class BaseTest {
 
@@ -45,19 +45,9 @@ public abstract class BaseTest {
 		dataSource.setNumTestsPerEvictionRun(3);
 
 		// setup persistence
-		persistence = new H2Persistence() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected synchronized Connection getConnection() {
-				try {
-					return dataSource.getConnection();
-				} catch (SQLException e) {
-					e.printStackTrace();
-					return null;
-				}
-			}
-		};
+		DAOFacade pers = new DAOFacade();
+		pers.init(DSL.using(dataSource, SQLDialect.MYSQL));
+		persistence = pers;
 	}
 
 	@Before
@@ -69,15 +59,43 @@ public abstract class BaseTest {
 	}
 
 	private void loadData(String fileName) throws Exception {
-		InputStream sqlFile = this.getClass().getClassLoader().getResourceAsStream(fileName);
-		Reader isr = new InputStreamReader(sqlFile);
-		new ScriptRunner(dataSource.getConnection(), true, true).runScript(isr);
-		isr.close();
-		sqlFile.close();
+		InputStream sqlFile = null;
+		Reader isr = null;
+		Connection conn = null;
+
+		try {
+			sqlFile = this.getClass().getClassLoader().getResourceAsStream(fileName);
+			isr = new InputStreamReader(sqlFile);
+			conn = dataSource.getConnection();
+			new ScriptRunner(conn, true, true).runScript(isr);
+		} finally {
+			if (isr != null) {
+				try {
+					isr.close();
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+			if (sqlFile != null) {
+				try {
+					sqlFile.close();
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+		}
 	}
 
 	/**
 	 * DatabaseString format: yyyy-MM-dd HH:mm:ss
+	 *
 	 * @return
 	 * @throws ParseException
 	 */
