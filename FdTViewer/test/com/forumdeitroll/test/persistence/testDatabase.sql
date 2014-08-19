@@ -1,6 +1,10 @@
 insert into authors (nick, messages, password, salt, hash) values ('admin', 2, '', 'e0342c65575601d6', 'c27a20319df29b1ab0e9046defbc192534e5a2e373b08045');
 insert into authors (nick, messages, password, salt, hash) values ('Sfigato', 1, '', 'd60ef1248b73b2fb', '2ae5b31efbac8029e3ef2b668fe85a2434a838380d5d538');
 
+insert into quotes (id, nick, content) values (1, 'Sfigato', 'Che la fortuna sia con me !');
+insert into quotes (id, nick, content) values (2, 'Sfigato', 'Un quadrifoglio esplosivo ...');
+insert into quotes (id, nick, content) values (3, 'admin', 'Il mio forum, il mio tessssoro !');
+
 insert into preferences (nick, `key`, `value`) values ('admin', 'super', 'yes');
 insert into preferences (nick, `key`, `value`) values ('Sfigato', 'theme', 'Classico');
 insert into preferences (nick, `key`, `value`) values ('Sfigato', 'sidebarStatus', 'hide');
