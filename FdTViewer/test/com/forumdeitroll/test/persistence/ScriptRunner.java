@@ -1,9 +1,9 @@
-package com.forumdeitroll.test;
+package com.forumdeitroll.test.persistence;
 
 /*
  * Slightly modified version of the com.ibatis.common.jdbc.ScriptRunner class
  * from the iBATIS Apache project. Only removed dependency on Resource class
- * and a constructor 
+ * and a constructor
  */
 /*
  *  Copyright 2004 Clinton Begin
@@ -170,13 +170,13 @@ public class ScriptRunner {
 					if (hasResults && rs != null) {
 						ResultSetMetaData md = rs.getMetaData();
 						int cols = md.getColumnCount();
-						for (int i = 0; i < cols; i++) {
+						for (int i = 1; i < cols + 1; i++) {
 							String name = md.getColumnLabel(i);
 							print(name + "\t");
 						}
 						println("");
 						while (rs.next()) {
-							for (int i = 0; i < cols; i++) {
+							for (int i = 1; i < cols + 1; i++) {
 								String value = rs.getString(i);
 								print(value + "\t");
 							}

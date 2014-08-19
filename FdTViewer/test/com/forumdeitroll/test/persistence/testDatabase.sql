@@ -19,6 +19,13 @@ insert into messages (id, text, date, subject, threadid, parentid, author, forum
 insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (8, 'Scritto da: Sfigato<BR>&gt; Ho incontrato yoda. Che ragazzo fortunato :( ...<BR><BR>Mi trovi un lavoro ?<BR><BR>- idyoda -',  '2014-08-16 14:54:46', 'Re: Ieri', 7, 7, null, null, 'true', 0);
 insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (9, 'Scritto da: <BR>&gt; Scritto da: Sfigato<BR>&gt; &gt; Ho incontrato yoda. Che ragazzo fortunato :( ...<BR>&gt; <BR>&gt; Mi trovi un lavoro ?<BR>&gt; <BR>&gt; - idyoda -<BR><BR>(rotfl)(rotfl)', '2014-08-16 14:55:14', 'Re: Ieri', 7, 8, 'admin', null, 'true', 0);
 
+insert into tagnames(t_id, `value`) values (1, 'cazzata');
+insert into tagnames(t_id, `value`) values (2, 'idyoda');
+
+insert into tags_bind(t_id, m_id, author) values (1, 1,'Sfigato');
+insert into tags_bind(t_id, m_id, author) values (2, 9, 'admin');
+insert into tags_bind(t_id, m_id, author) values (1, 4, 'admin');
+
 insert into ads (id, title, visurl, content) values (1, 'Saune Gay‎', 'www.luino.it/stazione/', 'Trova la sauna gay ideale vicino a casa tua !');
 insert into ads (id, title, visurl, content) values (2, 'Dildi Giganti', 'www.megadildo.it', 'Regala un sorriso al tuo bucio del cuxo !');
 insert into ads (id, title, visurl, content) values (3, 'Suore per tutti‎‎', 'www.suoregratis.it', 'La tua Suora personalizzata, a prezzi imbattibili !');

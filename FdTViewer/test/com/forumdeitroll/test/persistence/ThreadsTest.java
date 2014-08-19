@@ -1,5 +1,5 @@
 
-package com.forumdeitroll.test;
+package com.forumdeitroll.test.persistence;
 
 
 import org.junit.Assert;
@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ThreadsTest extends BaseTest {
-	
+
 	@Test
 	public void test_getThreads() {
-		
+
 		ThreadsDTO res;
-		
+
 		res = persistence.getThreads("", 99, 0, null);
 		Assert.assertEquals(2, res.getMessages().size());
 
