@@ -1,4 +1,6 @@
+-- user: admin / password: admin
 insert into authors (nick, messages, password, salt, hash) values ('admin', 2, '', 'e0342c65575601d6', 'c27a20319df29b1ab0e9046defbc192534e5a2e373b08045');
+-- user: Sfigato / password: sfigato
 insert into authors (nick, messages, password, salt, hash) values ('Sfigato', 1, '', 'd60ef1248b73b2fb', '2ae5b31efbac8029e3ef2b668fe85a2434a838380d5d538');
 
 insert into quotes (id, nick, content) values (1, 'Sfigato', 'Che la fortuna sia con me !');
@@ -33,6 +35,19 @@ insert into tags_bind(t_id, m_id, author) values (1, 4, 'admin');
 insert into bookmarks(nick, msgid, subject) values ('admin', 1, 'Primissimo messaggio');
 insert into bookmarks(nick, msgid, subject) values ('Sfigato', 4, 'Stupido reply');
 insert into bookmarks(nick, msgid, subject) values ('Sfigato', 7, 'Mio messaggio');
+
+insert into poll (id, title, text, author, creationdate, updatedate) values (1, 'I sondaggi', 'Sono utili ?', 'Sfigato', '2014-08-19 14:59:21', '2014-08-19 15:00:29');
+insert into poll (id, title, text, author, creationdate, updatedate) values (2, 'Sei perseo ?', 'Eh (newbie) ?', 'admin', '2014-08-19 15:00:25', '2014-08-19 15:00:49');
+
+insert into poll_question (pollid, sequence, text, votes) values (1, 0, 'Si', 1);
+insert into poll_question (pollid, sequence, text, votes) values (1, 1, 'No', 0);
+insert into poll_question (pollid, sequence, text, votes) values (1, 2, 'Non lo so', 1);
+insert into poll_question (pollid, sequence, text, votes) values (2, 0, 'Trentaseo', 1);
+insert into poll_question (pollid, sequence, text, votes) values (2, 1, 'Puppa !', 0);
+
+insert into poll_user (nick, pollid) values ('Sfigato', 1);
+insert into poll_user (nick, pollid) values ('admin', 1);
+insert into poll_user (nick, pollid) values ('admin', 2);
 
 insert into ads (id, title, visurl, content) values (1, 'Saune Gay‎', 'www.luino.it/stazione/', 'Trova la sauna gay ideale vicino a casa tua !');
 insert into ads (id, title, visurl, content) values (2, 'Dildi Giganti', 'www.megadildo.it', 'Regala un sorriso al tuo bucio del cuxo !');
