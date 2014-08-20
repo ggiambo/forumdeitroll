@@ -2,18 +2,19 @@ package com.forumdeitroll.persistence.dao;
 
 import static com.forumdeitroll.persistence.jooq.Tables.MESSAGES;
 import static com.forumdeitroll.persistence.jooq.Tables.SYSINFO;
+import static com.forumdeitroll.persistence.jooq.Tables.TAGS_BIND;
 import static com.forumdeitroll.persistence.jooq.Tables.THREADS;
 import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.Result;
+import org.jooq.SelectConditionStep;
 
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
@@ -52,7 +53,17 @@ public class MessagesDAO extends BaseDAO {
 	}
 
 	public List<MessageDTO> getMessagesByThread(long threadId) {
-		return null; // TODO
+		Result<MessagesRecord> records = jooq.selectFrom(MESSAGES)
+				.where(MESSAGES.THREADID.eq((int) threadId))
+				.orderBy(MESSAGES.ID.asc())
+				.fetch();
+
+		List<MessageDTO> res = new ArrayList<MessageDTO>(records.size());
+		for (MessagesRecord record : records) {
+			res.add(recordToDTO(record, false));
+		}
+
+		return res;
 	}
 
 	public List<MessageDTO> searchMessages(String search, SearchMessagesSort sort, int pageSize, int pageNr) {
@@ -61,19 +72,84 @@ public class MessagesDAO extends BaseDAO {
 
 	public String getMessageTitle(long id) {
 		String title = jooq.select(MESSAGES.SUBJECT)
-			.from(MESSAGES)
-			.where(MESSAGES.ID.eq((int) id))
-			.fetchOne(MESSAGES.SUBJECT);
+				.from(MESSAGES)
+				.where(MESSAGES.ID.eq((int) id))
+				.fetchOne(MESSAGES.SUBJECT);
 
 		return title;
 	}
 
 	public MessagesDTO getMessages(String forum, String author, int limit, int page, List<String> hiddenForums) {
-		return null; // TODO
+
+		SelectConditionStep<MessagesRecord> select = jooq.selectFrom(MESSAGES).where("1=1");
+
+		if ("".equals(forum)) {
+			select = select.and(MESSAGES.FORUM.isNull());
+		} else if (forum == null) {
+			if (hiddenForums != null && !hiddenForums.isEmpty()) {
+				select = select.and(
+						MESSAGES.FORUM.isNull().or(MESSAGES.FORUM.notIn(hiddenForums))
+						);
+			}
+		} else {
+			select = select.and(MESSAGES.FORUM.eq(forum));
+		}
+		if (StringUtils.isNotEmpty(author)) {
+			select = select.and(MESSAGES.AUTHOR.eq(author));
+		}
+
+		Result<MessagesRecord> records = select.orderBy(MESSAGES.ID.desc())
+				.limit(limit)
+				.offset(limit*page)
+				.fetch();
+
+		int messagesCount = countMessages(forum);
+		if (hiddenForums != null && !hiddenForums.isEmpty() && forum == null) {
+			for (String hiddenForum : hiddenForums) {
+				messagesCount -= countMessages(hiddenForum);
+			}
+		}
+
+		List<MessageDTO> res = new ArrayList<MessageDTO>(records.size());
+		for (MessagesRecord record : records) {
+			res.add(recordToDTO(record, false));
+		}
+
+		return new MessagesDTO(res, messagesCount);
 	}
 
 	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, List<String> hiddenForums) {
-		return null; // TODO
+
+		SelectConditionStep<Record> where = jooq.select(MESSAGES.fields())
+				.from(MESSAGES)
+				.join(TAGS_BIND).on(MESSAGES.ID.eq(TAGS_BIND.M_ID))
+				.where(TAGS_BIND.T_ID.eq((int) t_id));
+
+		if (hiddenForums != null && !hiddenForums.isEmpty()) {
+			where = where.and(
+					MESSAGES.FORUM.isNull().or(MESSAGES.FORUM.notIn(hiddenForums))
+					);
+		}
+
+		Result<Record> records = where.orderBy(TAGS_BIND.M_ID.desc())
+				.limit(limit)
+				.offset(limit*page)
+				.fetch();
+
+		List<MessageDTO> messages = new ArrayList<MessageDTO>(records.size());
+		for (Record record : records) {
+			messages.add(recordToDTO(record, false));
+		}
+
+		Object value = jooq.selectCount()
+				.from(TAGS_BIND)
+				.where(TAGS_BIND.T_ID.eq((int) t_id))
+				.fetchOne()
+				.getValue(0);
+
+		Integer nrOfMessages = (Integer)value;
+
+		return new MessagesDTO(messages, nrOfMessages);
 	}
 
 	private long insertReplyMessage(MessageDTO message) {
@@ -90,7 +166,6 @@ public class MessagesDAO extends BaseDAO {
 				.returning(MESSAGES.ID)
 				.fetchOne();
 
-
 		increaseNumberOfMessages(message.getForum(), false);
 
 		long id = record.getId();
@@ -102,10 +177,10 @@ public class MessagesDAO extends BaseDAO {
 	private long insertEditMessage(MessageDTO message) {
 
 		jooq.update(MESSAGES)
-				.set(MESSAGES.TEXT, mb4safe(message.getTextReal()))
-				.set(MESSAGES.SUBJECT, mb4safe(message.getSubjectReal()))
-				.where(MESSAGES.ID.equal((int) message.getId()));
-
+			.set(MESSAGES.TEXT, mb4safe(message.getTextReal()))
+			.set(MESSAGES.SUBJECT, mb4safe(message.getSubjectReal()))
+			.where(MESSAGES.ID.equal((int) message.getId()))
+			.execute();
 
 		return message.getId();
 	}
@@ -124,12 +199,12 @@ public class MessagesDAO extends BaseDAO {
 				.returning(MESSAGES.ID)
 				.fetchOne();
 
-
 		increaseNumberOfMessages(message.getForum(), true);
 
 		int id = record.getId();
-		record.setParentid(id);
-		record.setThreadid(id);
+		record.setParentid(id)
+			.setThreadid(id)
+			.update();
 
 		insertThread(id);
 
@@ -140,41 +215,69 @@ public class MessagesDAO extends BaseDAO {
 
 		forum = forum == null ? "" : forum;
 
+		int nr = 0;
 		SysinfoRecord record;
 		record = jooq.selectFrom(SYSINFO)
 				.where(SYSINFO.KEY.equal("messages.forum." + forum))
 				.fetchOne();
-		record.setValue(SYSINFO.VALUE, record.getValue(SYSINFO.VALUE) + 1);
+		nr = Integer.parseInt(record.getValue());
+		nr++;
+		record.setValue(SYSINFO.VALUE, Integer.toString(nr));
 
 		record = jooq.selectFrom(SYSINFO)
 				.where(SYSINFO.KEY.equal("messages.total"))
 				.fetchOne();
-		record.setValue(SYSINFO.VALUE, record.getValue(SYSINFO.VALUE) + 1);
+		nr = Integer.parseInt(record.getValue());
+		nr++;
+		record.setValue(SYSINFO.VALUE, Integer.toString(nr));
 
 		if (isNewThread) {
 			record = jooq.selectFrom(SYSINFO)
 					.where(SYSINFO.KEY.equal("threads.forum." + forum))
 					.fetchOne();
-			record.setValue(SYSINFO.VALUE, record.getValue(SYSINFO.VALUE) + 1);
+			nr = Integer.parseInt(record.getValue());
+			nr++;
+			record.setValue(SYSINFO.VALUE, Integer.toString(nr));
 
 			record = jooq.selectFrom(SYSINFO)
 					.where(SYSINFO.KEY.equal("threads.total"))
 					.fetchOne();
-			record.setValue(SYSINFO.VALUE, record.getValue(SYSINFO.VALUE) + 1);
+			nr = Integer.parseInt(record.getValue());
+			nr++;
+			record.setValue(SYSINFO.VALUE, Integer.toString(nr));
 		}
+
+	}
+
+	private int countMessages(String forum) {
+
+		String key;
+		if (forum == null) {
+			key = "messages.total";
+		} else {
+			key = "messages.forum." + forum;
+		}
+
+		String value = jooq.select(SYSINFO.VALUE)
+				.from(SYSINFO)
+				.where(SYSINFO.KEY.eq(key))
+				.fetchOne()
+				.getValue(SYSINFO.VALUE);
+
+		return Integer.parseInt(value);
 
 	}
 
 	private void updateLastIdInThread(long threadId, long lastId) {
 		jooq.update(THREADS)
-				.set(THREADS.LASTID, (int) lastId)
-				.where(THREADS.THREADID.equal((int) threadId));
+		.set(THREADS.LASTID, (int) lastId)
+		.where(THREADS.THREADID.equal((int) threadId));
 	}
 
 	private void insertThread(long threadId) {
 		jooq.insertInto(THREADS)
-				.values(THREADS.LASTID, threadId)
-				.values(THREADS.THREADID, threadId);
+			.values(THREADS.LASTID, threadId)
+			.values(THREADS.THREADID, threadId);
 	}
 
 	private MessageDTO recordToDTO(Record record, boolean search) {
@@ -191,10 +294,10 @@ public class MessagesDAO extends BaseDAO {
 		message.setRank(record.getValue(MESSAGES.RANK));
 
 		// TODO, usati nel search
-//		if (search) {
-//			message.setSearchRelevance(rs.getDouble("relevance"));
-//			message.setSearchCount(rs.getInt("count"));
-//		}
+		//		if (search) {
+		//			message.setSearchRelevance(rs.getDouble("relevance"));
+		//			message.setSearchCount(rs.getInt("count"));
+		//		}
 
 		return message;
 	}

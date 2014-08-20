@@ -105,12 +105,12 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public MessagesDTO getMessages(String forum, String author, int limit, int page, List<String> hiddenForums) {
-		return null;
+		return messagesDAO.getMessages(forum, author, limit, page, hiddenForums);
 	}
 
 	@Override
 	public List<MessageDTO> getMessagesByThread(long threadId) {
-		return null;
+		return messagesDAO.getMessagesByThread(threadId);
 	}
 
 	@Override
@@ -335,7 +335,7 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, List<String> hiddenForums) {
-		return null;
+		return messagesDAO.getMessagesByTag(limit, page, t_id, hiddenForums);
 	}
 
 	@Override

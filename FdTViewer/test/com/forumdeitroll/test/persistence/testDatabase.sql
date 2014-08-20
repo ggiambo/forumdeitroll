@@ -64,8 +64,8 @@ insert into ads (id, title, visurl, content) values (9, 'Lozioni per capelli Yod
 insert into sysinfo (`key`, `value`) values ('messages.total', '9');
 insert into sysinfo (`key`, `value`) values ('threads.total', '4');
 
-insert into sysinfo (`key`, `value`) values ('messages.forum', '1');
-insert into sysinfo (`key`, `value`) values ('threads.forum', '1');
+insert into sysinfo (`key`, `value`) values ('messages.forum.', '1');
+insert into sysinfo (`key`, `value`) values ('threads.forum.', '1');
 
 insert into sysinfo (`key`, `value`) values ('messages.forum.Forum iniziale', '3');
 insert into sysinfo (`key`, `value`) values ('threads.forum.Forum iniziale', '1');
