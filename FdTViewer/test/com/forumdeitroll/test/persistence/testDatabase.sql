@@ -1,3 +1,5 @@
+set schema fdtsucker;
+
 -- user: admin / password: admin
 insert into authors (nick, messages, password, salt, hash) values ('admin', 2, '', 'e0342c65575601d6', 'c27a20319df29b1ab0e9046defbc192534e5a2e373b08045');
 -- user: Sfigato / password: sfigato

@@ -340,7 +340,7 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public String getMessageTitle(long id) {
-		return null;
+		return messagesDAO.getMessageTitle(id);
 	}
 
 	@Override

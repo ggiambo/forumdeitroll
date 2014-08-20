@@ -7,6 +7,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,7 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public abstract class BaseTest {
+public class BaseTest {
 
 	private static BasicDataSource dataSource;
 
@@ -34,7 +35,7 @@ public abstract class BaseTest {
 		dataSource.setTestOnBorrow(true);
 		dataSource.setTestWhileIdle(true);
 		dataSource.setTestOnReturn(true);
-		dataSource.setUrl("jdbc:h2:mem:testDatabase");
+		dataSource.setUrl("jdbc:h2:mem:fdtsucker;DATABASE_TO_UPPER=false");
 		dataSource.setUsername("fdtsucker");
 		dataSource.setPassword("fdtsucker");
 		dataSource.setValidationQuery("SELECT 1");
@@ -46,7 +47,7 @@ public abstract class BaseTest {
 
 		// setup persistence
 		DAOFacade pers = new DAOFacade();
-		pers.init(DSL.using(dataSource, SQLDialect.MYSQL));
+		pers.init(DSL.using(dataSource, SQLDialect.H2));
 		persistence = pers;
 	}
 
@@ -56,6 +57,11 @@ public abstract class BaseTest {
 		loadData("schema_h2.sql");
 		// load testdata
 		loadData("com/forumdeitroll/test/persistence/testDatabase.sql");
+	}
+
+	@Test
+	public void testSetupDatabase() {
+		// just create the database and populate it
 	}
 
 	private void loadData(String fileName) throws Exception {

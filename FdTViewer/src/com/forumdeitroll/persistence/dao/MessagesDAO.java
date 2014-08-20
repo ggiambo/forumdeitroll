@@ -1,21 +1,25 @@
 package com.forumdeitroll.persistence.dao;
 
+import static com.forumdeitroll.persistence.jooq.Tables.MESSAGES;
+import static com.forumdeitroll.persistence.jooq.Tables.SYSINFO;
+import static com.forumdeitroll.persistence.jooq.Tables.THREADS;
+import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
+
+import org.jooq.DSLContext;
+import org.jooq.Record;
+
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
 import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
 import com.forumdeitroll.persistence.jooq.tables.records.SysinfoRecord;
-import org.jooq.DSLContext;
-import org.jooq.InsertSetMoreStep;
-import org.jooq.Record;
-import org.jooq.Result;
-
-import java.sql.*;
-import java.util.List;
-
-
-import static com.forumdeitroll.persistence.jooq.Tables.*;
-import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 public class MessagesDAO extends BaseDAO {
 
@@ -56,7 +60,12 @@ public class MessagesDAO extends BaseDAO {
 	}
 
 	public String getMessageTitle(long id) {
-		return null; // TODO
+		String title = jooq.select(MESSAGES.SUBJECT)
+			.from(MESSAGES)
+			.where(MESSAGES.ID.eq((int) id))
+			.fetchOne(MESSAGES.SUBJECT);
+
+		return title;
 	}
 
 	public MessagesDTO getMessages(String forum, String author, int limit, int page, List<String> hiddenForums) {
