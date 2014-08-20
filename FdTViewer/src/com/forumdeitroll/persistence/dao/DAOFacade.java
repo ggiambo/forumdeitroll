@@ -85,17 +85,17 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public ThreadsDTO getThreads(String forum, int limit, int page, List<String> hiddenForums) {
-		return null;
+		return threadsDAO.getThreads(forum, limit, page, hiddenForums);
 	}
 
 	@Override
 	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, List<String> hiddenForums) {
-		return null;
+		return threadsDAO.getThreadsByLastPost(forum, limit, page, hiddenForums);
 	}
 
 	@Override
 	public ThreadsDTO getAuthorThreadsByLastPost(String author, int limit, int page, List<String> hiddenForums) {
-		return null;
+		return threadsDAO.getAuthorThreadsByLastPost(author, limit, page, hiddenForums);
 	}
 
 	@Override
