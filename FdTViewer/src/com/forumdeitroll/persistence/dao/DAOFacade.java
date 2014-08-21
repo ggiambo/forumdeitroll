@@ -1,28 +1,45 @@
 package com.forumdeitroll.persistence.dao;
 
-import com.forumdeitroll.persistence.*;
-import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.log4j.Logger;
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.dbcp.BasicDataSource;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+
+import com.forumdeitroll.persistence.AdDTO;
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.BookmarkDTO;
+import com.forumdeitroll.persistence.DigestArticleDTO;
+import com.forumdeitroll.persistence.IPersistence;
+import com.forumdeitroll.persistence.MessageDTO;
+import com.forumdeitroll.persistence.MessagesDTO;
+import com.forumdeitroll.persistence.NotificationDTO;
+import com.forumdeitroll.persistence.PollDTO;
+import com.forumdeitroll.persistence.PollQuestion;
+import com.forumdeitroll.persistence.PollsDTO;
+import com.forumdeitroll.persistence.PrivateMsgDTO;
+import com.forumdeitroll.persistence.QuoteDTO;
+import com.forumdeitroll.persistence.SearchMessagesSort;
+import com.forumdeitroll.persistence.TagDTO;
+import com.forumdeitroll.persistence.ThreadsDTO;
+
 public class DAOFacade implements IPersistence {
 
-	private static final Logger LOG = Logger.getLogger(DAOFacade.class);
+	private static final long serialVersionUID = 1L;
 
 	protected AuthorsDAO authorsDAO;
 	protected ThreadsDAO threadsDAO;
 	protected MessagesDAO messagesDAO;
+	protected PollsDAO pollsDAO;
 
 	public void init(DSLContext jooq) {
 		authorsDAO = new AuthorsDAO(jooq);
 		threadsDAO = new ThreadsDAO(jooq);
 		messagesDAO = new MessagesDAO(jooq);
+		pollsDAO = new PollsDAO(jooq);
 	}
 
 	public void init(Properties databaseConfig) throws Exception {
@@ -220,27 +237,27 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public long createPoll(PollDTO pollDTO) {
-		return 0;
+		return pollsDAO.createPoll(pollDTO);
 	}
 
 	@Override
 	public boolean updatePollQuestion(PollQuestion pollQuestion, AuthorDTO user) {
-		return false;
+		return pollsDAO.updatePollQuestion(pollQuestion, user);
 	}
 
 	@Override
 	public PollsDTO getPollsByDate(int limit, int page) {
-		return null;
+		return pollsDAO.getPollsByDate(limit,  page);
 	}
 
 	@Override
 	public PollsDTO getPollsByLastVote(int limit, int page) {
-		return null;
+		return pollsDAO.getPollsByLastVote(limit,  page);
 	}
 
 	@Override
 	public PollDTO getPoll(long pollId) {
-		return null;
+		return pollsDAO.getPoll(pollId);
 	}
 
 	@Override

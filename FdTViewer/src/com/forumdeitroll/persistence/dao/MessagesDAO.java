@@ -270,14 +270,16 @@ public class MessagesDAO extends BaseDAO {
 
 	private void updateLastIdInThread(long threadId, long lastId) {
 		jooq.update(THREADS)
-		.set(THREADS.LASTID, (int) lastId)
-		.where(THREADS.THREADID.equal((int) threadId));
+			.set(THREADS.LASTID, (int) lastId)
+			.where(THREADS.THREADID.equal((int) threadId))
+			.execute();
 	}
 
 	private void insertThread(long threadId) {
 		jooq.insertInto(THREADS)
 			.values(THREADS.LASTID, threadId)
-			.values(THREADS.THREADID, threadId);
+			.values(THREADS.THREADID, threadId)
+			.execute();
 	}
 
 	private MessageDTO recordToDTO(Record record, boolean search) {

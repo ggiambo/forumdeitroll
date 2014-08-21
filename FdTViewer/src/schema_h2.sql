@@ -135,7 +135,7 @@ CREATE CACHED TABLE fdtsucker.tags_bind (
 	primary KEY(T_ID, M_ID)
 );
 
-CREATE CACHED TABLE fdtsucker.THREADS (
+CREATE CACHED TABLE fdtsucker.threads (
 	threadid INT NOT NULL,
 	lastid INT NOT NULL,
 );
