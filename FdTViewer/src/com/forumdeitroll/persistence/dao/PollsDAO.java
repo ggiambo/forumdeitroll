@@ -45,11 +45,11 @@ public class PollsDAO extends BaseDAO {
 		// insert poll questions
 		for (PollQuestion question : pollDTO.getPollQuestions()) {
 			jooq.insertInto(POLL_QUESTION)
-			.set(POLL_QUESTION.POLLID, id)
-			.set(POLL_QUESTION.SEQUENCE, question.getSequence())
-			.set(POLL_QUESTION.TEXT, mb4safe(question.getText()))
-			.set(POLL_QUESTION.VOTES, 0)
-			.execute();
+					.set(POLL_QUESTION.POLLID, id)
+					.set(POLL_QUESTION.SEQUENCE, question.getSequence())
+					.set(POLL_QUESTION.TEXT, mb4safe(question.getText()))
+					.set(POLL_QUESTION.VOTES, 0)
+					.execute();
 		}
 		return id;
 	}
@@ -63,7 +63,7 @@ public class PollsDAO extends BaseDAO {
 				.fetchOne()
 				.getValue(0);
 
-		Integer nrOfMessages = (Integer)value;
+		Integer nrOfMessages = (Integer) value;
 		if (nrOfMessages != 0) {
 			return false;
 		}
@@ -79,22 +79,22 @@ public class PollsDAO extends BaseDAO {
 		votes++;
 
 		jooq.update(POLL_QUESTION)
-			.set(POLL_QUESTION.VOTES, votes)
-			.where(POLL_QUESTION.POLLID.eq((int) pollQuestion.getPollId()))
-			.and(POLL_QUESTION.SEQUENCE.eq(pollQuestion.getSequence()))
-			.execute();
+				.set(POLL_QUESTION.VOTES, votes)
+				.where(POLL_QUESTION.POLLID.eq((int) pollQuestion.getPollId()))
+				.and(POLL_QUESTION.SEQUENCE.eq(pollQuestion.getSequence()))
+				.execute();
 
 		// update update date :)
 		jooq.update(POLL)
-			.set(POLL.UPDATEDATE, new Timestamp(System.currentTimeMillis()))
-			.where(POLL.ID.eq((int) pollQuestion.getPollId()))
-			.execute();
+				.set(POLL.UPDATEDATE, new Timestamp(System.currentTimeMillis()))
+				.where(POLL.ID.eq((int) pollQuestion.getPollId()))
+				.execute();
 
 		// 1 troll, 1 vote
 		jooq.insertInto(POLL_USER)
-			.set(POLL_USER.NICK, user.getNick())
-			.set(POLL_USER.POLLID, (int)pollQuestion.getPollId())
-			.execute();
+				.set(POLL_USER.NICK, user.getNick())
+				.set(POLL_USER.POLLID, (int) pollQuestion.getPollId())
+				.execute();
 
 		return true;
 	}
@@ -104,14 +104,14 @@ public class PollsDAO extends BaseDAO {
 	}
 
 	public PollsDTO getPollsByLastVote(int limit, int page) {
-		return  getPollsBy(POLL.UPDATEDATE, limit, page);
+		return getPollsBy(POLL.UPDATEDATE, limit, page);
 	}
 
 	private PollsDTO getPollsBy(TableField<PollRecord, ?> by, int limit, int page) {
 		Result<PollRecord> records = jooq.selectFrom(POLL)
 				.orderBy(by.desc())
 				.limit(limit)
-				.offset(limit*page)
+				.offset(limit * page)
 				.fetch();
 
 		List<PollDTO> res = new ArrayList<PollDTO>(records.size());
@@ -124,7 +124,7 @@ public class PollsDAO extends BaseDAO {
 				.fetchOne()
 				.getValue(0);
 
-		int nrOfPolls = (Integer)value;
+		int nrOfPolls = (Integer) value;
 
 		return new PollsDTO(res, nrOfPolls);
 	}
@@ -132,8 +132,8 @@ public class PollsDAO extends BaseDAO {
 	public PollDTO getPoll(long pollId) {
 
 		PollRecord record = jooq.selectFrom(POLL)
-			.where(POLL.ID.eq((int) pollId))
-			.fetchOne();
+				.where(POLL.ID.eq((int) pollId))
+				.fetchOne();
 
 		return recordToDTO(record);
 	}

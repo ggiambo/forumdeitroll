@@ -40,7 +40,7 @@ public class ThreadsDAO extends BaseDAO {
 			where = where.and(MESSAGES.FORUM.isNull());
 		} else if (forum == null) {
 			if (hiddenForums != null && !hiddenForums.isEmpty()) {
-				where =	where.and(MESSAGES.FORUM.isNull().or(MESSAGES.FORUM.notIn(hiddenForums)));
+				where = where.and(MESSAGES.FORUM.isNull().or(MESSAGES.FORUM.notIn(hiddenForums)));
 			}
 
 		} else {
@@ -84,7 +84,7 @@ public class ThreadsDAO extends BaseDAO {
 			if (hiddenForums != null && !hiddenForums.isEmpty()) {
 				where = where.and(
 						MESSAGES.FORUM.isNull().or(MESSAGES.FORUM.notIn(hiddenForums))
-						);
+				);
 			}
 		} else {
 			where = where.and(MESSAGES.FORUM.eq(forum));
@@ -92,7 +92,7 @@ public class ThreadsDAO extends BaseDAO {
 
 		Result<MessagesRecord> records = where.orderBy(MESSAGES.ID.desc())
 				.limit(limit)
-				.offset(limit*page)
+				.offset(limit * page)
 				.fetch();
 
 		int threadsCount = countThreads(forum);
@@ -128,13 +128,13 @@ public class ThreadsDAO extends BaseDAO {
 		if (hiddenForums != null && !hiddenForums.isEmpty()) {
 			where = where.and(
 					authorRows.FORUM.isNull().or(authorRows.FORUM.notIn(hiddenForums))
-					);
+			);
 		}
 
 		Result<Record> records = where.groupBy(THREADS.THREADID)
 				.orderBy(THREADS.LASTID.desc())
 				.limit(limit)
-				.offset(limit*page)
+				.offset(limit * page)
 				.fetch();
 
 		List<ThreadDTO> res = new ArrayList<ThreadDTO>(records.size());
@@ -197,7 +197,7 @@ public class ThreadsDAO extends BaseDAO {
 
 	private int getNumberOfMessages(long threadId) {
 		return jooq.selectFrom(MESSAGES)
-				.where(MESSAGES.THREADID.eq((int)threadId))
+				.where(MESSAGES.THREADID.eq((int) threadId))
 				.fetchCount();
 
 	}

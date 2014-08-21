@@ -59,11 +59,6 @@ public class BaseTest {
 		loadData("com/forumdeitroll/test/persistence/testDatabase.sql");
 	}
 
-	@Test
-	public void testSetupDatabase() {
-		// just create the database and populate it
-	}
-
 	private void loadData(String fileName) throws Exception {
 		InputStream sqlFile = null;
 		Reader isr = null;
