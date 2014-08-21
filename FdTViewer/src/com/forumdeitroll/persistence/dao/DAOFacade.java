@@ -34,12 +34,14 @@ public class DAOFacade implements IPersistence {
 	protected ThreadsDAO threadsDAO;
 	protected MessagesDAO messagesDAO;
 	protected PollsDAO pollsDAO;
+	protected QuotesDAO quotesDAO;
 
 	public void init(DSLContext jooq) {
 		authorsDAO = new AuthorsDAO(jooq);
 		threadsDAO = new ThreadsDAO(jooq);
 		messagesDAO = new MessagesDAO(jooq);
 		pollsDAO = new PollsDAO(jooq);
+		quotesDAO = new QuotesDAO(jooq);
 	}
 
 	public void init(Properties databaseConfig) throws Exception {
@@ -132,22 +134,22 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public List<QuoteDTO> getQuotes(AuthorDTO author) {
-		return null;
+		return quotesDAO.getQuotes(author);
 	}
 
 	@Override
 	public List<QuoteDTO> getAllQuotes() {
-		return null;
+		return quotesDAO.getAllQuotes();
 	}
 
 	@Override
 	public void insertUpdateQuote(QuoteDTO quote) {
-
+		quotesDAO.insertUpdateQuote(quote);
 	}
 
 	@Override
 	public void removeQuote(QuoteDTO quote) {
-
+		quotesDAO.removeQuote(quote);
 	}
 
 	@Override
