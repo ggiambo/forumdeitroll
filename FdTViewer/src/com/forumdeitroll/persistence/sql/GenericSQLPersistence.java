@@ -1374,7 +1374,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement("UPDATE quotes SET nick = ?, content = ? WHERE id = ? AND nick = ?");
 			int i = 1;
 			ps.setString(i++, quote.getNick());
-			ps.setString(i++, quote.getContent());
+			ps.setString(i++,  mb4safe(quote.getContent()));
 			ps.setLong(i++, quote.getId());
 			ps.setString(i++, quote.getNick());
 			ps.execute();
