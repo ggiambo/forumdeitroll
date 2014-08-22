@@ -56,14 +56,14 @@ public class PollsDAO extends BaseDAO {
 
 	public boolean updatePollQuestion(PollQuestion pollQuestion, AuthorDTO user) {
 
-		Object value = jooq.selectCount()
+		Object count = jooq.selectCount()
 				.from(POLL_USER)
 				.where(POLL_USER.POLLID.eq((int) pollQuestion.getPollId()))
 				.and(POLL_USER.NICK.eq(user.getNick()))
 				.fetchOne()
 				.getValue(0);
 
-		Integer nrOfMessages = (Integer) value;
+		Integer nrOfMessages = (Integer) count;
 		if (nrOfMessages != 0) {
 			return false;
 		}
@@ -119,12 +119,12 @@ public class PollsDAO extends BaseDAO {
 			res.add(recordToDTO(record));
 		}
 
-		Object value = jooq.selectCount()
+		Object count = jooq.selectCount()
 				.from(POLL)
 				.fetchOne()
 				.getValue(0);
 
-		int nrOfPolls = (Integer) value;
+		int nrOfPolls = (Integer) count;
 
 		return new PollsDTO(res, nrOfPolls);
 	}

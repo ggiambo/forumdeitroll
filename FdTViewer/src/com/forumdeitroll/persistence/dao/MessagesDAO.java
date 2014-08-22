@@ -4,7 +4,6 @@ import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
 import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
-import com.forumdeitroll.persistence.jooq.tables.records.SysinfoRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.*;
 
@@ -132,13 +131,13 @@ public class MessagesDAO extends BaseDAO {
 			messages.add(recordToDTO(record, false));
 		}
 
-		Object value = jooq.selectCount()
+		Object count = jooq.selectCount()
 				.from(TAGS_BIND)
 				.where(TAGS_BIND.T_ID.eq((int) t_id))
 				.fetchOne()
 				.getValue(0);
 
-		Integer nrOfMessages = (Integer) value;
+		Integer nrOfMessages = (Integer) count;
 
 		return new MessagesDTO(messages, nrOfMessages);
 	}
@@ -254,9 +253,13 @@ public class MessagesDAO extends BaseDAO {
 	}
 
 	private void insertThread(long threadId) {
+//		jooq.insertInto(THREADS)
+//			.set(THREADS.THREADID, (int) threadId)
+//			.set(THREADS.LASTID, (int) threadId)
+//			.execute();
 		jooq.insertInto(THREADS, THREADS.THREADID, THREADS.LASTID)
-				.values((int) threadId, (int) threadId)
-				.execute();
+			.values((int) threadId, (int) threadId)
+			.execute();
 	}
 
 	private MessageDTO recordToDTO(Record record, boolean search) {

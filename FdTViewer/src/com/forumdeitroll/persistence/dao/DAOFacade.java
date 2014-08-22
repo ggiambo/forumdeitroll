@@ -35,6 +35,7 @@ public class DAOFacade implements IPersistence {
 	protected MessagesDAO messagesDAO;
 	protected PollsDAO pollsDAO;
 	protected QuotesDAO quotesDAO;
+	protected BookmarksDAO bookmarksDAO;
 
 	public void init(DSLContext jooq) {
 		authorsDAO = new AuthorsDAO(jooq);
@@ -42,6 +43,7 @@ public class DAOFacade implements IPersistence {
 		messagesDAO = new MessagesDAO(jooq);
 		pollsDAO = new PollsDAO(jooq);
 		quotesDAO = new QuotesDAO(jooq);
+		bookmarksDAO = new BookmarksDAO(jooq);
 	}
 
 	public void init(Properties databaseConfig) throws Exception {
@@ -304,27 +306,27 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public List<BookmarkDTO> getBookmarks(AuthorDTO owner) {
-		return null;
+		return bookmarksDAO.getBookmarks(owner);
 	}
 
 	@Override
 	public boolean existsBookmark(BookmarkDTO bookmark) {
-		return false;
+		return bookmarksDAO.existsBookmark(bookmark);
 	}
 
 	@Override
 	public void addBookmark(BookmarkDTO bookmark) {
-
+		bookmarksDAO.addBookmark(bookmark);
 	}
 
 	@Override
 	public void deleteBookmark(BookmarkDTO bookmark) {
-
+		bookmarksDAO.deleteBookmark(bookmark);
 	}
 
 	@Override
 	public void editBookmark(BookmarkDTO bookmark) {
-
+		bookmarksDAO.editBookmark(bookmark);
 	}
 
 	@Override

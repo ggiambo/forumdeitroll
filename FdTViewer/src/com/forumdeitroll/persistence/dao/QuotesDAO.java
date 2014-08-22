@@ -1,12 +1,9 @@
 package com.forumdeitroll.persistence.dao;
 
 import com.forumdeitroll.persistence.*;
-import com.forumdeitroll.persistence.jooq.tables.records.PollQuestionRecord;
-import com.forumdeitroll.persistence.jooq.tables.records.PollRecord;
 import com.forumdeitroll.persistence.jooq.tables.records.QuotesRecord;
 import org.jooq.*;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,8 +82,13 @@ public class QuotesDAO extends BaseDAO {
 
 	private long insertQuote(QuoteDTO quote) {
 
-		QuotesRecord quotesRecord = jooq.insertInto(QUOTES, QUOTES.NICK, QUOTES.CONTENT)
-				.values(quote.getNick(), mb4safe(quote.getContent()))
+//		QuotesRecord quotesRecord = jooq.insertInto(QUOTES, QUOTES.NICK, QUOTES.CONTENT)
+//				.values(quote.getNick(), mb4safe(quote.getContent()))
+//				.returning(QUOTES.ID)
+//				.fetchOne();
+		QuotesRecord quotesRecord = jooq.insertInto(QUOTES)
+				.set(QUOTES.NICK,quote.getNick())
+				.set(QUOTES.CONTENT, mb4safe(quote.getContent()))
 				.returning(QUOTES.ID)
 				.fetchOne();
 
