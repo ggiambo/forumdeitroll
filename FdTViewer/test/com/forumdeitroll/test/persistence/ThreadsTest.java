@@ -19,21 +19,25 @@ public class ThreadsTest extends BaseTest {
 
 		res = persistence.getThreads("", 99, 0, null);
 		assertEquals(2, res.getMessages().size());
-
+		assertEquals(2, res.getMaxNrOfMessages());
 
 		res = persistence.getThreads("Forum iniziale", 99, 0, null);
 		assertEquals(1, res.getMessages().size());
+		assertEquals(1, res.getMaxNrOfMessages());
 
 		res = persistence.getThreads(null, 99, 0, null);
 		assertEquals(4, res.getMessages().size());
+		assertEquals(4, res.getMaxNrOfMessages());
 
 		res = persistence.getThreads(null, 2, 0, null);
 		assertEquals(2, res.getMessages().size());
+		assertEquals(4, res.getMaxNrOfMessages());
 
 		List<String> filtered = new ArrayList<String>();
 		filtered.add("Forum iniziale");
 		res = persistence.getThreads(null, 99, 0, filtered);
 		assertEquals(3, res.getMessages().size());
+		assertEquals(1, res.getMaxNrOfMessages());
 
 	}
 

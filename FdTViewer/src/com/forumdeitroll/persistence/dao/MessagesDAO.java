@@ -204,26 +204,14 @@ public class MessagesDAO extends BaseDAO {
 	private void increaseNumberOfMessages(String forum, boolean isNewThread) {
 
 		forum = forum == null ? "" : forum;
-		increaseNumberOfMessages("messages.forum." + forum);
-		increaseNumberOfMessages("messages.total");
+
+		increaseNumberOfMessagesFor(forum, 1);
+		increaseTotalNumberOfMessagess();
 
 		if (isNewThread) {
-			increaseNumberOfMessages("threads.forum." + forum);
-			increaseNumberOfMessages("threads.total");
+			increaseNumberOfThreadsFor(forum, 1);
+			increaseTotalNumberOfThreads();
 		}
-	}
-
-	private void increaseNumberOfMessages(String sysinfoKey) {
-		Record1<String> record = jooq.select(SYSINFO.VALUE)
-				.from(SYSINFO)
-				.where(SYSINFO.KEY.equal(sysinfoKey))
-				.fetchOne();
-		int nr = Integer.parseInt(record.getValue(SYSINFO.VALUE));
-
-		jooq.update(SYSINFO)
-				.set(SYSINFO.VALUE, Integer.toString(nr + 1))
-				.where(SYSINFO.KEY.equal(sysinfoKey))
-				.execute();
 	}
 
 	private int countMessages(String forum) {

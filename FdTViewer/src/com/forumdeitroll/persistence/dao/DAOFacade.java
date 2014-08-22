@@ -36,6 +36,7 @@ public class DAOFacade implements IPersistence {
 	protected PollsDAO pollsDAO;
 	protected QuotesDAO quotesDAO;
 	protected BookmarksDAO bookmarksDAO;
+	protected AdminDAO adminDAO;
 
 	public void init(DSLContext jooq) {
 		authorsDAO = new AuthorsDAO(jooq);
@@ -44,6 +45,7 @@ public class DAOFacade implements IPersistence {
 		pollsDAO = new PollsDAO(jooq);
 		quotesDAO = new QuotesDAO(jooq);
 		bookmarksDAO = new BookmarksDAO(jooq);
+		adminDAO = new AdminDAO(jooq);
 	}
 
 	public void init(Properties databaseConfig) throws Exception {
@@ -236,6 +238,7 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public void moveThreadTree(long rootMessageId, String destForum) {
+		adminDAO.moveThreadTree(messagesDAO.getMessage(rootMessageId), destForum);
 
 	}
 
@@ -266,22 +269,22 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public void restoreOrHideMessage(long msgId, int visible) {
-
+		adminDAO.restoreOrHideMessage(msgId, visible);
 	}
 
 	@Override
 	public void setSysinfoValue(String key, String value) {
-
+		adminDAO.setSysinfoValue(key, value);
 	}
 
 	@Override
 	public String getSysinfoValue(String key) {
-		return null;
+		return adminDAO.getSysinfoValue(key);
 	}
 
 	@Override
 	public boolean blockTorExitNodes() {
-		return false;
+		return "checked".equals(getSysinfoValue("blockTorExitNodes"));
 	}
 
 	@Override
@@ -366,12 +369,12 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public List<String> getTitles() {
-		return null;
+		return adminDAO.getTitles();
 	}
 
 	@Override
 	public void setTitles(List<String> titles) {
-
+		adminDAO.setTitles(titles);
 	}
 
 	@Override
@@ -386,7 +389,7 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public List<AdDTO> getAllAds() {
-		return null;
+		return adminDAO.getAllAds();
 	}
 
 	@Override
