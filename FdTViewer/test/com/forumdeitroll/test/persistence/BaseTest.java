@@ -1,13 +1,5 @@
 package com.forumdeitroll.test.persistence;
 
-import com.forumdeitroll.persistence.IPersistence;
-import com.forumdeitroll.persistence.dao.DAOFacade;
-import org.apache.commons.dbcp.BasicDataSource;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-import org.junit.Before;
-import org.junit.BeforeClass;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -16,9 +8,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.h2.jdbcx.JdbcConnectionPool;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+import org.junit.Before;
+import org.junit.BeforeClass;
+
+import com.forumdeitroll.persistence.IPersistence;
+import com.forumdeitroll.persistence.dao.DAOFacade;
+
 public class BaseTest {
 
-	private static BasicDataSource dataSource;
+	private static JdbcConnectionPool pool;
 
 	protected static IPersistence persistence;
 
@@ -26,27 +27,11 @@ public class BaseTest {
 	public static void init() throws Exception {
 		// setup datasource
 		Class.forName("org.h2.Driver");
-		dataSource = new BasicDataSource();
-		dataSource.setMaxActive(30);
-		dataSource.setMaxIdle(10);
-		dataSource.setMinIdle(5);
-		dataSource.setMaxWait(1000);
-		dataSource.setTestOnBorrow(true);
-		dataSource.setTestWhileIdle(true);
-		dataSource.setTestOnReturn(true);
-		dataSource.setUrl("jdbc:h2:mem:fdtsucker;DATABASE_TO_UPPER=false");
-		dataSource.setUsername("fdtsucker");
-		dataSource.setPassword("fdtsucker");
-		dataSource.setValidationQuery("SELECT 1");
-		dataSource.setValidationQueryTimeout(30);
-
-		dataSource.setMinEvictableIdleTimeMillis(1800000);
-		dataSource.setTimeBetweenEvictionRunsMillis(1800000);
-		dataSource.setNumTestsPerEvictionRun(3);
+		pool = JdbcConnectionPool.create("jdbc:h2:mem:fdtsucker;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "fdtsucker", "fdtsucker");
 
 		// setup persistence
 		DAOFacade pers = new DAOFacade();
-		pers.init(DSL.using(dataSource, SQLDialect.H2));
+		pers.init(DSL.using(pool, SQLDialect.H2));
 		persistence = pers;
 	}
 
@@ -66,7 +51,7 @@ public class BaseTest {
 		try {
 			sqlFile = this.getClass().getClassLoader().getResourceAsStream(fileName);
 			isr = new InputStreamReader(sqlFile);
-			conn = dataSource.getConnection();
+			conn = pool.getConnection();
 			new ScriptRunner(conn, true, true).runScript(isr);
 		} finally {
 			if (isr != null) {
