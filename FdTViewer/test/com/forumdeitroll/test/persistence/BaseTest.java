@@ -9,7 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.h2.jdbcx.JdbcConnectionPool;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -18,7 +18,7 @@ import com.forumdeitroll.persistence.sql.H2Persistence;
 
 public class BaseTest {
 
-	private static final BasicDataSource dataSource = new BasicDataSource();
+	private static JdbcConnectionPool pool;
 
 	protected static IPersistence persistence;
 
@@ -26,23 +26,7 @@ public class BaseTest {
 	public static void init() throws Exception {
 		// setup datasource
 		Class.forName("org.h2.Driver");
-		dataSource.setMaxActive(30);
-		dataSource.setMaxIdle(10);
-		dataSource.setMinIdle(5);
-		dataSource.setMaxWait(1000);
-		dataSource.setTestOnBorrow(true);
-		dataSource.setTestWhileIdle(true);
-		dataSource.setTestOnReturn(true);
-		dataSource.setUrl("jdbc:h2:mem:fdtsucker;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1");
-		dataSource.setUsername("fdtsucker");
-		dataSource.setPassword("fdtsucker");
-		dataSource.setValidationQuery("SELECT 1");
-		dataSource.setValidationQueryTimeout(30);
-
-		dataSource.setMinEvictableIdleTimeMillis(1800000);
-		dataSource.setTimeBetweenEvictionRunsMillis(1800000);
-		dataSource.setNumTestsPerEvictionRun(3);
-
+		pool = JdbcConnectionPool.create("jdbc:h2:mem:fdtsucker;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "fdtsucker", "fdtsucker");
 		// setup persistence
 		persistence = new H2Persistence() {
 			private static final long serialVersionUID = 1L;
@@ -50,7 +34,7 @@ public class BaseTest {
 			@Override
 			protected synchronized Connection getConnection() {
 				try {
-					return dataSource.getConnection();
+					return pool.getConnection();
 				} catch (SQLException e) {
 					e.printStackTrace();
 					return null;
@@ -75,7 +59,7 @@ public class BaseTest {
 		try {
 			sqlFile = this.getClass().getClassLoader().getResourceAsStream(fileName);
 			isr = new InputStreamReader(sqlFile);
-			conn = dataSource.getConnection();
+			conn = pool.getConnection();
 			new ScriptRunner(conn, true, true).runScript(isr);
 		} finally {
 			if (isr != null) {
