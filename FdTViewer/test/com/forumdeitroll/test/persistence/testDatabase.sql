@@ -1,3 +1,5 @@
+set schema fdtsucker;
+
 -- user: admin / password: admin
 insert into authors (nick, messages, password, salt, hash) values ('admin', 2, '', 'e0342c65575601d6', 'c27a20319df29b1ab0e9046defbc192534e5a2e373b08045');
 -- user: Sfigato / password: sfigato
@@ -62,14 +64,18 @@ insert into ads (id, title, visurl, content) values (9, 'Lozioni per capelli Yod
 insert into sysinfo (`key`, `value`) values ('messages.total', '9');
 insert into sysinfo (`key`, `value`) values ('threads.total', '4');
 
-insert into sysinfo (`key`, `value`) values ('messages.forum', '1');
-insert into sysinfo (`key`, `value`) values ('threads.forum', '1');
+insert into sysinfo (`key`, `value`) values ('messages.forum.', '4');
+insert into sysinfo (`key`, `value`) values ('threads.forum.', '2');
 
 insert into sysinfo (`key`, `value`) values ('messages.forum.Forum iniziale', '3');
 insert into sysinfo (`key`, `value`) values ('threads.forum.Forum iniziale', '1');
 
 insert into sysinfo (`key`, `value`) values ('messages.forum.Procura Svizzera', '2');
 insert into sysinfo (`key`, `value`) values ('threads.forum.Procura Svizzera', '2');
+
+insert into sysinfo (`key`, `value`) values ('title.0', 'Forum di test');
+insert into sysinfo (`key`, `value`) values ('title.1', 'Forum che funziona !');
+insert into sysinfo (`key`, `value`) values ('title.2', 'IMMENSO GIAMBO !!!1!');
 
 insert into threads (threadid, lastid) values (1, 3);
 insert into threads (threadid, lastid) values (4, 5);

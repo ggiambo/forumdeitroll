@@ -16,9 +16,9 @@ import org.junit.BeforeClass;
 import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.sql.H2Persistence;
 
-public abstract class BaseTest {
+public class BaseTest {
 
-	private static BasicDataSource dataSource;
+	private static final BasicDataSource dataSource = new BasicDataSource();
 
 	protected static IPersistence persistence;
 
@@ -26,7 +26,6 @@ public abstract class BaseTest {
 	public static void init() throws Exception {
 		// setup datasource
 		Class.forName("org.h2.Driver");
-		dataSource = new BasicDataSource();
 		dataSource.setMaxActive(30);
 		dataSource.setMaxIdle(10);
 		dataSource.setMinIdle(5);
@@ -34,7 +33,7 @@ public abstract class BaseTest {
 		dataSource.setTestOnBorrow(true);
 		dataSource.setTestWhileIdle(true);
 		dataSource.setTestOnReturn(true);
-		dataSource.setUrl("jdbc:h2:mem:testDatabase");
+		dataSource.setUrl("jdbc:h2:mem:fdtsucker;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1");
 		dataSource.setUsername("fdtsucker");
 		dataSource.setPassword("fdtsucker");
 		dataSource.setValidationQuery("SELECT 1");
@@ -69,15 +68,43 @@ public abstract class BaseTest {
 	}
 
 	private void loadData(String fileName) throws Exception {
-		InputStream sqlFile = this.getClass().getClassLoader().getResourceAsStream(fileName);
-		Reader isr = new InputStreamReader(sqlFile);
-		new ScriptRunner(dataSource.getConnection(), true, true).runScript(isr);
-		isr.close();
-		sqlFile.close();
+		InputStream sqlFile = null;
+		Reader isr = null;
+		Connection conn = null;
+
+		try {
+			sqlFile = this.getClass().getClassLoader().getResourceAsStream(fileName);
+			isr = new InputStreamReader(sqlFile);
+			conn = dataSource.getConnection();
+			new ScriptRunner(conn, true, true).runScript(isr);
+		} finally {
+			if (isr != null) {
+				try {
+					isr.close();
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+			if (sqlFile != null) {
+				try {
+					sqlFile.close();
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+		}
 	}
 
 	/**
 	 * DatabaseString format: yyyy-MM-dd HH:mm:ss
+	 *
 	 * @return
 	 * @throws ParseException
 	 */

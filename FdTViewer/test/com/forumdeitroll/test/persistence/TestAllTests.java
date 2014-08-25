@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import com.forumdeitroll.persistence.IPersistence;
 
-public class TestAllTests {
+public class TestAllTests extends BaseTest {
 
 	@Test
 	public void testAllTest() {
