@@ -52,7 +52,9 @@ public class BaseTest {
 			sqlFile = this.getClass().getClassLoader().getResourceAsStream(fileName);
 			isr = new InputStreamReader(sqlFile);
 			conn = pool.getConnection();
-			new ScriptRunner(conn, true, true).runScript(isr);
+			ScriptRunner scriptRunner = new ScriptRunner(conn, true, true);
+			scriptRunner.setLogWriter(null);
+			scriptRunner.runScript(isr);
 		} finally {
 			if (isr != null) {
 				try {

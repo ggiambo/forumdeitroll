@@ -228,12 +228,12 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public Map<String, String> setPreference(AuthorDTO user, String key, String value) {
-		return null;
+		return authorsDAO.setPreference(user, key, value);
 	}
 
 	@Override
 	public List<String> searchAuthor(String searchString) {
-		return null;
+		return authorsDAO.searchAuthor(searchString);
 	}
 
 	@Override
@@ -379,12 +379,12 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public void setHiddenForums(AuthorDTO loggedUser, List<String> hiddenForum) {
-
+		authorsDAO.setHiddenForums(loggedUser, hiddenForum);
 	}
 
 	@Override
 	public List<String> getHiddenForums(AuthorDTO loggedUser) {
-		return null;
+		return authorsDAO.getHiddenForums(loggedUser);
 	}
 
 	@Override

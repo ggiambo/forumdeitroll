@@ -1,13 +1,18 @@
 package com.forumdeitroll.persistence.dao;
 
-import com.forumdeitroll.PasswordUtils;
-import com.forumdeitroll.persistence.AuthorDTO;
-import org.jooq.DSLContext;
+import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
+import static com.forumdeitroll.persistence.jooq.Tables.PREFERENCES;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
+import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.Result;
+
+import com.forumdeitroll.PasswordUtils;
+import com.forumdeitroll.persistence.AuthorDTO;
 
 public class AuthorsDAO extends BaseDAO {
 
@@ -20,10 +25,12 @@ public class AuthorsDAO extends BaseDAO {
 		List<String> nicks;
 		if (onlyActive) {
 			nicks = jooq.select(AUTHORS.HASH, AUTHORS.NICK)
+					.from(AUTHORS)
 					.where(AUTHORS.HASH.isNotNull())
 					.fetch(AUTHORS.NICK);
 		} else {
 			nicks = jooq.select(AUTHORS.NICK)
+					.from(AUTHORS)
 					.fetch(AUTHORS.NICK);
 		}
 
@@ -46,7 +53,7 @@ public class AuthorsDAO extends BaseDAO {
 		PasswordUtils.changePassword(authorDTO, password);
 
 		jooq.insertInto(AUTHORS)
-				.set(AUTHORS.NICK, authorDTO.getNick())
+				.set(AUTHORS.NICK, nick)
 				.set(AUTHORS.PASSWORD, "") // <- campo "password", ospitava la vecchia "hash", non lo settiamo piu`
 				.set(AUTHORS.MESSAGES, 0)
 				.set(AUTHORS.SALT, authorDTO.getSalt())
@@ -80,6 +87,65 @@ public class AuthorsDAO extends BaseDAO {
 				.execute();
 
 		return res == 1;
+	}
+	
+	public Map<String, String> setPreference(AuthorDTO user, String key, String value) {
+		if (!getPreferences(user).keySet().contains(key)) {
+			jooq.insertInto(PREFERENCES)
+				.set(PREFERENCES.NICK, user.getNick())
+				.set(PREFERENCES.KEY, key)
+				.set(PREFERENCES.VALUE, value)
+				.execute();
+		} else {
+			jooq.update(PREFERENCES)
+				.set(PREFERENCES.VALUE, value)
+				.where(PREFERENCES.NICK.eq(user.getNick()))
+				.and(PREFERENCES.KEY.eq(key))
+				.execute();
+		} 
+		return getPreferences(user);
+	}
+	
+	public List<String> getHiddenForums(AuthorDTO loggedUser) {
+		List<String> hiddenForums = new ArrayList<String>();
+		Map<String, String> prefs = getPreferences(loggedUser);
+		for (Map.Entry<String, String> pref : prefs.entrySet()) {
+			if (pref.getKey().startsWith("hideForum.")) {
+				hiddenForums.add(pref.getValue());
+			}
+		}
+		return hiddenForums;
+	}
+	
+	public List<String> searchAuthor(String searchString) {
+		List<String> res = new ArrayList<String>();
+		Result<Record1<String>> records = jooq.select(AUTHORS.NICK)
+			.from(AUTHORS)
+			.where(AUTHORS.NICK.like(searchString + "%"))
+			.and(AUTHORS.HASH.isNotNull())
+			.orderBy(AUTHORS.NICK.asc())
+			.fetch();
+		
+		for (Record1<String> record : records) {
+			res.add(record.getValue(AUTHORS.NICK));
+		}
+		return res;
+	}
+	
+	public void setHiddenForums(AuthorDTO loggedUser, List<String> hiddenForums) {
+			// remove all
+		jooq.delete(PREFERENCES)
+			.where(PREFERENCES.KEY.like("hideForum.%"))
+			.and(PREFERENCES.NICK.eq(loggedUser.getNick()))
+			.execute();
+			// insert all
+			for (String hiddenForum : hiddenForums) {
+				jooq.insertInto(PREFERENCES)
+					.set(PREFERENCES.NICK, loggedUser.getNick())
+					.set(PREFERENCES.KEY, "hideForum." + hiddenForum)
+					.set(PREFERENCES.VALUE, hiddenForum)
+					.execute();
+			}
 	}
 
 }
