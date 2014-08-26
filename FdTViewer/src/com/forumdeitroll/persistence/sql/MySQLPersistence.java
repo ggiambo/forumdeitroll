@@ -65,7 +65,7 @@ public class MySQLPersistence extends GenericSQLPersistence {
 			ps.setString(i++, search);
 			ps.setInt(i++, limit);
 			ps.setInt(i++, limit * page);
-			return getMessages(ps.executeQuery(), true);
+			return getMessages(conn, ps.executeQuery(), true);
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages", e);
 		} finally {
@@ -73,7 +73,7 @@ public class MySQLPersistence extends GenericSQLPersistence {
 		}
 		return result;
 	}
-	
+
 	/**
 Da /opt/fdt/digest (riportata per versionamento):
 
@@ -128,7 +128,7 @@ WHERE messages.threadId = digest.threadId;
 
 
 	 */
-	
+
 	@Override
 	public List<DigestArticleDTO> getReadersDigest() {
 		Connection conn = null;
@@ -156,16 +156,16 @@ WHERE messages.threadId = digest.threadId;
 					current.setLastDate(rs.getDate("digest.lastdate"));
 					current.setNrOfMessages(rs.getInt("digest.nrOfMessages"));
 					if (rs.getString("digest_participant.author") != null && !current.getParticipants().contains(rs.getString("digest_participant.author"))) {
-						current.getParticipants().add(rs.getString("digest_participant.author"));	
+						current.getParticipants().add(rs.getString("digest_participant.author"));
 					}
 					results.add(current);
 				} else {
 					if (rs.getString("digest_participant.author") != null && !current.getParticipants().contains(rs.getString("digest_participant.author"))) {
-						current.getParticipants().add(rs.getString("digest_participant.author"));	
+						current.getParticipants().add(rs.getString("digest_participant.author"));
 					}
 				}
 			}
-			
+
 		} catch (SQLException e) {
 			LOG.error("Impossibile leggere i dati dal db", e);
 			return null;
