@@ -272,7 +272,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} catch (SQLException e) {
 			LOG.error("Cannot insert message " + message.toString(), e);
 		} finally {
-			close(null, null, conn);
+			close(conn);
 		}
 		return message;
 	}
@@ -289,7 +289,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.execute();
 			return message.getId();
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 	}
 
@@ -318,7 +318,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			updateLastIdInThread(conn, message.getThreadId(), id);
 			return id;
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 	}
 
@@ -353,7 +353,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			insertThread(conn, id);
 			return id;
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 	}
 
@@ -367,7 +367,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			LOG.error("Cannot get message with id " + id, e);
 			return null;
 		} finally {
-			close(null, null, conn);
+			close(conn);
 		}
 	}
 
@@ -382,7 +382,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				return res.get(0);
 			}
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 		return new MessageDTO();
 	}
@@ -418,7 +418,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			LOG.error("Cannot get author with nick " + nick, e);
 			return null;
 		} finally {
-			close(null, null, conn);
+			close(conn);
 		}
 	}
 
@@ -444,7 +444,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			}
 			dto.setPreferences(getPreferences(conn, dto));
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 		return dto;
 	}
@@ -741,7 +741,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				msg.setDate(rs2.getTimestamp("senddate"));
 				msg.setSubject(rs2.getString("subject"));
 				msg.setFromNick(rs2.getString("sender"));
-				close(rs2, ps2, null);
+				close(rs2, ps2);
 				ps2 = conn.prepareStatement("SELECT recipient, `read` FROM pvt_recipient WHERE pvt_id = ?");
 				ps2.setLong(1, id);
 				rs2 = ps2.executeQuery();
@@ -751,7 +751,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 					toNick.setRead(rs2.getBoolean(2));
 					msg.getToNick().add(toNick);
 				}
-				close(rs2, ps2, null);
+				close(rs2, ps2);
 				result.add(msg);
 			}
 		} catch (SQLException e) {
@@ -916,19 +916,19 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setLong(1, pvt_id);
 			ps.setString(2, user.getNick());
 			ps.execute();
-			close(null,ps,null);
+			close(ps);
 			ps = conn.prepareStatement("UPDATE pvt_content SET deleted = 1 WHERE id = ? AND sender = ?");
 			ps.setLong(1, pvt_id);
 			ps.setString(2, user.getNick());
 			ps.execute();
-			close(null, ps, null);
+			close(ps);
 			//cleanup - eventualmente opzionale oppure lanciata da timertask
 			ps = conn.prepareStatement("DELETE FROM pvt_recipient WHERE pvt_id IN (SELECT id FROM pvt_content WHERE deleted = 1) AND deleted = 1");
 			ps.execute();
-			close(null, ps, null);
+			close(ps);
 			ps = conn.prepareStatement("DELETE FROM pvt_content WHERE id NOT IN (SELECT id FROM pvt_recipient WHERE deleted = 0) AND deleted = 1");
 			ps.execute();
-			close(null, ps, null);
+			close(ps);
 		} catch (SQLException e) {
 			LOG.error("Cannot delete "+pvt_id+" for user "+user.getNick(), e);
 		} finally {
@@ -964,7 +964,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 					toNick.setRead(rs2.getBoolean(2));
 					msg.getToNick().add(toNick);
 				}
-				close(rs2, ps2, null);
+				close(rs2, ps2);
 				result.add(msg);
 			}
 		} catch (SQLException e) {
@@ -1026,7 +1026,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} catch (SQLException e) {
 			LOG.error("Cannot read properties for user " + user.getNick(), e);
 		} finally {
-			close(null, null, conn);
+			close(conn);
 		}
 		return new ConcurrentHashMap<String, String>();
 	}
@@ -1046,7 +1046,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				r.put(rs.getString("key"), rs.getString("value"));
 			}
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 		return r;
 	}
@@ -1349,7 +1349,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				ret.add(rs.getString("nick"));
 			}
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 		return ret;
 	}
@@ -1483,7 +1483,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				return rs.getInt("value");
 			}
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 		return -1;
 	}
@@ -1503,7 +1503,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				return rs.getInt("value");
 			}
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 		return -1;
 	}
@@ -1519,7 +1519,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				return rs.getInt(1);
 			}
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 		return 0;
 	}
@@ -1609,7 +1609,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				ps.execute();
 			}
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 	}
 
@@ -1794,12 +1794,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				res.add(question);
 			}
 		} finally {
-			close(rs, ps, null);
+			close(rs, ps);
 		}
 		return res;
 	}
 
-	protected final void close(ResultSet rs, Statement stmt, Connection conn) {
+	public final void close(ResultSet rs, Statement stmt, Connection conn) {
 		try {
 			if (rs != null) {
 				rs.close();
@@ -1828,6 +1828,22 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		} catch (Exception ex) {
 			// ignore
 		}
+	}
+
+	protected final void close(Connection conn) {
+		close(conn);
+	}
+
+	protected final void close(PreparedStatement ps) {
+		close(ps);
+	}
+
+	protected final void close(ResultSet rs) {
+		close(rs);
+	}
+
+	protected final void close(ResultSet rs, PreparedStatement ps) {
+		close(rs, ps);
 	}
 
 	@Override
@@ -1976,7 +1992,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			if (rs.next()) {
 				t_id = rs.getLong(1);
 			}
-			close(rs, ps, null);
+			close(rs, ps);
 			if (t_id == 0) {
 				ps = conn.prepareStatement("INSERT INTO tagnames(value) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
 				ps.setString(1, mb4safe(tag.getValue()));
@@ -1984,7 +2000,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				rs = ps.getGeneratedKeys();
 				rs.next();
 				t_id = rs.getLong(1);
-				close(rs, ps, null);
+				close(rs, ps);
 			}
 			ps = conn.prepareStatement("SELECT t_id, m_id, author FROM tags_bind WHERE t_id = ? AND m_id = ?");
 			ps.setLong(1, t_id);
@@ -1995,7 +2011,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				tag.setAuthor(rs.getString(3));
 				return tag;
 			}
-			close(rs, ps, null);
+			close(rs, ps);
 			ps = conn.prepareStatement("INSERT INTO tags_bind(t_id,m_id,author) VALUES (?,?,?)");
 			ps.setLong(1, t_id);
 			ps.setLong(2, tag.getM_id());
@@ -2112,7 +2128,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*page);
 			List<MessageDTO> messages = getMessages(conn, ps.executeQuery(), false);
-			close(rs, ps, null);
+			close(rs, ps);
 			ps = conn.prepareStatement("SELECT COUNT(*) FROM tags_bind WHERE t_id = ?");
 			ps.setLong(1, t_id);
 			rs = ps.executeQuery();
@@ -2292,7 +2308,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setLong(2, threadId);
 			ps.executeUpdate();
 		} finally {
-			close(null, ps, null);
+			close(ps);
 		}
 	}
 
@@ -2304,7 +2320,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setLong(2, threadId);
 			ps.executeUpdate();
 		} finally {
-			close(null, ps, null);
+			close(ps);
 		}
 	}
 }
