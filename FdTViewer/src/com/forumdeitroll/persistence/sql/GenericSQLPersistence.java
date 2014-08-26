@@ -496,7 +496,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		try {
 			conn = getConnection();
 			// check se esiste gia'. Blah banf transazioni chissenefrega <-- (complimenti a chi ha scritto questo - sarrusofono)
-			if (getAuthor(nick).isValid()) {
+			if (getAuthor(conn, nick).isValid()) {
 				return new AuthorDTO(null);
 			}
 
@@ -512,7 +512,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setString(i++, a.getSalt());
 			ps.setString(i++, a.getHash());
 			ps.execute();
-			return getAuthor(nick);
+			return getAuthor(conn, nick);
 		} catch (SQLException e) {
 			LOG.error("Cannot get Author " + nick, e);
 			return new AuthorDTO(null);
