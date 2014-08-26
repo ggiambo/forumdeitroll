@@ -260,15 +260,20 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	public MessageDTO insertMessage(MessageDTO message) {
 		Connection conn = null;
 		try {
+			long msgId;
 			conn = getConnection();
 			conn.setAutoCommit(false);
 			if (message.getParentId() != -1) {
 				if (message.getId() == -1) {
-					return getMessage(conn, insertReplyMessage(conn, message));
+					msgId = insertReplyMessage(conn, message);
+				} else {
+					msgId = insertEditMessage(conn, message);
 				}
-				return getMessage(conn, insertEditMessage(conn, message));
+			} else {
+				msgId = insertNewMessage(conn, message);
 			}
-			return getMessage(conn, insertNewMessage(conn, message));
+			conn.commit();
+			return getMessage(conn, msgId);
 		} catch (SQLException e) {
 			LOG.error("Cannot insert message " + message.toString(), e);
 		} finally {
@@ -309,12 +314,12 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setTimestamp(i++, new Timestamp(message.getDate().getTime()));
 			ps.setInt(i++, message.getVisibleReal());
 			ps.execute();
-			// update count
-			increaseNumberOfMessages(conn, message.getForum(), false);
 			// get generated id
 			rs = ps.getGeneratedKeys();
 			rs.next();
 			long id = rs.getLong(1);
+			// update count
+			increaseNumberOfMessages(conn, message.getForum(), false);
 			updateLastIdInThread(conn, message.getThreadId(), id);
 			return id;
 		} finally {
@@ -1831,19 +1836,19 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	}
 
 	protected final void close(Connection conn) {
-		close(conn);
+		close(null, null, conn);
 	}
 
 	protected final void close(PreparedStatement ps) {
-		close(ps);
+		close(null, ps, null);
 	}
 
 	protected final void close(ResultSet rs) {
-		close(rs);
+		close(rs, null, null);
 	}
 
 	protected final void close(ResultSet rs, PreparedStatement ps) {
-		close(rs, ps);
+		close(rs, ps, null);
 	}
 
 	@Override
