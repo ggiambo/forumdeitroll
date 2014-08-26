@@ -114,10 +114,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setInt(i++, limit);
 			ps.setInt(i++, limit*page);
 
-			int messagesCount = countMessages(forum, conn);
+			int messagesCount = countMessages(conn, forum);
 			if (hiddenForums != null && !hiddenForums.isEmpty() && forum == null) {
 				for (String hiddenForum : hiddenForums) {
-					messagesCount -= countMessages(hiddenForum, conn);
+					messagesCount -= countMessages(conn, hiddenForum);
 				}
 			}
 
@@ -156,10 +156,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.setInt(i++, limit);
 			ps.setInt(i++, limit*page);
 
-			int threadsCount = countThreads(forum, conn);
+			int threadsCount = countThreads(conn, forum);
 			if (hiddenForums != null && !hiddenForums.isEmpty() && forum == null) {
 				for (String hiddenForum : hiddenForums) {
-					threadsCount -= countMessages(hiddenForum, conn);
+					threadsCount -= countMessages(conn, hiddenForum);
 				}
 			}
 
@@ -204,10 +204,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 			rs = ps.executeQuery();
 
-			int threadsCount = countThreads(forum, conn);
+			int threadsCount = countThreads(conn, forum);
 			if (hiddenForums != null && !hiddenForums.isEmpty() && forum == null) {
 				for (String hiddenForum : hiddenForums) {
-					threadsCount -= countMessages(hiddenForum, conn);
+					threadsCount -= countMessages(conn, hiddenForum);
 				}
 			}
 			return new ThreadsDTO(getThreads(conn, ps.executeQuery(), true), threadsCount);
@@ -370,10 +370,10 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			return getMessage(conn, id);
 		} catch (SQLException e) {
 			LOG.error("Cannot get message with id " + id, e);
-			return null;
 		} finally {
 			close(conn);
 		}
+		return new MessageDTO();
 	}
 
 	private MessageDTO getMessage(Connection conn, long id) throws SQLException {
@@ -420,7 +420,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			conn = getConnection();
 			return getAuthor(conn, nick);
 		} catch (SQLException e) {
-			LOG.error("Cannot get author with nick " + nick, e);
+			LOG.error("Cannot get Author " + nick, e);
 			return null;
 		} finally {
 			close(conn);
@@ -637,18 +637,18 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public void insertUpdateQuote(QuoteDTO quote) {
-		if (quote.getId() > 0) {
-			try {
-				updateQuote(quote);
-			} catch (SQLException e) {
-				LOG.error("Cannot insert message " + quote.toString(), e);
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			if (quote.getId() > 0) {
+				updateQuote(conn, quote);
+			} else {
+				insertQuote(conn, quote);
 			}
-		} else {
-			try {
-				insertQuote(quote);
-			} catch (SQLException e) {
-				LOG.error("Cannot insert message " + quote.toString(), e);
-			}
+		} catch (SQLException e) {
+			LOG.error("Cannot insert message " + quote.toString(), e);
+		} finally {
+			close(conn);
 		}
 	}
 
@@ -871,42 +871,45 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return false;
 	}
 
-	private void notifyPvt(AuthorDTO recipient, PrivateMsgDTO privateMsg, boolean read) throws SQLException {
-		Connection conn = null;
+	private void notifyPvt(Connection conn, AuthorDTO recipient, PrivateMsgDTO privateMsg, boolean read) throws SQLException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE pvt_recipient SET `read` = ? WHERE recipient = ? AND pvt_id = ?");
 			ps.setBoolean(1, read);
 			ps.setString(2, recipient.getNick());
 			ps.setLong(3, privateMsg.getId());
 			int result;
-			if ((result = ps.executeUpdate()) > 1) { // 0 == messaggio gia'
-														// letto
-				throw new SQLException("Le scimmie presto! " + recipient.getNick() + "ha aggiornato " + result
-						+ " records!");
+			if ((result = ps.executeUpdate()) > 1) { // 0 == messaggio gia' letto
+				throw new SQLException("Le scimmie presto! "+recipient.getNick()+"ha aggiornato "+result+" records!");
 			}
 		} finally {
-			close(rs, ps, conn);
+			close(rs, ps);
 		}
 	}
 
 	@Override
 	public void notifyUnread(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
+		Connection conn = null;
 		try {
-			notifyPvt(recipient, privateMsg, false);
+			conn = getConnection();
+			notifyPvt(conn, recipient, privateMsg, false);
 		} catch (SQLException e) {
 			LOG.error("Cannot notify " + recipient.getNick() + " id " + privateMsg.getId(), e);
+		} finally {
+			close(conn);
 		}
 	}
 
 	@Override
 	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
+		Connection conn = null;
 		try {
-			notifyPvt(recipient, privateMsg, true);
+			notifyPvt(conn, recipient, privateMsg, true);
 		} catch (SQLException e) {
 			LOG.error("Cannot notify " + recipient.getNick() + " id " + privateMsg.getId(), e);
+		} finally {
+			close(conn);
 		}
 	}
 
@@ -1089,18 +1092,18 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public Map<String, String> setPreference(AuthorDTO user, String key, String value) {
-		if (!getPreferences(user).keySet().contains(key)) {
-			try {
-				insertPreference(user, key, value);
-			} catch (SQLException e) {
-				LOG.error("Cannot set preference key=" + key + " value=" + value + " for user " + user.getNick(), e);
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			if (!getPreferences(user).keySet().contains(key)) {
+				insertPreference(conn, user, key, value);
+			} else {
+				updatePreference(conn, user, key, value);
 			}
-		} else {
-			try {
-				updatePreference(user, key, value);
-			} catch (SQLException e) {
-				LOG.error("Cannot update preference key=" + key + " value=" + value + " for user " + user.getNick(), e);
-			}
+		} catch (SQLException e) {
+			LOG.error("Cannot update preference key=" + key + " value=" + value + " for user " + user.getNick(), e);
+		} finally {
+			close(conn);
 		}
 		return getPreferences(user);
 	}
@@ -1190,32 +1193,38 @@ public abstract class GenericSQLPersistence implements IPersistence {
 
 	@Override
 	public PollsDTO getPollsByDate(int limit, int page) {
+		Connection conn = null;
 		try {
-			return getPollsBy("creationDate", limit, page);
+			conn = getConnection();
+			return getPollsBy(conn, "creationDate", limit, page);
 		} catch (SQLException e) {
 			LOG.error("Cannot get polls with limit" + limit + " and page " + page, e);
+		} finally {
+			close(conn);
 		}
 		return new PollsDTO(new ArrayList<PollDTO>(), 0);
 	}
 
 	@Override
 	public PollsDTO getPollsByLastVote(int limit, int page) {
+		Connection conn = null;
 		try {
-			return getPollsBy("updateDate", limit, page);
+			conn = getConnection();
+			return getPollsBy(conn, "updateDate", limit, page);
 		} catch (SQLException e) {
 			LOG.error("Cannot get polls with limit" + limit + " and page " + page, e);
+		} finally {
+			close(conn);
 		}
 		return new PollsDTO(new ArrayList<PollDTO>(), 0);
 	}
 
-	private PollsDTO getPollsBy(String by, int limit, int page)  throws SQLException {
+	private PollsDTO getPollsBy(Connection conn, String by, int limit, int page)  throws SQLException {
 		List<PollDTO> res = new ArrayList<PollDTO>();
 		int nrOfPolls = 0;
-		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			conn = getConnection();
 			ps = conn.prepareStatement("SELECT * FROM poll ORDER BY " + by + " DESC LIMIT ? OFFSET ?");
 			ps.setInt(1, limit);
 			ps.setInt(2, limit*page);
@@ -1228,7 +1237,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 				nrOfPolls = rs.getInt("cnt");
 			}
 		} finally {
-			close(rs, ps, conn);
+			close(rs, ps);
 		}
 		return new PollsDTO(res, nrOfPolls);
 	}
@@ -1359,42 +1368,36 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return ret;
 	}
 
-	private void insertPreference(AuthorDTO user, String key, String value) throws SQLException {
-		Connection conn = null;
+	private void insertPreference(Connection conn, AuthorDTO user, String key, String value) throws SQLException {
 		PreparedStatement ps = null;
 		try {
-			conn = getConnection();
 			ps = conn.prepareStatement("INSERT INTO preferences (nick, `key`, value) VALUES (?, ?, ?)");
 			ps.setString(1, user.getNick());
 			ps.setString(2, key);
 			ps.setString(3, value);
 			ps.execute();
 		} finally {
-			close(null, ps, conn);
+			close(ps);
 		}
 	}
 
-	private void updatePreference(AuthorDTO user, String key, String value) throws SQLException {
-		Connection conn = null;
+	private void updatePreference(Connection conn, AuthorDTO user, String key, String value) throws SQLException {
 		PreparedStatement ps = null;
 		try {
-			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE preferences SET value = ? WHERE nick = ? and `key` = ?");
 			ps.setString(1, value);
 			ps.setString(2, user.getNick());
 			ps.setString(3, key);
 			ps.execute();
 		} finally {
-			close(null, ps, conn);
+			close(ps);
 		}
 	}
 
-	private long insertQuote(QuoteDTO quote) throws SQLException {
-		Connection conn = null;
+	private long insertQuote(Connection conn, QuoteDTO quote) throws SQLException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			conn = getConnection();
 			ps = conn.prepareStatement("INSERT INTO quotes (nick, content) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 			int i = 1;
 			ps.setString(i++, quote.getNick());
@@ -1405,16 +1408,14 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			rs.next();
 			return rs.getLong(1);
 		} finally {
-			close(rs, ps, conn);
+			close(rs, ps);
 		}
 	}
 
-	private long updateQuote(QuoteDTO quote) throws SQLException {
-		Connection conn = null;
+	private long updateQuote(Connection conn, QuoteDTO quote) throws SQLException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			conn = getConnection();
 			ps = conn.prepareStatement("UPDATE quotes SET nick = ?, content = ? WHERE id = ? AND nick = ?");
 			int i = 1;
 			ps.setString(i++, quote.getNick());
@@ -1424,7 +1425,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps.execute();
 			return quote.getId();
 		} finally {
-			close(rs, ps, conn);
+			close(rs, ps);
 		}
 	}
 
@@ -1473,7 +1474,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return messages;
 	}
 
-	private int countMessages(String forum, Connection conn) throws SQLException {
+	private int countMessages(Connection conn, String forum) throws SQLException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -1493,7 +1494,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return -1;
 	}
 
-	private int countThreads(String forum, Connection conn) throws SQLException {
+	private int countThreads(Connection conn, String forum) throws SQLException {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
@@ -1608,6 +1609,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				int startValue = Integer.parseInt(rs.getString(1));
+				close(ps);
 				ps = conn.prepareStatement("UPDATE sysinfo SET value = ? WHERE `key` = ?");
 				ps.setString(1, Integer.toString(startValue + increaseValue));
 				ps.setString(2, key);
