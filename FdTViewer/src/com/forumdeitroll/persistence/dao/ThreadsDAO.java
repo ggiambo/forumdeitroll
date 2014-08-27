@@ -55,7 +55,6 @@ public class ThreadsDAO extends BaseDAO {
 			return new ThreadsDTO();
 		}
 
-
 		int threadsCount = countThreads(forum);
 		if (hiddenForums != null && !hiddenForums.isEmpty() && forum == null) {
 			for (String hiddenForum : hiddenForums) {
@@ -65,7 +64,7 @@ public class ThreadsDAO extends BaseDAO {
 
 		List<ThreadDTO> res = new ArrayList<ThreadDTO>(records.size());
 		for (Record record : records) {
-			res.add(recordToDTO(record, false));
+			res.add(recordToDTO(record, true));
 		}
 
 		return new ThreadsDTO(res, threadsCount);
