@@ -16,9 +16,8 @@ public class TestAllTests extends BaseTest {
 	@Test
 	public void testAllTest() {
 		@SuppressWarnings("unchecked")
-		List<Class<? extends BaseTest>> allTestClasses = Arrays.asList(AdminTest.class, AuthorTest.class,
-				BookmarkTest.class, MessagesTest.class, MiscTest.class, PollTest.class, PrivateMsgTest.class,
-				QuoteTest.class, ThreadsTest.class);
+		List<Class<? extends BaseTest>> allTestClasses = Arrays.asList(AdminTest.class, AuthorTest.class, BookmarkTest.class,
+				MessagesTest.class, MiscTest.class, PollTest.class, PrivateMsgTest.class, QuoteTest.class, ThreadsTest.class);
 
 		Set<String> testMethods = new HashSet<String>();
 		for (Class<?> testClass : allTestClasses) {
@@ -35,8 +34,7 @@ public class TestAllTests extends BaseTest {
 				continue;
 			}
 			String testMethod = "test_" + methodName;
-			Assert.assertTrue("Nessun metodo di test " + testMethod + " disponibile !",
-					testMethods.contains(testMethod));
+			Assert.assertTrue("Nessun metodo di test " + testMethod + " disponibile !", testMethods.contains(testMethod));
 		}
 
 	}

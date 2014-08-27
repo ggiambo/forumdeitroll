@@ -55,7 +55,6 @@ public class PollTest extends BaseTest {
 		assertNotNull(poll.getVoterNicks());
 		assertEquals(0, poll.getVoterNicks().size());
 
-
 		List<PollQuestion> questions = poll.getPollQuestions();
 		assertNotNull(questions);
 		assertEquals(2, questions.size());

@@ -8,61 +8,61 @@ public class PrivateMsgTest extends BaseTest {
 	@Test
 	@Ignore("Implement me !")
 	public void test_getSentPvts() {
-		 // TODO
+		// TODO
 	}
 
 	@Test
 	@Ignore("Implement me !")
 	public void test_getInbox() {
-		 // TODO
+		// TODO
 	}
 
 	@Test
 	@Ignore("Implement me !")
 	public void test_getInboxPages() {
-		 // TODO
+		// TODO
 	}
 
 	@Test
 	@Ignore("Implement me !")
 	public void test_getOutboxPages() {
-		 // TODO
+		// TODO
 	}
 
 	@Test
 	@Ignore("Implement me !")
 	public void test_sendAPvtForGreatGoods() {
-		 // TODO
+		// TODO
 	}
 
 	@Test
 	@Ignore("Implement me !")
 	public void test_notifyRead() {
-		 // TODO
+		// TODO
 	}
 
 	@Test
 	@Ignore("Implement me !")
 	public void test_notifyUnread() {
-		 // TODO
+		// TODO
 	}
 
 	@Test
 	@Ignore("Implement me !")
 	public void test_checkForNewPvts() {
-		 // TODO
+		// TODO
 	}
 
 	@Test
 	@Ignore("Implement me !")
 	public void test_deletePvt() {
-		 // TODO
+		// TODO
 	}
 
 	@Test
 	@Ignore("Implement me !")
 	public void test_getPvtDetails() {
-		 // TODO
+		// TODO
 	}
 
 }

@@ -1,6 +1,9 @@
 package com.forumdeitroll.test.persistence;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
@@ -157,7 +160,9 @@ public class MessagesTest extends BaseTest {
 		assertEquals(0, msg.getRank());
 		assertEquals("Re: Ieri", msg.getSubject());
 		assertNull(msg.getTags());
-		assertEquals("Scritto da: Sfigato<BR>&gt; Ho incontrato yoda. Che ragazzo fortunato :( ...<BR><BR>Mi trovi un lavoro ?<BR><BR>- idyoda -", msg.getText());
+		assertEquals(
+				"Scritto da: Sfigato<BR>&gt; Ho incontrato yoda. Che ragazzo fortunato :( ...<BR><BR>Mi trovi un lavoro ?<BR><BR>- idyoda -",
+				msg.getText());
 		assertEquals(7, msg.getThreadId());
 		assertTrue(msg.isVisible());
 
@@ -171,7 +176,9 @@ public class MessagesTest extends BaseTest {
 		assertEquals(0, msg.getRank());
 		assertEquals("Re: Ieri", msg.getSubject());
 		assertNull(msg.getTags());
-		assertEquals("Scritto da: <BR>&gt; Scritto da: Sfigato<BR>&gt; &gt; Ho incontrato yoda. Che ragazzo fortunato :( ...<BR>&gt; <BR>&gt; Mi trovi un lavoro ?<BR>&gt; <BR>&gt; - idyoda -<BR><BR>(rotfl)(rotfl)", msg.getText());
+		assertEquals(
+				"Scritto da: <BR>&gt; Scritto da: Sfigato<BR>&gt; &gt; Ho incontrato yoda. Che ragazzo fortunato :( ...<BR>&gt; <BR>&gt; Mi trovi un lavoro ?<BR>&gt; <BR>&gt; - idyoda -<BR><BR>(rotfl)(rotfl)",
+				msg.getText());
 		assertEquals(7, msg.getThreadId());
 		assertTrue(msg.isVisible());
 
