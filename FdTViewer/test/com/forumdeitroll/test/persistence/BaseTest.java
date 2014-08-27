@@ -26,7 +26,8 @@ public class BaseTest {
 	public static void init() throws Exception {
 		// setup datasource
 		Class.forName("org.h2.Driver");
-		pool = JdbcConnectionPool.create("jdbc:h2:mem:fdtsucker;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "fdtsucker", "fdtsucker");
+		pool = JdbcConnectionPool.create("jdbc:h2:mem:fdtsucker;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "fdtsucker",
+				"fdtsucker");
 		// setup persistence
 		persistence = new H2Persistence() {
 			private static final long serialVersionUID = 1L;
@@ -90,7 +91,7 @@ public class BaseTest {
 
 	/**
 	 * DatabaseString format: yyyy-MM-dd HH:mm:ss
-	 *
+	 * 
 	 * @return
 	 * @throws ParseException
 	 */
@@ -98,6 +99,5 @@ public class BaseTest {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return sdf.parse(databaseString);
 	}
-
 
 }

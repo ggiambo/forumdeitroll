@@ -1,4 +1,3 @@
-
 package com.forumdeitroll.test.persistence;
 
 import static org.junit.Assert.assertEquals;
@@ -49,7 +48,6 @@ public class ThreadsTest extends BaseTest {
 		res = persistence.getThreadsByLastPost("", 99, 0, null);
 		assertEquals(2, res.getMessages().size());
 
-
 		res = persistence.getThreadsByLastPost("Forum iniziale", 99, 0, null);
 		assertEquals(1, res.getMessages().size());
 
@@ -72,7 +70,6 @@ public class ThreadsTest extends BaseTest {
 
 		res = persistence.getAuthorThreadsByLastPost("", 99, 0, null);
 		assertEquals(0, res.getMessages().size());
-
 
 		res = persistence.getAuthorThreadsByLastPost(null, 99, 0, null);
 		assertEquals(0, res.getMessages().size());
