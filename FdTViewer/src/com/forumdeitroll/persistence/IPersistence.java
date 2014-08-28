@@ -142,7 +142,7 @@ public interface IPersistence extends Serializable {
 	public void editBookmark(BookmarkDTO bookmark);
 
 	/**
-	 * Like/unlike di un messaggio (+1/-1). Ritorna true se l'operazione e' permessa.
+	 * Like/unlike di un messaggio (+1/-1). Ritorna di quanto e' stato modificato il valore del like
 	 * @param msgId
 	 * @param nick
 	 * @param unlike
