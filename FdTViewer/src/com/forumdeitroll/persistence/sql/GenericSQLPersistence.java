@@ -905,6 +905,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
 		Connection conn = null;
 		try {
+			conn = getConnection();
 			notifyPvt(conn, recipient, privateMsg, true);
 		} catch (SQLException e) {
 			LOG.error("Cannot notify " + recipient.getNick() + " id " + privateMsg.getId(), e);
