@@ -42,6 +42,14 @@ insert into notification(id, fromnick, tonick, msgid) values (1, 'admin', 'Sfiga
 insert into notification(id, fromnick, tonick, msgid) values (2, 'Sfigato', 'admin', 7);
 insert into notification(id, fromnick, tonick, msgid) values (3, 'admin', 'Sfigato', 9);
 
+insert into pvt_content (id, sender, content, senddate, subject, replyto, deleted) values (1, 'admin', 'Fai il bravo ;) ...',  '2014-08-29 13:02:43', 'Benvenuto fortunello !', 0, 0);
+insert into pvt_content (id, sender, content, senddate, subject, replyto, deleted) values (2, 'Sfigato', '&gt; Fai il bravo ;) ...<br><br>OK :$', '2014-08-29 13:10:50', 'Re: Benvenuto fortunello !', 0, 0);
+insert into pvt_content (id, sender, content, senddate, subject, replyto, deleted) values (3, 'Sfigato', '&gt; Fai il bravo ;) ...<br><br>Voglio essere admin !', '2014-08-29 13:11:24', 'Re: Benvenuto fortunello !', 0, 0);
+
+insert into pvt_recipient (pvt_id, recipient, read, deleted) values (1, 'Sfigato', 1, 0);
+insert into pvt_recipient (pvt_id, recipient, read, deleted) values (2, 'admin', 0, 0);
+insert into pvt_recipient (pvt_id, recipient, read, deleted) values (3, 'admin', 0, 0);
+
 insert into poll (id, title, text, author, creationdate, updatedate) values (1, 'I sondaggi', 'Sono utili ?', 'Sfigato', '2014-08-19 14:59:21', '2014-08-19 15:00:29');
 insert into poll (id, title, text, author, creationdate, updatedate) values (2, 'Sei perseo ?', 'Eh (newbie) ?', 'admin', '2014-08-19 15:00:25', '2014-08-19 15:00:49');
 
