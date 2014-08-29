@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -238,59 +237,6 @@ public class AuthorTest extends BaseTest {
 		assertNotNull(nicks);
 		assertEquals(1, nicks.size());
 		assertEquals("Sfigato", nicks.get(0));
-	}
-
-	@Test
-	public void test_setHiddenForums() {
-		AuthorDTO author = new AuthorDTO(null);
-		author.setNick("admin");
-		author.setMessages(99); // isValid()
-		persistence.setHiddenForums(author, Arrays.asList("Perbacco", "Accidenti", "Merdaaahhh!!"));
-		List<String> hiddenForums = persistence.getHiddenForums(author);
-		assertNotNull(hiddenForums);
-		assertEquals(3, hiddenForums.size());
-		assertTrue(hiddenForums.contains("Accidenti"));
-		assertTrue(hiddenForums.contains("Perbacco"));
-		assertTrue(hiddenForums.contains("Merdaaahhh!!"));
-
-		author.setNick("Sfigato");
-		author.setMessages(99); // isValid()
-		persistence.setHiddenForums(author, Arrays.asList("Numeri del Lotto"));
-		hiddenForums = persistence.getHiddenForums(author);
-		assertNotNull(hiddenForums);
-		assertEquals(1, hiddenForums.size());
-		assertTrue(hiddenForums.contains("Numeri del Lotto"));
-
-		author.setNick("Inesistente");
-		author.setMessages(99); // isValid()
-		persistence.setHiddenForums(author, Arrays.asList("Numeri del Lotto"));
-		hiddenForums = persistence.getHiddenForums(author);
-		assertNotNull(hiddenForums);
-		assertEquals(1, hiddenForums.size());
-		assertTrue(hiddenForums.contains("Numeri del Lotto"));
-	}
-
-	@Test
-	public void test_getHiddenForums() {
-		AuthorDTO author = new AuthorDTO(null);
-		author.setNick("admin");
-		author.setMessages(99); // isValid()
-		List<String> hiddenForums = persistence.getHiddenForums(author);
-		assertNotNull(hiddenForums);
-		assertEquals(1, hiddenForums.size());
-		assertEquals("Procura Svizzera", hiddenForums.get(0));
-
-		author.setNick("Admin");
-		author.setMessages(99); // isValid()
-		hiddenForums = persistence.getHiddenForums(author);
-		assertNotNull(hiddenForums);
-		assertEquals(0, hiddenForums.size());
-
-		author.setNick("Inesistente");
-		author.setMessages(99); // isValid()
-		hiddenForums = persistence.getHiddenForums(author);
-		assertNotNull(hiddenForums);
-		assertEquals(0, hiddenForums.size());
 	}
 
 	@Test

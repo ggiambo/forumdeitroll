@@ -38,6 +38,10 @@ insert into bookmarks(nick, msgid, subject) values ('admin', 1, 'Primissimo mess
 insert into bookmarks(nick, msgid, subject) values ('Sfigato', 4, 'Stupido reply');
 insert into bookmarks(nick, msgid, subject) values ('Sfigato', 7, 'Mio messaggio');
 
+insert into notification(id, fromnick, tonick, msgid) values (1, 'admin', 'Sfigato', 1);
+insert into notification(id, fromnick, tonick, msgid) values (2, 'Sfigato', 'admin', 7);
+insert into notification(id, fromnick, tonick, msgid) values (3, 'admin', 'Sfigato', 9);
+
 insert into poll (id, title, text, author, creationdate, updatedate) values (1, 'I sondaggi', 'Sono utili ?', 'Sfigato', '2014-08-19 14:59:21', '2014-08-19 15:00:29');
 insert into poll (id, title, text, author, creationdate, updatedate) values (2, 'Sei perseo ?', 'Eh (newbie) ?', 'admin', '2014-08-19 15:00:25', '2014-08-19 15:00:49');
 

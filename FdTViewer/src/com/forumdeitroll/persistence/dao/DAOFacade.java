@@ -37,6 +37,7 @@ public class DAOFacade implements IPersistence {
 	protected QuotesDAO quotesDAO;
 	protected BookmarksDAO bookmarksDAO;
 	protected AdminDAO adminDAO;
+	protected MiscDAO miscDAO;
 
 	public void init(DSLContext jooq) {
 		authorsDAO = new AuthorsDAO(jooq);
@@ -46,6 +47,7 @@ public class DAOFacade implements IPersistence {
 		quotesDAO = new QuotesDAO(jooq);
 		bookmarksDAO = new BookmarksDAO(jooq);
 		adminDAO = new AdminDAO(jooq);
+		miscDAO = new MiscDAO(jooq);
 	}
 
 	public void init(Properties databaseConfig) throws Exception {
@@ -103,7 +105,7 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public List<String> getForums() {
-		return null;
+		return miscDAO.getForums();
 	}
 
 	@Override
@@ -289,22 +291,22 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public List<NotificationDTO> getNotifications(String fromNick, String toNick) {
-		return null;
+		return miscDAO.getNotifications(fromNick, toNick);
 	}
 
 	@Override
 	public void removeNotification(String fromNick, String toNick, long id) {
-
+		miscDAO.removeNotification(fromNick, toNick, id);
 	}
 
 	@Override
 	public void createNotification(String fromNick, String toNick, long id) {
-
+		miscDAO.createNotification(fromNick, toNick, id);
 	}
 
 	@Override
 	public long getLastId() {
-		return 0;
+		return miscDAO.getLastId();
 	}
 
 	@Override
@@ -334,7 +336,7 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public int like(long msgId, String nick, boolean upvote) {
-		return 0;
+		return miscDAO.like(msgId, nick, upvote);
 	}
 
 	@Override
@@ -344,17 +346,17 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public TagDTO addTag(TagDTO tag) {
-		return null;
+		return miscDAO.addTag(tag);
 	}
 
 	@Override
 	public void deleTag(TagDTO tag, boolean isAdmin) {
-
+		miscDAO.deleTag(tag, isAdmin);
 	}
 
 	@Override
 	public void getTags(MessagesDTO messages) {
-
+		miscDAO.getTags(messages);
 	}
 
 	@Override
