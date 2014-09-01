@@ -38,6 +38,7 @@ public class DAOFacade implements IPersistence {
 	protected BookmarksDAO bookmarksDAO;
 	protected AdminDAO adminDAO;
 	protected MiscDAO miscDAO;
+	protected PrivateMsgDAO pvtDAO;
 
 	public void init(DSLContext jooq) {
 		authorsDAO = new AuthorsDAO(jooq);
@@ -48,6 +49,7 @@ public class DAOFacade implements IPersistence {
 		bookmarksDAO = new BookmarksDAO(jooq);
 		adminDAO = new AdminDAO(jooq);
 		miscDAO = new MiscDAO(jooq);
+		pvtDAO = new PrivateMsgDAO(jooq);
 	}
 
 	public void init(Properties databaseConfig) throws Exception {
@@ -160,27 +162,27 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public List<PrivateMsgDTO> getSentPvts(AuthorDTO author, int limit, int pageNr) {
-		return null;
+		return pvtDAO.getSentPvts(author, limit, pageNr);
 	}
 
 	@Override
 	public List<PrivateMsgDTO> getInbox(AuthorDTO author, int limit, int pageNr) {
-		return null;
+		return pvtDAO.getInbox(author, limit, pageNr);
 	}
 
 	@Override
 	public int getInboxPages(AuthorDTO author) {
-		return 0;
+		return pvtDAO.getInboxPages(author);
 	}
 
 	@Override
 	public int getOutboxPages(AuthorDTO author) {
-		return 0;
+		return pvtDAO.getOutboxPages(author);
 	}
 
 	@Override
 	public boolean sendAPvtForGreatGoods(AuthorDTO author, PrivateMsgDTO privateMsg, String[] recipients) {
-		return false;
+		return pvtDAO.sendAPvtForGreatGoods(author, privateMsg, recipients);
 	}
 
 	@Override
@@ -205,7 +207,7 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public PrivateMsgDTO getPvtDetails(long pvt_id, AuthorDTO user) {
-		return null;
+		return pvtDAO.getPvtDetails(pvt_id, user);
 	}
 
 	@Override
