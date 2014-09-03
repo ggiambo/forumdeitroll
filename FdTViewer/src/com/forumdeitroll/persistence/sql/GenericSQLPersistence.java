@@ -767,6 +767,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 		return result;
 	}
 
+	// TODO: Passare una Connection ?
 	private boolean existsRecipient(String recipient) throws SQLException {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -935,7 +936,7 @@ public abstract class GenericSQLPersistence implements IPersistence {
 			ps = conn.prepareStatement("DELETE FROM pvt_recipient WHERE pvt_id IN (SELECT id FROM pvt_content WHERE deleted = 1) AND deleted = 1");
 			ps.execute();
 			close(ps);
-			ps = conn.prepareStatement("DELETE FROM pvt_content WHERE id NOT IN (SELECT id FROM pvt_recipient WHERE deleted = 0) AND deleted = 1");
+			ps = conn.prepareStatement("DELETE FROM pvt_content WHERE id NOT IN (SELECT pvt_id FROM pvt_recipient WHERE deleted = 0) AND deleted = 1");
 			ps.execute();
 			close(ps);
 		} catch (SQLException e) {
