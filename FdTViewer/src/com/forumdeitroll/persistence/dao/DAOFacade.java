@@ -187,22 +187,22 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public void notifyRead(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
-
+		pvtDAO.notifyRead(recipient, privateMsg);
 	}
 
 	@Override
 	public void notifyUnread(AuthorDTO recipient, PrivateMsgDTO privateMsg) {
-
+		pvtDAO.notifyUnread(recipient, privateMsg);
 	}
 
 	@Override
 	public boolean checkForNewPvts(AuthorDTO author) {
-		return false;
+		return pvtDAO.checkForNewPvts(author);
 	}
 
 	@Override
 	public void deletePvt(long pvt_id, AuthorDTO user) {
-
+		pvtDAO.deletePvt(pvt_id, user);
 	}
 
 	@Override

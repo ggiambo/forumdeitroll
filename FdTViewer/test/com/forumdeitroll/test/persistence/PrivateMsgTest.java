@@ -101,6 +101,7 @@ public class PrivateMsgTest extends BaseTest {
 
 		String[] recipients = new String[] {
 				"admin",
+				"",
 				"Sfigato"
 		};
 
@@ -138,20 +139,34 @@ public class PrivateMsgTest extends BaseTest {
 
 		List<PrivateMsgDTO> messages = persistence.getInbox(author, 99, 0);
 		assertNotNull(messages);
-		assertEquals(1, messages.size());
+		assertEquals(2, messages.size());
 
 		pvt = messages.get(0);
-		assertEquals(getDateFromDatabaseString("2014-08-29 13:02:43"), pvt.getDate());
-		assertEquals("admin", pvt.getFromNick());
-		assertEquals(1, pvt.getId());
+		assertEquals(getDateFromDatabaseString("2014-08-29 13:11:24"), pvt.getDate());
+		assertEquals("Sfigato", pvt.getFromNick());
+		assertEquals(3, pvt.getId());
 		assertEquals(0, pvt.getReplyTo());
-		assertEquals("Benvenuto fortunello !", pvt.getSubject());
+		assertEquals("Re: Benvenuto fortunello !", pvt.getSubject());
 		assertEquals(null, pvt.getText());
 		List<ToNickDetailsDTO> toNicks = pvt.getToNick();
 		assertNotNull(toNicks);
 		assertEquals(1, toNicks.size());
 		ToNickDetailsDTO toNick = toNicks.get(0);
-		assertEquals("Sfigato", toNick.getNick());
+		assertEquals("admin", toNick.getNick());
+		assertFalse(toNick.isRead());
+
+		pvt = messages.get(1);
+		assertEquals(getDateFromDatabaseString("2014-08-29 13:10:50"), pvt.getDate());
+		assertEquals("Sfigato", pvt.getFromNick());
+		assertEquals(2, pvt.getId());
+		assertEquals(0, pvt.getReplyTo());
+		assertEquals("Re: Benvenuto fortunello !", pvt.getSubject());
+		assertEquals(null, pvt.getText());
+		toNicks = pvt.getToNick();
+		assertNotNull(toNicks);
+		assertEquals(1, toNicks.size());
+		toNick = toNicks.get(0);
+		assertEquals("admin", toNick.getNick());
 		assertTrue(toNick.isRead());
 
 	}
@@ -220,22 +235,43 @@ public class PrivateMsgTest extends BaseTest {
 
 	@Test
 	public void test_getPvtDetails() throws Exception {
+		// pvt as sender
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("Sfigato");
 
-		PrivateMsgDTO pvt = persistence.getPvtDetails(2, author);
-		assertNotNull(pvt);
-		assertEquals(getDateFromDatabaseString("2014-08-29 13:10:50"), pvt.getDate());
-		assertEquals("Sfigato", pvt.getFromNick());
-		assertEquals(2, pvt.getId());
-		assertEquals(0, pvt.getReplyTo());
-		assertEquals("Re: Benvenuto fortunello !", pvt.getSubject());
-		assertEquals("&gt; Fai il bravo ;) ...<br><br>OK :$", pvt.getText());
-		assertNotNull(pvt.getToNick());
-		List<ToNickDetailsDTO> toNicks = pvt.getToNick();
+		PrivateMsgDTO pvtSfigato = persistence.getPvtDetails(2, author);
+		assertNotNull(pvtSfigato);
+		assertEquals(getDateFromDatabaseString("2014-08-29 13:10:50"), pvtSfigato.getDate());
+		assertEquals("Sfigato", pvtSfigato.getFromNick());
+		assertEquals(2, pvtSfigato.getId());
+		assertEquals(0, pvtSfigato.getReplyTo());
+		assertEquals("Re: Benvenuto fortunello !", pvtSfigato.getSubject());
+		assertEquals("&gt; Fai il bravo ;) ...<br><br>OK :$", pvtSfigato.getText());
+		assertNotNull(pvtSfigato.getToNick());
+		List<ToNickDetailsDTO> toNicks = pvtSfigato.getToNick();
 		assertNotNull(toNicks);
 		assertEquals(1, toNicks.size());
 		ToNickDetailsDTO toNick = toNicks.get(0);
+		assertEquals("admin", toNick.getNick());
+		assertFalse(toNick.isRead());
+
+		// pvt as recipient
+		author = new AuthorDTO(null);
+		author.setNick("admin");
+
+		PrivateMsgDTO pvtAdmin = persistence.getPvtDetails(2, author);
+		assertNotNull(pvtAdmin);
+		assertEquals(pvtSfigato.getDate(), pvtAdmin.getDate());
+		assertEquals(pvtSfigato.getFromNick(), pvtAdmin.getFromNick());
+		assertEquals(pvtSfigato.getId(), pvtAdmin.getId());
+		assertEquals(pvtSfigato.getReplyTo(), pvtAdmin.getReplyTo());
+		assertEquals(pvtSfigato.getSubject(), pvtAdmin.getSubject());
+		assertEquals(pvtSfigato.getText(), pvtAdmin.getText());
+		assertNotNull(pvtAdmin.getToNick());
+		toNicks = pvtAdmin.getToNick();
+		assertNotNull(toNicks);
+		assertEquals(1, toNicks.size());
+		toNick = toNicks.get(0);
 		assertEquals("admin", toNick.getNick());
 		assertFalse(toNick.isRead());
 	}
