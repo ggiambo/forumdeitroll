@@ -43,7 +43,7 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 			ps.setString(1, search);
 			ps.setInt(2, limit);
 			ps.setInt(3, limit*page);
-			return getMessages(ps.executeQuery(), false);
+			return getMessages(conn, ps.executeQuery(), false);
 		} catch (SQLException e) {
 			LOG.error("Cannot get messages", e);
 		} finally {
@@ -51,7 +51,7 @@ public class PostgreSQLPersistence extends GenericSQLPersistence {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public List<DigestArticleDTO> getReadersDigest() {
 		throw new UnsupportedOperationException();

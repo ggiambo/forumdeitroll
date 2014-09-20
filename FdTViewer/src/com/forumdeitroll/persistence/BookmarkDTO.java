@@ -11,13 +11,13 @@ public class BookmarkDTO implements Serializable {
 	public String toString() {
 		return "BookmarkDTO{nick="+nick+";threadId="+msgId+"subject="+subject+"}";
 	}
-	
+
 	public long getMsgId() {
 		return msgId;
 	}
 
-	public void setMsgId(long threadId) {
-		this.msgId = threadId;
+	public void setMsgId(long msgId) {
+		this.msgId = msgId;
 	}
 
 	public String getNick() {
