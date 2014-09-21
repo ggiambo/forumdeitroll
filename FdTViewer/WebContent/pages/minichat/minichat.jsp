@@ -25,7 +25,9 @@
 				<c:forEach var="message" items="${messages}">
 					<tr>
 						<td class="when">
-							<fmt:formatDate value="${message.when}" pattern="HH:mm"/>
+							<span title="<fmt:formatDate value="${message.when}" pattern="dd/MM/yyyy HH:mm"/>">
+								<fmt:formatDate value="${message.when}" pattern="HH:mm"/>
+							</span>
 						</td>
 						<td class="who">
 							<c:if test="${message.irc}">

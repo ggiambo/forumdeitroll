@@ -50,7 +50,7 @@
 			</div>
 		
 			<div style="margin-bottom:5px"><label for="subject">Oggetto:</label>
-				<input type="text" name="subject" id="subject" value="${subject}"/>
+				<input type="text" name="subject" id="subject" value="<c:out value="${subject}" escapeXml="true"/>"/>
 			</div>
 		
 			<%-- input area --%>

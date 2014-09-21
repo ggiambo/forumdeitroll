@@ -68,7 +68,7 @@
 					</c:otherwise>
 				</c:choose>
                 <c:if test="${msg.author.preferences['super'] == 'yes'}">
-                    <div style="color:#900000;font-size:0.8em;font-style:normal;font-weight:bold;">Zuuper User</div>
+                    <div style="color:#009090;font-size:0.8em;font-style:normal;font-weight:bold;" title="Vi naso gli IP">Utente privilegiato</div>
                 </c:if>
 			</div>
 			<div class="msgDate">il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/></div>

@@ -55,7 +55,7 @@
 							</c:if>
 						</td>
 						<td class="pvtSubject">
-							<a href="Pvt?action=show&amp;id=${pvt.id}">${pvt.subject}</a>
+							<a href="Pvt?action=show&amp;id=${pvt.id}"><c:out value="${pvt.subject}" escapeXml="true"/></a>
 						</td>
 						<td class="pvtDate">
 							<a href="Pvt?action=show&amp;id=${pvt.id}"><fmt:formatDate value="${pvt.date}" pattern="dd.MM.yyyy"/>&nbsp;<fmt:formatDate value="${pvt.date}" pattern="HH:mm"/></a>
