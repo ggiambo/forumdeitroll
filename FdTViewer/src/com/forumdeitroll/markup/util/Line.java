@@ -110,7 +110,7 @@ public class Line {
 			}
 		}
 		
-		if (state.quoteLevel > 0) {
+		if (state.quoteLevel > 0 && quoteLvl != state.quoteLevel) {
 			io.write("</span>");
 		}
 		boolean br = true;
@@ -131,7 +131,7 @@ public class Line {
 				state.multiLineQuoteStarted = true;
 			}
 		}
-		if (quoteLvl > 0) {
+		if (quoteLvl > 0 && quoteLvl != state.quoteLevel) {
 			io.write(String.format("<span class='quoteLvl%d'>", (quoteLvl % 4 == 0 ? 4 : quoteLvl % 4)));
 		}
 		
