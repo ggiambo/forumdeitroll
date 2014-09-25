@@ -39,7 +39,7 @@
 						Non Autenticato
 					</c:when>
 					<c:otherwise>
-						${msg.author.nick}
+						${msg.author.nick}&nbsp;
 					</c:otherwise>
 				</c:choose>
 				<fmt:formatDate value="${msg.date}" pattern="yyyy-MM-dd HH:mm"/>
