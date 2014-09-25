@@ -17,7 +17,7 @@
 	</fdt:delayedScript>
 	
 	<c:set var="msg" value="${show}" scope="request"/>
-	<div class="messagesBox" id="showMsg">
+	<div class="messagesBox msgOdd" id="showMsg">
 		<jsp:include page="../incMessage.jsp"/>
 	</div>
 	
