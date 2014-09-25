@@ -79,6 +79,31 @@ public class ThreadTree {
 			return children;
 		}
 
+		public void subjectElision(String prevTitle) {
+			if (content.getSubject().equals(prevTitle) || (content.getSubject().startsWith("Re: ") && content.getSubject().substring(4).equals(prevTitle))) {
+				content.setSubject("&#9632;");
+			} else {
+				prevTitle = content.getSubject();
+			}
+			for (final TreeNode child: children) {
+				child.subjectElision(prevTitle);
+			}
+		}
+
+		public TreeNode setNext(final MessageDTO prev) {
+			if (prev != null) {
+				prev.setNextId(this.content.getId());
+				content.setPrevId(prev.getId());
+			}
+
+			TreeNode curPrev = this;
+
+			for (final TreeNode child: children) {
+				curPrev = child.setNext(curPrev.content);
+			}
+
+			return curPrev;
+		}
 	}
 
 }

@@ -7,6 +7,8 @@ public class MessageDTO extends ThreadDTO {
 
 	private long parentId = -1;
 	private long threadId = -1;
+	private long nextId = -1;
+	private long prevId = -1;
 	private String text = null;
 
 	private double searchRelevance = -1.0;
@@ -36,6 +38,22 @@ public class MessageDTO extends ThreadDTO {
 
 	public void setThreadId(long threadId) {
 		this.threadId = threadId;
+	}
+
+	public long getNextId() {
+		return nextId;
+	}
+
+	public void setNextId(final long nextId) {
+		this.nextId = nextId;
+	}
+
+	public long getPrevId() {
+		return prevId;
+	}
+
+	public void setPrevId(final long prevId) {
+		this.prevId = prevId;
 	}
 
 	public String getText() {

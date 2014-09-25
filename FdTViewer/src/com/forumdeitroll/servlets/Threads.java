@@ -91,6 +91,42 @@ public class Threads extends MainServlet {
 
 		return "thread.jsp";
 	}
+	
+	/**
+	* Tutti i messaggi del thread, ma mostra solo i titoli
+	*/
+	@Action
+	String softvThread(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String stringThreadId = req.getParameter("threadId");
+		if (StringUtils.isEmpty(stringThreadId)) {
+			return init(req, res);
+		}
+		String stringShowId = req.getParameter("showId");
+		if (StringUtils.isEmpty(stringShowId)) {
+			stringShowId = stringThreadId;
+		}
+		Long showId = Long.parseLong(stringShowId);
+		String forum = req.getParameter("forum");
+		addSpecificParam(req, "forum",  forum);
+		Long threadId = Long.parseLong(stringThreadId);
+		List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
+		MessageDTO showMsg = null;
+		for (final MessageDTO msg: msgs) {
+			if (msg.getId() == showId) {
+				showMsg = msg;
+				break;
+			}
+		}
+		final ThreadTree.TreeNode root = new ThreadTree(msgs).getRoot();
+		root.subjectElision("");
+		root.setNext(null);
+		req.setAttribute("root", root);
+		req.setAttribute("show", showMsg);
+		setWebsiteTitlePrefix(req, getPersistence().getMessage(threadId).getSubject());
+		setNavigationMessage(req, NavigationMessage.info("Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>"));
+		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3)); 
+		return "softv.jsp";
+	}
 
 	/**
 	 * Chiamato via ajax, apre il thread tree

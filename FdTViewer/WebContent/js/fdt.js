@@ -343,6 +343,10 @@ $("body").on("keypress", function(e) {
 	var target = $(e.target);
 	if (!target.is("input") && !target.is("textarea")) {
 		if (e.charCode == 106) {
+			if (window.location.href.match(/action=softvThread/)) {
+				document.getElementById("softvNext").onclick();
+				return;
+			}
 			var scrollToMsgIndex = $.data(document.body, "scrollToMsgIndex");
 			if (scrollToMsgIndex == undefined) {
 				scrollToMsgIndex = -1;
@@ -353,6 +357,10 @@ $("body").on("keypress", function(e) {
 			}, 200);
 		}
 		if (e.charCode == 107) {
+			if (window.location.href.match(/action=softvThread/)) {
+				document.getElementById("softvPrev").onclick();
+				return;
+			}
 			var scrollToMsgIndex = $.data(document.body, "scrollToMsgIndex");
 			if (scrollToMsgIndex == undefined) {
 				scrollToMsgIndex = $('div[id^="msg"]').length;
@@ -778,4 +786,37 @@ function showDropDownReply(event, msgId) {
 
 function hideDropDownReply(event, msgId) {
 	$(event.target.parentNode.parentNode).hide();
+}
+
+function softvSwap(tid, mid, event) {
+	jQuery.ajax({
+		type: "GET",
+		dataType: "html",
+		url: "Messages?action=getById&stripped=1&msgId=" + mid,
+		success: function(data) {
+			document.getElementById("showMsg").innerHTML = data;
+			var ls = document.getElementsByClassName("softvSelected");
+			for (var i = 0; i < ls.length; ++i) {
+				ls[i].classList.remove("softvSelected");
+			}
+			document.getElementById("softvEntry" + mid).classList.add("softvSelected");
+			document.getElementById("softvPrev").onclick = function() {
+				softvMove(tid, mid, prevMap);
+			};
+			document.getElementById("softvNext").onclick = function() {
+				softvMove(tid, mid, nextMap);
+			};
+			history.pushState(null, "", "Threads?action=softvThread&threadId=" + tid + "#softvMsg" + mid)
+		}
+	});
+	if (event != null) {
+		event.stopPropagation();
+	}
+	return false;
+}
+
+function softvMove(tid, mid, m) {
+	nmid = m[mid];
+	if (nmid >= 0) softvSwap(tid, nmid, null);
+	return false;
 }

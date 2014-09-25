@@ -1323,6 +1323,10 @@ ul.threadlist {
 	padding: 0;
 }
 
+ul.largerspacing {
+	border-left: 10px solid gray;
+}
+
 ul.dl0 {
 	border-color: #FFFFFF;
 }
@@ -1705,3 +1709,10 @@ div.fakeAdContent {
 	font-family: arial,sans-serif;
 }
 
+div.softvMsg {
+	font-family: monospace;
+}
+
+.softvSelected {
+	font-weight: bold;
+}

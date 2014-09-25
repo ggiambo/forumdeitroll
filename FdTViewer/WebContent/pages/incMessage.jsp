@@ -245,7 +245,6 @@
 					</a>
 				</div>
 			</c:if>
-
 		</c:if>
 
 		<div class="buttonBarButton buttonBarRispondi">
