@@ -150,7 +150,9 @@ public class Messages extends MainServlet {
 		messages.add(getPersistence().getMessage(msgId));
 		req.setAttribute("messages", messages);
 		req.setAttribute("resultSize", messages.size());
-		setAntiXssToken(req);
+		if (req.getParameter("stripped") == null) {
+			setAntiXssToken(req);
+		}
 
 		// request from a notification ?
 		String notificationId = req.getParameter("notificationId");
@@ -166,7 +168,12 @@ public class Messages extends MainServlet {
 			}
 		}
 
-		return "messages.jsp";
+		if (req.getParameter("stripped") == null) {
+			return "messages.jsp";
+		}
+
+		getServletContext().getRequestDispatcher("/pages/messages/softvMessage.jsp").forward(req, res);
+		return null;
 	}
 
 	/**
@@ -657,9 +664,15 @@ public class Messages extends MainServlet {
 			content.append("/Messages?action=init");
 		}
 
+		boolean softvFlag = false;
 		if (submitURI != null) {
 			if (submitURI.getPath().endsWith("/Threads")) {
-				content.append("/Threads?action=getByThread&threadId=").append(msg.getThreadId());
+				if (submitURI.getQuery().indexOf("action=softvThread") >= 0) {
+					softvFlag = true;
+					content.append("/Threads?action=softvThread&threadId=").append(msg.getThreadId());
+				} else {
+					content.append("/Threads?action=getByThread&threadId=").append(msg.getThreadId());
+				}
 			} else if (submitURI.getPath().endsWith("/Messages")) {
 				final String rawQuery = submitURI.getQuery();
 				String navForum = null;
@@ -684,7 +697,11 @@ public class Messages extends MainServlet {
 		}
 
 		content.append("&rnd=").append(System.currentTimeMillis());
-		content.append("#msg").append(msg.getId());
+		if (softvFlag) {
+			content.append("#softvMsg").append(msg.getId());
+		} else {
+			content.append("#msg").append(msg.getId());
+		}
 		writer.name("content").value(content.toString());
 		writer.endObject();
 		writer.flush();
