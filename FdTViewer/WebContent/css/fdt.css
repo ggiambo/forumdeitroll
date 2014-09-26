@@ -1716,3 +1716,7 @@ div.softvMsg {
 .softvSelected {
 	font-weight: bold;
 }
+
+.softvMsg a:link {
+	color: green !important;
+}
