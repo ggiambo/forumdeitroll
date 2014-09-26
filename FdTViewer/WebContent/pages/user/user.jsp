@@ -242,6 +242,14 @@
 						</div>
 						<div style="clear: both;"></div>
 					</div>
+					<div>
+						<div class="inputUserPanel">
+							<input type="checkbox" name="<%=User.PREF_SOFTV%>" id="<%=User.PREF_SOFTV%>" ${loggedUser.preferences['softv']} />
+						</div>
+						<div class="lblUserPanel">
+							<label for="<%=User.PREF_SOFTV%>" class="lbl">Seleziona se sei sarrusofono</label>
+						</div>
+					</div>
 					<input type="submit" value="Modifica" class="sendUserPanel" />
 				</form>
 				<div style="clear: both;"></div>

@@ -18,6 +18,9 @@
 		<div id="threadTree_${thread.id}" class="${rowclass} threadBox">
 			<span class="threadTitle">
 			<c:choose>
+				<c:when test="${not empty loggedUser && loggedUser.preferences['softv'] == 'checked'}">
+					<a href="Threads?action=softvThread&threadId=${thread.id}">${thread.subject}</a>
+				</c:when>
 				<c:when test="${param['action'] == 'getThreadsByLastPost' || param['action'] == 'getAuthorThreadsByLastPost'}">
 					<a href="Threads?action=getByThread&threadId=${thread.id}#msg${thread.lastId}">${thread.subject}</a>
 				</c:when>
