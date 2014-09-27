@@ -29,7 +29,7 @@
 				<a href=Threads?action=getThreadsByLastPost class=btn>Ultime</a>
 			</li>
 			<li class="col-1">
-				<a href=Threads?action=TODO class=btn onclick="alert('TODO'); return false">Autori</a>
+				<a href=Authors?action=getAuthors class=btn>Autori</a>
 			</li>
 			<li class="col-1">
 				<a href=Messages?action=newMessage class=btn onclick="alert('TODO'); return false">Nuovo</a>

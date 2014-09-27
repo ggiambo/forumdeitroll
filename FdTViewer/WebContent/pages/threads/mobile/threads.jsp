@@ -58,7 +58,7 @@
 								<c:param name="action" value="getAvatar"/>
 								<c:param name="nick" value="${thread.author.nick}"/>
 							</c:url>
-							<img src="${avatarURL}" style="width: 16px; height: 16px;"></a>
+							<img src="${avatarURL}" class=avatar></a>
 					</c:otherwise>
 				</c:choose>
 			</span>

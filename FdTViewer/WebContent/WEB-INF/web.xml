@@ -99,6 +99,14 @@
   	<servlet-name>Admin</servlet-name>
   	<url-pattern>/Admin</url-pattern>
   </servlet-mapping>
+  <servlet>
+  	<servlet-name>Authors</servlet-name>
+  	<servlet-class>com.forumdeitroll.servlets.Authors</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>Authors</servlet-name>
+  	<url-pattern>/Authors</url-pattern>
+  </servlet-mapping>
   <jsp-config>
     <taglib>
       <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
@@ -143,6 +151,7 @@
     <url-pattern>/ReadersDigest</url-pattern>
     <url-pattern>/Minichat</url-pattern>
     <url-pattern>/Admin/*</url-pattern>
+    <url-pattern>/Authors</url-pattern>
   </filter-mapping>
   <servlet>
     <description></description>
