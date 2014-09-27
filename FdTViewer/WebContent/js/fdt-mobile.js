@@ -42,3 +42,47 @@ var authorsearch = function(element, event) {
 	}
 	return true;
 };
+
+var domready = function(callback) {
+	if (domready.called) {
+		console.log('domready called')
+		callback();
+		return;
+	}
+	if (!domready.configured) {
+		console.log('configuring domready')
+		document.addEventListener("DOMContentLoaded", function(event) {
+			console.log('domready called')
+			domready.called = true;
+			var i;
+			for (i in domready.callbacks) {
+				var callback = domready.callbacks[i];
+				try {
+					callback();
+				} catch (e) {}
+			}
+		});
+		domready.callbacks = [];
+		domready.configured = true;
+	}
+	domready.callbacks.push(callback);
+};
+
+domready(function() {
+	var value = localStorage['toggleQuotes'];
+	if (value === 'true') {
+		var style = document.createElement('style');
+		style.appendChild(document.createTextNode("[class^='quoteLvl'], [class^='quoteLvl'] + br, .quote-container, .quote-container + br { visibility: collapse !important; display: none !important; }"));
+		document.body.appendChild(style);
+	}
+});
+
+var toggleQuotes = function() {
+	var value = localStorage['toggleQuotes'];
+	if (value === 'true') {
+		localStorage['toggleQuotes'] = 'false';
+	} else {
+		localStorage['toggleQuotes'] = 'true';
+	}
+	location.reload();
+};

@@ -10,7 +10,7 @@
 			<c:set var="rowclass" value="msgOdd"/>
 		</c:otherwise>
 	</c:choose>
-	<div id="threadTree_${thread.id}" class="${rowclass} threadBox">
+	<div id="threadTree_${thread.id}" class="${rowclass} threadBox" onclick="this.childNodes[1].click()">
 		<c:choose>
 			<c:when test="${param['action'] == 'getThreadsByLastPost' || param['action'] == 'getAuthorThreadsByLastPost'}">
 				<a href="Threads?action=getByThread&threadId=${thread.id}#msg${thread.lastId}">${thread.subject}</a>

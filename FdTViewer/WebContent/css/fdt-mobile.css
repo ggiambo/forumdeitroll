@@ -79,6 +79,11 @@ a {
 * {
 	background-color: transparent;
 }
+
+input {
+	height: 2em;
+}
+
 /* suoranciata's dead simple grid layout*/
 .row {
 	width: 100%;
@@ -155,20 +160,29 @@ a {
 }
 
 .avatar {
-	width: 32px;
+	height: 32px;
 }
 
 .msgInfo {
-	background-color: #fafafa;
-	margin: 4px 5px;
+	text-align: right;
 }
 
 .messageBox {
 	margin: 4px 5px;
 	border: 1px solid #D3D3D3;
+	min-height: 64px;
 }
 
 .threadBox {
 	margin: 4px 5px;
 	border: 1px solid #D3D3D3;
+}
+
+.threadDetail {
+	text-align: right;
+	clear: both;
+}
+
+.threadlist {
+	padding-left: .3em;
 }

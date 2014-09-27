@@ -16,18 +16,20 @@
 			<c:set var="rowclass" value="msgOdd"/>
 		</c:otherwise>
 	</c:choose>
-	<a class="${rowclass}" href="Messages?action=getByAuthor&author=${author.nick}">
-		<img src="Misc?action=getAvatar&amp;nick=${author.nick}" class=avatar>
-		<span class=nickname>${author.nick}</span>
-		(${author.messages}
-		<c:choose>
-			<c:when test="${author.messages != 1}">
-				messaggi)
-			</c:when>
-			<c:otherwise>
-				messaggio)
-			</c:otherwise>
-		</c:choose>
-	</a>
+	<div class="${rowclass}" onclick="this.childNodes[1].click()">
+		<a href="Messages?action=getByAuthor&author=${author.nick}">
+			<img src="Misc?action=getAvatar&amp;nick=${author.nick}" class=avatar>
+			<span class=nickname>${author.nick}</span>
+			(${author.messages}
+			<c:choose>
+				<c:when test="${author.messages != 1}">
+					messaggi)
+				</c:when>
+				<c:otherwise>
+					messaggio)
+				</c:otherwise>
+			</c:choose>
+		</a>
+	</div>
 	<br>
 </c:forEach>

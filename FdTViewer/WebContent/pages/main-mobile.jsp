@@ -38,6 +38,9 @@
 				<span class=btn>Menu</span>
 				<ul>
 					<li><a href='javascript:classico()'>Classico</a></li>
+					<li>
+						<a href='javascript:toggleQuotes()'>Mostra/Nascondi<br>Quotes</a>
+					</li>
 				</ul>
 			</li>
 		</ul>
