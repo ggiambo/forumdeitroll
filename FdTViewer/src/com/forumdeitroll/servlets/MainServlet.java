@@ -101,7 +101,11 @@ public abstract class MainServlet extends HttpServlet {
 				if (req.getAttribute("websiteTitle") == null)
 					setWebsiteTitlePrefix(req, "");
 				req.setAttribute("page", page);
-				getServletContext().getRequestDispatcher("/pages/main.jsp").forward(req, res);
+				if (isMobileView(req)) {
+					getServletContext().getRequestDispatcher("/pages/main-mobile.jsp").forward(req, res);
+				} else {
+					getServletContext().getRequestDispatcher("/pages/main.jsp").forward(req, res);
+				}
 			}
 		} catch (Exception e) {
 			handleException(e, req, res);
@@ -308,6 +312,24 @@ public abstract class MainServlet extends HttpServlet {
 			}
 		}
 		return null;
+	}
+
+	@Action
+	String updateMobileView(HttpServletRequest req, HttpServletResponse res) {
+		if (isMobileView(req)) {
+			req.getSession().removeAttribute("mobileView");
+		} else {
+			req.getSession().setAttribute("mobileView", "true");
+		}
+		return null;
+	}
+
+	protected static boolean isMobileView(HttpServletRequest req) {
+		return req.getSession().getAttribute("mobileView") != null && req.getSession().getAttribute("mobileView").equals("true");
+	}
+
+	protected static void setIncludeNoMobile(HttpServletRequest req) {
+		req.setAttribute("includeNoMobile", "true");
 	}
 
 	/**

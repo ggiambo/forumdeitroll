@@ -1,0 +1,174 @@
+/* importato da fdt.css per compatibilita' */
+
+img.emoticon {
+	border: none;
+	vertical-align: bottom;
+}
+
+span.quoteLvl4 {
+	color: #AF6F00;
+}
+
+span.quoteLvl3 {
+	color: #9A00EF;
+}
+
+span.quoteLvl2 {
+	color: #00AF59;
+}
+
+span.quoteLvl1 {
+	color: #007BDF;
+}
+
+div.quote-container {
+	height: 16px;
+	background-image: url(../images/plus_sign.gif);
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+div.quote-container:after {
+	content: "clicca per aprire";
+	margin-left: 25px;
+}
+div.quote-container * {
+	display: none;
+}
+
+div.quote-closer {
+	background-color: transparent;
+	background-image: url(../images/minus_sign.gif);
+	background-repeat: no-repeat;
+	cursor: pointer;
+	padding-top: 11px;
+}
+
+.msgEven {
+	background-color: #FFFFFF;
+}
+
+.msgOdd {
+	background-color: #F6F6F6;
+}
+
+.favicon {
+	width: 16px;
+	height: 16px;
+	margin-right: 6px;
+}
+
+span.tagForum {
+	background-color: darkRed;
+	border-radius: 5px;
+	color: white;
+	font-weight: bold;
+	font-size: 70%;
+	padding: 0.1em 0.5em;
+}
+
+/* minimal reset */
+body {
+	font-family: sans-serif;
+}
+li {
+	list-style-type: none;
+}
+a {
+	text-decoration: none;
+}
+* {
+	background-color: transparent;
+}
+/* suoranciata's dead simple grid layout*/
+.row {
+	width: 100%;
+	margin: 0 auto;
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+.row > .col-1 { width: 16.66666667% }
+.row > .col-2 { width: 33.33333333% }
+.row > .col-3 { width: 50% }
+.row > .col-4 { width: 66.66666667% }
+.row > .col-5 { width: 83.33333333% }
+.row > .col-6 { width: 100% }
+.row > [class^='col-'] {
+	margin: 0;
+	padding: 0;
+	float: left;
+}
+.row > [class^='col']:last-child {
+	float: right;
+}
+
+/* suoranciata's dead simple pure css dropdown menu */
+.menu > ul {
+	display: none;
+	background-color: lightgray;
+	padding-left: 0;
+}
+.menu:hover > ul {
+	display: block;
+}
+.menu > ul > li {
+	height: 2em;
+	padding-top: .2em;
+	background-color: #fafafa;
+	border:1px solid #84bbf3;
+}
+
+/* styling */
+.header {
+	height: 3em;
+	position: fixed;
+	top: 0;
+	left: 0;
+	
+}
+.header>li {
+	text-align: center;
+	vertical-align: center;
+}
+.main {
+	margin-top: 3.6em /* stessa di altezza .header piu' un po' */
+}
+
+.btn {
+	box-shadow:inset 0px 1px 0px 0px #dcecfb;
+	background-color:#bddbfa;
+	border:1px solid #84bbf3;
+	display:inline-block;
+	color:#ffffff;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0px #528ecc;
+	width: 100%;
+	height: 3em;
+	padding-top: .5em;
+}
+.btn:hover {
+	background: #bddbfa;
+}.btn:active {
+	position:relative;
+	top:1px;
+}
+
+.avatar {
+	width: 32px;
+}
+
+.msgInfo {
+	background-color: #fafafa;
+	margin: 4px 5px;
+}
+
+.messageBox {
+	margin: 4px 5px;
+	border: 1px solid #D3D3D3;
+}
+
+.threadBox {
+	margin: 4px 5px;
+	border: 1px solid #D3D3D3;
+}
