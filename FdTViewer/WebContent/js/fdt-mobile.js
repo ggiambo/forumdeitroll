@@ -45,16 +45,13 @@ var authorsearch = function(element, event) {
 
 var domready = function(callback) {
 	if (domready.called) {
-		console.log('domready called')
 		callback();
 		return;
 	}
 	if (!domready.configured) {
-		console.log('configuring domready')
 		document.addEventListener("DOMContentLoaded", function(event) {
-			console.log('domready called')
 			domready.called = true;
-			var i;
+			var i = null;
 			for (i in domready.callbacks) {
 				var callback = domready.callbacks[i];
 				try {
