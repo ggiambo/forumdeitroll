@@ -825,6 +825,9 @@ function softvMove(tid, mid, m) {
 function forceMobileView() {
 	$.ajax({
 		url : 'Messages?action=updateMobileView',
-		complete : function() { location.reload(); }
+		complete : function() {
+			try { localStorage['mobileNagScreen'] = 'false'} catch (e) {}
+			location.reload();
+		}
 	});
 }
