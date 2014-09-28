@@ -186,7 +186,11 @@ public class Misc extends HttpServlet {
 	 * @throws Exception
 	 */
 	private void logoutAction(HttpServletRequest req, HttpServletResponse res) {
+		boolean mobileView = MainServlet.isMobileView(req);
 		req.getSession().invalidate();
+		if (mobileView) {
+			req.getSession().setAttribute("mobileView", "true");
+		}
 		res.setStatus(302);
 		res.setContentType("text/html");
 		res.setHeader("Location", "Messages?disclaimer=OK");

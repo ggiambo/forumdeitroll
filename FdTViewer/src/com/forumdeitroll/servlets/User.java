@@ -80,6 +80,11 @@ public class User extends MainServlet {
 		setWebsiteTitlePrefix(req, "");
 		if (loggedUser != null && loggedUser.isValid()) {
 			req.setAttribute(PREF_HIDDEN_FORUMS, getPersistence().getHiddenForums(loggedUser));
+			if (isMobileView(req)) {
+				res.setHeader("Location", "Messages?action=getMessages");
+				res.sendError(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+				return null;
+			}
 			return "user.jsp";
 		}
 		loginRatelimiter.increment(IPMemStorage.requestToIP(req));

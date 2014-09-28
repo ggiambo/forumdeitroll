@@ -16,6 +16,7 @@
 	</c:otherwise>
 </c:choose>
 
+<a href="#msg${msg.id}"></a>
 <div class="messageBox ${rowclass}">
 	<div class=msgHeader>
 		<div class=msgTitle>
@@ -37,6 +38,7 @@
 				</c:when>
 				<c:otherwise></c:otherwise>
 			</c:choose>
+			<br>
 			il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/>
 		</div>
 	</div>
@@ -48,5 +50,19 @@
 			<c:set var="rowclass" value="msgOdd"/>
 		</c:otherwise>
 	</c:choose>
-	<fdt:msg search="${param.search}" signature="false" author="${msg.author}">${msg.text}</fdt:msg>
+	<div class=msgContent>
+		<fdt:msg search="${param.search}" signature="false" author="${msg.author}">${msg.text}</fdt:msg>
+		<div class=row>
+			<div class=col-1-2>&nbsp;</div>
+			<div class=col-2>
+				<a href="Messages?action=mobileComposer&amp;replyToId=${msg.id}&type=quote" class=btn>Quota</a>
+			</div>
+			<div class=col-1>&nbsp;</div>
+			<div class=col-2>
+				<a href="Messages?action=mobileComposer&amp;replyToId=${msg.id}" class=btn>Rispondi</a>
+			</div>
+			<div class=col-1-2>&nbsp;</div>
+		</div>
+		<div class=row>&nbsp;</div>
+	</div>
 </div>

@@ -8,3 +8,7 @@
 	<c:set var="index" value="${index.count}" scope="request"></c:set>
 	<jsp:include page="incMessage.jsp"></jsp:include>
 </c:forEach>
+
+<fdt:delayedScript>
+domready(configureMessagesView);
+</fdt:delayedScript>

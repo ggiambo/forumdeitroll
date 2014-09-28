@@ -13,6 +13,7 @@ public class Authors extends MainServlet {
 		return getAuthors(req, res);
 	}
 
+	// solo vista mobile
 	@Action
 	String getAuthors(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		boolean onlyActive = true;
@@ -22,6 +23,7 @@ public class Authors extends MainServlet {
 		}
 		List<AuthorDTO> result = getPersistence().getAuthors(onlyActive);
 		req.setAttribute("authors", result);
+		setNavigationMessage(req, NavigationMessage.info("Autori"));
 		return "authors.jsp";
 	}
 }

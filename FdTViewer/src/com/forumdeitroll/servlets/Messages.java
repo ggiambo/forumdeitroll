@@ -225,6 +225,64 @@ public class Messages extends MainServlet {
 		return "newMessage.jsp";
 	}
 
+	private static String getReplySubject(String parentSubject) {
+		if (!parentSubject.startsWith("Re:")) {
+			parentSubject = "Re: " + parentSubject;
+		}
+		return parentSubject.substring(0, Math.min(MAX_SUBJECT_LENGTH, parentSubject.length()));
+	}
+
+	private static List<String> quoteTypes = Arrays.asList("quote", "quote1", "quote4");
+
+	private static String getReplyText(String parentText, String type, String author) {
+		if (!quoteTypes.contains(type)) {
+			return "";
+		}
+		String text = parentText.trim();
+		// quote
+		Matcher m = PATTERN_QUOTE.matcher(text);
+		while (m.find()) {
+			String group = m.group(0);
+			int nrQuotes = group.replace(" ", "").replace("<BR>", "").length() / 4; // 4 = "&gt;".length();
+			nrQuotes++;
+			StringBuilder newBegin = new StringBuilder("\r\n");
+			for (int j = 0; j < nrQuotes; j++) {
+				newBegin.append("&gt; ");
+			}
+			text = m.replaceFirst(newBegin.toString());
+			m = PATTERN_QUOTE.matcher(text);
+		}
+
+		text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n&gt; " + text + "\r\n";
+		if ("quote1".equals(type)) {
+			StringBuilder out = new StringBuilder();
+			for (String line : text.split("\r\n")) {
+				if (line.startsWith("Scritto da")
+						|| line.startsWith("&gt; ")
+						&& line.length() > 2
+						&& !line.startsWith("&gt; &gt;")
+						&& !line.startsWith("&gt; Scritto da")
+						) {
+					out.append(line).append("\r\n");
+				}
+			}
+			text = out.toString();
+		} else if ("quote4".equals(type)) {
+			StringBuilder out = new StringBuilder();
+			for (String line : text.split("\r\n")) {
+				if (!line.startsWith("&gt; &gt; &gt; &gt; &gt;")
+					|| line.startsWith("&gt; Scritto da")
+					|| line.startsWith("&gt; &gt; Scritto da")
+					|| line.startsWith("&gt; &gt; &gt; Scritto da")
+					|| line.startsWith("&gt; &gt; &gt; &gt; Scritto da")) {
+					out.append(line).append("\r\n");
+				}
+			}
+			text = out.toString();
+		}
+		return text;
+	}
+
 	/**
 	 * Popola il div per la risposta/quota messaggio
 	 * @param req
@@ -239,60 +297,10 @@ public class Messages extends MainServlet {
 		req.setAttribute("parentId", parentId);
 		MessageDTO newMsg = new MessageDTO();
 		MessageDTO msgDTO = getPersistence().getMessage(parentId);
-		if ("quote".equals(type) || "quote1".equals(type) || "quote4".equals(type)) {
-			String text = msgDTO.getText().trim();
-
-			// quote
-			Matcher m = PATTERN_QUOTE.matcher(text);
-			while (m.find()) {
-				String group = m.group(0);
-				int nrQuotes = group.replace(" ", "").replace("<BR>", "").length() / 4; // 4 = "&gt;".length();
-				nrQuotes++;
-				StringBuilder newBegin = new StringBuilder("\r\n");
-				for (int j = 0; j < nrQuotes; j++) {
-					newBegin.append("&gt; ");
-				}
-				text = m.replaceFirst(newBegin.toString());
-				m = PATTERN_QUOTE.matcher(text);
-			}
-
-			String author = msgDTO.getAuthor().getNick();
-			text = "\r\nScritto da: " + (author != null ? author.trim() : "") + "\r\n&gt; " + text + "\r\n";
-			if ("quote1".equals(type)) {
-				StringBuilder out = new StringBuilder();
-				for (String line : text.split("\r\n")) {
-					if (line.startsWith("Scritto da")
-							|| line.startsWith("&gt; ")
-							&& line.length() > 2
-							&& !line.startsWith("&gt; &gt;")
-							&& !line.startsWith("&gt; Scritto da")
-							) {
-						out.append(line).append("\r\n");
-					}
-				}
-				text = out.toString();
-			} else if ("quote4".equals(type)) {
-				StringBuilder out = new StringBuilder();
-				for (String line : text.split("\r\n")) {
-					if (!line.startsWith("&gt; &gt; &gt; &gt; &gt;")
-						|| line.startsWith("&gt; Scritto da")
-						|| line.startsWith("&gt; &gt; Scritto da")
-						|| line.startsWith("&gt; &gt; &gt; Scritto da")
-						|| line.startsWith("&gt; &gt; &gt; &gt; Scritto da")) {
-						out.append(line).append("\r\n");
-					}
-				}
-				text = out.toString();
-			}
-			newMsg.setText(text);
-		}
+		newMsg.setText(getReplyText(msgDTO.getText(), type, msgDTO.getAuthor().getNick()));
 		newMsg.setForum(msgDTO.getForum());
 		// setta il subject: aggiungi "Re: " e se necessario tronca a 40 caratteri
-		String subject = msgDTO.getSubject();
-		if (!subject.startsWith("Re:")) {
-			subject = "Re: " + subject;
-		}
-		newMsg.setSubject(subject.substring(0, Math.min(MAX_SUBJECT_LENGTH, subject.length())));
+		newMsg.setSubject(getReplySubject(msgDTO.getSubject()));
 		newMsg.setParentId(parentId);
 		req.setAttribute("message", newMsg);
 
@@ -954,5 +962,51 @@ public class Messages extends MainServlet {
 		synchronized(BANNED_IPs) {
 			BANNED_IPs.add(ip);
 		}
+	}
+
+	@Action
+	String mobileComposer(HttpServletRequest req, HttpServletResponse res) {
+		setWebsiteTitlePrefix(req, "Nuovo messaggio");
+		final String ip = IPMemStorage.requestToIP(req);
+		if (getPersistence().blockTorExitNodes()) {
+			if (CacheTorExitNodes.check(ip)) {
+				req.setAttribute("warnTorUser", "true");
+			}
+		}
+
+		String sMessageId = req.getParameter("messageId");
+		String sReplyToId = req.getParameter("replyToId");
+		if (sMessageId != null) { // true per edit messaggio proprio
+			long messageId = Long.parseLong(sMessageId);
+			setWebsiteTitlePrefix(req, "Modifica messaggio");
+			MessageDTO msg = getPersistence().getMessage(messageId);
+			if (msg.getAuthor().getNick().equals(login(req).getNick()) && !login(req).isBanned()) {
+				req.setAttribute("messageId", sMessageId);
+				req.setAttribute("replyToId", "-1");
+				req.setAttribute("subject", msg.getSubject());
+				req.setAttribute("text", msg.getText().replaceAll("<BR>", "\r\n"));
+				req.setAttribute("forum", msg.getForum());
+			} else {
+				return null;
+			}
+		} else if (sReplyToId != null) { // risposta a un messaggio
+			long replyToId = Long.parseLong(sReplyToId);
+			MessageDTO parent = getPersistence().getMessage(replyToId);
+			setWebsiteTitlePrefix(req, "Rispondi a " + parent.getAuthor().getNick());
+			if (StringUtils.isEmpty(parent.getAuthor().getNick())) {
+				setWebsiteTitlePrefix(req, "Rispondi ad un anonimo");
+			}
+			req.setAttribute("messageId", "-1");
+			req.setAttribute("replyToId", sReplyToId);
+			req.setAttribute("subject", getReplySubject(parent.getSubject()));
+			req.setAttribute("text", getReplyText(parent.getText(), req.getParameter("type"), parent.getAuthor().getNick()));
+			req.setAttribute("forum", parent.getForum());
+		} else {
+			req.setAttribute("messageId", "-1");
+			req.setAttribute("replyToId", "-1");
+			req.setAttribute("forums", getPersistence().getForums());
+		}
+		req.setAttribute("username", login(req).getNick());
+		return "composer.jsp";
 	}
 }
