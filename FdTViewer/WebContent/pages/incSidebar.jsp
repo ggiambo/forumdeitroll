@@ -19,6 +19,8 @@
 	</c:if>
 	<a href="ReadersDigest">The Troll's Digest</a>
 	<br>
+	<a href="javascript:forceMobileView()">Visualizzazione Mobile</a>
+	<br>
 	<br>
 	<form action="Messages" method="get" id="sidebarSearchForm" onsubmit="return searchAjax();">
 		<input type="hidden" name="action" value="search"/>

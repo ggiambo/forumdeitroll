@@ -172,10 +172,7 @@
 				function() {
 					if (!localStorage['mobileNagScreen']) {
 						if (confirm('Sembra che tu stia usando un browser mobile. Vuoi passare alla versione del forum per dispositivi mobili?')) {
-							$.ajax({
-								url : 'Messages?action=updateMobileView',
-								complete : function() { location.reload(); }
-							});
+							forceMobileView();
 						} else {
 							localStorage['mobileNagScreen'] = 'true';
 						}

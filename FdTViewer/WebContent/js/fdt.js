@@ -820,3 +820,11 @@ function softvMove(tid, mid, m) {
 	if (nmid >= 0) softvSwap(tid, nmid, null);
 	return false;
 }
+
+
+function forceMobileView() {
+	$.ajax({
+		url : 'Messages?action=updateMobileView',
+		complete : function() { location.reload(); }
+	});
+}
