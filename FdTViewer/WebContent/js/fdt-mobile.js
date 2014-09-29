@@ -84,30 +84,13 @@ var toggleQuotes = function() {
 	location.reload();
 };
 
-var configureMessagesView = function() {
-	document.addEventListener('click', function(event) {
-		var div = event.target;
-		if (div.tagName !== 'DIV') return;
-		if (div.className !== 'msgHeader') {
-			if (div.parentNode.className === 'msgHeader') {
-				div = div.parentNode;
-			} else if (div.className.indexOf('messageBox') !== -1){
-				div = div.querySelector('.msgHeader');
-			} else {
-				return;
-			}
-		}
-		var content = div.parentNode.querySelector('.msgContent');
-		if (content.style.display) {
-			if (content.style.display === 'block') {
-				content.style.display = 'none';
-			} else {
-				content.style.display = 'block';
-			}
-		} else {
-			content.style.display = 'block';
-		}
-	});
+var toggleMessageView = function(element, event) {
+	var msgContent = element.parentNode.parentNode.parentNode.parentNode.parentNode.querySelector('.msgContent');
+	if (!msgContent.style.display || msgContent.style.display === 'none') {
+		msgContent.style.display = 'block';
+	} else {
+		msgContent.style.display = 'none';
+	}
 };
 
 var previewMode = false;

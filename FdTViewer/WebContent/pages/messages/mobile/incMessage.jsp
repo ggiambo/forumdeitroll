@@ -18,11 +18,11 @@
 
 <a href="#msg${msg.id}"></a>
 <div class="messageBox ${rowclass}">
-	<div class=msgHeader>
-		<div class=msgTitle>
+	<div class=row>
+		<div class=col-3>
 			<a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a>
 		</div>
-		<div class=msgInfo>
+		<div class="col-2 msgInfo">
 			Scritto da
 			<c:choose>
 				<c:when test="${not empty msg.author.nick}">
@@ -41,7 +41,15 @@
 			<br>
 			il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/>
 		</div>
+		<div class=col-1>
+			<div class=row>
+				<div class=col-1-2>&nbsp;</div>
+				<div class=col-5><a href="#" onclick="toggleMessageView(this,event); return false" class=btn>&#x25bc;</a></div>
+				<div class=col-1-2>&nbsp;</div>
+			</div>
+		</div>
 	</div>
+	<div class=row>&nbsp;</div>
 	<c:choose>
 		<c:when test="${index % 2 == 0}">
 			<c:set var="rowclass" value="msgEven"/>
@@ -50,7 +58,7 @@
 			<c:set var="rowclass" value="msgOdd"/>
 		</c:otherwise>
 	</c:choose>
-	<div class=msgContent>
+	<div class="row msgContent">
 		<fdt:msg search="${param.search}" signature="false" author="${msg.author}">${msg.text}</fdt:msg>
 		<div class=row>
 			<div class=col-1-2>&nbsp;</div>

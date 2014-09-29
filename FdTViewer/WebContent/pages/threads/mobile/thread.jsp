@@ -16,7 +16,3 @@
 </c:choose>
 
 <jsp:include page="incThread.jsp"/>
-
-<fdt:delayedScript>
-domready(configureMessagesView);
-</fdt:delayedScript>
