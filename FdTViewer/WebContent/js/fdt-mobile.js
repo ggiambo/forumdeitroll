@@ -88,8 +88,10 @@ var toggleMessageView = function(element, event) {
 	var msgContent = element.parentNode.parentNode.parentNode.parentNode.parentNode.querySelector('.msgContent');
 	if (!msgContent.style.display || msgContent.style.display === 'none') {
 		msgContent.style.display = 'block';
+		element.innerHTML = '&#x25b2;';
 	} else {
 		msgContent.style.display = 'none';
+		element.innerHTML = '&#x25bc;';
 	}
 };
 
