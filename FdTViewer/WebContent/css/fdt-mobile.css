@@ -163,6 +163,11 @@ a {
 	height: 3em;
 	padding-top: .5em;
 }
+
+.btn-flat {
+	height: 1.5em;
+}
+
 .btn:hover {
 	background: #bddbfa;
 }.btn:active {

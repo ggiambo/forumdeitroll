@@ -44,7 +44,7 @@
 		<div class=col-1>
 			<div class=row>
 				<div class=col-1-2>&nbsp;</div>
-				<div class=col-5><a href="#" onclick="toggleMessageView(this,event); return false" class=btn>&#x25bc;</a></div>
+				<div class=col-5><a href="#" onclick="toggleMessageView(this,event); return false" class="btn btn-flat">&#x25bc;</a></div>
 				<div class=col-1-2>&nbsp;</div>
 			</div>
 		</div>
@@ -63,15 +63,15 @@
 		<div class=row>
 			<div class=col-1-2>&nbsp;</div>
 			<div class=col-2>
-				<a href="Messages?action=mobileComposer&amp;replyToId=${msg.id}&type=quote" class=btn>Quota</a>
+				<a href="Messages?action=mobileComposer&amp;replyToId=${msg.id}&type=quote" class="btn btn-flat">Quota</a>
 			</div>
 			<div class=col-1>&nbsp;</div>
 			<div class=col-2>
 				<c:if test="${msg.author.nick == loggedUser.nick}">
-					<a href="Messages?action=mobileComposer&amp;replyToId=${msg.parentId}&amp;messageId=${msg.id}" class=btn>Modifica</a>
+					<a href="Messages?action=mobileComposer&amp;replyToId=${msg.parentId}&amp;messageId=${msg.id}" class="btn btn-flat">Modifica</a>
 				</c:if>
 				<c:if test="${msg.author.nick != loggedUser.nick}">
-					<a href="Messages?action=mobileComposer&amp;replyToId=${msg.id}" class=btn>Rispondi</a>
+					<a href="Messages?action=mobileComposer&amp;replyToId=${msg.id}" class="btn btn-flat">Rispondi</a>
 				</c:if>
 			</div>
 			<div class=col-1-2>&nbsp;</div>
