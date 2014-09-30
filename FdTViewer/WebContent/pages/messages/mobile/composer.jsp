@@ -5,6 +5,19 @@
 
 <%! static final long bootTime = System.currentTimeMillis(); %>
 
+<style>
+
+@media screen and (orientation:landscape) {
+	.header {
+		display: none;
+	}
+	.main {
+		margin-top: .5em;
+	}
+}
+
+</style>
+
 <input type=hidden id=messageId value="${messageId}">
 <input type=hidden id=replyToId value="${replyToId}">
 
