@@ -127,7 +127,9 @@ public class Line {
 		
 		if (opts.collapseQuotes) {
 			if (!state.multiLineQuoteStarted && quoteLvl != 0 && scrittoda == -1) {
+				io.write("</span>");
 				io.write("<div class='quote-container'><div>");
+				io.write(String.format("<span class='quoteLvl%d'>", (quoteLvl % 4 == 0 ? 4 : quoteLvl % 4)));
 				state.multiLineQuoteStarted = true;
 			}
 		}
