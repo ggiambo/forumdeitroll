@@ -47,7 +47,7 @@
 						</c:otherwise>
 					</c:choose>
 					<li><a href='javascript:classico()'>Classico</a></li>
-					<li><a href='javascript:toggleQuotes()'>Mostra/Nascondi<br>Quotes</a></li>
+					<li><a href='javascript:toggleQuotes()'>Toggle Quotes</a></li>
 				</ul>
 			</li>
 		</ul>
