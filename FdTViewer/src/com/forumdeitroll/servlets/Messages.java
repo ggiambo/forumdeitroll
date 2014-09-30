@@ -978,11 +978,12 @@ public class Messages extends MainServlet {
 		String sReplyToId = req.getParameter("replyToId");
 		if (sMessageId != null) { // true per edit messaggio proprio
 			long messageId = Long.parseLong(sMessageId);
+			long replyToId = Long.parseLong(sReplyToId);
 			setWebsiteTitlePrefix(req, "Modifica messaggio");
 			MessageDTO msg = getPersistence().getMessage(messageId);
 			if (msg.getAuthor().getNick().equals(login(req).getNick()) && !login(req).isBanned()) {
 				req.setAttribute("messageId", sMessageId);
-				req.setAttribute("replyToId", "-1");
+				req.setAttribute("replyToId", sReplyToId);
 				req.setAttribute("subject", msg.getSubject());
 				req.setAttribute("text", msg.getText().replaceAll("<BR>", "\r\n"));
 				req.setAttribute("forum", msg.getForum());

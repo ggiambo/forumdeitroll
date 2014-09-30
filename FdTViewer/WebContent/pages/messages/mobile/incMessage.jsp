@@ -67,7 +67,12 @@
 			</div>
 			<div class=col-1>&nbsp;</div>
 			<div class=col-2>
-				<a href="Messages?action=mobileComposer&amp;replyToId=${msg.id}" class=btn>Rispondi</a>
+				<c:if test="${msg.author.nick == loggedUser.nick}">
+					<a href="Messages?action=mobileComposer&amp;replyToId=${msg.parentId}&amp;messageId=${msg.id}" class=btn>Modifica</a>
+				</c:if>
+				<c:if test="${msg.author.nick != loggedUser.nick}">
+					<a href="Messages?action=mobileComposer&amp;replyToId=${msg.id}" class=btn>Rispondi</a>
+				</c:if>
 			</div>
 			<div class=col-1-2>&nbsp;</div>
 		</div>
