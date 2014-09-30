@@ -40,14 +40,14 @@
 					<c:choose>
 						<c:when test="${not empty loggedUser}">
 							<li>Loggato come ${loggedUser.nick}</li>
-							<li><a href="Misc?action=logoutAction">Logout</a></li>
+							<li onclick=this.childNodes[0].click()><a href="Misc?action=logoutAction">Logout</a></li>
 						</c:when>
 						<c:otherwise>
-							<li><a href="User?action=loginAction">Login</a></li>
+							<li onclick=this.childNodes[0].click()><a href="User?action=loginAction">Login</a></li>
 						</c:otherwise>
 					</c:choose>
-					<li><a href='javascript:classico()'>Classico</a></li>
-					<li><a href='javascript:toggleQuotes()'>Toggle Quotes</a></li>
+					<li onclick=this.childNodes[0].click()><a href='javascript:classico()'>Classico</a></li>
+					<li onclick=this.childNodes[0].click()><a href='javascript:toggleQuotes()'>Toggle Quotes</a></li>
 				</ul>
 			</li>
 		</ul>
