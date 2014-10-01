@@ -66,7 +66,7 @@ public class User extends MainServlet {
 
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
-		req.setAttribute(ALL_FORUMS, getPersistence().getForums());
+		req.setAttribute(ALL_FORUMS, cachedForums.get());
 	}
 
 	@Action
