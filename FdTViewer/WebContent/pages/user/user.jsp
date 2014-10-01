@@ -249,6 +249,7 @@
 						<div class="lblUserPanel">
 							<label for="<%=User.PREF_SOFTV%>" class="lbl">Seleziona se sei sarrusofono</label>
 						</div>
+						<div style="clear: both;"></div>
 					</div>
 					<input type="submit" value="Modifica" class="sendUserPanel" />
 				</form>
