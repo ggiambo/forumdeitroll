@@ -100,7 +100,7 @@ public class PagerTag extends TagSupport  {
 		return pager;
 	}
 
-	private static void renderPager(LinkedList<PagerElem> pager, PageContext pageContext, PagerHandler handler) throws IOException {
+	private static void renderPager(LinkedList<PagerElem> pager, PageContext pageContext, PagerHandler handler, boolean mobileView) throws IOException {
 		JspWriter out = pageContext.getOut();
 		out.write("<ul class='pager'>");
 		HttpServletRequest req = (HttpServletRequest)pageContext.getRequest();
@@ -108,7 +108,11 @@ public class PagerTag extends TagSupport  {
 			PagerElem page = pagerIterator.next();
 			if (page.type == PagerType.CURRENT) {
 				out.write("<li class='pager-current'>");
-				out.write(Integer.toString(page.n + 1)); //visualizza 1, usa 0 e cosi' via
+				if (mobileView) {
+					out.write("<a href=javascript:location.reload() class=btn><b>" + Integer.toString(page.n + 1) + "</b></a>");
+				} else {
+					out.write(Integer.toString(page.n + 1)); //visualizza 1, usa 0 e cosi' via
+				}
 				out.write("</li>");
 			} else {
 				out.write("<li class='pager-");
@@ -127,6 +131,9 @@ public class PagerTag extends TagSupport  {
 					break;
 				}
 				out.write(handler.getLink(page.n, req)); //visualizza 1, usa 0 e cosi' via
+				if (mobileView) {
+					out.write("\" class=\"btn");
+				}
 				switch (page.type) {
 				case FIRST:
 					out.write("\">&#171;</a></li>");break;
@@ -162,7 +169,7 @@ public class PagerTag extends TagSupport  {
 			}*/
 			LinkedList<PagerElem> pager = generatePager(cur, max);
 			//LOG.debug("pager -> "+pager);
-			renderPager(pager, pageContext, handlers.get(handler));
+			renderPager(pager, pageContext, handlers.get(handler), MainServlet.isMobileView(req));
 
 		} catch (Exception e) {
 			LOG.error("Errore durante il rendering del pager: "+e.getMessage(), e);

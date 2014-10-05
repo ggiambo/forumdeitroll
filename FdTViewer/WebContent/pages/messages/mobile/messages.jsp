@@ -8,3 +8,5 @@
 	<c:set var="index" value="${index.count}" scope="request"></c:set>
 	<jsp:include page="incMessage.jsp"></jsp:include>
 </c:forEach>
+
+<fdt:pager handler="Messages"/>

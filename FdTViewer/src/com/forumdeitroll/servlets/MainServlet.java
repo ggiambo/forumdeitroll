@@ -324,7 +324,7 @@ public abstract class MainServlet extends HttpServlet {
 		return null;
 	}
 
-	protected static boolean isMobileView(HttpServletRequest req) {
+	public static boolean isMobileView(HttpServletRequest req) {
 		return req.getSession().getAttribute("mobileView") != null && req.getSession().getAttribute("mobileView").equals("true");
 	}
 
