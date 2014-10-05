@@ -16,12 +16,7 @@ public class Authors extends MainServlet {
 	// solo vista mobile
 	@Action
 	String getAuthors(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		boolean onlyActive = true;
-		String paramOnlyActive = req.getParameter("onlyActive");
-		if (paramOnlyActive != null) {
-			onlyActive = Boolean.parseBoolean(paramOnlyActive);
-		}
-		List<AuthorDTO> result = getPersistence().getAuthors(onlyActive);
+		List<AuthorDTO> result = getPersistence().getActiveAuthors();
 		req.setAttribute("authors", result);
 		setNavigationMessage(req, NavigationMessage.info("Autori"));
 		return "authors.jsp";

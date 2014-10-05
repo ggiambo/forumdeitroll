@@ -181,4 +181,5 @@ public interface IPersistence extends Serializable {
 
 	public void setAllAds(List<AdDTO> ads);
 
+	public List<AuthorDTO> getActiveAuthors();
 }

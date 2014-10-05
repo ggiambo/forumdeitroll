@@ -31,12 +31,12 @@ var authorsearch = function(element, event) {
 	for (i = 0; i < nodelist.length; i++) {
 		var span = nodelist[i];
 		if (!search) {
-			span.parentNode.style.display = 'block';
+			span.parentNode.parentNode.style.display = 'block';
 		} else {
 			if (span.childNodes[0].nodeValue.toLowerCase().indexOf(search) !== -1) {
-				span.parentNode.style.display = 'block';
+				span.parentNode.parentNode.style.display = 'block';
 			} else {
-				span.parentNode.style.display = 'none';
+				span.parentNode.parentNode.style.display = 'none';
 			}
 		}
 	}

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.jooq.DSLContext;
 import org.jooq.Record1;
+import org.jooq.Record2;
 import org.jooq.Result;
 
 import com.forumdeitroll.PasswordUtils;
@@ -18,6 +19,23 @@ public class AuthorsDAO extends BaseDAO {
 
 	public AuthorsDAO(DSLContext jooq) {
 		super(jooq);
+	}
+
+	public List<AuthorDTO> getActiveAuthors() {
+		Result<Record2<String, Integer>> result =
+			jooq.select(AUTHORS.NICK, AUTHORS.MESSAGES)
+			.from(AUTHORS)
+			.where(AUTHORS.MESSAGES.greaterThan(0))
+			.orderBy(AUTHORS.MESSAGES.desc())
+			.fetch();
+		List<AuthorDTO> authors = new ArrayList<AuthorDTO>();
+		for (Record2<String, Integer> record : result) {
+			AuthorDTO author = new AuthorDTO(null);
+			author.setNick(record.value1());
+			author.setMessages(record.value2());
+			authors.add(author);
+		}
+		return authors;
 	}
 
 	public List<AuthorDTO> getAuthors(boolean onlyActive) {

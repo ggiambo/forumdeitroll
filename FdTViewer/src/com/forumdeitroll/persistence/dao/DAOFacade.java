@@ -400,5 +400,10 @@ public class DAOFacade implements IPersistence {
 	public void setAllAds(List<AdDTO> ads) {
 
 	}
+
+	@Override
+	public List<AuthorDTO> getActiveAuthors() {
+		return authorsDAO.getActiveAuthors();
+	}
 }
 

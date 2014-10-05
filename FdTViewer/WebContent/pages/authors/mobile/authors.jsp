@@ -16,9 +16,8 @@
 			<c:set var="rowclass" value="msgOdd"/>
 		</c:otherwise>
 	</c:choose>
-	<div class="row ${rowclass}" onclick="this.childNodes[1].click()">
+	<div class="row author ${rowclass}" onclick="this.childNodes[1].click()">
 		<a href="Messages?action=getByAuthor&author=${author.nick}" class=col-6>
-			<img src="Misc?action=getAvatar&amp;nick=${author.nick}" class=avatar>
 			<span class=nickname>${author.nick}</span>
 			(${author.messages}
 			<c:choose>
