@@ -14,9 +14,10 @@ public abstract class PersistenceFactory {
 	public static synchronized IPersistence getInstance() throws Exception {
 		if (instance == null) {
 			try {
-				instance = new DAOFacade();
+				DAOFacade _instance = new DAOFacade();
 				String persistenceName = FdTConfig.getProperty("persistence.name");
-				instance.init(FdTConfig.getDatabaseConfig(persistenceName));
+				_instance.init(FdTConfig.getDatabaseConfig(persistenceName));
+				instance = _instance;
 			} catch (Exception e) {
 				LOG.error("Cannot instantiate Persistence " + FdTConfig.getProperty("persistence.name"), e);
 				throw e;
