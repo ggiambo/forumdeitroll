@@ -16,7 +16,7 @@
 	</c:otherwise>
 </c:choose>
 
-<a href="#msg${msg.id}"></a>
+<span class=msg-anchor id="msg${msg.id}"></span>
 <div class="messageBox ${rowclass}">
 	<div class=row>
 		<div class=col-3>

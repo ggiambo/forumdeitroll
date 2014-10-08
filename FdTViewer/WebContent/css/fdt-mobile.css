@@ -227,6 +227,13 @@ ul.pager > li {
 	padding-left: .3em;
 }
 
+.msg-anchor {
+	display: block;
+	position: relative;
+	top: -3.5em;
+	visibility: hidden;
+}
+
 /* form styling */
 
 
