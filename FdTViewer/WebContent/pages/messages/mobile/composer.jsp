@@ -69,7 +69,7 @@
 	<div class=col-1>&nbsp;</div>
 	<div class=col-1>Pass</div>
 	<div class=col-1>
-		<input type=text id=password value="">
+		<input type=password id=password value="">
 	</div>
 	<div class=col-1>&nbsp;</div>
 </div>
