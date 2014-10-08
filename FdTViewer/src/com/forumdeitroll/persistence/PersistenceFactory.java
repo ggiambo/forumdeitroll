@@ -1,10 +1,9 @@
 package com.forumdeitroll.persistence;
 
-import java.lang.reflect.Constructor;
-
 import org.apache.log4j.Logger;
 
 import com.forumdeitroll.FdTConfig;
+import com.forumdeitroll.persistence.dao.DAOFacade;
 
 public abstract class PersistenceFactory {
 
@@ -15,14 +14,11 @@ public abstract class PersistenceFactory {
 	public static synchronized IPersistence getInstance() throws Exception {
 		if (instance == null) {
 			try {
-				String persistenceNickName = FdTConfig.getProperty("persistence.nickName");
-				String databaseClass = FdTConfig.getProperty(persistenceNickName + ".class");
-				Class<? extends IPersistence> c = Class.forName(databaseClass).asSubclass(IPersistence.class);
-				Constructor<? extends IPersistence> cons = c.getConstructor();
-				instance = cons.newInstance();
-				instance.init(FdTConfig.getDatabaseConfig(persistenceNickName));
+				instance = new DAOFacade();
+				String persistenceName = FdTConfig.getProperty("persistence.name");
+				instance.init(FdTConfig.getDatabaseConfig(persistenceName));
 			} catch (Exception e) {
-				LOG.error("Cannot instantiate Persistence " + FdTConfig.getProperty("persistence.nickName"), e);
+				LOG.error("Cannot instantiate Persistence " + FdTConfig.getProperty("persistence.name"), e);
 				throw e;
 			}
 		}

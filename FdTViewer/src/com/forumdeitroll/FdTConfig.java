@@ -10,7 +10,7 @@ public class FdTConfig {
 	private static final Logger LOG = Logger.getLogger(FdTConfig.class);
 
 	private static Properties properties;
-	
+
 	static {
 		properties = new Properties();
 		try {
@@ -24,12 +24,13 @@ public class FdTConfig {
 	public static String getProperty(String name) {
 		return properties.getProperty(name);
 	}
-	
-	public static Properties getDatabaseConfig(String persistenceNickName) {
+
+	public static Properties getDatabaseConfig(String persistenceName) {
 		Properties ret = new Properties();
+		String keyPrefix = "persistence." + persistenceName;
 		for (String prop : properties.stringPropertyNames()) {
-			if (prop.startsWith(persistenceNickName)) {
-				ret.put( prop.substring(persistenceNickName.length() + 1), properties.getProperty(prop));
+			if (prop.startsWith(keyPrefix)) {
+				ret.put( prop.substring(keyPrefix.length() + 1), properties.getProperty(prop));
 			}
 		}
 		return ret;

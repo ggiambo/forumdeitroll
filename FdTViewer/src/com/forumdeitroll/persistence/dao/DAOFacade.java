@@ -53,16 +53,13 @@ public class DAOFacade implements IPersistence {
 	}
 
 	public void init(Properties databaseConfig) throws Exception {
-		Class.forName("com.mysql.jdbc.Driver");
-		String host = databaseConfig.getProperty("host");
-		String port = databaseConfig.getProperty("port");
+		String driver = databaseConfig.getProperty("driverclass");
+		Class.forName(driver);
 		String username = databaseConfig.getProperty("username");
 		String password = databaseConfig.getProperty("password");
-		String dbname = databaseConfig.getProperty("dbname");
-		String url = "jdbc:mysql://" + host + ":" + port + "/" + dbname + "?useUnicode=yes&characterEncoding=UTF-8";
+		String url = databaseConfig.getProperty("url");
 		DSLContext jooq = setupDataSource(url, username, password);
 		init(jooq);
-
 	}
 
 	private DSLContext setupDataSource(String connectURI, String user, String password) {
