@@ -90,14 +90,14 @@ public class AuthorTest extends BaseTest {
 		assertEquals("Sfigato", author.getNick());
 		assertNull(author.getAvatar());
 		assertEquals(1, author.getMessages());
-		assertEquals(0, author.getPreferences().size());
+		assertEquals(2, author.getPreferences().size());
 
 		author = authors.get(1);
 		assertNotNull(author);
 		assertEquals("admin", author.getNick());
 		assertNull(author.getAvatar());
 		assertEquals(2, author.getMessages());
-		assertEquals(0, author.getPreferences().size());
+		assertEquals(5, author.getPreferences().size());
 	}
 
 	@Test
@@ -255,6 +255,13 @@ public class AuthorTest extends BaseTest {
 		value = persistence.getSysinfoValue("title.2");
 		assertNotNull(value);
 		assertEquals("IMMENSO GIAMBO !!!1!", value);
+	}
+
+	@Test
+	public void test_getActiveAuthors() {
+		List<AuthorDTO> authors = persistence.getActiveAuthors();
+		assertNotNull(authors);
+		assertEquals(2, authors.size());
 	}
 
 }

@@ -47,6 +47,7 @@ public abstract class BaseDAO {
 		authorDTO.setOldPassword(record.getPassword());
 		authorDTO.setSalt(record.getSalt());
 		authorDTO.setSignatureImage(record.getSignatureImage());
+		authorDTO.setPreferences(getPreferences(authorDTO));
 
 		return authorDTO;
 	}
