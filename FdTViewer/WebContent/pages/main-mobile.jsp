@@ -46,8 +46,8 @@
 							<li onclick=this.childNodes[0].click()><a href="User?action=loginAction">Login</a></li>
 						</c:otherwise>
 					</c:choose>
-					<li onclick=this.childNodes[0].click()><a href='javascript:classico()'>Classico</a></li>
-					<li onclick=this.childNodes[0].click()><a href='javascript:toggleQuotes()'>Toggle Quotes</a></li>
+					<li onclick="classico()"><a href='#' onclick="return false">Classico</a></li>
+					<li onclick="toggleQuotes()"><a href='#' onclick="return false">Toggle Quotes</a></li>
 				</ul>
 			</li>
 		</ul>
