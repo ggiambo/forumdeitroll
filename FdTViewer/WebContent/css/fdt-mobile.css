@@ -115,7 +115,6 @@ a {
 	width: 250px;
 	right: 0;
 	float: right;
-	z-index: 1;
 }
 .menu:hover > ul {
 	display: block;
@@ -159,7 +158,6 @@ ul.pager > li {
 	position: fixed;
 	top: 0;
 	left: 0;
-	z-index: 1;
 	
 }
 .header>li {
