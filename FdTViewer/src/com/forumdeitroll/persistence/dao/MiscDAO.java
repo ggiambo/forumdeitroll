@@ -140,7 +140,8 @@ public class MiscDAO extends BaseDAO {
 			t_id = jooq.insertInto(TAGNAMES)
 					.set(TAGNAMES.VALUE, mb4safe(tag.getValue()))
 					.returning(TAGNAMES.T_ID)
-					.execute();
+					.fetchOne()
+					.getTId();
 		}
 
 		TagsBindRecord tagsBindRecord = jooq.selectFrom(TAGS_BIND)

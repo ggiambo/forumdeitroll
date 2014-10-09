@@ -2,6 +2,7 @@ package com.forumdeitroll.test.persistence;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -161,19 +162,28 @@ public class MiscTest extends BaseTest {
 
 	@Test
 	public void test_addTag() {
+
 		TagDTO tag = new TagDTO();
 		tag.setAuthor("Sfigato");
 		tag.setM_id(9);
 		tag.setValue("Bah banf");
 
 		persistence.addTag(tag);
-		assertTrue(tag.getT_id() > 0);
+		assertEquals(tag.getT_id(), 3);
 
 		MessagesDTO messages = new MessagesDTO();
 		MessageDTO msg = persistence.getMessage(tag.getM_id());
 		messages.getMessages().add(msg);
 		persistence.getTags(messages);
-		assertEquals(2, messages.getMessages().get(0).getTags().size());
+		List<MessageDTO> messgesList = messages.getMessages();
+		assertEquals(1, messgesList.size());
+		ArrayList<TagDTO> tags = messgesList.get(0).getTags();
+		assertEquals(2, tags.size());
+		TagDTO newTag = tags.get(1);
+		assertEquals(tag.getAuthor(), newTag.getAuthor());
+		assertEquals(tag.getM_id(), newTag.getM_id());
+		assertEquals(tag.getT_id(), newTag.getT_id());
+		assertEquals(tag.getValue(), newTag.getValue());
 	}
 
 	@Test
