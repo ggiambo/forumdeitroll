@@ -18,13 +18,6 @@ import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.servlets.User;
 
 public class AuthorTest extends BaseTest {
-	
-	@Test
-	public void test_getActiveAuthors() {
-		List<AuthorDTO> authors = persistence.getActiveAuthors();
-		assertNotNull(authors);
-		assertEquals(2, authors.size());
-	}
 
 	@Test
 	public void test_getAuthor() {
