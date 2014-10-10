@@ -39,6 +39,7 @@ public class DAOFacade implements IPersistence {
 	protected AdminDAO adminDAO;
 	protected MiscDAO miscDAO;
 	protected PrivateMsgDAO pvtDAO;
+	protected DigestDAO digestDAO;
 
 	public void init(DSLContext jooq) {
 		authorsDAO = new AuthorsDAO(jooq);
@@ -50,6 +51,7 @@ public class DAOFacade implements IPersistence {
 		adminDAO = new AdminDAO(jooq);
 		miscDAO = new MiscDAO(jooq);
 		pvtDAO = new PrivateMsgDAO(jooq);
+		digestDAO = new DigestDAO(jooq);
 	}
 
 	public void init(Properties databaseConfig) throws Exception {
@@ -340,7 +342,7 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public List<DigestArticleDTO> getReadersDigest() {
-		return null;
+		return digestDAO.getReadersDigest();
 	}
 
 	@Override
