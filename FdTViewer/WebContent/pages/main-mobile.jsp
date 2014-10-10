@@ -2,6 +2,7 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 <%! static final long bootTime = System.currentTimeMillis(); %>
+<% com.forumdeitroll.util.VisitorCounters.add(request); %>
 <!doctype html>
 <html>
 	<head>
