@@ -1720,3 +1720,11 @@ div.softvMsg {
 .softvMsg a:link {
 	color: green !important;
 }
+
+.pvt-notification-enhancer {
+	float: right;
+	clear: both;
+	padding-right: 80px;
+	color: red;
+	font-weight: bold;
+}

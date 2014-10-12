@@ -113,6 +113,11 @@
 			</c:otherwise>
 		</c:choose>
 		</div>
+		<c:if test="${hasPvts}">
+			<div class=pvt-notification-enhancer>
+				Nuovi messaggi in casella ! &#8593;
+			</div>
+		</c:if>
 		<br>
 		<c:if test="${!empty page}">
 			<li id='pager'><fdt:pager handler="Messages"></fdt:pager></li>
