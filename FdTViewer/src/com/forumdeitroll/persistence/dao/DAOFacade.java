@@ -397,7 +397,7 @@ public class DAOFacade implements IPersistence {
 
 	@Override
 	public void setAllAds(List<AdDTO> ads) {
-
+		adminDAO.setAllAds(ads);
 	}
 
 	@Override

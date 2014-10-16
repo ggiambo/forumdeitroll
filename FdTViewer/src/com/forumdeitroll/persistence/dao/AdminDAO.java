@@ -124,6 +124,19 @@ public class AdminDAO extends BaseDAO {
 		return res;
 	}
 
+	public void setAllAds(List<AdDTO> ads) {
+
+		jooq.delete(ADS).execute();
+
+		for (AdDTO ad : ads) {
+			jooq.insertInto(ADS)
+				.set(ADS.CONTENT, ad.getContent())
+				.set(ADS.TITLE, ad.getTitle())
+				.set(ADS.VISURL, ad.getVisurl())
+				.execute();
+		}
+	}
+
 	private AdDTO recordToDTO(AdsRecord record) {
 		final AdDTO dto = new AdDTO();
 		dto.setId(record.getId());

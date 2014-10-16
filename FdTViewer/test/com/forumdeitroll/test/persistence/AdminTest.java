@@ -1,9 +1,9 @@
 package com.forumdeitroll.test.persistence;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.forumdeitroll.persistence.AdDTO;
@@ -85,9 +85,22 @@ public class AdminTest extends BaseTest {
 	}
 
 	@Test
-	@Ignore("Implement me !")
 	public void test_setAllAds() {
-		// TODO
+
+		List<AdDTO> ads = new ArrayList<AdDTO>();
+
+		for (int i = 0; i < 10; i++) {
+			AdDTO ad = new AdDTO();
+			ad.setContent("Content_" + i);
+			ad.setTitle("Title_" + i);
+			ad.setVisurl("Visurl_" + i);
+			ads.add(ad);
+		}
+		persistence.setAllAds(ads);
+
+		List<AdDTO> allAds = persistence.getAllAds();
+		Assert.assertEquals(10, allAds.size());
+
 	}
 
 }
