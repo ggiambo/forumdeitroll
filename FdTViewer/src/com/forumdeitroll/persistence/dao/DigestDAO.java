@@ -4,14 +4,15 @@ import static com.forumdeitroll.persistence.jooq.tables.Digest.DIGEST;
 import static com.forumdeitroll.persistence.jooq.tables.DigestParticipant.DIGEST_PARTICIPANT;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.impl.DSL;
+import org.jooq.types.DayToSecond;
 
 import com.forumdeitroll.persistence.DigestArticleDTO;
 
@@ -20,9 +21,18 @@ public class DigestDAO extends BaseDAO {
 		super(jooq);
 	}
 	public List<DigestArticleDTO> getReadersDigest() {
-		Result<Record> records = jooq.select(ArrayUtils.addAll(DIGEST.fields(), DIGEST_PARTICIPANT.fields()))
+
+		Field<DayToSecond> rank = DSL.timestampDiff(DIGEST.STARTDATE, DIGEST.LASTDATE).multiply(DIGEST.NROFMESSAGES).as("rank");
+
+		List<Field<?>> fields = new ArrayList<Field<?>>();
+		fields.addAll(Arrays.asList(DIGEST.fields()));
+		fields.addAll(Arrays.asList(DIGEST_PARTICIPANT.fields()));
+		fields.add(rank);
+
+		Result<Record> records = jooq.select(fields)
 			.from(DIGEST, DIGEST_PARTICIPANT)
 			.where(DIGEST.THREADID.eq(DIGEST_PARTICIPANT.THREADID))
+			.orderBy(rank)
 			.fetch();
 		List<DigestArticleDTO> results = new ArrayList<DigestArticleDTO>();
 		DigestArticleDTO current = null;
@@ -47,23 +57,9 @@ public class DigestDAO extends BaseDAO {
 				}
 			}
 		}
-		// con jooq non posso fare quello che c'era nella query:
-		// ORDER BY digest.nrOfMessages * (unix_timestamp(startdate) - unix_timestamp(lastdate))
-		Collections.sort(results, digestArticleComparator);
 		return results;
 	}
 
-	private static DigestArticleComparator digestArticleComparator = new DigestArticleComparator();
-
-	private static class DigestArticleComparator implements Comparator<DigestArticleDTO> {
-		@Override
-		public int compare(DigestArticleDTO o1, DigestArticleDTO o2) {
-			long v1 = o1.getNrOfMessages() * (o1.getStartDate().getTime() - o1.getLastDate().getTime());
-			long v2 = o2.getNrOfMessages() * (o2.getStartDate().getTime() - o2.getLastDate().getTime());
-			long r = v1 - v2;
-			return (int) r;
-		}
-	}
 /**
 
 	Da /opt/fdt/digest (riportata per versionamento):
