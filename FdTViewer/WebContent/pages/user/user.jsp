@@ -251,6 +251,15 @@
 						</div>
 						<div style="clear: both;"></div>
 					</div>
+					<div>
+						<div class="inputUserPanel">
+							<input type="text" maxlength="32" name="<%=User.PREF_USER_TITLE%>" id="<%=User.PREF_USER_TITLE%>" value="${loggedUser.preferences['userTitle']}" />
+						</div>
+						<div class="lblUserPanel">
+							<label for="<%=User.PREF_USER_TITLE%>" class="lbl">Datti un titolo !</label>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
 					<input type="submit" value="Modifica" class="sendUserPanel" />
 				</form>
 				<div style="clear: both;"></div>

@@ -67,9 +67,17 @@
 						<a href="<c:out value="${messagesUrl}" escapeXml="true" />">${msg.author.nick}</a>
 					</c:otherwise>
 				</c:choose>
-                <c:if test="${msg.author.preferences['super'] == 'yes'}">
-                    <div style="color:#009090;font-size:0.8em;font-style:normal;font-weight:bold;" title="Vi naso gli IP">Utente privilegiato</div>
-                </c:if>
+                <c:choose>
+                    <c:when test="${msg.author.preferences['super'] == 'yes'}">
+                        <div style="color:#009090;font-size:0.8em;font-style:normal;font-weight:bold;" title="Vi naso gli IP">Utente privilegiato</div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="userTitle" value="${msg.author.preferences['userTitle']}"/>
+                        <c:if test="${not empty userTitle}">
+                            <div style="color:#5B5BF0;font-size:0.8em;font-style:normal;font-weight:bold;">${userTitle}</div>
+                        </c:if>
+                    </c:otherwise>
+                </c:choose>
 			</div>
 			<div class="msgDate">il <fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/></div>
 

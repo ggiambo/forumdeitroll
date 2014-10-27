@@ -52,17 +52,19 @@ public class User extends MainServlet {
 	public static final String PREF_LARGE_STYLE = "largeStyle";
 	public static final String PREF_THEME = "theme";
 	public static final String PREF_HIDE_FAKE_ADS = "hideFakeAds";
-	public static final String PREF_SOFTV = "softv";
+    public static final String PREF_SOFTV = "softv";
+    public static final String PREF_USER_TITLE = "userTitle";
+
 	public static final List<String> PREF_THEMES = Arrays.asList("Classico", "Scuro", "Flat");
 
 	public static final String ALL_FORUMS = "allForums";
 
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
-	public static final int LOGIN_TIME_LIMIT = 3 * 60 * 1000;
-	public static final int LOGIN_NUMBER_LIMIT = 5;
+    public static final int LOGIN_TIME_LIMIT = 3 * 60 * 1000;
+    public static final int LOGIN_NUMBER_LIMIT = 5;
 
-	protected final Ratelimiter<String> loginRatelimiter = new Ratelimiter<String>(LOGIN_TIME_LIMIT, LOGIN_NUMBER_LIMIT);
+    protected final Ratelimiter<String> loginRatelimiter = new Ratelimiter<String>(LOGIN_TIME_LIMIT, LOGIN_NUMBER_LIMIT);
 
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
@@ -487,6 +489,11 @@ public class User extends MainServlet {
 		if (StringUtils.isNotEmpty(theme)) {
 			loggedUser.setPreferences(getPersistence().setPreference(loggedUser, PREF_THEME, theme));
 		}
+
+        String userTitle = req.getParameter(PREF_USER_TITLE);
+        if (userTitle!=null) {
+            loggedUser.setPreferences(getPersistence().setPreference(loggedUser, PREF_USER_TITLE, userTitle));
+        }
 
 		return "user.jsp";
 	}
