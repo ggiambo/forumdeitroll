@@ -63,9 +63,16 @@
 						</a>
 					</h1>
 					<c:if test="${not empty randomQuote }">
-						<p id="quoteForum" title="${randomQuote.nick}" onclick="getRandomQuote()">
-							${randomQuote.content}
-						</p>
+						<c:if test="${fn:length(randomQuote.content) > 116}">
+							<p id="quoteForum" title="${randomQuote.content} - ${randomQuote.nick}" onclick="getRandomQuote()">
+								${fn:substring(randomQuote.content, 0, 114)}&#8230;
+							</p>
+						</c:if>
+						<c:if test="${fn:length(randomQuote.content) <= 116}">
+							<p id="quoteForum" title="${randomQuote.nick}" onclick="getRandomQuote()">
+								${randomQuote.content}
+							</p>
+						</c:if>
 					</c:if>
 				</div>
 			</c:if>
