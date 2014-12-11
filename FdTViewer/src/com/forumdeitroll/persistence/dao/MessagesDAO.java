@@ -5,6 +5,7 @@ import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
 import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.jooq.*;
 
 import java.sql.Timestamp;
@@ -15,6 +16,8 @@ import static com.forumdeitroll.persistence.jooq.Tables.*;
 import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 public class MessagesDAO extends BaseDAO {
+
+	private static final Logger LOG = Logger.getLogger(MessagesDAO.class);
 
 	public MessagesDAO(DSLContext jooq) {
 		super(jooq);
@@ -223,11 +226,17 @@ public class MessagesDAO extends BaseDAO {
 			key = "messages.forum." + forum;
 		}
 
-		String value = jooq.select(SYSINFO.VALUE)
+		Record1<String> record = jooq.select(SYSINFO.VALUE)
 				.from(SYSINFO)
 				.where(SYSINFO.KEY.eq(key))
-				.fetchOne()
-				.getValue(SYSINFO.VALUE);
+				.fetchOne();
+
+		if (record == null) {
+			LOG.error("Nessuna entry in SYSINFO con la key '" + key + "' !");
+			return 0;
+		}
+
+		String value = record.getValue(SYSINFO.VALUE);
 
 		return Integer.parseInt(value);
 

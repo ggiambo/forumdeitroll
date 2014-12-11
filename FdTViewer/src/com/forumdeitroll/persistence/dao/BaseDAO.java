@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Result;
@@ -18,6 +19,8 @@ import com.forumdeitroll.persistence.jooq.tables.records.AuthorsRecord;
 import com.forumdeitroll.persistence.jooq.tables.records.PreferencesRecord;
 
 public abstract class BaseDAO {
+
+	private static final Logger LOG = Logger.getLogger(BaseDAO.class);
 
 	protected DSLContext jooq;
 
@@ -92,6 +95,10 @@ public abstract class BaseDAO {
 
 	private void increaseNumber(String key, int increaseValue) {
 		String val = getSysinfoValue(key);
+		if (StringUtils.isEmpty(val)) {
+			LOG.error("Nessuna entry in SYSINFO con la key '" + key + "' !");
+			return;
+		}
 		int nr = Integer.parseInt(val);
 		setSysinfoValue(key, Integer.toString(nr + increaseValue));
 	}
