@@ -37,20 +37,20 @@ public class Misc extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOG = Logger.getLogger(Misc.class);
-	
+
 	private IPersistence persistence;
-	
+
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
-	
+
 	/**
 	 * Inizializza le immagini per non autenticato o autenticato senza avatar
 	 */
 	@Override
 	public void init(ServletConfig config) throws ServletException {
-		
+
 		super.init(config);
-		
+
 		try {
 			// anonimo
 			InputStream is = config.getServletContext().getResourceAsStream("/images/avataranonimo.gif");
@@ -83,12 +83,12 @@ public class Misc extends HttpServlet {
 			throw new ServletException("Cannot instantiate persistence", e);
 		}
 	}
-	
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		doPost(req, res);
 	}
-	
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String action = req.getParameter("action");
@@ -112,7 +112,7 @@ public class Misc extends HttpServlet {
 			LOG.error("action '" + action + "' conosciuta");
 		}
 	}
-	
+
 	private void redirectTo(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String url = req.getParameter("url");
 		url = StringEscapeUtils.unescapeHtml4(url);
@@ -120,7 +120,7 @@ public class Misc extends HttpServlet {
 		res.setHeader("Location", url);
 		res.sendError(302);
 	}
-	
+
 	/**
 	 * Scrive direttamente nella response i bytes che compongono l'avatar
 	 * @param req
@@ -145,7 +145,7 @@ public class Misc extends HttpServlet {
 		out.flush();
 		out.close();
 	}
-	
+
 	private void getUserSignatureImage(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String nick = req.getParameter("nick");
 		res.setHeader("Cache-Control", "max-age=3600");
@@ -176,7 +176,7 @@ public class Misc extends HttpServlet {
 		CaptchaServletUtil.writeImage(res, captcha.getImage());
 		req.getSession().setAttribute("captcha", captcha.getAnswer());
 	}
-	
+
 
 	/**
 	 * Cancella l'utente loggato dalla sessione
@@ -195,7 +195,7 @@ public class Misc extends HttpServlet {
 		res.setContentType("text/html");
 		res.setHeader("Location", "Messages?disclaimer=OK");
 	}
-	
+
 	private void getDisclaimer(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String originalURL =
 			req.getHeader("Referer") != null
@@ -209,11 +209,11 @@ public class Misc extends HttpServlet {
 		req.setAttribute("originalURL", originalURL);
 		getServletContext().getRequestDispatcher("/pages/disclaimer.jsp").forward(req, res);
 	}
-	
+
 	/**
 	 * Metodo di utilità per aggirare la same origin policy quando si testa in locale il motorino
 	 * wrappando le chiamate
-	 * 
+	 *
 	 * @param req
 	 * @param res
 	 * @throws ServletException
@@ -223,7 +223,7 @@ public class Misc extends HttpServlet {
 		String search = req.getParameter("q");
 		String sort = req.getParameter("sort");
 		String page = req.getParameter("p");
-		
+
 		String endpoint = "http://forumdeitroll.com/motorino/search?q=" + URLEncoder.encode(search, "UTF-8");
 		if (!StringUtils.isEmpty(sort)) {
 			endpoint += "&sort=" + sort; //date,rdate,rank
@@ -231,7 +231,7 @@ public class Misc extends HttpServlet {
 		if (!StringUtils.isEmpty(page)) {
 			endpoint += "&p=" + page;
 		}
-		
+
 		System.out.println(endpoint);
 		InputStream in = new URL(endpoint).openStream();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -241,13 +241,13 @@ public class Misc extends HttpServlet {
 			out.write(buffer, 0, count);
 		}
 		in.close();
-		
+
 		res.setContentType("application/json");
 		res.getOutputStream().write(out.toByteArray());
 	}
-	
+
 	/**
-	 * wrapper del servizio di freegeoip, per aggirare la same-origin policy a partire da firefox 22/23 
+	 * wrapper del servizio di freegeoip, per aggirare la same-origin policy a partire da firefox 22/23
 	 * http://freegeoip.net/json/{ip}
 	 * @param req
 	 * @param res
@@ -257,7 +257,7 @@ public class Misc extends HttpServlet {
 	private void freegeoip(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		String ip = req.getParameter("ip");
 		String callback = req.getParameter("callback");
-		String endpoint = "http://freegeoip.net/json/" + ip + "?callback=" + callback;
+		String endpoint = "http://www.telize.com/geoip/" + ip + "?callback=" + callback;
 		InputStream in = new URL(endpoint).openStream();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		byte[] buffer = new byte[512];
