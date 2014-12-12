@@ -1,5 +1,7 @@
 FdTSucker/bin/
 FdTViewer/build/
+FdTViewer/classes/
+FdTViewer/target/
 .classpath
 .metadata
 .idea
