@@ -24,6 +24,7 @@ public class MessageTag extends BodyTagSupport {
 	private String search;
 	private AuthorDTO author;
 	private String signature;
+	private boolean alt = false;
 	public void setSearch(String search) {
 		this.search = search;
 	}
@@ -42,6 +43,11 @@ public class MessageTag extends BodyTagSupport {
 	public void setSignature(String signature) {
 		this.signature = signature;
 	}
+	public void setAlt(String alt) {
+		if (alt != "") {
+			this.alt = true;
+		}
+	}
 	public boolean isRenderingSignature() {
 		return Boolean.parseBoolean(getSignature());
 	}
@@ -51,7 +57,7 @@ public class MessageTag extends BodyTagSupport {
 			AuthorDTO loggedUser = (AuthorDTO) pageContext.getRequest().getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 			RenderOptions opts = new RenderOptions();
 			opts.renderImages = ! isRenderingSignature();
-			opts.renderYoutube = ! isRenderingSignature();
+			opts.renderYoutube = ! isRenderingSignature(); // renderImages e renderYoutube sono la stessa cosa?? wtf?
 			opts.collapseQuotes =
 				! isRenderingSignature() &&
 				"checked".equals(
@@ -69,11 +75,15 @@ public class MessageTag extends BodyTagSupport {
 						? loggedUser.getPreferences().get(User.PREF_SHOWANONIMG)
 						: "yes");
 			opts.authorIsAnonymous =
-				author != null && StringUtils.isEmpty(author.getNick());
-			Renderer.render(
-				getBodyContent().getReader(),
-				getBodyContent().getEnclosingWriter(),
-				opts);
+				author != null && StringUtils.isEmpty(author.getNick()); // se author e` null allora non e` anonymous?? wtf?
+			if (alt) {
+				com.forumdeitroll.markup2.Renderer.render(getBodyContent().getString(), getBodyContent().getEnclosingWriter(), opts);
+			} else {
+				Renderer.render(
+					getBodyContent().getReader(),
+					getBodyContent().getEnclosingWriter(),
+					opts);
+			}
 		} catch (Exception e) {
 			LOG.error("Errore durante il rendering del post "+e.getMessage(), e);
 			LOG.error("BODY:\n"+getBodyContent().getString());

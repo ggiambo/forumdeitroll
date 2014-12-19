@@ -48,7 +48,7 @@ public class Emoticons {
 		return emotiCount;
 	}
 	
-	public final List<Emoticon> serieClassica = new ArrayList<Emoticon>() {
+	public static final List<Emoticon> serieClassica = new ArrayList<Emoticon>() {
 		
 		private void addEmo(String imgName, String sequence, String altText) {
 			add(new Emoticon(imgName, sequence, altText));
@@ -95,7 +95,7 @@ public class Emoticons {
 
 	}};
 	
-	public final List<Emoticon> serieEstesa = new ArrayList<Emoticon>() {
+	public static final List<Emoticon> serieEstesa = new ArrayList<Emoticon>() {
 		
 		private void addEmo(String imgName, String sequence, String altText) {
 			add(new EmoticonExtended(imgName, sequence, altText));
@@ -115,7 +115,7 @@ public class Emoticons {
 			addEmo("poop", "$poop", "Evacua");
 	}};
 	
-	public final List<Emoticon> tutte = new ArrayList<Emoticon>() {{
+	public static final List<Emoticon> tutte = new ArrayList<Emoticon>() {{
 		addAll(serieClassica);
 		addAll(serieEstesa);
 	}};

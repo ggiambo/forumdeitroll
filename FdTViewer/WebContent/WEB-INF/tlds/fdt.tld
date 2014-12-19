@@ -39,6 +39,13 @@
     	<rtexprvalue>true</rtexprvalue>
     	<type>java.lang.String</type>
     </attribute>
+    <attribute>
+        <description>La macchina del capo ha un buco in una gomma</description>
+        <name>alt</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <type>java.lang.String</type>
+    </attribute>
   </tag>
 
 	<tag>
