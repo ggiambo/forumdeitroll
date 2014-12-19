@@ -141,10 +141,10 @@ public class Links {
 	
 	private static final int MAX_DESC_LENGTH = 50;
 
-	private static char[] THREAD_LINK_INITSEQ = "Threads?action=getByThread&threadId=".toCharArray();
-	private static char[] MESSAGE_LINK_SEQ = "#msg".toCharArray();
-	private static char[] AMPERSAND_SIGN = "&".toCharArray();
-	private static char[] OCTOTHORPE_SIGN = "#".toCharArray();
+	public static char[] THREAD_LINK_INITSEQ = "Threads?action=getByThread&threadId=".toCharArray();
+	public static char[] MESSAGE_LINK_SEQ = "#msg".toCharArray();
+	public static char[] AMPERSAND_SIGN = "&".toCharArray();
+	public static char[] OCTOTHORPE_SIGN = "#".toCharArray();
 
 	private static long extractThreadId(RenderIO io, int offset, int length) {
 		try {
