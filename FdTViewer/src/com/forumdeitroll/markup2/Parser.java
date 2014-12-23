@@ -136,7 +136,7 @@ class Parser {
 
 	/*
 	Un chunk e` un link, una emoticon, una sequenza di testo semplice, un newline, una sequenza di &gt; (QUOTE_RUN)  o un testo delimitato da tags
-	<Chunk> ::= ( LINK | EMOTICON | TEXT | NL | QUOTE_RUN | PUTTANATA_MICIDIALE | <TagDelimited> )+
+	<Chunk> ::= ( LINK | EMOTICON | TEXT | NL | QUOTE_RUN | <PuttanataMicidialeSeq> | <TagDelimited> )+
 	*/
 	public static ParserNode.Chunk parseChunk(final RTokenizer tokv) throws ParseException {
 		if (debug) {
@@ -145,6 +145,7 @@ class Parser {
 
 		final ParserNode.Chunk c = new ParserNode.Chunk();
 
+		CHUNK_LOOP:
 		for (;;) {
 			final Token t = tokv.peek(0);
 			switch (t.tokenType) {
@@ -153,7 +154,6 @@ class Parser {
 			case TEXT:
 			case NL:
 			case QUOTE_RUN:
-			case PUTTANATA_MICIDIALE:
 				c.childs.add(new ParserNode.TokenNode(t));
 				tokv.advance(1);
 				break;
@@ -162,12 +162,19 @@ class Parser {
 				final ParserNode.TagDelimited td = parseTagDelimited(tokv);
 				if (td != null) {
 					c.childs.add(td);
+					continue CHUNK_LOOP;
+				}
+
+				final ParserNode.PuttanataMicidialeSeq pms = parsePuttanataMicidialeSeq(tokv);
+				if (pms != null) {
+					c.childs.add(pms);
+					continue CHUNK_LOOP;
+				}
+
+				if (c.childs.size() == 0) {
+					return null;
 				} else {
-					if (c.childs.size() == 0) {
-						return null;
-					} else {
-						return c;
-					}
+					return c;
 				}
 			}
 		}
@@ -203,5 +210,21 @@ class Parser {
 			}
 		}
 		return td;
+	}
+
+	/*
+	Un <PuttanataMicidialeSeq> e` una sequenza di puttanate micidiali
+	<PuttanataMicidialeSeq> ::= PUTTANATA_MICIDIALE <PuttanataMicidialeSeq>?
+	*/
+	public static ParserNode.PuttanataMicidialeSeq parsePuttanataMicidialeSeq(final RTokenizer tokv) throws ParseException {
+		final Token t = tokv.peek(0);
+		if (t.tokenType != Token.Type.PUTTANATA_MICIDIALE)
+			return null;
+
+		tokv.advance(1);
+
+		final ParserNode.PuttanataMicidialeSeq pms = new ParserNode.PuttanataMicidialeSeq(t);
+		pms.rest = parsePuttanataMicidialeSeq(tokv);
+		return pms;
 	}
 }

@@ -117,7 +117,6 @@
 2794178//messaggio malformato
 2793118//la funzione ^ e` veramente implementata col culo
 2793040//scritto da colorato male
-2792949//^
 2792941//messaggio malformato (SAMURAI e` ritardato e fa sempre lo stesso errore)
 2791323//parsing link migliore
 2790861
@@ -128,7 +127,6 @@
 2789572//parsing domini differente
 2789314//parsing domini differente
 2788331//parsing domini differente
-2787793//^
 2787548//parsing link migliore
 2787345//messaggio malformato
 2786882//parsing domini differente
@@ -163,6 +161,9 @@
 2777091//parsing domini migliore
 2776903//parsing link migliore
 2776566//url che non cominciano col protocollo non sono piu` riconosciuti
-2776640//^
 2776496//baco
 2775930//parsing domini migliore
+2796658
+2792845
+2784267
+2776640

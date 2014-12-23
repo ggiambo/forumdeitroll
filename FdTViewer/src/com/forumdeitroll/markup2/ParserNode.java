@@ -315,16 +315,6 @@ interface ParserNode {
 				}
 				break;
 
-			case PUTTANATA_MICIDIALE:
-				for (int i = 0; i < t.puttanataMicidialeDepth; ++i) {
-					w.write("<sup>");
-				}
-				w.write(t.text.buf, t.text.start, t.text.length());
-				for (int i = 0; i < t.puttanataMicidialeDepth; ++i) {
-					w.write("</sup>");
-				}
-				break;
-
 			case CLOSE_TAG:
 				EntityEscaper.writeEscaped(w, t.text.buf, t.text.start, t.text.length());
 				break;
@@ -345,6 +335,46 @@ interface ParserNode {
 
 		public boolean isBR() {
 			return t.tokenType == Token.Type.NL;
+		}
+	}
+
+	public static class PuttanataMicidialeSeq implements ParserNode {
+		public final Token t;
+		public PuttanataMicidialeSeq rest;
+
+		public PuttanataMicidialeSeq(final Token t) {
+			this.t = t;
+			this.rest = null;
+		}
+
+		public void printDebug(final PrintWriter w, final int depth) {
+			Rendering.indent(w, depth);
+			w.println("PUTTANATA_MICIDIALE " + t.toString());
+			if (rest != null) {
+				rest.printDebug(w, depth+1);
+			}
+		}
+
+		public void render(final Writer w, final Parser.Status status) throws Exception {
+			if ((t.text.length() == 0) && (rest == null)) {
+				w.write("^");
+				return;
+			}
+
+			w.write("<sup>");
+			w.write(t.text.buf, t.text.start, t.text.length());
+			if (rest != null) {
+				rest.render(w, status);
+			}
+			w.write("</sup>");
+		}
+
+		public boolean isQuoteGroup() {
+			return false;
+		}
+
+		public boolean isBR() {
+			return false;
 		}
 	}
 }
