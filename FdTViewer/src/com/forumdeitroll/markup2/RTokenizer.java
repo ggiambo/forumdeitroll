@@ -49,7 +49,7 @@ CLOSE_TAG ::= '[/' (url|code|spoiler|color) ']'
 NL ::= '<br>'
 EMOTICON ::= <una delle emoticon o uno snippet>
 LINK ::= <un link>
-PUTTANATA_MICIDIALE ::= '^'+<una parola>
+PUTTANATA_MICIDIALE ::= '^'<una parola>
 TEXT ::= qualunque altra cosa
 
 Se viene letto l'OPEN_TAG [code] si passa allo stato tsCode
@@ -416,18 +416,8 @@ class RTokenizer {
 				}
 
 				// Puttanata colossale che non avrebbe mai dovuto essere aggiunta alla sintassi
-				/*
-				Funziona male, per implementarla come e` implementata nel parser vecchio servirebbe una regola del parser apposta per questa minchiata
-				*/
 				if (ss.charAt(0) == '^') {
-					final char stopch = ss.charAt(0);
 					int i = 1;
-					int depth = 1;
-					for (; i < ss.length(); ++i) {
-						if (ss.charAt(i) != '^')
-							break;
-						++depth;
-					}
 					int start = i;
 					for (; i < ss.length(); ++i) {
 						// solo 1024 caratteri massimo, perche' 1023 va bene ma 1024 e` chiaramente un errore, meglio limitare i danni
@@ -435,19 +425,16 @@ class RTokenizer {
 							break;
 						}
 						char c = ss.charAt(i);
-						if ((c == '<') || (c == ' ') || (c == '\t') || (c == '[') || (c == '_') || (c == stopch)) {
+						if ((c == '<') || (c == ' ') || (c == '\t') || (c == '[') || (c == '_') || (c == '^')) {
 							break;
 						}
 					}
 
-					if (i > 1) {
-						emit(Token.Type.TEXT, nt);
-						final Token tk = new Token(Token.Type.PUTTANATA_MICIDIALE, level, new Substring(ss.buf, ss.start+start, ss.start+i));
-						tk.puttanataMicidialeDepth = depth;
-						tokv.add(tk);
-						ss.start += i;
-						return tsNormal;
-					}
+					emit(Token.Type.TEXT, nt);
+					final Token tk = new Token(Token.Type.PUTTANATA_MICIDIALE, level, new Substring(ss.buf, ss.start+start, ss.start+i));
+					tokv.add(tk);
+					ss.start += i;
+					return tsNormal;
 				}
 
 				final char c = ss.charAt(0);

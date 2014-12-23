@@ -25,7 +25,6 @@ class Token {
 	public boolean oldStyle;
 	public boolean multiLine;
 	public String repl;
-	public int puttanataMicidialeDepth;
 
 	public Token(final Type tokenType, final int quoteLevel, final Substring text) {
 		this.tokenType = tokenType;
