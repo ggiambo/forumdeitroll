@@ -2,6 +2,7 @@ package com.forumdeitroll.markup3;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.forumdeitroll.markup.Emoticon;
@@ -313,10 +314,10 @@ public class MarkupRenderer implements TokenListener {
 			, link, link));
 		}
 		out.append(String.format(
-			"<a href=\"https://www.google.com/searchbyimage?&image_url=%s\""
+			"<a href=\"https://www.google.com/searchbyimage?image_url=%s\""
 			+ " alt='Ricerca immagini simili' title='Ricerca immagini simili'"
 			+ " rel='nofollow noreferrer' target='_blank'>"
-			+ "<img src=\"https://www.google.com/favicon.ico\" style='width: 16px; height: 16px;'></a>", link));
+			+ "<img src=\"https://www.google.com/favicon.ico\" alt='' style='width: 16px; height: 16px;'></a>", link));
 	}
 
 	private void onUrl(TokenMatcher token, TokenMatcher additional) {
@@ -566,6 +567,6 @@ public class MarkupRenderer implements TokenListener {
 	}
 
 	private static String escape(String string) {
-		return EntityEscaper.escape(string);
+		return StringEscapeUtils.escapeHtml4(string);
 	}
 }
