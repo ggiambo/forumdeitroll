@@ -19,10 +19,10 @@ import org.jooq.Record3;
 import org.jooq.Result;
 
 import com.forumdeitroll.FdTException;
-import com.forumdeitroll.PagerTag;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
+import com.forumdeitroll.taglibs.PagerTag;
 
 public class PrivateMsgDAO extends BaseDAO {
 
