@@ -104,6 +104,7 @@ public abstract class TokenMatcher implements MatchResult {
 			return matcher.groupCount();
 		}
 		@Override public void region(int start, int end) {
+			regionStart = start;
 			matcher.region(start, end);
 		}
 		@Override public void reset(String text) {

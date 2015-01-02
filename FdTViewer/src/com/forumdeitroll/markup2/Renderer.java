@@ -55,7 +55,7 @@ public class Renderer {
 	}
 
 	public static RenderOptions[] getAllRenderingOptions() {
-		final List<RenderOptions> r = new ArrayList<RenderOptions>(32);
+		final List<RenderOptions> r = new ArrayList<RenderOptions>(64);
 
 		final boolean[] falsetrue = { false, true };
 
@@ -63,13 +63,15 @@ public class Renderer {
 			for (final boolean showImagesPlaceholder: falsetrue) {
 				for (final boolean renderImages: falsetrue) {
 					for (final boolean renderYoutube: falsetrue) {
-						final RenderOptions x = new RenderOptions();
-						x.renderYoutube = renderYoutube;
-						x.renderImages = renderImages;
-						x.collapseQuotes = false; // buona fortuna suoranciata!
-						x.embedYoutube = embedYoutube;
-						x.showImagesPlaceholder = showImagesPlaceholder;
-						r.add(x);
+						for (final boolean collapseQuotes : falsetrue) {
+							final RenderOptions x = new RenderOptions();
+							x.renderYoutube = renderYoutube;
+							x.renderImages = renderImages;
+							x.collapseQuotes = collapseQuotes;// fanculo sarru, mi hai fatto skippare dei test!
+							x.embedYoutube = embedYoutube;
+							x.showImagesPlaceholder = showImagesPlaceholder;
+							r.add(x);
+						}
 					}
 				}
 			}

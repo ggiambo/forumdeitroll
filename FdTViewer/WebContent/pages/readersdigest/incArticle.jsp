@@ -67,14 +67,14 @@
 	
 	<i>Il messaggio di apertura:</i>
 	<br>
-	<fdt:msg signature="false">${article.openerText}</fdt:msg>
+	<fdt:render target="articleOpener"/>
 	<br>
 	<br>
 	
 	<c:if test="${article.openerText != article.excerpt }">
 		<i>Una delle risposte più popolari:</i>
 		<br>
-		<fdt:msg signature="false">${article.excerpt}</fdt:msg>
+		<fdt:render target="articleExcerpt"/>
 		<br>
 	</c:if>
 	

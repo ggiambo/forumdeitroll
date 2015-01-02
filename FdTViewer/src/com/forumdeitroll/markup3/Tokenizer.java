@@ -35,7 +35,7 @@ public class Tokenizer {
 		this.returnToMode = TokenizerMode.NORMAL;
 		this.nextToken = null;
 		this.additional = null;
-		this.limit = 50000; //id 915608: 251kb
+		this.limit = 50000; //id 915608: 251kb, ~47k tokens
 		this.skipBow = false;
 		for (int i = 0; i < matchers.length; i++) {
 			for (int j = 0; j < matchers[i].length; j++) {

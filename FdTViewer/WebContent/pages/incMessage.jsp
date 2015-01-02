@@ -126,11 +126,8 @@
 	</c:if>
 
 	<div style="padding: 10px;" class="message">
-		<fdt:msg search="${param.search}" signature="false" author="${msg.author}">${msg.text}</fdt:msg>
-		<c:if test="${param.parseComp == 'yes'}">
-			<hr></hr>
-			<fdt:msg alt="yes" search="${param.search}" signature="false" author="${msg.author}">${msg.text}</fdt:msg>
-		</c:if>
+		<c:set var="message" value="${msg}"/>
+		<fdt:render target="message"/>
 	</div>
 
 	<c:if test="${(not empty msg.author.preferences['signature'] || not empty msg.author.signatureImage) && (empty loggedUser || (not empty loggedUser && loggedUser.preferences['hideSignature'] != 'checked'))}">
@@ -145,7 +142,7 @@
 		</c:choose>
 		<div class="${signatureClass}" id="firma_${msg.id}">
 			<c:if test="${not empty msg.author.preferences['signature']}">
-				<fdt:msg search="" signature="true" author="${msg.author}">${msg.author.preferences['signature']}</fdt:msg>
+				<fdt:render target="signature"/>
 			</c:if>
 			<c:if test="${not empty msg.author.signatureImage}">
 				<c:url value="Misc" var="signatureUrl">
