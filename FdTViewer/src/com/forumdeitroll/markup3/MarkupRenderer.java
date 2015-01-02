@@ -202,7 +202,7 @@ public class MarkupRenderer implements TokenListener {
 				out.append("<BR>");
 				return;
 			}
-			out.append("<a href=\"User?action=getUserInfo&nick=");
+			out.append("<a href=\"User?action=getUserInfo&amp;nick=");
 			out.append(escape(nick));
 			out.append("\">");
 			out.append(escape(nick));
