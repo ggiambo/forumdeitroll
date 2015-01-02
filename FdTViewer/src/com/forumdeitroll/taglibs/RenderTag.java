@@ -1,6 +1,8 @@
 package com.forumdeitroll.taglibs;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -73,6 +75,15 @@ public class RenderTag extends TagSupport {
 		}
 		try {
 			String html = com.forumdeitroll.markup3.Renderer.render(text, opts);
+			if (pageContext.getRequest().getParameter("compareRendering") != null) {
+				StringWriter sw = new StringWriter();
+				sw.write(html);
+				sw.write("<BR>--- R1 ---<BR>");
+				com.forumdeitroll.markup.Renderer.render(new StringReader(text), sw, opts);
+				sw.write("<BR>--- RS ---<BR>");
+				com.forumdeitroll.markup2.Renderer.render(text, sw, opts);
+				html = sw.toString();
+			}
 			pageContext.getOut().print(html);
 		} catch (Exception e) {
 			LOG.error(e);
