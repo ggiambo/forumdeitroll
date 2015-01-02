@@ -37,11 +37,36 @@ public class EntityEscaper {
 						c = 0;
 						break;
 					}
-				}	
+				}
 			}
 			if (c == 0)
 				continue;
 			out.write(c);
 		}
+	}
+
+	public static String escape(String s, int offset, int length) {
+		StringBuilder out = new StringBuilder();
+		for (int i = 0; i < length; i++) {
+			char c = s.charAt(i + offset);
+			if (!Chars.isAlphanum(c)) {
+				for (char[] pair : entityMapping) {
+					if (c == pair[0]) {
+						out.append(pair, 1, pair.length -1);
+						c = 0;
+						break;
+					}
+				}
+			}
+			if (c == 0) {
+				continue;
+			}
+			out.append(c);
+		}
+		return out.toString();
+	}
+
+	public static String escape(String s) {
+		return escape(s, 0, s.length());
 	}
 }
