@@ -22,7 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
-import com.forumdeitroll.MessageTag;
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
@@ -36,6 +35,7 @@ import com.forumdeitroll.persistence.TagDTO;
 import com.forumdeitroll.profiler.UserProfile;
 import com.forumdeitroll.profiler.UserProfiler;
 import com.forumdeitroll.servlets.Action.Method;
+import com.forumdeitroll.taglibs.MessageTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.google.gson.Gson;

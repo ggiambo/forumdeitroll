@@ -1,4 +1,4 @@
-package com.forumdeitroll;
+package com.forumdeitroll.taglibs;
 
 import java.io.IOException;
 import java.io.StringReader;
