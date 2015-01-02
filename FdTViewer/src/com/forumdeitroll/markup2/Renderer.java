@@ -54,7 +54,7 @@ public class Renderer {
 		msg.render(out, status);
 	}
 
-	protected static RenderOptions[] getAllRenderingOptions() {
+	public static RenderOptions[] getAllRenderingOptions() {
 		final List<RenderOptions> r = new ArrayList<RenderOptions>(32);
 
 		final boolean[] falsetrue = { false, true };
