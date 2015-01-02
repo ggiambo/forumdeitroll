@@ -49,6 +49,18 @@
   </tag>
 
 	<tag>
+		<name>render</name>
+		<tag-class>com.forumdeitroll.taglibs.RenderTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>target</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+
+	<tag>
     <description>
         Check for unread pvts
     </description>
@@ -83,5 +95,5 @@
 	  		<rtexprvalue>true</rtexprvalue>
   		</attribute>
 	</tag>
-	
+
 </taglib>

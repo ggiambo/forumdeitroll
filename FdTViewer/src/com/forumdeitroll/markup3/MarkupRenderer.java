@@ -2,7 +2,6 @@ package com.forumdeitroll.markup3;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.forumdeitroll.markup.Emoticon;
@@ -34,14 +33,11 @@ public class MarkupRenderer implements TokenListener {
 	private boolean codeTagOpen;
 	private boolean preTagCode;
 	private int[] tagsCounter;
-	private String lastTokenName;
 	private int lastOutStart;
 	private String urlHref;
 	private String urlHrefType;
 	private StringBuilder alternateOut;
 	private int emotiCount;
-
-	private static boolean bugReplication = true;
 
 	public String render(String text, RenderOptions opts) throws Exception {
 		reset(text, opts);
@@ -59,7 +55,6 @@ public class MarkupRenderer implements TokenListener {
 		this.codeTagOpen = false;
 		this.preTagCode = false;
 		this.tagsCounter = new int[7]; // bisu + spoiler + color + carets
-		this.lastTokenName = null;
 		this.lastOutStart = 0;
 		this.urlHref = null;
 		this.urlHrefType = null;
@@ -97,7 +92,6 @@ public class MarkupRenderer implements TokenListener {
 		} else if (token.name.startsWith("TEXT")) {
 			onWord(token);
 		}
-		this.lastTokenName = token.name;
 		this.lastOutStart = nextOutStart;
 	}
 
@@ -113,19 +107,18 @@ public class MarkupRenderer implements TokenListener {
 	private void onQuotes(TokenMatcher token) {
 		int newQuoteLevel = countQuoteLevel(token);
 		boolean scrittoda = token.name.endsWith("SCRITTO_DA");
-		if (bugReplication) {
-			if (scrittoda && newQuoteLevel == 1 && lastTokenName != null && lastTokenName.equals("BR")) {
-				newQuoteLevel = 0;
-				emitQuoteText(token);
-			} else if (scrittoda && newQuoteLevel > 1 && lastTokenName == null) {
-				newQuoteLevel--;
-			}
-		}
 		if (quoteLevel == 0 && newQuoteLevel == 0) {
 			return;
 		} else if (quoteLevel != 0 && quoteLevel == newQuoteLevel) {
-			emitQuoteText(token);
-			return;
+			if (!scrittoda && !multiLineQuoteStarted && opts.collapseQuotes) {
+				emitCloseQuote();
+				emitOpenMultiLineQuote();
+				multiLineQuoteStarted = true;
+				emitOpenQuote(token);
+				emitQuoteText(token);
+			} else {
+				emitQuoteText(token);
+			}
 		} else if (newQuoteLevel == 0) {
 			emitCloseQuote();
 			if (multiLineQuoteStarted) {
@@ -136,16 +129,20 @@ public class MarkupRenderer implements TokenListener {
 		} else if (quoteLevel == 0) {
 			if (!scrittoda && opts.collapseQuotes && !multiLineQuoteStarted) {
 				emitOpenMultiLineQuote();
+				multiLineQuoteStarted = true;
 			}
 			quoteLevel = newQuoteLevel;
 			emitOpenQuote(token);
+			emitQuoteText(token);
 		} else {
+			quoteLevel = newQuoteLevel;
 			emitCloseQuote();
 			if (!scrittoda && opts.collapseQuotes && !multiLineQuoteStarted) {
 				emitOpenMultiLineQuote();
+				multiLineQuoteStarted = true;
 			}
-			quoteLevel = newQuoteLevel;
 			emitOpenQuote(token);
+			emitQuoteText(token);
 		}
 	}
 
@@ -194,7 +191,6 @@ public class MarkupRenderer implements TokenListener {
 
 	private void emitOpenQuote(TokenMatcher token) {
 		out.append(String.format("<span class='quoteLvl%d'>", (quoteLevel % 4 == 0 ? 4 : quoteLevel % 4)));
-		emitQuoteText(token);
 	}
 
 	private void emitQuoteText(TokenMatcher token) {
@@ -216,11 +212,7 @@ public class MarkupRenderer implements TokenListener {
 	}
 
 	private void emitCloseQuote() {
-		if (lastTokenName != null && lastTokenName.equals("BR") || lastTokenName.equals("QUOTES_SCRITTO_DA")) {
-			out.replace(out.length() - 4, out.length(), "</span><BR>");
-		} else {
-			out.append("</span>");
-		}
+		out.append("</span>");
 	}
 
 	private void onCode(TokenMatcher token) {
@@ -362,7 +354,7 @@ public class MarkupRenderer implements TokenListener {
 				link = "http://" + link;
 			}
 		}
-		if (bugReplication && type.equals("LINK_TLD") && !orig.contains("/")) {
+		if (type.equals("LINK_TLD") && !orig.contains("/")) {
 			link += "/";
 		}
 		link = escape(link);
@@ -379,9 +371,6 @@ public class MarkupRenderer implements TokenListener {
 			}
 		}
 		boolean shortenDesc = autolink;
-		if (bugReplication) {
-			shortenDesc = !(autolink && internal) || desc == null;
-		}
 		if (desc == null) {
 			desc = orig;
 		}
@@ -577,10 +566,6 @@ public class MarkupRenderer implements TokenListener {
 	}
 
 	private static String escape(String string) {
-		if (bugReplication) {
-			return EntityEscaper.escape(string);
-		} else {
-			return StringEscapeUtils.escapeHtml4(string);
-		}
+		return EntityEscaper.escape(string);
 	}
 }

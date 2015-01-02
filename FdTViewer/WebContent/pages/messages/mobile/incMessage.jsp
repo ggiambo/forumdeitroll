@@ -59,7 +59,8 @@
 		</c:otherwise>
 	</c:choose>
 	<div class="row msgContent">
-		<fdt:msg search="${param.search}" signature="false" author="${msg.author}">${msg.text}</fdt:msg>
+		<c:set var="message" value="${msg}"/>
+		<fdt:render target="message"/>
 		<div class=row>
 			<div class=col-1-2>&nbsp;</div>
 			<div class=col-2>

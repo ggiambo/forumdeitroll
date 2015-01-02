@@ -53,10 +53,11 @@ public class GreatRendereresShootout {
 //			runFromDb(2823988, "<BR><BR>Ne ^fap-fap-fap valeva ^fap-fap-fap  la pena ^fap-fap-fap :$ ", new RenderOptions());
 //			printTokens("^a b ^c d");
 //			runFromUser("^a b ^c d", new RenderOptions());
-			runCompetition();
-//			testSingleMessage(2816441);
+//			runCompetition();
+//			testSingleMessage(2775233);
+//			testSingleMessage(2798073);
 //			printTokensDb("Cosa fai il 4 Dicembre (geek) ?<BR>http://www.cdt.ch/ticino/cronaca/118658/kalashnikov-e-colt-in-un-sol-colpo.html<BR>[url]http://www4.ti.ch/di/dg/uef/aste/dettaglio/?user_diasteonline_pi1[id]=99258[/url]<BR><BR><BR><b>**Modificato dall'autore il 07.11.2014 09:05**</b>");
-//			testFromUser("^ok^ok");
+			testFromUser("ok\nok\n>nok");
 //			testFromUser("[url=Messages?action=getById&msgId=2779559]abcde fghil jkmno pqrst uvwyx zabcd efghi ljkmn opqrs tuwyx z[/url]");
 //			testFromUser("[url=http://en.wikipedia.org/wiki/Richard_A._Gardner]abcde fghil jkmno pqrst uvwyx zabcd efghi ljkmn opqrs tuwyx z[/url]");
 //			printTokens("[yt]https://www.youtube.com/watch?v=eDXnjIpLJFs[/yt]");

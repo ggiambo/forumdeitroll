@@ -36,4 +36,12 @@ public class Renderer {
 		}
 		out.write(renderer.render(in, opts));
 	}
+	public static String render(String in, RenderOptions opts) throws Exception {
+		MarkupRenderer renderer;
+		if ((renderer = mrTl.get()) == null) {
+			renderer = new MarkupRenderer();
+			mrTl.set(renderer);
+		}
+		return renderer.render(in, opts);
+	}
 }
