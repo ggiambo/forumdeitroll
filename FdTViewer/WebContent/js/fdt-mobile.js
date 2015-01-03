@@ -65,12 +65,26 @@ var domready = function(callback) {
 	domready.callbacks.push(callback);
 };
 
+var openQuotes = function(event) {
+	var elem = event.target;
+	elem.className = 'quote-closer';
+	elem.onclick = function() {
+		elem.className = 'quote-container';
+		elem.onclick = openQuotes;
+	};
+};
+
 domready(function() {
 	var value = localStorage['toggleQuotes'];
 	if (value === 'true') {
 		var style = document.createElement('style');
 		style.appendChild(document.createTextNode("[class^='quoteLvl'], [class^='quoteLvl'] + br, .quote-container, .quote-container + br { visibility: collapse !important; display: none !important; }"));
 		document.body.appendChild(style);
+	}
+	var q = document.querySelectorAll('.quote-container');
+	var i;
+	for (i = 0; i < q.length; i++) {
+		q[i].onclick = openQuotes;
 	}
 });
 
