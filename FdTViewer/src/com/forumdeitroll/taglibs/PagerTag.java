@@ -102,7 +102,7 @@ public class PagerTag extends TagSupport  {
 
 	private static void renderPager(LinkedList<PagerElem> pager, PageContext pageContext, PagerHandler handler, boolean mobileView) throws IOException {
 		JspWriter out = pageContext.getOut();
-		out.write("<ul class='pager'>");
+		out.write("<ul class='pager pager-"+pager.size()+"'>");
 		HttpServletRequest req = (HttpServletRequest)pageContext.getRequest();
 		for (Iterator<PagerElem> pagerIterator = pager.iterator(); pagerIterator.hasNext();) {
 			PagerElem page = pagerIterator.next();

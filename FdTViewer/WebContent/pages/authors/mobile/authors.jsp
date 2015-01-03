@@ -8,15 +8,7 @@
 </div>
 
 <c:forEach items="${authors}" var="author" varStatus="index">
-	<c:choose>
-		<c:when test="${index.index % 2 == 0}">
-			<c:set var="rowclass" value="msgEven"/>
-		</c:when>
-		<c:otherwise>
-			<c:set var="rowclass" value="msgOdd"/>
-		</c:otherwise>
-	</c:choose>
-	<div class="row author ${rowclass}" onclick="this.childNodes[1].click()">
+	<div class="row author" onclick="this.childNodes[1].click()">
 		<a href="Messages?action=getByAuthor&author=${author.nick}" class=col-6>
 			<span class=nickname>${author.nick}</span>
 			(${author.messages}

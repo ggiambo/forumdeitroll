@@ -74,20 +74,6 @@ var openQuotes = function(event) {
 	};
 };
 
-domready(function() {
-	var value = localStorage['toggleQuotes'];
-	if (value === 'true') {
-		var style = document.createElement('style');
-		style.appendChild(document.createTextNode("[class^='quoteLvl'], [class^='quoteLvl'] + br, .quote-container, .quote-container + br { visibility: collapse !important; display: none !important; }"));
-		document.body.appendChild(style);
-	}
-	var q = document.querySelectorAll('.quote-container');
-	var i;
-	for (i = 0; i < q.length; i++) {
-		q[i].onclick = openQuotes;
-	}
-});
-
 var toggleQuotes = function() {
 	var value = localStorage['toggleQuotes'];
 	if (value === 'true') {
@@ -99,13 +85,13 @@ var toggleQuotes = function() {
 };
 
 var toggleMessageView = function(element, event) {
-	var msgContent = element.parentNode.parentNode.parentNode.parentNode.parentNode.querySelector('.msgContent');
+	var msgContent = element.parentNode.querySelector('.msgContent');
 	if (!msgContent.style.display || msgContent.style.display === 'none') {
 		msgContent.style.display = 'block';
-		element.innerHTML = '&#x25b2;';
+		element.querySelector('.arrow').innerHTML = '&#x25b2;';
 	} else {
 		msgContent.style.display = 'none';
-		element.innerHTML = '&#x25bc;';
+		element.querySelector('.arrow').innerHTML = '&#x25bc;';
 	}
 };
 
@@ -194,3 +180,37 @@ var showHideMenu = function() {
 	}
 	
 };
+
+domready(function() {
+	// mostra/nascondi quotes
+	var value = localStorage['toggleQuotes'];
+	if (value === 'true') {
+		var style = document.createElement('style');
+		style.appendChild(document.createTextNode("[class^='quoteLvl'], [class^='quoteLvl'] + br, .quote-container, .quote-container + br { visibility: collapse !important; display: none !important; }"));
+		document.body.appendChild(style);
+	}
+	var q = document.querySelectorAll('.quote-container');
+	var i;
+	for (i = 0; i < q.length; i++) {
+		q[i].onclick = openQuotes;
+	}
+	// apri il messaggio se linkato
+	var msgId = location.href.match(/Threads\?action=getByThread&threadId=[0-9]+#msg([0-9]+)/);
+	if (msgId) {
+		msgId = msgId[1];
+	} else {
+		msgId = location.href.match(/Threads\?action=getByThread&threadId=([0-9]+)/);
+		if (msgId) {
+			msgId = msgId[1];
+		}
+	}
+	if (msgId) {
+		document.querySelector('#msg-toggle-' + msgId).click();
+	}
+	// linkwrapper
+	document.addEventListener('click', function(event) {
+		if (event.target.className.match(/linkwrapper/)) {
+			event.target.querySelector('a').click();
+		}
+	}, false);
+});

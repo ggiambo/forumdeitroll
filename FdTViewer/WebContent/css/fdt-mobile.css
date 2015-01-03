@@ -43,14 +43,6 @@ div.quote-closer {
 	padding-top: 11px;
 }
 
-.msgEven {
-	background-color: #FFFFFF;
-}
-
-.msgOdd {
-	background-color: #F6F6F6;
-}
-
 .favicon {
 	width: 16px;
 	height: 16px;
@@ -127,6 +119,19 @@ ul.pager > li {
 	width: 9.09090909%;
 }
 
+ul.pager-1 > li {width: 100%;}
+ul.pager-2 > li {width: 50%;}
+ul.pager-3 > li {width: 33.333333333333336%;}
+ul.pager-4 > li {width: 25%;}
+ul.pager-5 > li {width: 20%;}
+ul.pager-6 > li {width: 16.666666666666668%;}
+ul.pager-7 > li {width: 14.285714285714286%;}
+ul.pager-8 > li {width: 12.5%;}
+ul.pager-9 > li {width: 11.11111111111111%;}
+ul.pager-10 > li {width: 10%;}
+ul.pager-11 > li {width: 9.090909090909092%;}
+
+
 /* accordion cronologia */
 .msgContent {
 	display: none;
@@ -157,23 +162,21 @@ ul.pager > li {
 	margin-top: 4em;
 	margin-bottom: 4em;
 }
-.menu > ul > li {
+.menu > div {
 	text-align: center;
-}
-.menu > ul > li > a {
-	width: 100%;
-	height: 3em;
+	background: linear-gradient(#ffffff, #dfdfdf);
+	border: 1px solid #D3D3D3;
+	min-height: 64px;
 }
 
 .btn {
 	box-shadow:inset 0px 1px 0px 0px #dcecfb;
-	background-color:#bddbfa;
-	border:1px solid #84bbf3;
+	background: linear-gradient(#5D6B7A, #272D33);
 	display:inline-block;
-	color:#ffffff;
-	text-decoration:none;
+	color:white;
+	text-decoration: none;
+	font-weight: bold;
 	text-align:center;
-	text-shadow:1px 1px 0px #528ecc;
 	width: 100%;
 	height: 3em;
 	padding-top: .5em;
@@ -184,7 +187,7 @@ ul.pager > li {
 }
 
 .btn:hover {
-	background: #bddbfa;
+	background: linear-gradient(#7D91A6, #272D33)
 }
 .btn:active {
 	position:relative;
@@ -192,7 +195,7 @@ ul.pager > li {
 }
 
 .avatar {
-	height: 32px;
+	height: 48px;
 }
 
 .msgInfo {
@@ -203,11 +206,17 @@ ul.pager > li {
 	margin: 4px 5px;
 	border: 1px solid #D3D3D3;
 	min-height: 64px;
+	background: linear-gradient(#ffffff, #dfdfdf);
+}
+
+.msgInfo {
+	float: right;
 }
 
 .threadBox {
 	margin: 4px 5px;
 	border: 1px solid #D3D3D3;
+	background: linear-gradient(#ffffff, #dfdfdf);
 }
 
 .threadDetail {
@@ -246,5 +255,6 @@ textarea {
 }
 
 div.author {
-	height: 2em
+	height: 2em;
+	background: linear-gradient(#ffffff, #dfdfdf);
 }

@@ -3,15 +3,7 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
 <c:forEach items="${messages}" var="thread" varStatus="index">
-	<c:choose>
-		<c:when test="${index.count % 2 == 0}">
-			<c:set var="rowclass" value="msgEven"/>
-		</c:when>
-		<c:otherwise>
-			<c:set var="rowclass" value="msgOdd"/>
-		</c:otherwise>
-	</c:choose>
-	<div id="threadTree_${thread.id}" class="${rowclass} threadBox" onclick="this.childNodes[1].click()">
+	<div id="threadTree_${thread.id}" class="threadBox" onclick="this.childNodes[1].click()">
 		<c:choose>
 			<c:when test="${param['action'] == 'getThreadsByLastPost' || param['action'] == 'getAuthorThreadsByLastPost'}">
 				<a href="Threads?action=getByThread&threadId=${thread.id}#msg${thread.lastId}">${thread.subject}</a>

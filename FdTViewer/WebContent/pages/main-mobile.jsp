@@ -58,19 +58,17 @@
 			</c:choose>
 		</div>
 		<div class=menu>
-			<ul>
-				<c:choose>
-					<c:when test="${not empty loggedUser}">
-						<li>Loggato come ${loggedUser.nick}</li>
-						<li><a href="Misc?action=logoutAction">Logout</a></li>
-					</c:when>
-					<c:otherwise>
-						<li><a href="User?action=loginAction">Login</a></li>
-					</c:otherwise>
-				</c:choose>
-				<li onclick="classico()"><a href="javascript:void(0)">Classico</a></li>
-				<li onclick="toggleQuotes()"><a href="javascript:void(0)">Toggle Quotes</a></li>
-			</ul>
+			<c:choose>
+				<c:when test="${not empty loggedUser}">
+					<div>Loggato come ${loggedUser.nick}</div>
+					<div class=linkwrapper><a href="Misc?action=logoutAction">Logout</a></div>
+				</c:when>
+				<c:otherwise>
+					<div class=linkwrapper><a href="User?action=loginAction">Login</a></div>
+				</c:otherwise>
+			</c:choose>
+			<div onclick="classico()"><a href="javascript:void(0)">Classico</a></div>
+			<div onclick="toggleQuotes()"><a href="javascript:void(0)">Toggle Quotes</a></div>
 		</div>
 		<fdt:delayedScript dump="true">
 			questo non verra' stampato, ma se lo togli la taglib non viene eseguita
