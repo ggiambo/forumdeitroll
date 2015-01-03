@@ -168,3 +168,15 @@ var sendMessage = function() {
 		});
 	});
 };
+
+var showHideMenu = function() {
+	if (!document.querySelector(".main").style.display
+			|| document.querySelector(".main").style.display === 'block') {
+		document.querySelector(".main").style.display = 'none';
+		document.querySelector(".menu").style.display = 'block';
+	} else {
+		document.querySelector(".main").style.display = 'block';
+		document.querySelector(".menu").style.display = 'none';
+	}
+	
+};

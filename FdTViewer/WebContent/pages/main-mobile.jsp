@@ -35,21 +35,8 @@
 			<li class="col-1">
 				<a href=Messages?action=mobileComposer class=btn>Nuovo</a>
 			</li>
-			<li class="col-1 menu">
-				<span class=btn>Menu</span>
-				<ul>
-					<c:choose>
-						<c:when test="${not empty loggedUser}">
-							<li>Loggato come ${loggedUser.nick}</li>
-							<li onclick=this.childNodes[0].click()><a href="Misc?action=logoutAction">Logout</a></li>
-						</c:when>
-						<c:otherwise>
-							<li onclick=this.childNodes[0].click()><a href="User?action=loginAction">Login</a></li>
-						</c:otherwise>
-					</c:choose>
-					<li onclick="classico()"><a href='#' onclick="return false">Classico</a></li>
-					<li onclick="toggleQuotes()"><a href='#' onclick="return false">Toggle Quotes</a></li>
-				</ul>
+			<li class="col-1">
+				<a href="javascript:showHideMenu()" class="btn">Menu</a>
 			</li>
 		</ul>
 		<div class=main>
@@ -69,6 +56,21 @@
 					<jsp:include page="${fn:toLowerCase(servlet)}/mobile/${page}" />
 				</c:otherwise>
 			</c:choose>
+		</div>
+		<div class=menu>
+			<ul>
+				<c:choose>
+					<c:when test="${not empty loggedUser}">
+						<li>Loggato come ${loggedUser.nick}</li>
+						<li><a href="Misc?action=logoutAction">Logout</a></li>
+					</c:when>
+					<c:otherwise>
+						<li><a href="User?action=loginAction">Login</a></li>
+					</c:otherwise>
+				</c:choose>
+				<li onclick="classico()"><a href="javascript:void(0)">Classico</a></li>
+				<li onclick="toggleQuotes()"><a href="javascript:void(0)">Toggle Quotes</a></li>
+			</ul>
 		</div>
 		<fdt:delayedScript dump="true">
 			questo non verra' stampato, ma se lo togli la taglib non viene eseguita
