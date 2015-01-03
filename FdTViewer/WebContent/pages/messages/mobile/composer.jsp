@@ -47,15 +47,19 @@
 </div>
 <div class=row>&nbsp;</div>
 <div class=row>
-	<div class=col-1>Oggetto</div>
-	<div class=col-5>
+	<div class=col-6>Oggetto</div>
+</div>
+<div class=row>
+	<div class=col-6>
 		<input id=subject type=text value="${subject}" maxlength="<%=com.forumdeitroll.servlets.Messages.MAX_SUBJECT_LENGTH%>">
 	</div>
 </div>
 <div class=row>&nbsp;</div>
 <div class=row>
-	<div class=col-1>Testo</div>
-	<div class=col-5>
+	<div class=col-6>Testo</div>
+</div>
+<div class=row>
+	<div class=col-6>
 		<textarea id=text>${text}</textarea>
 		<div id=preview></div>
 	</div>
