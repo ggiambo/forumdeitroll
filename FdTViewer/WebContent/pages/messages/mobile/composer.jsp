@@ -91,7 +91,7 @@
 <div class=row>
 	<div class=col-1-2>&nbsp;</div>
 	<div class=col-2>
-		<a href="javascript:previewMessage()" class=btn>Preview</a>
+		<a href="javascript:previewMessage()" class="btn btn-flat">Preview</a>
 	</div>
 	<div class=col-1>&nbsp;</div>
 	<div class=col-2>
@@ -99,7 +99,7 @@
 			<a href="javascript:alert('Post con Tor temporaneamente inibito.')" class="msgSendButton" style="background-color: red" >BLOCCATO</a>
 		</c:if>
 		<c:if test="${warnTorUser == null}">
-			<a href="javascript:sendMessage()" class=btn>Invia</a>
+			<a href="javascript:sendMessage()" class="btn btn-flat">Invia</a>
 		</c:if>
 	</div>
 	<div class=col-1-2>&nbsp;</div>

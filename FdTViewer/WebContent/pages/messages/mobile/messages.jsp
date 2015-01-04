@@ -9,4 +9,4 @@
 	<jsp:include page="incMessage.jsp"></jsp:include>
 </c:forEach>
 
-<fdt:pager handler="Messages"/>
+<c:set scope="request" var="pagerHandler" value="Messages"/>

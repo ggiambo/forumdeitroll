@@ -1,5 +1,9 @@
 /* importato da fdt.css per compatibilita' */
 
+body {
+	font-size: small;
+}
+
 img.emoticon {
 	border: none;
 	vertical-align: bottom;
@@ -99,24 +103,33 @@ a {
 	float: right;
 }
 
-/* pager */
-ul.pager {
+.footer {
 	position: fixed;
 	bottom: 0;
 	width: 100%;
-	margin: 0 auto;
-	display: block;
 	margin: 0;
 	padding: 0;
-	clear: both;
+	bottom: 0;
+	left: 0;
+}
+
+/* pager */
+ul.pager {
 	background-color: #fafafa;
+	border: 0;
+	padding: 0;
+	margin: 0;
 }
 
 ul.pager > li {
 	margin: 0;
 	padding: 0;
+	border: 0;
 	float: left;
 	width: 9.09090909%;
+}
+ul.pager > li:last-child {
+	float: right;
 }
 
 ul.pager-1 > li {width: 100%;}
@@ -143,7 +156,6 @@ ul.pager-11 > li {width: 9.090909090909092%;}
 	position: fixed;
 	top: 0;
 	left: 0;
-	
 }
 .header>li {
 	text-align: center;
@@ -195,7 +207,7 @@ ul.pager-11 > li {width: 9.090909090909092%;}
 }
 
 .avatar {
-	height: 48px;
+	width: 48px;
 }
 
 .msgInfo {

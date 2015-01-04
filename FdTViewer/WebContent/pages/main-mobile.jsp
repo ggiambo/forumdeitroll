@@ -70,6 +70,11 @@
 			<div onclick="classico()"><a href="javascript:void(0)">Classico</a></div>
 			<div onclick="toggleQuotes()"><a href="javascript:void(0)">Toggle Quotes</a></div>
 		</div>
+			<div class=footer>
+				<c:if test="${not empty pagerHandler}">
+					<fdt:pager handler="${pagerHandler}"/>
+				</c:if>
+			</div>
 		<fdt:delayedScript dump="true">
 			questo non verra' stampato, ma se lo togli la taglib non viene eseguita
 		</fdt:delayedScript>

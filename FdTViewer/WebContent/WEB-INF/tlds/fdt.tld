@@ -96,4 +96,16 @@
   		</attribute>
 	</tag>
 
+	<tag>
+		<name>prettyDate</name>
+		<tag-class>com.forumdeitroll.taglibs.PrettyDateTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>date</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Date</type>
+		</attribute>
+	</tag>
+
 </taglib>

@@ -30,34 +30,27 @@
 				</div>
 			</c:when>
 			<c:otherwise>
-				<div class=col-4>
+				<div class=col-5>
 					${msg.subject}
 					<span class=arrow>&#x25bc;</span>
 				</div>
-				<div class=col-1>
-					<a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}" class="btn btn-flat"
-						onclick="event.stopPropagation()">
-						&#x25b6;
-					</a>
-				</div>
 			</c:otherwise>
 		</c:choose>
-	</div>
-	<div class="row msgContent">
 		<span class=msgInfo>
-			Scritto da
+			di
 			<c:choose>
 				<c:when test="${not empty msg.author.nick}">
-					<a href="Messages?action=getByAuthor&author=${msg.author.nick}">${msg.author.nick}</a>
+					${msg.author.nick}
 				</c:when>
 				<c:otherwise>
 					non autenticato
 				</c:otherwise>
 			</c:choose>
 			<br>
-			il
-			<fmt:formatDate value="${msg.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${msg.date}" pattern="HH:mm"/>
+			<i><fdt:prettyDate date="${msg.date}"/></i>
 		</span>
+	</div>
+	<div class="row msgContent">
 		<c:set var="message" value="${msg}"/>
 		<fdt:render target="message"/>
 		<div class=row>
@@ -73,6 +66,27 @@
 				<c:if test="${msg.author.nick != loggedUser.nick}">
 					<a href="Messages?action=mobileComposer&amp;replyToId=${msg.id}" class="btn btn-flat">Rispondi</a>
 				</c:if>
+			</div>
+			<div class=col-1-2>&nbsp;</div>
+		</div>
+		<div class=row>&nbsp;</div>
+		<div class=row>
+			<div class=col-1-2>&nbsp;</div>
+			<div class=col-2>
+				<c:if test="${not empty msg.author.nick}">
+					<a href="Messages?action=getByAuthor&author=${msg.author.nick}" class="btn btn-flat">
+						${msg.author.nick}
+					</a>
+				</c:if>
+				<c:if test="${empty msg.author.nick}">
+					&nbsp;
+				</c:if>
+			</div>
+			<div class=col-1>&nbsp;</div>
+			<div class=col-2>
+				<a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}" class="btn btn-flat">
+					Leggi Thread
+				</a>
 			</div>
 			<div class=col-1-2>&nbsp;</div>
 		</div>
