@@ -226,6 +226,7 @@ ul.pager-11 > li {width: 9.090909090909092%;}
 }
 
 .threadBox {
+	min-height: 64px;
 	margin: 4px 5px;
 	border: 1px solid #D3D3D3;
 	background: linear-gradient(#ffffff, #dfdfdf);

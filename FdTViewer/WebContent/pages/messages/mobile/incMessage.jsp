@@ -75,7 +75,7 @@
 			<div class=col-2>
 				<c:if test="${not empty msg.author.nick}">
 					<a href="Messages?action=getByAuthor&author=${msg.author.nick}" class="btn btn-flat">
-						${msg.author.nick}
+						di ${msg.author.nick}
 					</a>
 				</c:if>
 				<c:if test="${empty msg.author.nick}">

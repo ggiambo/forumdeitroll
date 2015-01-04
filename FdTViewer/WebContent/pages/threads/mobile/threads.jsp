@@ -3,29 +3,30 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
 <c:forEach items="${messages}" var="thread" varStatus="index">
-	<div id="threadTree_${thread.id}" class="threadBox" onclick="this.childNodes[1].click()">
-		<c:choose>
-			<c:when test="${param['action'] == 'getThreadsByLastPost' || param['action'] == 'getAuthorThreadsByLastPost'}">
-				<a href="Threads?action=getByThread&threadId=${thread.id}#msg${thread.lastId}">${thread.subject}</a>
-			</c:when>
-			<c:when test="${param['action'] == 'getThreads'}">
-				<a href="Threads?action=getByThread&threadId=${thread.id}">${thread.subject}</a>
-			</c:when>
-			<c:otherwise></c:otherwise>
-		</c:choose>
-		(${thread.numberOfMessages}
-		<c:choose>
-			<c:when test="${thread.numberOfMessages != 1}">
-				messaggi)
-			</c:when>
-			<c:otherwise>
-				messaggio)
-			</c:otherwise>
-		</c:choose>
-		<c:if test="${!empty thread.forum}">
-			<span class="tagForum">${thread.forum}</span>
-		</c:if>
-		<div class="threadDetail">
+	<c:choose>
+		<c:when test="${param['action'] == 'getThreadsByLastPost' || param['action'] == 'getAuthorThreadsByLastPost'}">
+			<c:set var="threadId" value="${thread.id}"/>
+			<c:set var="messageId" value="${thread.lastId}"/>
+		</c:when>
+		<c:when test="${param['action'] == 'getThreads'}">
+			<c:set var="threadId" value="${thread.id}"/>
+			<c:set var="messageId" value="${thread.id}"/>
+		</c:when>
+		<c:otherwise></c:otherwise>
+	</c:choose>
+	<div class="threadBox" onclick="gotoThread(${threadId},${messageId})">
+		<div class=row>
+			<div class=col-1>
+				<img src="Misc?action=getAvatar&amp;&nick=${thread.author.nick}" class=avatar>
+			</div>
+			<div class=col-5>
+				${thread.subject}
+				<c:if test="${!empty thread.forum}">
+					<span class="tagForum">${thread.forum}</span>
+				</c:if>
+			</div>
+		</div>
+		<span class=msgInfo>
 			<c:choose>
 				<c:when test="${param['action'] == 'getThreadsByLastPost' || param['action'] == 'getAuthorThreadsByLastPost'}">
 					Ultimo messaggio di
@@ -35,31 +36,20 @@
 				</c:when>
 				<c:otherwise></c:otherwise>
 			</c:choose>
-			<span class="msgAuthor">
-				<c:choose>
-					<c:when test="${empty thread.author.nick}">
-						Non Autenticato
-					</c:when>
-					<c:otherwise>
-						<c:url value="Messages" var="authorURL">
-							<c:param name="action" value="getByAuthor"/>
-							<c:param name="author" value="${thread.author.nick}"/>
-						</c:url>
-						<a href="<c:out value="${authorURL}" escapeXml="true" />">
-							${thread.author.nick}
-							<c:url value="Misc" var="avatarURL">
-								<c:param name="action" value="getAvatar"/>
-								<c:param name="nick" value="${thread.author.nick}"/>
-							</c:url>
-							<img src="${avatarURL}" class=avatar></a>
-					</c:otherwise>
-				</c:choose>
-			</span>
-			il <fmt:formatDate value="${thread.date}" pattern="dd.MM.yyyy"/> alle <fmt:formatDate value="${thread.date}" pattern="HH:mm"/>
-		</div>
+			<c:choose>
+				<c:when test="${empty thread.author.nick}">
+					non autenticato
+				</c:when>
+				<c:otherwise>
+					${thread.author.nick}
+				</c:otherwise>
+			</c:choose>
+			<br>
+			<i><fdt:prettyDate date="${thread.date}"/></i>
+		</span>
 	</div>
 </c:forEach>
 
 <c:if test="${!empty page}">
-	<fdt:pager handler="Messages"/>
+	<c:set scope="request" var="pagerHandler" value="Messages"/>
 </c:if>

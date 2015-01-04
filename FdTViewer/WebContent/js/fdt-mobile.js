@@ -181,6 +181,14 @@ var showHideMenu = function() {
 	
 };
 
+var gotoThread = function(threadId, messageId) {
+	var link = "Threads?action=getByThread&threadId=" + threadId;
+	if (messageId) {
+		link += "#msg" + messageId;
+	}
+	location = link;
+}
+
 domready(function() {
 	// mostra/nascondi quotes
 	var value = localStorage['toggleQuotes'];
