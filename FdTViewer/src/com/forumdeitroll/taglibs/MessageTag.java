@@ -16,6 +16,7 @@ import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.servlets.MainServlet;
 import com.forumdeitroll.servlets.User;
 
+@Deprecated
 public class MessageTag extends BodyTagSupport {
 	private static final long serialVersionUID = -4382505626768797422L;
 	private static final Logger LOG = Logger.getLogger(MessageTag.class);
@@ -117,7 +118,7 @@ public class MessageTag extends BodyTagSupport {
 			author != null && StringUtils.isEmpty(author.getNick());
 		StringReader in = new StringReader(body);
 		StringWriter out = new StringWriter();
-		Renderer.render(in, out, opts);
+		com.forumdeitroll.markup3.Renderer.render(in, out, opts);
 		return out.toString();
 	}
 }
