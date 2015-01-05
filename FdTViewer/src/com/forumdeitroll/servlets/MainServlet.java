@@ -174,8 +174,7 @@ public abstract class MainServlet extends HttpServlet {
 
 			userSessionBanContagion(req, loggedUser);
 
-			// pvts ?
-			req.setAttribute("hasPvts", getPersistence().checkForNewPvts(loggedUser));
+			
 			// sidebar status come attributo nel reques
 			sidebarStatus = loggedUser.getPreferences().get("sidebarStatus");
 			blockHeaderStatus = loggedUser.getPreferences().get("blockHeader");
@@ -216,7 +215,12 @@ public abstract class MainServlet extends HttpServlet {
 			throw new IllegalArgumentException("L'action " + action + " non e' definita");
 		}
 		if (a.method() == Action.Method.GETPOST || a.method() == method) {
-			return (String)actionMethod.invoke(this, new Object[] {req, res});
+			String retval = (String)actionMethod.invoke(this, new Object[] {req, res});
+			if (!StringUtils.isEmpty(loggedUserNick)) {
+				// pvts ?
+				req.setAttribute("hasPvts", getPersistence().checkForNewPvts(login(req)));
+			}
+			return retval;
 		}
 		throw new IllegalArgumentException("Azione " + action + " non permette il metodo " + method);
 	}
