@@ -36,7 +36,14 @@
 				<a href=Messages?action=mobileComposer class=btn>Nuovo</a>
 			</li>
 			<li class="col-1">
-				<a href="javascript:showHideMenu()" class="btn">Menu</a>
+				<a href="javascript:showHideMenu()" class="btn">
+					<c:if test="${hasPvts}">
+						<img src='images/icona_pibox_a.gif'>
+					</c:if>
+					<c:if test="${not hasPvts}">
+						Menu
+					</c:if>
+				</a>
 			</li>
 		</ul>
 		<div class=main>
@@ -62,7 +69,14 @@
 				<c:when test="${not empty loggedUser}">
 					<div>Loggato come ${loggedUser.nick}</div>
 					<div class=linkwrapper><a href="Misc?action=logoutAction">Logout</a></div>
-					<div class=linkwrapper><a href="Pvt">Messaggi privati</a></div>
+					<div class=linkwrapper>
+						<c:if test="${hasPvts}">
+							<a href="Pvt"><b>Messaggi privati</b></a>
+						</c:if>
+						<c:if test="${not hasPvts}">
+							<a href="Pvt">Messaggi privati</a>
+						</c:if>
+					</div>
 				</c:when>
 				<c:otherwise>
 					<div class=linkwrapper><a href="User?action=loginAction">Login</a></div>
