@@ -125,6 +125,7 @@ public class Pvt extends MainServlet {
 		req.setAttribute("pvtdetail", pvt);
 		req.setAttribute("from", "show");
 		req.setAttribute("sender", getPersistence().getAuthor(pvt.getFromNick()));
+		setNavigationMessage(req, NavigationMessage.info("Messaggi privati - Visualizza Messaggio"));
 		return "pvts.jsp";
 	}
 	
@@ -213,7 +214,7 @@ public class Pvt extends MainServlet {
 					recipients.add(nick);
 				}
 			}
-			
+			req.getSession().setAttribute("mobileRecipients", recipients);
 			req.setAttribute("recipients", "'" + StringUtils.join(recipients, "','") + "'");
 		} else {
 			req.setAttribute("recipients", "'" + pvt.getFromNick() + "'");

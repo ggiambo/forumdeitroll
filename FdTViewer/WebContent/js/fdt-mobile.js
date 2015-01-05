@@ -217,6 +217,11 @@ var inviaPvt = function() {
 	document.getElementsByTagName("form")[0].submit();
 };
 
+var notifyUnread = function() {
+	document.getElementsByName('action')[0].value = 'notifyUnread';
+	document.getElementsByTagName("form")[0].submit();
+};
+
 domready(function() {
 	// mostra/nascondi quotes
 	var value = localStorage['toggleQuotes'];

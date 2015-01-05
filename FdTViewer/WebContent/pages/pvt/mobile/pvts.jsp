@@ -72,41 +72,74 @@
 </c:if>
 
 <c:if test="${from == 'show'}">
-	<div class=pvtBox>
-		<span class=msgInfo>
-			<i><fdt:prettyDate date="${pvtdetail.date}"/></i>
-		</span>
-		<div class=row>
-			<div class=col-1>
-				<img src="Misc?action=getAvatar&amp;&nick=${pvtdetail.fromNick}" class=avatar>
+	<form method=post action=Pvt>
+		<input type=hidden name=action value=>
+		<input type=hidden name=id value="${pvtdetail.id}">
+		<div class=pvtBox>
+			<span class=msgInfo>
+				<i><fdt:prettyDate date="${pvtdetail.date}"/></i>
+			</span>
+			<div class=row>
+				<div class=col-1>
+					<img src="Misc?action=getAvatar&amp;&nick=${pvtdetail.fromNick}" class=avatar>
+				</div>
+				<div class=col-5>
+					${pvt.subject}
+					<br>
+					Da
+					<c:choose>
+						<c:when test="${pvtdetail.fromNick != loggedUser.nick and not pvtdetail.read}">
+							<b>${pvtdetail.fromNick}</b>
+						</c:when>
+						<c:otherwise>
+							${pvtdetail.fromNick}
+						</c:otherwise>
+					</c:choose>
+					<br>
+					A
+					<c:forEach items="${pvtdetail.toNick}" var="destNick" varStatus="index">
+						<c:if test="${index.index > 0}">
+							,
+						</c:if>
+						<c:if test="${destNick.read}">
+							${destNick.nick}
+						</c:if>
+						<c:if test="${not destNick.read}">
+							<b>${destNick.nick}</b>
+						</c:if>
+					</c:forEach>
+				</div>
 			</div>
-			<div class=col-5>
-				${pvt.subject}
-				<br>
-				Da ${pvtdetail.fromNick}
-				<br>
-				A
-				<c:forEach items="${pvtdetail.toNick}" var="destNick" varStatus="index">
-					<c:if test="${index.index > 0}">
-						,
-					</c:if>
-					<c:if test="${destNick.read}">
-						${destNick.nick}
-					</c:if>
-					<c:if test="${not destNick.read}">
-						<b>${destNick.nick}</b>
-					</c:if>
-				</c:forEach>
+			<div class=row>
+				<div class=col-6>
+					<c:set var="privateMessage" value="${pvtdetail}" />
+					<fdt:render target="privateMessage"/>
+				</div>
 			</div>
+			<div class=row>&nbsp;</div>
+			<div class=row>
+				<div class=col-1-2>&nbsp;</div>
+				<div class=col-2>
+					<c:if test="${pvtdetail.fromNick == loggedUser.nick}">
+						&nbsp;
+					</c:if>
+					<c:if test="${pvtdetail.fromNick != loggedUser.nick}">
+						<a href="#" onclick="notifyUnread()" class="btn btn-flat">
+							Da leggere
+						</a>
+					</c:if>
+				</div>
+				<div class=col-1>&nbsp;</div>
+				<div class=col-2>
+					<a href="Pvt?action=replyAll&id=${pvtdetail.id}" class="btn btn-flat">
+						Rispondi
+					</a>
+				</div>
+				<div class=col-1-2>&nbsp;</div>
+			</div>
+			<div class=row>&nbsp;</div>
 		</div>
-		<div class=row>
-			<div class=col-6>
-				<c:set var="privateMessage" value="${pvtdetail}" />
-				<fdt:render target="privateMessage"/>
-			</div>
-		</div>
-		<div class=row>&nbsp;</div>
-	</div>
+	</form>
 </c:if>
 
 <c:if test="${from == 'sendNew'}">
@@ -139,7 +172,17 @@
 		</div>
 		<div class=row>
 			<div class=col-6>
-				<input type=text name=subject value="${mobileSubject}">
+				<c:choose>
+					<c:when test="${not empty subject}">
+						<input type=text name=subject value="${subject}">
+					</c:when>
+					<c:when test="${not empty mobileSubject}">
+						<input type=text name=subject value="${mobileSubject}">
+					</c:when>
+					<c:otherwise>
+						<input type=text name=subject">
+					</c:otherwise>
+				</c:choose>
 			</div>
 		</div>
 		<div class=row>
@@ -147,7 +190,17 @@
 		</div>
 		<div class=row>
 			<div class=col-6>
-				<textarea name=text>${mobileText}</textarea>
+				<c:choose>
+					<c:when test="${not empty text}">
+						<textarea name=text>${text}</textarea>
+					</c:when>
+					<c:when test="${not empty mobileText}">
+						<textarea name=text>${mobileText}</textarea>
+					</c:when>
+					<c:otherwise>
+						<textarea name=text></textarea>
+					</c:otherwise>
+				</c:choose>
 			</div>
 		</div>
 		<div class=row>
