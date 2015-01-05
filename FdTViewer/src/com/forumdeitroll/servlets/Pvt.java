@@ -1,5 +1,6 @@
 package com.forumdeitroll.servlets;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,7 @@ public class Pvt extends MainServlet {
 	@Action(method=Method.GET)
 	String inbox(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		setWebsiteTitlePrefix(req, "Messaggi privati - Ricevuti");
+		setNavigationMessage(req, NavigationMessage.info("Messaggi privati - Ricevuti"));
 		AuthorDTO author = login(req);
 		String page = req.getParameter("page");
 		int npage = 0;
@@ -50,6 +52,11 @@ public class Pvt extends MainServlet {
 
 	@Action(method=Method.GET)
 	String sendNew(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		if (req.getParameter("action").equals("sendNew")) {
+			req.getSession().removeAttribute("mobileRecipients");
+			req.getSession().removeAttribute("mobileText");
+			req.getSession().removeAttribute("mobileSubject");
+		}
 		setWebsiteTitlePrefix(req, "Messaggi privati - Scrivi nuovo");
 		String recipients = req.getParameter("recipients");
 		if (!StringUtils.isEmpty(recipients)) {
@@ -62,6 +69,8 @@ public class Pvt extends MainServlet {
 	@Action(method=Method.POST)
 	String sendPvt(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO author = login(req);
+		req.getSession().setAttribute("mobileSubject", req.getParameter("subject"));
+		req.getSession().setAttribute("mobileText", req.getParameter("text"));
 		String text = req.getParameter("text");
 		String subject = req.getParameter("subject");
 		String[] recipients = req.getParameterValues("recipients");
@@ -123,6 +132,7 @@ public class Pvt extends MainServlet {
 	String show(HttpServletRequest req, HttpServletResponse res)
 		throws Exception {
 		setWebsiteTitlePrefix(req, "Messaggi privati - Visualizza Messaggio");
+		setNavigationMessage(req, NavigationMessage.info("Messaggi privati - Visualizza Messaggio"));
 		long id = Long.parseLong(req.getParameter("id"));
 		PrivateMsgDTO pvt = new PrivateMsgDTO();
 		pvt.setId(id);
@@ -151,6 +161,7 @@ public class Pvt extends MainServlet {
 	@Action(method=Method.GET)
 	String outbox(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		setWebsiteTitlePrefix(req, "Messaggi privati - Inviati");
+		setNavigationMessage(req, NavigationMessage.info("Messaggi privati - Inviati"));
 		AuthorDTO author = login(req);
 		if (author.isValid()) {
 			int npage = 0;
@@ -249,4 +260,40 @@ public class Pvt extends MainServlet {
 		}
 	}
 
+	@Action(method=Method.POST)
+	String mobileAddRecipient(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String authorsLink = "Authors?action=getAuthors&callback=" +
+			URLEncoder.encode("Pvt?action=mobileAddRecipientCallback&nick=", "UTF-8");
+		res.setHeader("Location", authorsLink);
+		res.sendError(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+		req.getSession().setAttribute("mobileSubject", req.getParameter("subject"));
+		req.getSession().setAttribute("mobileText", req.getParameter("text"));
+		return null;
+	}
+
+	@Action(method=Method.GET)
+	String mobileAddRecipientCallback(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		ArrayList<String> recipients = (ArrayList<String>) req.getSession().getAttribute("mobileRecipients");
+		if (recipients == null) {
+			recipients = new ArrayList<String>();
+		}
+		if (!recipients.contains(req.getParameter("nick"))) {
+			recipients.add(req.getParameter("nick"));
+		}
+		req.getSession().setAttribute("mobileRecipients", recipients);
+		return sendNew(req, res);
+	}
+
+	@Action(method=Method.POST)
+	String mobileRemoveRecipient(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		ArrayList<String> recipients = (ArrayList<String>) req.getSession().getAttribute("mobileRecipients");
+		if (recipients == null) {
+			recipients = new ArrayList<String>();
+		}
+		recipients.remove(req.getParameter("toRemove"));
+		req.getSession().setAttribute("mobileRecipients", recipients);
+		req.getSession().setAttribute("mobileSubject", req.getParameter("subject"));
+		req.getSession().setAttribute("mobileText", req.getParameter("text"));
+		return sendNew(req, res);
+	}
 }

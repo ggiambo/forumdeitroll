@@ -62,12 +62,13 @@
 				<c:when test="${not empty loggedUser}">
 					<div>Loggato come ${loggedUser.nick}</div>
 					<div class=linkwrapper><a href="Misc?action=logoutAction">Logout</a></div>
+					<div class=linkwrapper><a href="Pvt">Messaggi privati</a></div>
 				</c:when>
 				<c:otherwise>
 					<div class=linkwrapper><a href="User?action=loginAction">Login</a></div>
 				</c:otherwise>
 			</c:choose>
-			<div onclick="classico()"><a href="javascript:void(0)">Classico</a></div>
+			<div onclick="classico()"><a href="javascript:void(0)">Visualizzazione classica</a></div>
 			<div onclick="toggleQuotes()"><a href="javascript:void(0)">Toggle Quotes</a></div>
 		</div>
 			<div class=footer>

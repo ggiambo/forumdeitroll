@@ -9,7 +9,15 @@
 
 <c:forEach items="${authors}" var="author" varStatus="index">
 	<div class="row author" onclick="this.childNodes[1].click()">
-		<a href="Messages?action=getByAuthor&author=${author.nick}" class=col-6>
+		<c:choose>
+			<c:when test="${not empty param['callback']}">
+				<c:set var="link" value="${param['callback']}${author.nick}"/>
+			</c:when>
+			<c:otherwise>
+				<c:set var="link" value="Messages?action=getByAuthor&author=${author.nick}"/>
+			</c:otherwise>
+		</c:choose>
+		<a href="${link}" class=col-6>
 			<span class=nickname>${author.nick}</span>
 			(${author.messages}
 			<c:choose>

@@ -187,7 +187,35 @@ var gotoThread = function(threadId, messageId) {
 		link += "#msg" + messageId;
 	}
 	location = link;
-}
+};
+
+var showPvt = function(id) {
+	location = "Pvt?action=show&id=" + id;
+};
+
+var addRecipient = function() {
+	document.getElementsByName('action')[0].value = 'mobileAddRecipient';
+	document.getElementsByTagName("form")[0].submit();
+};
+
+var removeRecipient = function(nick) {
+	document.getElementsByName('action')[0].value = 'mobileRemoveRecipient';
+	document.getElementsByName('toRemove')[0].value = nick;
+	document.getElementsByTagName("form")[0].submit();
+};
+
+var invioPvtInCorso = false;
+
+var inviaPvt = function() {
+	if (!invioPvtInCorso) {
+		invioPvtInCorso = true;
+	} else {
+		alert("Invio in corso...");
+		return;
+	}
+	document.getElementsByName('action')[0].value = 'sendPvt';
+	document.getElementsByTagName("form")[0].submit();
+};
 
 domready(function() {
 	// mostra/nascondi quotes
