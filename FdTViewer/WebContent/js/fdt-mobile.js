@@ -74,24 +74,19 @@ var openQuotes = function(event) {
 	};
 };
 
-var toggleQuotes = function() {
-	var value = localStorage['toggleQuotes'];
-	if (value === 'true') {
-		localStorage['toggleQuotes'] = 'false';
-	} else {
-		localStorage['toggleQuotes'] = 'true';
+var toggleMessageView = function(element, event, id) {
+	var messageBox = element.parentNode;
+	if (!messageBox.className.match(/messageBox/)) {
+		messageBox = messageBox.parentNode;
 	}
-	location.reload();
-};
-
-var toggleMessageView = function(element, event) {
-	var msgContent = element.parentNode.querySelector('.msgContent');
-	if (!msgContent.style.display || msgContent.style.display === 'none') {
-		msgContent.style.display = 'block';
-		element.querySelector('.arrow').innerHTML = '&#x25b2;';
+	var msgContent = messageBox.querySelector('.msgContent');
+	if (msgContent.className.match(/open/)) {
+		msgContent.className = 'msgContent';
+		messageBox.querySelector('.arrow').innerHTML = '&#x25bc;';
 	} else {
-		msgContent.style.display = 'none';
-		element.querySelector('.arrow').innerHTML = '&#x25bc;';
+		msgContent.className = 'msgContent open';
+		messageBox.querySelector('.arrow').innerHTML = '&#x25b2;';
+		location = "#msg" + id;
 	}
 };
 
@@ -224,12 +219,6 @@ var notifyUnread = function() {
 
 domready(function() {
 	// mostra/nascondi quotes
-	var value = localStorage['toggleQuotes'];
-	if (value === 'true') {
-		var style = document.createElement('style');
-		style.appendChild(document.createTextNode("[class^='quoteLvl'], [class^='quoteLvl'] + br, .quote-container, .quote-container + br { visibility: collapse !important; display: none !important; }"));
-		document.body.appendChild(style);
-	}
 	var q = document.querySelectorAll('.quote-container');
 	var i;
 	for (i = 0; i < q.length; i++) {

@@ -62,6 +62,10 @@ span.tagForum {
 	padding: 0.1em 0.5em;
 }
 
+img.userPostedImage {
+	max-width: 150px;
+}
+
 /* minimal reset */
 body {
 	font-family: sans-serif;
@@ -73,6 +77,11 @@ a {
 	text-decoration: none;
 	color: inherit;
 }
+
+.msgText a, .msgExcerpt a {
+	color: darkblue;
+}
+
 * {
 	background-color: transparent;
 }
@@ -146,9 +155,61 @@ ul.pager-10 > li {width: 10%;}
 ul.pager-11 > li {width: 9.090909090909092%;}
 
 
-/* accordion cronologia */
+/* cronologia */
 .msgContent {
+	position: relative;
+	top: 0;
+}
+
+.msgContent > .transparentOverlay {
+	position: absolute;
+	top: 0;
+	height: 32px;
+	width: 100%;
+	background: linear-gradient( rgba(255,255,255,0), rgba(255,255,255,0.8) );
+	display: block;
+}
+
+.msgContent > .msgText {
+	min-height: 32px;
+	max-height: 32px;
+	overflow: hidden;
+}
+
+.msgContent [class^='quoteLvl'],
+.msgContent [class^='quoteLvl'] + br,
+.msgContent .quote-container,
+.msgContent .quote-container + br
+ {
+	visibility: collapse !important;
+	display: none !important;
+}
+
+.msgContent > .msgButtons {
 	display: none;
+}
+
+.msgContent.open > .transparentOverlay {
+	display: none;
+}
+
+.msgContent.open > .msgText {
+	display: block;
+	max-height: none;
+	overflow: auto;
+}
+
+.msgContent.open [class^='quoteLvl'],
+.msgContent.open [class^='quoteLvl'] + br,
+.msgContent.open .quote-container,
+.msgContent.open .quote-container + br
+ {
+	visibility: visible !important;
+	display: block !important;
+}
+
+.msgContent.open > .msgButtons {
+	display: block;
 }
 
 /* styling */
@@ -157,6 +218,7 @@ ul.pager-11 > li {width: 9.090909090909092%;}
 	position: fixed;
 	top: 0;
 	left: 0;
+	z-index: 2;
 }
 .header>li {
 	text-align: center;

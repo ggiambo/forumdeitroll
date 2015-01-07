@@ -46,24 +46,6 @@
 				</a>
 			</li>
 		</ul>
-		<div class=main>
-			<c:if test="${navigationMessage != null}">
-				<div class=row>
-					<span class="navigationMessage${navigationMessage.type}">
-						${navigationMessage.content}
-					</span>
-				</div>
-				<div class=row>&nbsp;</div>
-			</c:if>
-			<c:choose>
-				<c:when test="${includeNoMobile == 'true'}">
-					<jsp:include page="${fn:toLowerCase(servlet)}/${page}" />
-				</c:when>
-				<c:otherwise>
-					<jsp:include page="${fn:toLowerCase(servlet)}/mobile/${page}" />
-				</c:otherwise>
-			</c:choose>
-		</div>
 		<div class=menu>
 			<c:choose>
 				<c:when test="${not empty loggedUser}">
@@ -83,13 +65,30 @@
 				</c:otherwise>
 			</c:choose>
 			<div onclick="classico()"><a href="javascript:void(0)">Visualizzazione classica</a></div>
-			<div onclick="toggleQuotes()"><a href="javascript:void(0)">Toggle Quotes</a></div>
 		</div>
-			<div class=footer>
-				<c:if test="${not empty pagerHandler}">
-					<fdt:pager handler="${pagerHandler}"/>
-				</c:if>
-			</div>
+		<div class=main>
+			<c:if test="${navigationMessage != null}">
+				<div class=row>
+					<span class="navigationMessage${navigationMessage.type}">
+						${navigationMessage.content}
+					</span>
+				</div>
+				<div class=row>&nbsp;</div>
+			</c:if>
+			<c:choose>
+				<c:when test="${includeNoMobile == 'true'}">
+					<jsp:include page="${fn:toLowerCase(servlet)}/${page}" />
+				</c:when>
+				<c:otherwise>
+					<jsp:include page="${fn:toLowerCase(servlet)}/mobile/${page}" />
+				</c:otherwise>
+			</c:choose>
+		</div>
+		<div class=footer>
+			<c:if test="${not empty pagerHandler}">
+				<fdt:pager handler="${pagerHandler}"/>
+			</c:if>
+		</div>
 		<fdt:delayedScript dump="true">
 			questo non verra' stampato, ma se lo togli la taglib non viene eseguita
 		</fdt:delayedScript>
