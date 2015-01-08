@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
 
 import com.forumdeitroll.profiler.UserProfile;
 import com.google.gson.Gson;
@@ -130,7 +129,7 @@ public class UserProfiler extends MainServlet {
 			return null;
 		}
 		String jsonProfile = req.getParameter("jsonProfile");
-		Log.debug("jsonProfile = "+jsonProfile);
+		logger.debug("jsonProfile = "+jsonProfile);
 		UserProfile profile = new Gson().fromJson(jsonProfile, UserProfile.class);
 		for (ListIterator<UserProfile> itP = unbanRequests.listIterator(); itP.hasNext();) {
 			if (itP.next().getUuid().equals(profile.getUuid())) {
@@ -148,7 +147,7 @@ public class UserProfiler extends MainServlet {
 			return null;
 		}
 		String jsonProfile = req.getParameter("jsonProfile");
-		Log.debug("jsonProfile = "+jsonProfile);
+		logger.debug("jsonProfile = "+jsonProfile);
 		UserProfile profile = new Gson().fromJson(jsonProfile, UserProfile.class);
 		for (ListIterator<UserProfile> itP = unbanRequests.listIterator(); itP.hasNext();) {
 			if (itP.next().getUuid().equals(profile.getUuid())) {
