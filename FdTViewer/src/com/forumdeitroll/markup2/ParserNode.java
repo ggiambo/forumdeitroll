@@ -1,18 +1,15 @@
 package com.forumdeitroll.markup2;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.io.Writer;
 import java.io.PrintWriter;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.forumdeitroll.markup.Emoticons;
-import com.forumdeitroll.markup.util.Links;
 import com.forumdeitroll.markup.util.EntityEscaper;
-import com.forumdeitroll.markup.util.Chars;
+import com.forumdeitroll.markup.util.Links;
 
 interface ParserNode {
 	public void render(final Writer w, final Parser.Status status) throws Exception;

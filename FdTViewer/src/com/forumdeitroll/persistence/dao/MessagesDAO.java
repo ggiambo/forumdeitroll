@@ -1,19 +1,27 @@
 package com.forumdeitroll.persistence.dao;
 
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.MessagesDTO;
-import com.forumdeitroll.persistence.SearchMessagesSort;
-import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.jooq.*;
+import static com.forumdeitroll.persistence.jooq.Tables.MESSAGES;
+import static com.forumdeitroll.persistence.jooq.Tables.SYSINFO;
+import static com.forumdeitroll.persistence.jooq.Tables.TAGS_BIND;
+import static com.forumdeitroll.persistence.jooq.Tables.THREADS;
+import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.forumdeitroll.persistence.jooq.Tables.*;
-import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Record1;
+import org.jooq.Result;
+import org.jooq.SelectConditionStep;
+
+import com.forumdeitroll.persistence.MessageDTO;
+import com.forumdeitroll.persistence.MessagesDTO;
+import com.forumdeitroll.persistence.SearchMessagesSort;
+import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
 
 public class MessagesDAO extends BaseDAO {
 

@@ -13,7 +13,6 @@ import com.forumdeitroll.ThreadTree;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
-import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
 import com.forumdeitroll.servlets.Action.Method;
 

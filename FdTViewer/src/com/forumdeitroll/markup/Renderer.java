@@ -1,6 +1,5 @@
 package com.forumdeitroll.markup;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
@@ -8,13 +7,13 @@ import org.apache.log4j.Logger;
 
 import com.forumdeitroll.markup.util.Code;
 import com.forumdeitroll.markup.util.Color;
+import com.forumdeitroll.markup.util.Images;
 import com.forumdeitroll.markup.util.Line;
 import com.forumdeitroll.markup.util.Section;
-import com.forumdeitroll.markup.util.Word;
-import com.forumdeitroll.markup.util.Images;
 import com.forumdeitroll.markup.util.Spoiler;
 import com.forumdeitroll.markup.util.Tags;
 import com.forumdeitroll.markup.util.Url;
+import com.forumdeitroll.markup.util.Word;
 import com.forumdeitroll.markup.util.YouTube;
 
 

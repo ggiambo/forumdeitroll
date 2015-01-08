@@ -1,7 +1,5 @@
 package com.forumdeitroll.markup.util;
 
-import java.io.IOException;
-
 import com.forumdeitroll.markup.RenderIO;
 import com.forumdeitroll.markup.RenderState;
 

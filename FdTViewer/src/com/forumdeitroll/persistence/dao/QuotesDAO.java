@@ -1,14 +1,20 @@
 package com.forumdeitroll.persistence.dao;
 
-import com.forumdeitroll.persistence.*;
-import com.forumdeitroll.persistence.jooq.tables.records.QuotesRecord;
-import org.jooq.*;
+import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
+import static com.forumdeitroll.persistence.jooq.Tables.QUOTES;
+import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.forumdeitroll.persistence.jooq.Tables.*;
-import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Record3;
+import org.jooq.Result;
+
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.QuoteDTO;
+import com.forumdeitroll.persistence.jooq.tables.records.QuotesRecord;
 
 public class QuotesDAO extends BaseDAO {
 

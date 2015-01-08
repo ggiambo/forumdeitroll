@@ -1,6 +1,5 @@
 package com.forumdeitroll.markup2;
 
-import com.forumdeitroll.markup.Emoticon;
 
 class Token {
 	enum Type {

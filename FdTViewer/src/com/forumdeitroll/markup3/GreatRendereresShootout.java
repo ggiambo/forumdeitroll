@@ -1,10 +1,8 @@
 package com.forumdeitroll.markup3;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -19,7 +17,6 @@ import java.util.HashMap;
 
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
-import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.PersistenceFactory;
 import com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv;

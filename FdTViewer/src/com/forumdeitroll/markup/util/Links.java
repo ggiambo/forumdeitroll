@@ -3,7 +3,6 @@ package com.forumdeitroll.markup.util;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 import com.forumdeitroll.markup.RenderIO;
 import com.forumdeitroll.persistence.PersistenceFactory;

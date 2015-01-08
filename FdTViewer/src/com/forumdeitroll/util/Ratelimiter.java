@@ -1,7 +1,7 @@
 package com.forumdeitroll.util;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Ratelimiter<T> {
 	protected final Map<T, Info> map = new HashMap<T, Info>();

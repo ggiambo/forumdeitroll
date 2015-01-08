@@ -1,12 +1,11 @@
 package com.forumdeitroll.markup2;
 
-import java.io.Reader;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.Emoticon;
+import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.Snippet;
 
 /**

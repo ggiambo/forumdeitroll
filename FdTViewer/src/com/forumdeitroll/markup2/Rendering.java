@@ -1,15 +1,16 @@
 package com.forumdeitroll.markup2;
 
-import java.io.Writer;
-import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.forumdeitroll.markup.util.Chars;
+import com.forumdeitroll.markup.util.EntityEscaper;
+import com.forumdeitroll.markup.util.FaviconWhiteList;
 import com.forumdeitroll.markup.util.Images;
 import com.forumdeitroll.markup.util.Links;
-import com.forumdeitroll.markup.util.EntityEscaper;
 import com.forumdeitroll.markup.util.YouTube;
-import com.forumdeitroll.markup.util.Chars;
-import com.forumdeitroll.markup.util.FaviconWhiteList;
 import com.forumdeitroll.persistence.PersistenceFactory;
 
 class Rendering {

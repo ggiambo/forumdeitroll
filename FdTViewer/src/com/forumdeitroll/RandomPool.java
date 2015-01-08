@@ -1,8 +1,8 @@
 package com.forumdeitroll;
 
-import java.util.Random;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Random;
 
 public class RandomPool {
 	public static final ThreadLocal<SecureRandom> secureRandom = new ThreadLocal<SecureRandom>() {

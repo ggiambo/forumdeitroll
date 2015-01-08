@@ -9,7 +9,6 @@ import com.forumdeitroll.markup.Emoticon;
 import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Snippet;
-import com.forumdeitroll.markup.util.EntityEscaper;
 import com.forumdeitroll.markup.util.FaviconWhiteList;
 import com.forumdeitroll.persistence.PersistenceFactory;
 

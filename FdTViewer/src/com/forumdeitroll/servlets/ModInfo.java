@@ -3,8 +3,8 @@ package com.forumdeitroll.servlets;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.IPersistence;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.ModInfoBean;
