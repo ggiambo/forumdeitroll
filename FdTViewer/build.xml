@@ -5,8 +5,8 @@
 			<include name="*.jar"/>
 		</fileset>
 		<fileset dir="/usr/share/java">
-			<include name="servlet-api-2.5.jar"/>
-			<include name="jsp-api-2.1.jar"/>
+			<include name="servlet-api-3.0.jar"/>
+			<include name="jsp-api-2.2.jar"/>
 		</fileset>
 	</path>
 	<target name="clean">
