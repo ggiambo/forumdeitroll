@@ -20,7 +20,7 @@
 		<delete dir="WebContent/WEB-INF/classes"/>
 		<delete file="FdTViewer.war"/>
 	</target>
-	<target name="init" depends="clean">
+	<target name="init">
 		<mkdir dir="WebContent/WEB-INF/classes"/>
 	</target>
 	<target name="compile" depends="init">
