@@ -95,6 +95,11 @@ a {
 	padding: 0;
 	clear: both;
 }
+
+.row.sep {
+	height: 1px;
+}
+
 .row > .col-1 { width: 16.66666667% }
 .row > .col-2 { width: 33.33333333% }
 .row > .col-3 { width: 50% }

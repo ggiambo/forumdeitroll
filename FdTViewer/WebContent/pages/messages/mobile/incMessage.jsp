@@ -50,6 +50,7 @@
 			<i><fdt:prettyDate date="${msg.date}"/></i>
 		</span>
 	</div>
+	<div class="row sep"></div>
 	<div class="msgContent">
 		<div class=transparentOverlay onclick=toggleMessageView(this,event,${msg.id})></div>
 		<div class="msgText">
