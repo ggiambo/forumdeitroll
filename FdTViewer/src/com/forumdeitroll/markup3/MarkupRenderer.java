@@ -376,9 +376,9 @@ public class MarkupRenderer implements TokenListener {
 		}
 		int limit = URL_MAX_DESC_LENGTH;
 		if (shortenDesc && desc.length() > limit) {
-			out.append(escape(desc.substring(0, limit))).append("...");
+			out.append(desc.substring(0, limit)).append("...");
 		} else {
-			out.append(escape(desc));
+			out.append(desc);
 		}
 		out.append("</a>");
 		if (!internal) {
