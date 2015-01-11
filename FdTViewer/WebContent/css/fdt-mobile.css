@@ -118,6 +118,10 @@ a {
 	float: right;
 }
 
+.row > [class^='col']:first-child {
+	float: left;
+}
+
 .footer {
 	position: fixed;
 	bottom: 0;
@@ -282,15 +286,16 @@ ul.pager-11 > li {width: 9.090909090909092%;}
 	text-align: right;
 }
 
+
+.msgInfo {
+	float: right;
+}
+
 .messageBox {
 	margin: 4px 5px;
 	border: 1px solid #D3D3D3;
 	min-height: 64px;
 	background: linear-gradient(#ffffff, #dfdfdf);
-}
-
-.msgInfo {
-	float: right;
 }
 
 .threadBox {
@@ -302,6 +307,12 @@ ul.pager-11 > li {width: 9.090909090909092%;}
 
 .pvtBox {
 	min-height: 64px;
+	margin: 4px 5px;
+	border: 1px solid #D3D3D3;
+	background: linear-gradient(#ffffff, #dfdfdf);
+}
+
+.userInfoBox {
 	margin: 4px 5px;
 	border: 1px solid #D3D3D3;
 	background: linear-gradient(#ffffff, #dfdfdf);
@@ -345,4 +356,9 @@ textarea {
 div.author {
 	height: 2em;
 	background: linear-gradient(#ffffff, #dfdfdf);
+}
+
+.quotes {
+	margin: 0;
+	padding: 0;
 }
