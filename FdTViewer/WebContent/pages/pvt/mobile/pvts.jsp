@@ -180,7 +180,7 @@
 						<input type=text name=subject value="${mobileSubject}">
 					</c:when>
 					<c:otherwise>
-						<input type=text name=subject">
+						<input type=text name=subject>
 					</c:otherwise>
 				</c:choose>
 			</div>
