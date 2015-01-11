@@ -51,7 +51,7 @@
 </div>
 <div class=row>
 	<div class=col-6>
-		<input id=subject type=text value="${subject}" maxlength="<%=com.forumdeitroll.servlets.Messages.MAX_SUBJECT_LENGTH%>">
+		<input id=subject type=text value="<c:out value="${subject}" escapeXml="true"/>" maxlength="<%=com.forumdeitroll.servlets.Messages.MAX_SUBJECT_LENGTH%>">
 	</div>
 </div>
 <div class=row>&nbsp;</div>
