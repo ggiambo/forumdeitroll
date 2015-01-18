@@ -408,7 +408,7 @@ public class MarkupRenderer implements TokenListener {
 		} else if (additional.name.equals("LINK_YOUTUBE_REGULAR")) {
 			youcode = additional.group(4);
 		}
-		emitYoutube(youcode, additional.group(1));
+		emitYoutube(youcode, additional != null ? additional.group(1) : null);
 	}
 
 	private void emitYoutube(String youcode, String link) {
