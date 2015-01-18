@@ -1,6 +1,8 @@
 package com.forumdeitroll.markup3;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -406,21 +408,53 @@ public class MarkupRenderer implements TokenListener {
 		} else if (additional.name.equals("LINK_YOUTUBE_REGULAR")) {
 			youcode = additional.group(4);
 		}
-		emitYoutube(youcode);
+		emitYoutube(youcode, additional.group(1));
 	}
 
-	private void emitYoutube(String youcode) {
+	private void emitYoutube(String youcode, String link) {
 		youcode = escape(youcode);
+		String t = link != null ? extractTFromYoutubeUrl(link) : null;
 		if (opts.embedYoutube) {
+			int start = 0;
+			if (t != null) {
+				if (t.indexOf('m') != -1) { // XXmXXs | XXm
+					String m = t.substring(0, t.indexOf('m'));
+					start += 60 * Integer.parseInt(m);
+					if (t.indexOf('s') != -1) {
+						String s = t.substring(t.indexOf('m') + 1, t.indexOf('s'));
+						start += Integer.parseInt(s);
+					}
+				} else if (t.indexOf('s') != -1) { // XXs
+					start += Integer.parseInt(t.substring(0, t.indexOf('s')));
+				} else { // XX
+					start += Integer.parseInt(t);
+				}
+			}
 			out.append(String.format(
-				"<iframe width=\"400\" height=\"329\" src=\"//www.youtube-nocookie.com/embed/%s\" frameborder=\"0\" allowfullscreen></iframe>"
-				, youcode));
+				"<iframe width=\"400\" height=\"329\" src=\"//www.youtube-nocookie.com/embed/%s%s\" frameborder=\"0\" allowfullscreen></iframe>"
+				, youcode, "?start=" + start));
 		} else {
-			out.append(String.format(
-				"<a href=\"http://www.youtube.com/watch?v=%s\" onmouseover='YTCreateScriptTag(this, \"%s\")'>"
-				+ "<img src='http://img.youtube.com/vi/%s/2.jpg'></a>"
-				, youcode, youcode, youcode));
+			if (link != null) {
+				out.append(String.format(
+					"<a href=\"%s\" onmouseover='YTCreateScriptTag(this, \"%s\")'>" +
+					"<img src='http://img.youtube.com/vi/%s/2.jpg'></a>"
+					, escape(link), youcode, youcode));
+			} else {
+				out.append(String.format(
+					"<a href=\"http://www.youtube.com/watch?v=%s\" onmouseover='YTCreateScriptTag(this, \"%s\")'>"
+					+ "<img src='http://img.youtube.com/vi/%s/2.jpg'></a>"
+					, youcode, youcode, youcode));
+			}
 		}
+	}
+
+	private static Pattern t_pattern = Pattern.compile("[&\\?#]t=([0-9]+m[0-9]+s|[0-9]+[ms]|[0-9]+)");
+	private String extractTFromYoutubeUrl(String link) {
+		Matcher matcher = t_pattern.matcher(link);
+		if (matcher.find()) {
+			return matcher.group(1);
+		}
+		return null;
 	}
 
 	private void onSpoiler(TokenMatcher token) {
@@ -481,7 +515,7 @@ public class MarkupRenderer implements TokenListener {
 			if (token.name.equals("LINK_YOUTUBE_REGULAR")) {
 				youcode = token.group(4);
 			}
-			emitYoutube(youcode);
+			emitYoutube(youcode, token.group(1));
 		} else {
 			String desc = null;
 			if (token.name.equals("LINK_INTERNAL_MSGID")) {
