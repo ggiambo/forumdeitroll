@@ -108,4 +108,14 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>nickcode</name>
+		<tag-class>com.forumdeitroll.taglibs.NickCodeTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>nick</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
 </taglib>

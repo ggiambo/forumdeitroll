@@ -45,6 +45,7 @@
 					<img class="avatarImg" alt="Avatar" src="Misc<c:out value="${avatarURL}" escapeXml="true" />" />
 				</c:otherwise>
 			</c:choose>
+			<fdt:nickcode nick="${msg.author.nick}"/>
 		</div>
 		<c:if test="${!empty msg.forum}">
 			<div class="msgForum">${msg.forum}</div>
