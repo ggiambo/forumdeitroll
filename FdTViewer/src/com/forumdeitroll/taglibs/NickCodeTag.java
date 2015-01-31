@@ -17,8 +17,11 @@ public class NickCodeTag extends TagSupport {
 	public int doEndTag() throws JspException {
 		if (!StringUtils.isEmpty(nick)) {
 			try {
-				pageContext.getOut().println(
-					"<div style=\"font-size: xx-small;\" title=\""+md5(nick)+"\">" + last8(md5(nick)) + "</div>");
+				StringBuilder out = new StringBuilder();
+				out.append("<div style='color: #");
+				out.append(last6(md5(nick)));
+				out.append("'> 	&#9786;</div>");
+				pageContext.getOut().println(out.toString());
 			} catch (Exception e) {}
 		}
 		return SKIP_BODY;
@@ -29,6 +32,9 @@ public class NickCodeTag extends TagSupport {
 			out.append(c);
 		}
 		return out.append(s).toString();
+	}
+	public static String last6(String s) {
+		return s.substring(s.length() - 6, s.length());
 	}
 	public static String last8(String s) {
 		return s.substring(s.length() - 8, s.length());
