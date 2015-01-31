@@ -29,7 +29,7 @@
 								</c:otherwise>
 							</c:choose>
 						</td>
-						<td class="pvtNickname">												
+						<td class="pvtNickname">
 							<c:if test="${from == 'inbox' }">
 								<a href="Pvt?action=show&amp;id=${pvt.id}">${pvt.fromNick}</a>
 							</c:if>
@@ -61,7 +61,7 @@
 							<a href="Pvt?action=show&amp;id=${pvt.id}"><fmt:formatDate value="${pvt.date}" pattern="dd.MM.yyyy"/>&nbsp;<fmt:formatDate value="${pvt.date}" pattern="HH:mm"/></a>
 						</td>
 						<td class="pvtAction">
-							<a href="Pvt?action=delete&amp;id=${pvt.id}&amp;from=${from}" title="Cancella messaggio"><img src="images/delete.png" alt="Cancella" /></a>
+							<a href="Pvt?action=delete&amp;id=${pvt.id}&amp;from=${from}&amp;page=${param['page']}" title="Cancella messaggio"><img src="images/delete.png" alt="Cancella" /></a>
 						</td>
 					</tr>
 				</c:forEach>
