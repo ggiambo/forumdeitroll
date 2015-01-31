@@ -17,10 +17,13 @@ public class NickCodeTag extends TagSupport {
 	public int doEndTag() throws JspException {
 		if (!StringUtils.isEmpty(nick)) {
 			try {
+				String hash = md5(nick);
 				StringBuilder out = new StringBuilder();
 				out.append("<div style='color: #");
-				out.append(last6(md5(nick)));
-				out.append("'> 	&#9786;</div>");
+				out.append(last6(hash));
+				out.append("' title='");
+				out.append(hash);
+				out.append("'>&#9786;</div>");
 				pageContext.getOut().println(out.toString());
 			} catch (Exception e) {}
 		}
