@@ -1,32 +1,39 @@
 package com.forumdeitroll.servlets;
 
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.SingleValueCache;
 import com.forumdeitroll.persistence.AdDTO;
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.IPersistence;
-import com.forumdeitroll.persistence.PersistenceFactory;
+import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.QuoteDTO;
+import com.forumdeitroll.persistence.dao.AdminDAO;
+import com.forumdeitroll.persistence.dao.AuthorsDAO;
+import com.forumdeitroll.persistence.dao.BookmarksDAO;
+import com.forumdeitroll.persistence.dao.DigestDAO;
+import com.forumdeitroll.persistence.dao.MessagesDAO;
+import com.forumdeitroll.persistence.dao.MiscDAO;
+import com.forumdeitroll.persistence.dao.PollsDAO;
+import com.forumdeitroll.persistence.dao.PrivateMsgDAO;
+import com.forumdeitroll.persistence.dao.QuotesDAO;
+import com.forumdeitroll.persistence.dao.ThreadsDAO;
 
 public abstract class MainServlet extends HttpServlet {
 
@@ -42,43 +49,57 @@ public abstract class MainServlet extends HttpServlet {
 
 	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
-	private IPersistence persistence;
-
 	private Map<String, Method> actionMethodCache;
+
+	protected AuthorsDAO authorsDAO;
+	protected ThreadsDAO threadsDAO;
+	protected MessagesDAO messagesDAO;
+	protected PollsDAO pollsDAO;
+	protected QuotesDAO quotesDAO;
+	protected BookmarksDAO bookmarksDAO;
+	protected AdminDAO adminDAO;
+	protected MiscDAO miscDAO;
+	protected PrivateMsgDAO privateMsgDAO;
+	protected DigestDAO digestDAO;
 
 	protected SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
-			return getPersistence().getForums();
+			return miscDAO.getForums();
 		}
 	};
 
 	protected SingleValueCache<List<QuoteDTO>> cachedQuotes = new SingleValueCache<List<QuoteDTO>>(60 * 60 * 1000) {
 		@Override protected List<QuoteDTO> update() {
-			return getPersistence().getAllQuotes();
+			return quotesDAO.getAllQuotes();
 		}
 	};
 
 	protected SingleValueCache<List<String>> cachedTitles = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
-			return getPersistence().getTitles();
+			return adminDAO.getTitles();
 		}
 	};
 
 	protected SingleValueCache<List<AdDTO>> cachedAds = new SingleValueCache<List<AdDTO>>(60 * 60 * 1000) {
 		@Override protected List<AdDTO> update() {
-			return getPersistence().getAllAds();
+			return adminDAO.getAllAds();
 		}
 	};
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		try {
-			persistence = PersistenceFactory.getInstance();
-		} catch (Exception e) {
-			LOG.fatal(e);
-			throw new ServletException("Cannot instantiate persistence", e);
-		}
+		authorsDAO = DAOFactory.getAuthorsDAO();
+		threadsDAO = DAOFactory.getThreadsDAO();
+		messagesDAO = DAOFactory.getMessagesDAO();
+		pollsDAO = DAOFactory.getPollsDAO();
+		quotesDAO = DAOFactory.getQuotesDAO();
+		bookmarksDAO = DAOFactory.getBookmarksDAO();
+		adminDAO = DAOFactory.getAdminDAO();
+		miscDAO = DAOFactory.getMiscDAO();
+		privateMsgDAO = DAOFactory.getPrivateMsgDAO();
+		digestDAO = DAOFactory.getDigestDAO();
+
 		actionMethodCache = new HashMap<String, Method>();
 	}
 
@@ -135,7 +156,7 @@ public abstract class MainServlet extends HttpServlet {
 		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) {
 			// sessione bannata contagia utente
 			if (!(loggedUser.isBanned())) {
-				getPersistence().updateAuthorPassword(loggedUser, null);
+				authorsDAO.updateAuthorPassword(loggedUser, null);
 			}
 		}
 
@@ -160,7 +181,7 @@ public abstract class MainServlet extends HttpServlet {
 		req.setAttribute("randomAds", getRandomAdDTOs(req, res));
 
 		// javascript maGGico
-		req.setAttribute("javascript", persistence.getSysinfoValue("javascript"));
+		req.setAttribute("javascript", miscDAO.getSysinfoValue("javascript"));
 
 		// user
 		String loggedUserNick = (String)req.getSession().getAttribute(LOGGED_USER_SESS_ATTR);
@@ -168,12 +189,12 @@ public abstract class MainServlet extends HttpServlet {
 		String blockHeaderStatus = null;
 		if (!StringUtils.isEmpty(loggedUserNick)) {
 			// update loggedUser in session
-			AuthorDTO loggedUser = persistence.getAuthor(loggedUserNick);
+			AuthorDTO loggedUser = authorsDAO.getAuthor(loggedUserNick);
 			req.setAttribute(LOGGED_USER_REQ_ATTR, loggedUser);
 
 			userSessionBanContagion(req, loggedUser);
 
-			
+
 			// sidebar status come attributo nel reques
 			sidebarStatus = loggedUser.getPreferences().get("sidebarStatus");
 			blockHeaderStatus = loggedUser.getPreferences().get("blockHeader");
@@ -217,7 +238,7 @@ public abstract class MainServlet extends HttpServlet {
 			String retval = (String)actionMethod.invoke(this, new Object[] {req, res});
 			if (!StringUtils.isEmpty(loggedUserNick)) {
 				// pvts ?
-				req.setAttribute("hasPvts", getPersistence().checkForNewPvts(login(req)));
+				req.setAttribute("hasPvts", privateMsgDAO.checkForNewPvts(login(req)));
 			}
 			return retval;
 		}
@@ -235,14 +256,6 @@ public abstract class MainServlet extends HttpServlet {
 	abstract String init(HttpServletRequest req, HttpServletResponse res) throws Exception;
 
 	/**
-	 * La persistence inizializzata
-	 * @return
-	 */
-	protected final IPersistence getPersistence() {
-		return persistence;
-	}
-
-	/**
 	 * Tenta un login: Ritorna AuthorDTO valido se OK, AuthorDTO invalido se e'
 	 * stato inserito un captcha giusto, null se autenticazione fallita.
 	 * @param req
@@ -253,7 +266,7 @@ public abstract class MainServlet extends HttpServlet {
 		String nick = req.getParameter("nick");
 		String pass = req.getParameter("pass");
 		if (!StringUtils.isEmpty(nick) && !StringUtils.isEmpty(pass)) {
-			final AuthorDTO author = getPersistence().getAuthor(nick);
+			final AuthorDTO author = authorsDAO.getAuthor(nick);
 			if (PasswordUtils.hasUserPassword(author, pass)) {
 				// ok, ci siamo loggati con successo, salvare come attributo nel req
 				req.setAttribute(LOGGED_USER_REQ_ATTR, author);
@@ -262,7 +275,7 @@ public abstract class MainServlet extends HttpServlet {
 					// CODICE DI MIGRAZIONE DELLA FUNZIONE DI HASHING DELLE PASSWORD
 					// autenticazione con username e password effettuata con successo ma
 					// nome utente e password sono salvati con la vecchia funzione di hashing
-					getPersistence().updateAuthorPassword(author, pass);
+					authorsDAO.updateAuthorPassword(author, pass);
 				}
 				return author;
 			}
@@ -301,7 +314,7 @@ public abstract class MainServlet extends HttpServlet {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser != null && loggedUser.isValid()) {
 			// settiamo nelle preferences dell'utente
-			getPersistence().setPreference(loggedUser, "sidebarStatus", sidebarStatus);
+			authorsDAO.setPreference(loggedUser, "sidebarStatus", sidebarStatus);
 			loggedUser.getPreferences().put("sidebarStatus", sidebarStatus);
 		} else {
 			// settiamo nel cookie
@@ -349,7 +362,7 @@ public abstract class MainServlet extends HttpServlet {
 		}
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser != null && loggedUser.isValid()) {
-			getPersistence().setPreference(loggedUser, "blockHeader", blockHeaderStatus);
+			authorsDAO.setPreference(loggedUser, "blockHeader", blockHeaderStatus);
 			loggedUser.getPreferences().put("blockHeader", blockHeaderStatus);
 		} else {
 			boolean cookieSet = false;
@@ -395,7 +408,6 @@ public abstract class MainServlet extends HttpServlet {
 	/**
 	 * Imposta il titolo del sito
 	 * @param req
-	 * @param websiteTitle
 	 */
 	protected void setWebsiteTitlePrefix(HttpServletRequest req, String prefix) {
 		if (StringUtils.isNotEmpty(prefix)) {
@@ -525,7 +537,7 @@ public abstract class MainServlet extends HttpServlet {
 	protected List<String> hiddenForums(HttpServletRequest req) {
 		AuthorDTO loggedUser = login(req);
 		if (loggedUser.isValid()) {
-			return getPersistence().getHiddenForums(loggedUser);
+			return authorsDAO.getHiddenForums(loggedUser);
 		}
 		return null;
 	}

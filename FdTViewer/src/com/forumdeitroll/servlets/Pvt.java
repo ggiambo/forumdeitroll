@@ -21,16 +21,16 @@ import com.google.gson.stream.JsonWriter;
  */
 public class Pvt extends MainServlet {
 	private static final long serialVersionUID = 1L;
-	
+
 	private static int PVT_PER_PAGE = 10;
-	
+
 
 	@Override
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return inbox(req, res);
 	}
-	
+
 
 	@Action(method=Method.GET)
 	String inbox(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -42,11 +42,11 @@ public class Pvt extends MainServlet {
 		try {
 			npage = Integer.parseInt(page);
 		} catch (Exception e) {
-			
+
 		}
-		req.setAttribute("pvts", getPersistence().getInbox(author, PVT_PER_PAGE, npage));
+		req.setAttribute("pvts", privateMsgDAO.getInbox(author, PVT_PER_PAGE, npage));
 		req.setAttribute("from", "inbox");
-		req.setAttribute("totalSize", getPersistence().getInboxPages(author));
+		req.setAttribute("totalSize", privateMsgDAO.getInboxPages(author));
 		return "pvts.jsp";
 	}
 
@@ -65,7 +65,7 @@ public class Pvt extends MainServlet {
 		req.setAttribute("from", "sendNew");
 		return "pvts.jsp";
 	}
-	
+
 	@Action(method=Method.POST)
 	String sendPvt(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO author = login(req);
@@ -98,37 +98,37 @@ public class Pvt extends MainServlet {
 				text = text.replaceAll("(?i)&lt;" + t + "&gt;", "<" + t + ">");
 				text = text.replaceAll("(?i)&lt;/" + t + "&gt;", "</" + t + ">");
 			}
-			
+
 			PrivateMsgDTO message = new PrivateMsgDTO();
 			message.setText(text);
 			message.setSubject(subject);
-			if (!getPersistence().sendAPvtForGreatGoods(author, message, recipients)) {
+			if (!privateMsgDAO.sendAPvtForGreatGoods(author, message, recipients)) {
 				setNavigationMessage(req, NavigationMessage.error("Il messaggio non &egrave; stato inviato<img src='images/emo/10.gif'>"));
 				ripopola(req);
 				req.setAttribute("from", "sendNew");
-				return "pvts.jsp";	
+				return "pvts.jsp";
 			}
 			return inbox(req, res);
 		}
 		setNavigationMessage(req, NavigationMessage.error("Fai il login o registrati (cit)"));
 		return "pvts.jsp";
 	}
-	
+
 	@Action(method=Method.POST)
 	String notifyUnread(HttpServletRequest req, HttpServletResponse res)
 		throws Exception {
 		long id = Long.parseLong(req.getParameter("id"));
 		PrivateMsgDTO pvt = new PrivateMsgDTO();
 		pvt.setId(id);
-		getPersistence().notifyUnread(login(req), pvt);
-		pvt = getPersistence().getPvtDetails(id, login(req));
+		privateMsgDAO.notifyUnread(login(req), pvt);
+		pvt = privateMsgDAO.getPvtDetails(id, login(req));
 		req.setAttribute("pvtdetail", pvt);
 		req.setAttribute("from", "show");
-		req.setAttribute("sender", getPersistence().getAuthor(pvt.getFromNick()));
+		req.setAttribute("sender", messagesDAO.getAuthor(pvt.getFromNick()));
 		setNavigationMessage(req, NavigationMessage.info("Messaggi privati - Visualizza Messaggio"));
 		return "pvts.jsp";
 	}
-	
+
 	@Action(method=Method.GET)
 	String show(HttpServletRequest req, HttpServletResponse res)
 		throws Exception {
@@ -137,19 +137,19 @@ public class Pvt extends MainServlet {
 		long id = Long.parseLong(req.getParameter("id"));
 		PrivateMsgDTO pvt = new PrivateMsgDTO();
 		pvt.setId(id);
-		getPersistence().notifyRead(login(req), pvt);
-		pvt = getPersistence().getPvtDetails(id, login(req));
+		privateMsgDAO.notifyRead(login(req), pvt);
+		pvt = privateMsgDAO.getPvtDetails(id, login(req));
 		req.setAttribute("pvtdetail", pvt);
 		req.setAttribute("from", "show");
-		req.setAttribute("sender", getPersistence().getAuthor(pvt.getFromNick()));
+		req.setAttribute("sender", privateMsgDAO.getAuthor(pvt.getFromNick()));
 		return "pvts.jsp";
 	}
-	
+
 	@Action(method=Method.GET)
 	String delete(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		if (login(req).isValid()) {
 			long id = Long.parseLong(req.getParameter("id"));
-			getPersistence().deletePvt(id, login(req));
+			privateMsgDAO.deletePvt(id, login(req));
 			String from = req.getParameter("from");
 			if ("outbox".equals(from)) {
 				return outbox(req, res);
@@ -158,7 +158,7 @@ public class Pvt extends MainServlet {
 		}
 		return "pvts.jsp";
 	}
-	
+
 	@Action(method=Method.GET)
 	String outbox(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		setWebsiteTitlePrefix(req, "Messaggi privati - Inviati");
@@ -169,17 +169,17 @@ public class Pvt extends MainServlet {
 			try {
 				npage = Integer.parseInt(req.getParameter("page"));
 			} catch (Exception e) {
-				
+
 			}
-			List<PrivateMsgDTO> pvts = getPersistence().getSentPvts(login(req), PVT_PER_PAGE, npage);
+			List<PrivateMsgDTO> pvts = privateMsgDAO.getSentPvts(login(req), PVT_PER_PAGE, npage);
 			req.setAttribute("pvts", pvts);
 			req.setAttribute("from", "outbox");
-			req.setAttribute("totalSize", getPersistence().getOutboxPages(author));
+			req.setAttribute("totalSize", privateMsgDAO.getOutboxPages(author));
 			return "pvts.jsp";
 		}
 		return null; //TODO pagina user non auth
 	}
-	
+
 	/**
 	 * Rispondi al mittente
 	 */
@@ -187,7 +187,7 @@ public class Pvt extends MainServlet {
 	String reply(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return reply(req, false);
 	}
-	
+
 	/**
 	 * Rispondi al mittente e a tutti i destinatari, tranne che me
 	 */
@@ -195,17 +195,17 @@ public class Pvt extends MainServlet {
 	String replyAll(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return reply(req, true);
 	}
-	
+
 	private String reply(HttpServletRequest req, boolean toAll)	throws Exception {
 		setWebsiteTitlePrefix(req, "Messaggi privati - Rispondi");
 		long id = Long.parseLong(req.getParameter("id"));
 		PrivateMsgDTO pvt = new PrivateMsgDTO();
 		pvt.setId(id);
-		pvt = getPersistence().getPvtDetails(id, login(req));
+		pvt = privateMsgDAO.getPvtDetails(id, login(req));
 		// prepara il reply
 		if (toAll) {
 			List<String> recipients = new ArrayList<String>();
-			
+
 			recipients.add(pvt.getFromNick());
 			String me = login(req).getNick();
 			for (Iterator<ToNickDetailsDTO> itRec = pvt.getToNick().iterator(); itRec.hasNext();) {
@@ -229,12 +229,12 @@ public class Pvt extends MainServlet {
 		req.setAttribute("from", "sendNew");
 		return "pvts.jsp";
 	}
-	
+
 	@Action(method=Method.GET)
 	String searchAuthorAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String searchString = req.getParameter("searchString");
 		if (StringUtils.isNotEmpty(searchString) && searchString.length() > 1) {
-			List<String> authors = getPersistence().searchAuthor(searchString);
+			List<String> authors = authorsDAO.searchAuthor(searchString);
 			JsonWriter writer = new JsonWriter(res.getWriter());
 			writer.beginObject();
 			writer.name("resultCode").value("OK");
@@ -250,7 +250,7 @@ public class Pvt extends MainServlet {
 		}
 		return null;
 	}
-	
+
 	private void ripopola(HttpServletRequest req) {
 		req.setAttribute("text", req.getParameter("text"));
 		req.setAttribute("subject", req.getParameter("subject"));

@@ -1,28 +1,20 @@
 package com.forumdeitroll.test.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.forumdeitroll.persistence.*;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.MessagesDTO;
-import com.forumdeitroll.persistence.NotificationDTO;
-import com.forumdeitroll.persistence.TagDTO;
+import static org.junit.Assert.*;
 
 public class MiscTest extends BaseTest {
 
 	@Test
 	public void test_getForums() {
-		List<String> forums = persistence.getForums();
+		List<String> forums = miscDAO.getForums();
 		assertNotNull(forums);
 		assertEquals(2, forums.size());
 
@@ -35,7 +27,7 @@ public class MiscTest extends BaseTest {
 
 	@Test
 	public void test_getNotifications() {
-		List<NotificationDTO> notifications = persistence.getNotifications("admin", "Sfigato");
+		List<NotificationDTO> notifications = miscDAO.getNotifications("admin", "Sfigato");
 		assertNotNull(notifications);
 		assertEquals(2, notifications.size());
 
@@ -51,7 +43,7 @@ public class MiscTest extends BaseTest {
 		assertEquals(9, notification.getMsgId());
 		assertEquals("Sfigato", notification.getToNick());
 
-		notifications = persistence.getNotifications("Sfigato", "admin");
+		notifications = miscDAO.getNotifications("Sfigato", "admin");
 		assertNotNull(notifications);
 		assertEquals(1, notifications.size());
 
@@ -61,7 +53,7 @@ public class MiscTest extends BaseTest {
 		assertEquals(7, notification.getMsgId());
 		assertEquals("admin", notification.getToNick());
 
-		notifications = persistence.getNotifications("Sfigato", "Admin");
+		notifications = miscDAO.getNotifications("Sfigato", "Admin");
 		assertNotNull(notifications);
 		assertEquals(0, notifications.size());
 
@@ -69,9 +61,9 @@ public class MiscTest extends BaseTest {
 
 	@Test
 	public void test_removeNotification() {
-		persistence.removeNotification("admin", "Sfigato", 1);
+		miscDAO.removeNotification("admin", "Sfigato", 1);
 
-		List<NotificationDTO> notifications = persistence.getNotifications("admin", "Sfigato");
+		List<NotificationDTO> notifications = miscDAO.getNotifications("admin", "Sfigato");
 		assertNotNull(notifications);
 		assertEquals(1, notifications.size());
 
@@ -84,9 +76,9 @@ public class MiscTest extends BaseTest {
 
 	@Test
 	public void test_createNotification() {
-		persistence.createNotification("Sfigato", "admin", 4);
+		miscDAO.createNotification("Sfigato", "admin", 4);
 
-		List<NotificationDTO> notifications = persistence.getNotifications("Sfigato", "admin");
+		List<NotificationDTO> notifications = miscDAO.getNotifications("Sfigato", "admin");
 		assertNotNull(notifications);
 		assertEquals(2, notifications.size());
 
@@ -105,54 +97,54 @@ public class MiscTest extends BaseTest {
 
 	@Test
 	public void test_getLastId() {
-		assertEquals(9, persistence.getLastId());
+		assertEquals(9, miscDAO.getLastId());
 	}
 
 	@Test
 	public void test_like() {
-		MessageDTO msg = persistence.getMessage(9);
+		MessageDTO msg = messagesDAO.getMessage(9);
 		assertEquals(0, msg.getRank());
 
 		// like: +1
-		assertEquals(1, persistence.like(9, "Sfigato", true));
-		msg = persistence.getMessage(9);
+		assertEquals(1, miscDAO.like(9, "Sfigato", true));
+		msg = messagesDAO.getMessage(9);
 		assertEquals(1, msg.getRank());
 		// not allowed
-		assertEquals(0, persistence.like(9, "Sfigato", true));
-		msg = persistence.getMessage(9);
+		assertEquals(0, miscDAO.like(9, "Sfigato", true));
+		msg = messagesDAO.getMessage(9);
 		assertEquals(1, msg.getRank());
 		// unlike: -1
-		assertEquals(-2, persistence.like(9, "Sfigato", false));
-		msg = persistence.getMessage(9);
+		assertEquals(-2, miscDAO.like(9, "Sfigato", false));
+		msg = messagesDAO.getMessage(9);
 		assertEquals(-1, msg.getRank());
 		// not allowed
-		assertEquals(0, persistence.like(9, "Sfigato", false));
-		msg = persistence.getMessage(9);
+		assertEquals(0, miscDAO.like(9, "Sfigato", false));
+		msg = messagesDAO.getMessage(9);
 		assertEquals(-1, msg.getRank());
 		// like: +1
-		assertEquals(2, persistence.like(9, "Sfigato", true));
-		msg = persistence.getMessage(9);
+		assertEquals(2, miscDAO.like(9, "Sfigato", true));
+		msg = messagesDAO.getMessage(9);
 		assertEquals(1, msg.getRank());
 
 		// like: +2
-		assertEquals(1, persistence.like(9, "admin", true));
-		msg = persistence.getMessage(9);
+		assertEquals(1, miscDAO.like(9, "admin", true));
+		msg = messagesDAO.getMessage(9);
 		assertEquals(2, msg.getRank());
 		// not allowed
-		assertEquals(0, persistence.like(9, "admin", true));
-		msg = persistence.getMessage(9);
+		assertEquals(0, miscDAO.like(9, "admin", true));
+		msg = messagesDAO.getMessage(9);
 		assertEquals(2, msg.getRank());
 		// unlike: 0
-		assertEquals(-2, persistence.like(9, "admin", false));
-		msg = persistence.getMessage(9);
+		assertEquals(-2, miscDAO.like(9, "admin", false));
+		msg = messagesDAO.getMessage(9);
 		assertEquals(0, msg.getRank());
 		// not allowed
-		assertEquals(0, persistence.like(9, "admin", false));
-		msg = persistence.getMessage(9);
+		assertEquals(0, miscDAO.like(9, "admin", false));
+		msg = messagesDAO.getMessage(9);
 		assertEquals(0, msg.getRank());
 		// like: +2
-		assertEquals(2, persistence.like(9, "admin", true));
-		msg = persistence.getMessage(9);
+		assertEquals(2, miscDAO.like(9, "admin", true));
+		msg = messagesDAO.getMessage(9);
 		assertEquals(2, msg.getRank());
 
 	}
@@ -171,13 +163,13 @@ public class MiscTest extends BaseTest {
 		tag.setM_id(9);
 		tag.setValue("Bah banf");
 
-		persistence.addTag(tag);
+		miscDAO.addTag(tag);
 		assertEquals(tag.getT_id(), 3);
 
 		MessagesDTO messages = new MessagesDTO();
-		MessageDTO msg = persistence.getMessage(tag.getM_id());
+		MessageDTO msg = messagesDAO.getMessage(tag.getM_id());
 		messages.getMessages().add(msg);
-		persistence.getTags(messages);
+		miscDAO.getTags(messages);
 		List<MessageDTO> messgesList = messages.getMessages();
 		assertEquals(1, messgesList.size());
 		ArrayList<TagDTO> tags = messgesList.get(0).getTags();
@@ -192,16 +184,16 @@ public class MiscTest extends BaseTest {
 	@Test
 	public void test_deleTag() {
 		MessagesDTO messages = new MessagesDTO();
-		MessageDTO msg = persistence.getMessage(1);
+		MessageDTO msg = messagesDAO.getMessage(1);
 		messages.getMessages().add(msg);
-		persistence.getTags(messages);
+		miscDAO.getTags(messages);
 
-		persistence.deleTag(msg.getTags().get(0), true);
+		miscDAO.deleTag(msg.getTags().get(0), true);
 
 		messages = new MessagesDTO();
-		msg = persistence.getMessage(1);
+		msg = messagesDAO.getMessage(1);
 		messages.getMessages().add(msg);
-		persistence.getTags(messages);
+		miscDAO.getTags(messages);
 		assertNull(messages.getMessages().get(0).getTags());
 	}
 
@@ -209,14 +201,14 @@ public class MiscTest extends BaseTest {
 	public void test_getTags() {
 		MessagesDTO messages = new MessagesDTO();
 
-		MessageDTO msg = persistence.getMessage(1);
+		MessageDTO msg = messagesDAO.getMessage(1);
 		messages.getMessages().add(msg);
-		msg = persistence.getMessage(7);
+		msg = messagesDAO.getMessage(7);
 		messages.getMessages().add(msg);
-		msg = persistence.getMessage(9);
+		msg = messagesDAO.getMessage(9);
 		messages.getMessages().add(msg);
 
-		persistence.getTags(messages);
+		miscDAO.getTags(messages);
 
 		msg = messages.getMessages().get(0);
 		List<TagDTO> tags = msg.getTags();
@@ -249,8 +241,8 @@ public class MiscTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("admin");
 		author.setMessages(99); // isValid()
-		persistence.setHiddenForums(author, Arrays.asList("Perbacco", "Accidenti", "Merdaaahhh!!"));
-		List<String> hiddenForums = persistence.getHiddenForums(author);
+        authorsDAO.setHiddenForums(author, Arrays.asList("Perbacco", "Accidenti", "Merdaaahhh!!"));
+		List<String> hiddenForums = authorsDAO.getHiddenForums(author);
 		assertNotNull(hiddenForums);
 		assertEquals(3, hiddenForums.size());
 		assertTrue(hiddenForums.contains("Accidenti"));
@@ -259,16 +251,16 @@ public class MiscTest extends BaseTest {
 
 		author.setNick("Sfigato");
 		author.setMessages(99); // isValid()
-		persistence.setHiddenForums(author, Arrays.asList("Numeri del Lotto"));
-		hiddenForums = persistence.getHiddenForums(author);
+        authorsDAO.setHiddenForums(author, Arrays.asList("Numeri del Lotto"));
+		hiddenForums = authorsDAO.getHiddenForums(author);
 		assertNotNull(hiddenForums);
 		assertEquals(1, hiddenForums.size());
 		assertTrue(hiddenForums.contains("Numeri del Lotto"));
 
 		author.setNick("Inesistente");
 		author.setMessages(99); // isValid()
-		persistence.setHiddenForums(author, Arrays.asList("Numeri del Lotto"));
-		hiddenForums = persistence.getHiddenForums(author);
+        authorsDAO.setHiddenForums(author, Arrays.asList("Numeri del Lotto"));
+		hiddenForums = authorsDAO.getHiddenForums(author);
 		assertNotNull(hiddenForums);
 		assertEquals(1, hiddenForums.size());
 		assertTrue(hiddenForums.contains("Numeri del Lotto"));
@@ -280,20 +272,20 @@ public class MiscTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("admin");
 		author.setMessages(99); // isValid()
-		List<String> hiddenForums = persistence.getHiddenForums(author);
+		List<String> hiddenForums = authorsDAO.getHiddenForums(author);
 		assertNotNull(hiddenForums);
 		assertEquals(1, hiddenForums.size());
 		assertEquals("Procura Svizzera", hiddenForums.get(0));
 
 		author.setNick("Admin");
 		author.setMessages(99); // isValid()
-		hiddenForums = persistence.getHiddenForums(author);
+		hiddenForums = authorsDAO.getHiddenForums(author);
 		assertNotNull(hiddenForums);
 		assertEquals(0, hiddenForums.size());
 
 		author.setNick("Inesistente");
 		author.setMessages(99); // isValid()
-		hiddenForums = persistence.getHiddenForums(author);
+		hiddenForums = authorsDAO.getHiddenForums(author);
 		assertNotNull(hiddenForums);
 		assertEquals(0, hiddenForums.size());
 	}

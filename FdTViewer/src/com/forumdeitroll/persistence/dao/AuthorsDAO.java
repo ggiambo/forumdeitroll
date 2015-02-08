@@ -106,7 +106,7 @@ public class AuthorsDAO extends BaseDAO {
 
 		return res == 1;
 	}
-	
+
 	public Map<String, String> setPreference(AuthorDTO user, String key, String value) {
 		if (!getPreferences(user).keySet().contains(key)) {
 			jooq.insertInto(PREFERENCES)
@@ -120,10 +120,10 @@ public class AuthorsDAO extends BaseDAO {
 				.where(PREFERENCES.NICK.eq(user.getNick()))
 				.and(PREFERENCES.KEY.eq(key))
 				.execute();
-		} 
+		}
 		return getPreferences(user);
 	}
-	
+
 	public List<String> getHiddenForums(AuthorDTO loggedUser) {
 		List<String> hiddenForums = new ArrayList<String>();
 		Map<String, String> prefs = getPreferences(loggedUser);
@@ -134,7 +134,7 @@ public class AuthorsDAO extends BaseDAO {
 		}
 		return hiddenForums;
 	}
-	
+
 	public List<String> searchAuthor(String searchString) {
 		List<String> res = new ArrayList<String>();
 		Result<Record1<String>> records = jooq.select(AUTHORS.NICK)
@@ -143,13 +143,13 @@ public class AuthorsDAO extends BaseDAO {
 			.and(AUTHORS.HASH.isNotNull())
 			.orderBy(AUTHORS.NICK.asc())
 			.fetch();
-		
+
 		for (Record1<String> record : records) {
 			res.add(record.getValue(AUTHORS.NICK));
 		}
 		return res;
 	}
-	
+
 	public void setHiddenForums(AuthorDTO loggedUser, List<String> hiddenForums) {
 			// remove all
 		jooq.delete(PREFERENCES)

@@ -2,9 +2,8 @@ package com.forumdeitroll.servlets;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.IPersistence;
+import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.ModInfoBean;
@@ -19,7 +18,7 @@ public class ModInfo extends MainServlet {
 
 		final IPMemStorage.Record record = IPMemStorage.get(m_id);
 		final ModInfoBean modInfo = new ModInfoBean(m_id, record);
-		final MessageDTO msg = getPersistence().getMessage(Long.parseLong(m_id));
+		final MessageDTO msg = messagesDAO.getMessage(Long.parseLong(m_id));
 		msg.modInfoException();
 
 		req.setAttribute("modInfo", modInfo);
@@ -34,7 +33,7 @@ public class ModInfo extends MainServlet {
 	String init(final HttpServletRequest req, final HttpServletResponse res) throws Exception {
 		final AuthorDTO loggedUser = login(req);
 
-		final boolean isAdmin = (loggedUser != null) && ("yes".equals(getPersistence().getPreferences(loggedUser).get("super")));
+		final boolean isAdmin = (loggedUser != null) && ("yes".equals(messagesDAO.getPreferences(loggedUser).get("super")));
 		if (!isAdmin) {
 			return "messages.jsp";
 		}
@@ -47,7 +46,7 @@ public class ModInfo extends MainServlet {
 		final String m_id = req.getParameter("m_id");
 		final AuthorDTO loggedUser = login(req);
 
-		final boolean isAdmin = (loggedUser != null) && ("yes".equals(getPersistence().getPreferences(loggedUser).get("super")));
+		final boolean isAdmin = (loggedUser != null) && ("yes".equals(messagesDAO.getPreferences(loggedUser).get("super")));
 		if (!isAdmin) {
 			return "messages.jsp";
 		}
@@ -64,7 +63,7 @@ public class ModInfo extends MainServlet {
 			nickname = record.authorNickname();
 		} else {
 			try {
-				final MessageDTO msg = getPersistence().getMessage(Long.parseLong(m_id));
+				final MessageDTO msg = messagesDAO.getMessage(Long.parseLong(m_id));
 				if (msg != null) {
 					final AuthorDTO msgAuthor = msg.getAuthor();
 					if ((msgAuthor != null) && msgAuthor.isValid()) {
@@ -81,14 +80,14 @@ public class ModInfo extends MainServlet {
 			return show(req, res);
 		}
 
-		final AuthorDTO target = getPersistence().getAuthor(nickname);
+		final AuthorDTO target = messagesDAO.getAuthor(nickname);
 
 		if (target == null) {
 			setNavigationMessage(req,NavigationMessage.error("Fallito: impossibile trovare l'utente <" + nickname + ">"));
 			return show(req, res);
 		}
 
-		getPersistence().updateAuthorPassword(target, null);
+		authorsDAO.updateAuthorPassword(target, null);
 
 		return show(req, res);
 	}
@@ -98,7 +97,7 @@ public class ModInfo extends MainServlet {
 		final String m_id = req.getParameter("m_id");
 		final AuthorDTO loggedUser = login(req);
 
-		final boolean isAdmin = (loggedUser != null) && ("yes".equals(getPersistence().getPreferences(loggedUser).get("super")));
+		final boolean isAdmin = (loggedUser != null) && ("yes".equals(messagesDAO.getPreferences(loggedUser).get("super")));
 		if (!isAdmin) {
 			return "messages.jsp";
 		}
@@ -125,7 +124,7 @@ public class ModInfo extends MainServlet {
 		final String m_id = req.getParameter("m_id");
 		final AuthorDTO loggedUser = login(req);
 
-		final boolean isAdmin = (loggedUser != null) && ("yes".equals(getPersistence().getPreferences(loggedUser).get("super")));
+		final boolean isAdmin = (loggedUser != null) && ("yes".equals(messagesDAO.getPreferences(loggedUser).get("super")));
 		if (!isAdmin) {
 			return "messages.jsp";
 		}
@@ -137,8 +136,9 @@ public class ModInfo extends MainServlet {
 
 		try {
 			final long id = Long.parseLong(m_id);
-			getPersistence().moveThreadTree(id, IPersistence.FORUM_ASHES);
-			getPersistence().restoreOrHideMessage(id, -1);
+			MessageDTO rootMessage = messagesDAO.getMessage(id);
+			adminDAO.moveThreadTree(rootMessage, DAOFactory.FORUM_ASHES);
+			adminDAO.restoreOrHideMessage(id, -1);
 		} catch (NumberFormatException e) {
 			setNavigationMessage(req, NavigationMessage.error("Errore durante l'esecuzione della richiesta: " + e.getMessage()));
 			return show(req, res);

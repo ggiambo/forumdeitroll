@@ -3,16 +3,14 @@ package com.forumdeitroll.markup3;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import com.forumdeitroll.markup.Emoticon;
 import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Snippet;
 import com.forumdeitroll.markup.util.FaviconWhiteList;
-import com.forumdeitroll.persistence.PersistenceFactory;
+import com.forumdeitroll.persistence.DAOFactory;
 
 public class MarkupRenderer implements TokenListener {
 
@@ -498,7 +496,7 @@ public class MarkupRenderer implements TokenListener {
 				return titleCache.get(id);
 			}
 			try {
-				String title = PersistenceFactory.getInstance().getMessageTitle(id);
+				String title = DAOFactory.getMessagesDAO().getMessageTitle(id);
 				titleCache.put(id, title);
 				return title;
 			} catch (Exception e) {
@@ -540,7 +538,7 @@ public class MarkupRenderer implements TokenListener {
 			}
 			emitLink(link, token.name, desc, true);
 		}
-		
+
 	}
 
 	private void onWord(TokenMatcher token) {

@@ -5,7 +5,7 @@ import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.forumdeitroll.markup.RenderIO;
-import com.forumdeitroll.persistence.PersistenceFactory;
+import com.forumdeitroll.persistence.DAOFactory;
 
 public class Links {
 	private static final char[][] initseq = new char[][] {
@@ -19,10 +19,10 @@ public class Links {
 		"ftp://".toCharArray(),
 		"mailto:".toCharArray(),
 	};
-	
+
 	private static final char[] slash = "/".toCharArray();
 	private static final char[] dot = ".".toCharArray();
-	
+
 	private static final char[][] tlds = new char[][] {
 		".it/".toCharArray(),
 		".com/".toCharArray(),
@@ -40,16 +40,16 @@ public class Links {
 		".gov/".toCharArray(),
 		".mil/".toCharArray(),
 	};
-	
+
 	private static final char[][] fdt_domains_initseq = new char[][] {
 		"http://www.forumdeitroll.com/".toCharArray(),
 		"https://www.forumdeitroll.com/".toCharArray(),
 		"http://forumdeitroll.com/".toCharArray(),
 		"https://forumdeitroll.com/".toCharArray()
 	};
-	
+
 	private static final char[] BR = "<BR>".toCharArray();
-	
+
 	public static boolean isLink(char[] buffer, int offset, int length) {
 		if (Chars.containsWhitespaces(buffer, offset, length)) {
 			return false;
@@ -81,7 +81,7 @@ public class Links {
 		}
 		return false;
 	}
-	
+
 	public static boolean isInternalLink(char[] buffer, int offset, int length) {
 		// the buffer region has to be always checked before with isLink, undefined behaviour ensues otherwise
 		for (int i = 3; i < 7; i++) {
@@ -96,7 +96,7 @@ public class Links {
 		}
 		return false;
 	}
-	
+
 	public static void writeUrl(Writer out, char[] buffer, int offset, int length) throws IOException {
 		// the buffer region has to be always checked before with isLink, undefined behaviour ensues otherwise
 		// www.
@@ -105,14 +105,14 @@ public class Links {
 			EntityEscaper.writeEscaped(out, buffer, offset, length);
 			return;
 		}
-		
+
 		for (char[] seq : initseq) {
 			if (0 == Chars.indexOf(buffer, offset, length, seq, 0, seq.length, 0, false, true)) {
 				EntityEscaper.writeEscaped(out, buffer, offset, length);
 				return;
 			}
 		}
-		
+
 		// tlds without http:// prefix
 		int p;
 		for (char[] tld: tlds) {
@@ -137,7 +137,7 @@ public class Links {
 		// print link as-is
 		EntityEscaper.writeEscaped(out, buffer, offset, length);
 	}
-	
+
 	private static final int MAX_DESC_LENGTH = 50;
 
 	public static char[] THREAD_LINK_INITSEQ = "Threads?action=getByThread&threadId=".toCharArray();
@@ -206,13 +206,13 @@ public class Links {
 			return titleCache.get(id);
 		}
 		try {
-			String title = PersistenceFactory.getInstance().getMessageTitle(id);
+			String title = DAOFactory.getMessagesDAO().getMessageTitle(id);
 			titleCache.put(id, title);
 			return title;
 		} catch (Exception e) {
 			return null;
 		}
-		
+
 	}
 
 	public static void writeLinkTag(RenderIO io, int offset, int length, int descOffset, int descLength) throws Exception {

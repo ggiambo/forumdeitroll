@@ -16,7 +16,7 @@ public class Authors extends MainServlet {
 	// solo vista mobile
 	@Action
 	String getAuthors(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		List<AuthorDTO> result = getPersistence().getActiveAuthors();
+		List<AuthorDTO> result = authorsDAO.getActiveAuthors();
 		req.setAttribute("authors", result);
 		setNavigationMessage(req, NavigationMessage.info("Autori"));
 		return "authors.jsp";

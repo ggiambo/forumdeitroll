@@ -14,11 +14,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
+import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.PersistenceFactory;
 import com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv;
 
 public class GreatRendereresShootout {
@@ -129,7 +128,7 @@ public class GreatRendereresShootout {
 		put(2805362l, "migliore parse url");
 		put(2807087l, "diverso parse url http://[IP esterno corrente]:44444");
 		put(2815562l, "YODO: parsare parametro t in url youtube");
-		
+
 	}};
 
 	private static void reportDelta(long id, long threadId, RenderOptions[] optss, ArrayList<String[]> output) throws Exception {
@@ -171,11 +170,11 @@ public class GreatRendereresShootout {
 	}
 
 	private static void printTokensSingleMessage(long id) throws Exception {
-		String text = PersistenceFactory.getInstance().getMessage(id).getText();
+		String text = DAOFactory.getMessagesDAO().getMessage(id).getText();
 		new Tokenizer().tokenize(text, TokenListener.PRINTER);
 	}
 	private static void testSingleMessage(long id) throws Exception {
-		MessageDTO dto = PersistenceFactory.getInstance().getMessage(id);
+		MessageDTO dto = DAOFactory.getMessagesDAO().getMessage(id);
 		String text = dto.getText();
 		testSingleMessage(id, dto.getThreadId(), text);
 	}
@@ -187,7 +186,7 @@ public class GreatRendereresShootout {
 		for (RenderOptions opts : com.forumdeitroll.markup2.Renderer.getAllRenderingOptions()) {
 			String[] results = runFromDb(id, threadId, text, opts);
 			output.add(results);
-			
+
 		}
 		for (int i = 0; i < output.size(); i++) {
 			String[] results = output.get(i);
@@ -232,7 +231,7 @@ public class GreatRendereresShootout {
 		}
 	}
 	private static void testRange() throws Exception {
-		for (MessageDTO messageDTO : PersistenceFactory.getInstance().getMessages(null, null, 1000, 1, null).getMessages()) {
+		for (MessageDTO messageDTO : DAOFactory.getMessagesDAO().getMessages(null, null, 1000, 1, null).getMessages()) {
 			for (RenderOptions opts : com.forumdeitroll.markup2.Renderer.getAllRenderingOptions()) {
 				runFromDb(messageDTO.getId(), messageDTO.getThreadId(), messageDTO.getText(), opts);
 			}

@@ -16,13 +16,13 @@ public @interface Action {
 		Method(String method) {
 			this.method = method;
 		};
-		
+
 		@Override
 		public String toString() {
 			return method;
 		}
 	}
-	
+
 	Method method() default Method.GETPOST;
 
 }

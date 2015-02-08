@@ -1,26 +1,25 @@
 package com.forumdeitroll.test.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.forumdeitroll.persistence.AdDTO;
+import com.forumdeitroll.persistence.MessageDTO;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.forumdeitroll.persistence.AdDTO;
-import com.forumdeitroll.persistence.MessageDTO;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdminTest extends BaseTest {
 
 	@Test
 	public void test_moveThreadTree() {
-		MessageDTO message = persistence.getMessage(8);
+		MessageDTO message = messagesDAO.getMessage(8);
 		Assert.assertNull(message.getForum());
 
-		int msgInSourceForum = persistence.getMessages("", null, 99, 0, null).getMaxNrOfMessages();
-		int msgInDestinationForum = persistence.getMessages("Procura Svizzera", null, 99, 0, null).getMaxNrOfMessages();
+		int msgInSourceForum = messagesDAO.getMessages("", null, 99, 0, null).getMaxNrOfMessages();
+		int msgInDestinationForum = messagesDAO.getMessages("Procura Svizzera", null, 99, 0, null).getMaxNrOfMessages();
 
-		persistence.moveThreadTree(message.getId(), "Procura Svizzera");
-		MessageDTO movedMessage = persistence.getMessage(8);
+        adminDAO.moveThreadTree(message, "Procura Svizzera");
+		MessageDTO movedMessage = messagesDAO.getMessage(8);
 
 		Assert.assertEquals("Procura Svizzera", movedMessage.getForum());
 		Assert.assertEquals(message.getId(), movedMessage.getId());
@@ -31,36 +30,36 @@ public class AdminTest extends BaseTest {
 		Assert.assertEquals(message.getId(), movedMessage.getThreadId());
 		Assert.assertEquals(message.getId(), movedMessage.getParentId());
 
-		int msgInSourceForumAfter = persistence.getMessages("", null, 99, 0, null).getMaxNrOfMessages();
+		int msgInSourceForumAfter = messagesDAO.getMessages("", null, 99, 0, null).getMaxNrOfMessages();
 		Assert.assertEquals(msgInSourceForum - 2, msgInSourceForumAfter);
 
-		int msgInDestinationForumAfter = persistence.getMessages("Procura Svizzera", null, 99, 0, null).getMaxNrOfMessages();
+		int msgInDestinationForumAfter = messagesDAO.getMessages("Procura Svizzera", null, 99, 0, null).getMaxNrOfMessages();
 		Assert.assertEquals(msgInDestinationForum + 2, msgInDestinationForumAfter);
 	}
 
 	@Test
 	public void test_restoreOrHideMessage() {
-		MessageDTO message = persistence.getMessage(4);
+		MessageDTO message = messagesDAO.getMessage(4);
 		Assert.assertTrue(message.isVisible());
 
-		persistence.restoreOrHideMessage(message.getId(), 0);
-		message = persistence.getMessage(message.getId());
+        adminDAO.restoreOrHideMessage(message.getId(), 0);
+		message = messagesDAO.getMessage(message.getId());
 		Assert.assertFalse(message.isVisible());
 
-		persistence.restoreOrHideMessage(message.getId(), 1);
-		message = persistence.getMessage(message.getId());
+        adminDAO.restoreOrHideMessage(message.getId(), 1);
+		message = messagesDAO.getMessage(message.getId());
 		Assert.assertTrue(message.isVisible());
 
 	}
 
 	@Test
 	public void test_blockTorExitNodes() {
-		Assert.assertFalse(persistence.blockTorExitNodes());
+		Assert.assertFalse(adminDAO.blockTorExitNodes());
 	}
 
 	@Test
 	public void test_getTitles() {
-		List<String> titles = persistence.getTitles();
+		List<String> titles = adminDAO.getTitles();
 		Assert.assertEquals(3, titles.size());
 		Assert.assertEquals("Forum di test", titles.get(0));
 		Assert.assertEquals("Forum che funziona !", titles.get(1));
@@ -69,18 +68,18 @@ public class AdminTest extends BaseTest {
 
 	@Test
 	public void test_setTitles() {
-		List<String> titles = persistence.getTitles();
+		List<String> titles = adminDAO.getTitles();
 		titles.remove(1);
 		titles.add("Prot Quack Quack");
 
-		persistence.setTitles(titles);
-		List<String> newTitles = persistence.getTitles();
-		Assert.assertArrayEquals(titles.toArray(), newTitles.toArray());
+        adminDAO.setTitles(titles);
+		List<String> newTitles = adminDAO.getTitles();
+		Assert.assertArrayEquals(newTitles.toArray(), titles.toArray());
 	}
 
 	@Test
 	public void test_getAllAds() {
-		List<AdDTO> allAds = persistence.getAllAds();
+		List<AdDTO> allAds = adminDAO.getAllAds();
 		Assert.assertEquals(9, allAds.size());
 	}
 
@@ -96,9 +95,9 @@ public class AdminTest extends BaseTest {
 			ad.setVisurl("Visurl_" + i);
 			ads.add(ad);
 		}
-		persistence.setAllAds(ads);
+        adminDAO.setAllAds(ads);
 
-		List<AdDTO> allAds = persistence.getAllAds();
+		List<AdDTO> allAds = adminDAO.getAllAds();
 		Assert.assertEquals(10, allAds.size());
 
 	}

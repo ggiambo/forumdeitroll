@@ -1,5 +1,14 @@
 package com.forumdeitroll.test.persistence;
 
+import com.forumdeitroll.persistence.DAOFactory;
+import com.forumdeitroll.persistence.dao.*;
+import org.h2.jdbcx.JdbcConnectionPool;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+import org.junit.Before;
+import org.junit.BeforeClass;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -8,20 +17,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.h2.jdbcx.JdbcConnectionPool;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-import org.junit.Before;
-import org.junit.BeforeClass;
-
-import com.forumdeitroll.persistence.IPersistence;
-import com.forumdeitroll.persistence.dao.DAOFacade;
-
 public class BaseTest {
 
 	private static JdbcConnectionPool pool;
 
-	protected static IPersistence persistence;
+    static AdminDAO adminDAO;
+    static AuthorsDAO authorsDAO;
+    static BookmarksDAO bookmarksDAO;
+    static DigestDAO digestDAO;
+    static MessagesDAO messagesDAO;
+    static MiscDAO miscDAO;
+    static PollsDAO pollsDAO;
+    static PrivateMsgDAO pvtDAO;
+    static QuotesDAO quotesDAO;
+    static ThreadsDAO threadsDAO;
 
 	@BeforeClass
 	public static void init() throws Exception {
@@ -30,11 +39,19 @@ public class BaseTest {
 		pool = JdbcConnectionPool.create("jdbc:h2:mem:fdtsucker;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1", "fdtsucker",
 				"fdtsucker");
 
-		// setup persistence
-		DAOFacade pers = new DAOFacade();
-		pers.init(DSL.using(pool, SQLDialect.H2));
-		persistence = pers;
-	}
+        DSLContext jooq = DSL.using(pool, SQLDialect.H2);
+
+        authorsDAO = new AuthorsDAO(jooq);
+        threadsDAO = new ThreadsDAO(jooq);
+        messagesDAO = new MessagesDAO(jooq);
+        pollsDAO = new PollsDAO(jooq);
+        quotesDAO = new QuotesDAO(jooq);
+        bookmarksDAO = new BookmarksDAO(jooq);
+        adminDAO = new AdminDAO(jooq);
+        miscDAO = new MiscDAO(jooq);
+        pvtDAO = new PrivateMsgDAO(jooq);
+        digestDAO = new DigestDAO(jooq);
+    }
 
 	@Before
 	public void setupDatabase() throws Exception {

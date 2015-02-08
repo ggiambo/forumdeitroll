@@ -25,8 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.IPersistence;
-import com.forumdeitroll.persistence.PersistenceFactory;
+import com.forumdeitroll.persistence.DAOFactory;
 
 /**
  * Servlet "speciale" che non necessita di tutto l'ambaradan di MainFilter e MainServlet
@@ -37,8 +36,6 @@ public class Misc extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOG = Logger.getLogger(Misc.class);
-
-	private IPersistence persistence;
 
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
@@ -74,13 +71,6 @@ public class Misc extends HttpServlet {
 		} catch (IOException e) {
 			LOG.error(e);
 			throw new ServletException("Cannot read default images", e);
-		}
-
-		try {
-			persistence = PersistenceFactory.getInstance();
-		} catch (Exception e) {
-			LOG.fatal(e);
-			throw new ServletException("Cannot instantiate persistence", e);
 		}
 	}
 
@@ -131,7 +121,7 @@ public class Misc extends HttpServlet {
 	private void getAvatar(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String nick = req.getParameter("nick");
 		res.setHeader("Cache-Control", "max-age=3600");
-		AuthorDTO author = persistence.getAuthor(nick);
+		AuthorDTO author = DAOFactory.getAuthorsDAO().getAuthor(nick);
 		ServletOutputStream out = res.getOutputStream();
 		if (author.isValid()) {
 			if (author.getAvatar() != null) {
@@ -149,7 +139,7 @@ public class Misc extends HttpServlet {
 	private void getUserSignatureImage(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String nick = req.getParameter("nick");
 		res.setHeader("Cache-Control", "max-age=3600");
-		AuthorDTO author = persistence.getAuthor(nick);
+		AuthorDTO author = DAOFactory.getAuthorsDAO().getAuthor(nick);
 		ServletOutputStream out = res.getOutputStream();
 		out.write(author.getSignatureImage());
 		out.flush();

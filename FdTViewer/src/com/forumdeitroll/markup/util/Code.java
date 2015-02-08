@@ -6,14 +6,14 @@ import com.forumdeitroll.markup.RenderIO;
 import com.forumdeitroll.markup.RenderState;
 
 public class Code {
-	
+
 	private static final char[] CODE_OPEN = "[code ".toCharArray();
 	private static final char[] CODE = "[code]".toCharArray();
 	private static final char[] CODE_END = "[/code]".toCharArray();
-	
+
 	private static final char[] CLOSE_SQUARE_BRACKET = "]".toCharArray();
 	private static final char[] BR = "<BR>".toCharArray();
-	
+
 	public static boolean code(RenderIO io, RenderState state) throws IOException {
 		if (io.startWith(CODE)) {
 			int end = io.indexOf(CODE_END, CODE.length);
@@ -49,7 +49,7 @@ public class Code {
 		}
 		return false;
 	}
-	
+
 	public static boolean codeEnd(RenderIO io, RenderState state) throws IOException {
 		if (io.startWith(CODE_END)) {
 			io.write("</pre>");
@@ -59,13 +59,13 @@ public class Code {
 		}
 		return false;
 	}
-	
+
 	public static void cleanup(RenderIO io, RenderState state) throws IOException {
 		if (state.codeTagOpen)
 			io.write("</pre>");
 		state.codeTagOpen = false;
 	}
-	
+
 	public static boolean brToNewline(RenderIO io, RenderState state) throws IOException {
 		if (!state.codeTagOpen)
 			return false;

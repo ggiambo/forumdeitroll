@@ -1,27 +1,22 @@
 package com.forumdeitroll.test.persistence;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.servlets.User;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.servlets.User;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.*;
 
 public class AuthorTest extends BaseTest {
 
 	@Test
 	public void test_getAuthor() {
-		AuthorDTO author = persistence.getAuthor("admin");
+		AuthorDTO author = authorsDAO.getAuthor("admin");
 		assertNotNull(author);
 		assertEquals("admin", author.getNick());
 		assertNull(author.getAvatar());
@@ -42,7 +37,7 @@ public class AuthorTest extends BaseTest {
 		assertNull(preferences.get(User.PREF_SHOWANONIMG));
 		assertEquals("Classico", preferences.get(User.PREF_THEME));
 
-		author = persistence.getAuthor("Admin");
+		author = authorsDAO.getAuthor("Admin");
 		assertNotNull(author);
 		assertEquals("admin", author.getNick());
 		assertNull(author.getAvatar());
@@ -63,7 +58,7 @@ public class AuthorTest extends BaseTest {
 		assertNull(preferences.get(User.PREF_SHOWANONIMG));
 		assertEquals("Classico", preferences.get(User.PREF_THEME));
 
-		author = persistence.getAuthor("Inesistente");
+		author = authorsDAO.getAuthor("Inesistente");
 		assertNotNull(author);
 		assertEquals(null, author.getNick());
 		assertNull(author.getAvatar());
@@ -73,13 +68,12 @@ public class AuthorTest extends BaseTest {
 
 	@Test
 	public void test_getAuthors() {
-		List<AuthorDTO> authors = persistence.getAuthors(true);
+		List<AuthorDTO> authors = authorsDAO.getAuthors(true);
 		assertNotNull(authors);
 		assertEquals(2, authors.size());
 
 		// sort by nick
 		Collections.sort(authors, new Comparator<AuthorDTO>() {
-			@Override
 			public int compare(AuthorDTO a1, AuthorDTO a2) {
 				return a1.getNick().compareTo(a2.getNick());
 			}
@@ -102,13 +96,13 @@ public class AuthorTest extends BaseTest {
 
 	@Test
 	public void test_updateAuthor() {
-		AuthorDTO author = persistence.getAuthor("admin");
+		AuthorDTO author = authorsDAO.getAuthor("admin");
 		author.setMessages(42);
 		author.setAvatar(new byte[] { 11, 12, 13, 14, 15 });
 		author.setSignatureImage(new byte[] { 16, 17, 18, 19, 20 });
-		persistence.updateAuthor(author);
+		authorsDAO.updateAuthor(author);
 
-		author = persistence.getAuthor("admin");
+		author = authorsDAO.getAuthor("admin");
 		assertEquals(new String(new byte[] { 11, 12, 13, 14, 15 }), new String(author.getAvatar()));
 		assertEquals(42, author.getMessages());
 		assertEquals("admin", author.getNick());
@@ -131,11 +125,11 @@ public class AuthorTest extends BaseTest {
 
 	@Test
 	public void test_updateAuthorPassword() {
-		AuthorDTO author = persistence.getAuthor("admin");
+		AuthorDTO author = authorsDAO.getAuthor("admin");
 		String oldHash = author.getHash();
-		assertTrue(persistence.updateAuthorPassword(author, "prooot"));
+		assertTrue(authorsDAO.updateAuthorPassword(author, "prooot"));
 
-		AuthorDTO updatedAuthor = persistence.getAuthor("admin");
+		AuthorDTO updatedAuthor = authorsDAO.getAuthor("admin");
 		assertNotNull(updatedAuthor);
 		assertThat(oldHash, not(updatedAuthor.getHash()));
 		assertEquals(author.getHash(), updatedAuthor.getHash());
@@ -162,14 +156,14 @@ public class AuthorTest extends BaseTest {
 
 	@Test
 	public void test_registerUser() {
-		AuthorDTO author = persistence.registerUser("admin", "troll");
+		AuthorDTO author = authorsDAO.registerUser("admin", "troll");
 		assertNotNull(author);
 		assertEquals(null, author.getNick());
 		assertNull(author.getAvatar());
 		assertEquals(-1, author.getMessages());
 		assertEquals(0, author.getPreferences().size());
 
-		author = persistence.registerUser("Newtroll", "troll");
+		author = authorsDAO.registerUser("Newtroll", "troll");
 		assertNotNull(author);
 		assertEquals("Newtroll", author.getNick());
 		assertNull(author.getAvatar());
@@ -183,7 +177,7 @@ public class AuthorTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("admin");
 		author.setMessages(99); // isValid()
-		Map<String, String> preferences = persistence.getPreferences(author);
+		Map<String, String> preferences = authorsDAO.getPreferences(author);
 		assertNull(preferences.get(User.PREF_AUTO_REFRESH));
 		assertNull(preferences.get(User.PREF_BLOCK_HEADER));
 		assertNull(preferences.get(User.PREF_COLLAPSE_QUOTES));
@@ -203,9 +197,9 @@ public class AuthorTest extends BaseTest {
 	public void test_setPreference() {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("admin");
-		persistence.setPreference(author, User.PREF_HIDE_FAKE_ADS, "yesss!!");
+		authorsDAO.setPreference(author, User.PREF_HIDE_FAKE_ADS, "yesss!!");
 
-		author = persistence.getAuthor("admin");
+		author = authorsDAO.getAuthor("admin");
 		assertNotNull(author);
 		assertEquals("admin", author.getNick());
 		assertNull(author.getAvatar());
@@ -229,11 +223,11 @@ public class AuthorTest extends BaseTest {
 
 	@Test
 	public void test_searchAuthor() {
-		List<String> nicks = persistence.searchAuthor("sfig");
+		List<String> nicks = authorsDAO.searchAuthor("sfig");
 		assertNotNull(nicks);
 		assertEquals(0, nicks.size());
 
-		nicks = persistence.searchAuthor("Sfig");
+		nicks = authorsDAO.searchAuthor("Sfig");
 		assertNotNull(nicks);
 		assertEquals(1, nicks.size());
 		assertEquals("Sfigato", nicks.get(0));
@@ -241,25 +235,25 @@ public class AuthorTest extends BaseTest {
 
 	@Test
 	public void test_setSysinfoValue() {
-		persistence.setSysinfoValue("newKey", "Prot Quack Burp");
-		String value = persistence.getSysinfoValue("newKey");
+		authorsDAO.setSysinfoValue("newKey", "Prot Quack Burp");
+		String value = authorsDAO.getSysinfoValue("newKey");
 		assertNotNull(value);
 		assertEquals("Prot Quack Burp", value);
 	}
 
 	@Test
 	public void test_getSysinfoValue() {
-		String value = persistence.getSysinfoValue("newKey");
+		String value = authorsDAO.getSysinfoValue("newKey");
 		assertNull(value);
 
-		value = persistence.getSysinfoValue("title.2");
+		value = authorsDAO.getSysinfoValue("title.2");
 		assertNotNull(value);
 		assertEquals("IMMENSO GIAMBO !!!1!", value);
 	}
 
 	@Test
 	public void test_getActiveAuthors() {
-		List<AuthorDTO> authors = persistence.getActiveAuthors();
+		List<AuthorDTO> authors = authorsDAO.getActiveAuthors();
 		assertNotNull(authors);
 		assertEquals(2, authors.size());
 	}

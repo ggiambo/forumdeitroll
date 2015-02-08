@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.forumdeitroll.persistence.*;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.chart.ChartFactory;
@@ -19,11 +20,6 @@ import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.DefaultPieDataset;
 
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.PollDTO;
-import com.forumdeitroll.persistence.PollQuestion;
-import com.forumdeitroll.persistence.PollsDTO;
 import com.forumdeitroll.servlets.Action.Method;
 
 public class Polls extends MainServlet {
@@ -31,19 +27,19 @@ public class Polls extends MainServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static final int MIN_TITLE_LENGTH = 5;
-	
+
 	private static int CHART_WIDTH = 500;
-	
+
 	public static final int MAX_TITLE_LENGTH = 40;
-	
+
 	private static final int MAX_QUESTIONS = 10;
-	
+
 	public static final int MAX_QUESTION_LENGTH = 65;
 
 	public static final int MIN_TEXT_LENGTH = 5;
 
 	public static final int MAX_TEXT_LENGTH = 1000;
-	
+
 	private Color[] pieSliceColors = new Color[] {
 			new Color(248, 215, 83),
 			new Color(92, 151, 70),
@@ -53,13 +49,13 @@ public class Polls extends MainServlet {
 			new Color(116, 121, 111),
 			new Color(196, 56, 79)
 		};
-	
+
 	@Action
 	@Override
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return getByPage(req, res);
 	}
-	
+
 	/**
 	 * I polls di questa pagina (Dimensione PAGE_SIZE) in ordine di data
 	 * @param req
@@ -69,13 +65,13 @@ public class Polls extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String getByPage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		PollsDTO polls = getPersistence().getPollsByDate(PAGE_SIZE, getPageNr(req));
+		PollsDTO polls = pollsDAO.getPollsByDate(PAGE_SIZE, getPageNr(req));
 		req.setAttribute("polls", polls.getPolls());
 		req.setAttribute("totalSize", polls.getMaxNrOfPolls()); // TODO
 		setWebsiteTitlePrefix(req, "Sondaggi");
 		return "polls.jsp";
 	}
-	
+
 	/**
 	 * I polls di questa pagina (Dimensione PAGE_SIZE) in ordine di ultimo voto
 	 * @param req
@@ -85,13 +81,13 @@ public class Polls extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String getByLastVote(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		PollsDTO polls = getPersistence().getPollsByLastVote(PAGE_SIZE, getPageNr(req));
+		PollsDTO polls = pollsDAO.getPollsByLastVote(PAGE_SIZE, getPageNr(req));
 		req.setAttribute("polls", polls.getPolls());
 		req.setAttribute("totalSize", polls.getMaxNrOfPolls()); // TODO
 		setWebsiteTitlePrefix(req, "Sondaggi");
 		return "polls.jsp";
 	}
-	
+
 	/**
 	 * Vai alla pagina per creare un nuovo poll
 	 */
@@ -103,10 +99,10 @@ public class Polls extends MainServlet {
 			return getByPage(req, res);
 		}
 		req.setAttribute("questions", getBaseQuestions());
-		
+
 		return "newPoll.jsp";
 	}
-	
+
 	/**
 	 * Inserisci il poll
 	 */
@@ -117,7 +113,7 @@ public class Polls extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.error("No registrato ? No sondaggio !"));
 			return getByPage(req, res);
 		}
-		
+
 		// validazione
 		boolean isInError = false;
 		String title = req.getParameter("title");
@@ -158,7 +154,7 @@ public class Polls extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.error("Non piu' di 10 domande, pliiis !"));
 			isInError = true;
 		}
-		
+
 		if (isInError) {
 			req.setAttribute("title", title);
 			req.setAttribute("text", text);
@@ -171,9 +167,9 @@ public class Polls extends MainServlet {
 		pollDTO.setTitle(title);
 		pollDTO.setText(text);
 		pollDTO.setPollQuestions(questions);
-		
-		long pollId = getPersistence().createPoll(pollDTO);
-		
+
+		long pollId = pollsDAO.createPoll(pollDTO);
+
 		// comunichiamo al mondo l'esistenza di un nuovo poll =) !
 		MessageDTO msg = new MessageDTO();
 		msg.setDate(new Date());
@@ -185,8 +181,8 @@ public class Polls extends MainServlet {
 		msgText.append("Polls?action=getPollContent&pollId=").append(pollId);
 		msgText.append("]qui[/url] per visualizzarlo");
 		msg.setText(msgText.toString());
-		getPersistence().insertMessage(msg);
-		
+		messagesDAO.insertMessage(msg);
+
 		return getByPage(req, res);
 	}
 
@@ -195,33 +191,33 @@ public class Polls extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String getChart(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		
+
 		long pollId = Long.parseLong(req.getParameter("pollId"));
-		PollDTO poll = getPersistence().getPoll(pollId);
-		
+		PollDTO poll = pollsDAO.getPoll(pollId);
+
 		DefaultPieDataset dataset = new DefaultPieDataset();
 		for (PollQuestion q : poll.getPollQuestions()) {
 			if (q.getVotes() != 0) {
 				dataset.setValue(q.getText(), q.getVotes());
 			}
 		}
-		
+
 		JFreeChart chart = ChartFactory.createPieChart3D(null, dataset, true, false, false);
 		PiePlot3D plot = (PiePlot3D) chart.getPlot();
-        plot.setForegroundAlpha(0.60f);
-        plot.setCircular(true);
-        plot.setBackgroundPaint(new Color(214, 214, 214)); // #D6D6D6
-        plot.setOutlinePaint(new Color(169, 169, 169)); // #A9A9A9
-        plot.setLabelGenerator(new StandardPieSectionLabelGenerator("Voti: {1} ({2})", NumberFormat.getNumberInstance(), NumberFormat.getPercentInstance()));
-        
-        // renderizza con i colori custom
-        @SuppressWarnings("unchecked")
+		plot.setForegroundAlpha(0.60f);
+		plot.setCircular(true);
+		plot.setBackgroundPaint(new Color(214, 214, 214)); // #D6D6D6
+		plot.setOutlinePaint(new Color(169, 169, 169)); // #A9A9A9
+		plot.setLabelGenerator(new StandardPieSectionLabelGenerator("Voti: {1} ({2})", NumberFormat.getNumberInstance(), NumberFormat.getPercentInstance()));
+
+		// renderizza con i colori custom
+		@SuppressWarnings("unchecked")
 		List<Comparable<?>> datasetKeys = dataset.getKeys();
-        for (int i = 0; i < datasetKeys.size(); i++) {
-        	plot.setSectionPaint(datasetKeys.get(i), pieSliceColors[(i % pieSliceColors.length)]);
-        }
-        
-        // write chart
+		for (int i = 0; i < datasetKeys.size(); i++) {
+			plot.setSectionPaint(datasetKeys.get(i), pieSliceColors[(i % pieSliceColors.length)]);
+		}
+
+		// write chart
 		res.setContentType("image/png");
 		res.setHeader("Cache-Control", "no-cache");
 		res.setHeader("Pragma", "no-cache");
@@ -231,20 +227,20 @@ public class Polls extends MainServlet {
 
 		return null;
 	}
-	
+
 	/**
 	 * Ritorna il contenuto del poll
 	 */
 	@Action(method=Method.GET)
 	String getPollContent(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		long pollId = Long.parseLong(req.getParameter("pollId"));
-		PollDTO poll = getPersistence().getPoll(pollId);
+		PollDTO poll = pollsDAO.getPoll(pollId);
 		req.setAttribute("poll", poll);
-		
+
 		// sanitized pollText
 		String pollText = StringEscapeUtils.escapeXml(poll.getText()).replaceAll("\n", "<br/>");
 		req.setAttribute("pollText", pollText);
-		
+
 		// can vote ?
 		AuthorDTO author = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		boolean canVote = true;
@@ -262,33 +258,33 @@ public class Polls extends MainServlet {
 
 		return "pollContent.jsp";
 	}
-	
+
 	/**
 	 * Rsipondi al poll
 	 */
 	@Action(method=Method.POST)
 	String answerPoll(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		
+
 		AuthorDTO author = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (author == null || !author.isValid()) {
 			setNavigationMessage(req, NavigationMessage.error("No registrato ? No sondaggio !"));
 			return getPollContent(req, res);
 		}
-		
+
 		long pollId = Long.parseLong(req.getParameter("pollId"));
 		int pollSequence = Integer.parseInt(req.getParameter("pollSequence"));
-		
+
 		PollQuestion pollQuestion = new PollQuestion();
 		pollQuestion.setPollId(pollId);
 		pollQuestion.setSequence(pollSequence);
-		
-		if (!getPersistence().updatePollQuestion(pollQuestion, author)) {
+
+		if (!pollsDAO.updatePollQuestion(pollQuestion, author)) {
 			setNavigationMessage(req, NavigationMessage.error("Un troll, un voto !"));
 		}
-		
+
 		return getPollContent(req, res);
 	}
-	
+
 	private List<PollQuestion> getBaseQuestions() {
 		// almeno due domande di default
 		List<PollQuestion> questions = new ArrayList<PollQuestion>(2);
@@ -296,5 +292,5 @@ public class Polls extends MainServlet {
 		questions.add(new PollQuestion());
 		return questions;
 	}
-	
+
 }

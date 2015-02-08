@@ -1,18 +1,14 @@
 package com.forumdeitroll.test.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.MessageDTO;
+import com.forumdeitroll.persistence.MessagesDTO;
+import org.junit.Test;
 
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
-
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.MessagesDTO;
+import static org.junit.Assert.*;
 
 public class MessagesTest extends BaseTest {
 
@@ -29,8 +25,8 @@ public class MessagesTest extends BaseTest {
 		newMsg.setForum("");
 		newMsg.setSubject("Test new message");
 		newMsg.setText("Simple text");
-		int nrOfMessages = persistence.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
-		MessageDTO res = persistence.insertMessage(newMsg);
+		int nrOfMessages = messagesDAO.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
+		MessageDTO res = messagesDAO.insertMessage(newMsg);
 		assertNotNull(res.getAuthor());
 		assertEquals(author.getNick(), res.getAuthor().getNick());
 		assertEquals(now, res.getDate());
@@ -44,7 +40,7 @@ public class MessagesTest extends BaseTest {
 		assertEquals(newMsg.getRank(), res.getRank());
 		assertNull(res.getTags());
 		assertTrue(res.isVisible());
-		int nrOfMessagesAfter = persistence.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
+		int nrOfMessagesAfter = messagesDAO.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
 		assertEquals(nrOfMessages + 1, nrOfMessagesAfter);
 
 		now = new Date();
@@ -53,8 +49,8 @@ public class MessagesTest extends BaseTest {
 		editMsg.setSubject("Test new message: Edited");
 		editMsg.setText("Simple text: Edit");
 		editMsg.setThreadId(res.getThreadId());
-		nrOfMessages = persistence.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
-		res = persistence.insertMessage(editMsg);
+		nrOfMessages = messagesDAO.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
+		res = messagesDAO.insertMessage(editMsg);
 		assertNotNull(res.getAuthor());
 		assertEquals(author.getNick(), res.getAuthor().getNick());
 		assertEquals(now, editMsg.getDate()); // la data non cambia !
@@ -68,7 +64,7 @@ public class MessagesTest extends BaseTest {
 		assertEquals(editMsg.getRank(), res.getRank());
 		assertNull(res.getTags());
 		assertTrue(res.isVisible());
-		nrOfMessagesAfter = persistence.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
+		nrOfMessagesAfter = messagesDAO.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
 		assertEquals(nrOfMessages, nrOfMessagesAfter);
 
 		now = new Date();
@@ -80,8 +76,8 @@ public class MessagesTest extends BaseTest {
 		replyMsg.setSubject("Re: Test new message");
 		replyMsg.setText("Simple text: A reply");
 		replyMsg.setThreadId(res.getThreadId());
-		nrOfMessages = persistence.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
-		res = persistence.insertMessage(replyMsg);
+		nrOfMessages = messagesDAO.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
+		res = messagesDAO.insertMessage(replyMsg);
 		assertNotNull(res.getAuthor());
 		assertNull(res.getAuthor().getNick());
 		assertEquals(now, res.getDate());
@@ -95,14 +91,14 @@ public class MessagesTest extends BaseTest {
 		assertEquals(replyMsg.getRank(), res.getRank());
 		assertNull(res.getTags());
 		assertTrue(res.isVisible());
-		nrOfMessagesAfter = persistence.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
+		nrOfMessagesAfter = messagesDAO.getMessages("", author.getNick(), 99, 0, null).getMaxNrOfMessages();
 		assertEquals(nrOfMessages + 1, nrOfMessagesAfter);
 
 	}
 
 	@Test
 	public void test_getMessage() throws Exception {
-		MessageDTO msg = persistence.getMessage(7);
+		MessageDTO msg = messagesDAO.getMessage(7);
 		assertNull(msg.getForum());
 		assertNotNull(msg.getAuthor());
 		assertEquals("Sfigato", msg.getAuthor().getNick());
@@ -116,7 +112,7 @@ public class MessagesTest extends BaseTest {
 		assertEquals(7, msg.getThreadId());
 		assertTrue(msg.isVisible());
 
-		msg = persistence.getMessage(5);
+		msg = messagesDAO.getMessage(5);
 		assertEquals("Procura Svizzera", msg.getForum());
 		assertNotNull(msg.getAuthor());
 		assertEquals(null, msg.getAuthor().getNick());
@@ -133,7 +129,7 @@ public class MessagesTest extends BaseTest {
 
 	@Test
 	public void test_getMessagesByThread() throws Exception {
-		List<MessageDTO> msgs = persistence.getMessagesByThread(7);
+		List<MessageDTO> msgs = messagesDAO.getMessagesByThread(7);
 		assertEquals(3, msgs.size());
 
 		MessageDTO msg = msgs.get(0);
@@ -191,13 +187,13 @@ public class MessagesTest extends BaseTest {
 
 	@Test
 	public void test_getMessageTitle() {
-		String title = persistence.getMessageTitle(8);
+		String title = messagesDAO.getMessageTitle(8);
 		assertEquals("Re: Ieri", title);
 	}
 
 	@Test
 	public void test_getMessages() throws Exception {
-		MessagesDTO msgs = persistence.getMessages("Procura Svizzera", null, 99, 0, null);
+		MessagesDTO msgs = messagesDAO.getMessages("Procura Svizzera", null, 99, 0, null);
 		assertNotNull(msgs);
 		assertNotNull(msgs.getMessages());
 		assertEquals(2, msgs.getMessages().size());
@@ -233,7 +229,7 @@ public class MessagesTest extends BaseTest {
 
 	@Test
 	public void test_getMessagesByTag() throws Exception {
-		MessagesDTO msgs = persistence.getMessagesByTag(99, 0, 1, null);
+		MessagesDTO msgs = messagesDAO.getMessagesByTag(99, 0, 1, null);
 		assertNotNull(msgs);
 		assertNotNull(msgs.getMessages());
 		assertEquals(2, msgs.getMessages().size());

@@ -8,7 +8,7 @@ import com.forumdeitroll.persistence.BookmarkDTO;
 import com.forumdeitroll.servlets.Action.Method;
 
 public class Bookmarks extends MainServlet {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -16,15 +16,15 @@ public class Bookmarks extends MainServlet {
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		return list(req, res);
 	}
-	
+
 	@Action(method=Method.GET)
 	String list(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO loggedUser = login(req);
 		if (loggedUser == null || !loggedUser.isValid()) return null;
-		req.setAttribute("bookmarks", getPersistence().getBookmarks(loggedUser));
+		req.setAttribute("bookmarks", bookmarksDAO.getBookmarks(loggedUser));
 		return "bookmarks.jsp";
 	}
-	
+
 	@Action(method=Method.GET)
 	String add(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO loggedUser = login(req);
@@ -33,16 +33,16 @@ public class Bookmarks extends MainServlet {
 		BookmarkDTO bookmark = new BookmarkDTO();
 		bookmark.setNick(loggedUser.getNick());
 		bookmark.setMsgId(msgId);
-		if (getPersistence().existsBookmark(bookmark)) {
+		if ( bookmarksDAO.existsBookmark(bookmark)) {
 			setNavigationMessage(req, NavigationMessage.warn("Il messaggio &egrave; gi&agrave; tra i tuoi segnalibri."));
 			req.setAttribute("highlight", msgId);
 		} else {
 			req.setAttribute("msgId", msgId);
-			req.setAttribute("subject", getPersistence().getMessage(msgId).getSubject());	
+			req.setAttribute("subject",  messagesDAO.getMessage(msgId).getSubject());
 		}
 		return list(req, res);
 	}
-	
+
 	@Action(method=Method.POST)
 	String confirmAdd(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO loggedUser = login(req);
@@ -56,10 +56,10 @@ public class Bookmarks extends MainServlet {
 			subject.length() > Messages.MAX_SUBJECT_LENGTH
 			? subject.substring(0, Messages.MAX_SUBJECT_LENGTH)
 			: subject);
-		getPersistence().addBookmark(bookmark);
+		bookmarksDAO.addBookmark(bookmark);
 		return list(req, res);
 	}
-	
+
 	@Action(method=Method.POST)
 	String delete(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO loggedUser = login(req);
@@ -68,10 +68,10 @@ public class Bookmarks extends MainServlet {
 		BookmarkDTO bookmark = new BookmarkDTO();
 		bookmark.setNick(loggedUser.getNick());
 		bookmark.setMsgId(Long.parseLong(msgId));
-		getPersistence().deleteBookmark(bookmark);
+		bookmarksDAO.deleteBookmark(bookmark);
 		return list(req, res);
 	}
-	
+
 	@Action(method=Method.POST)
 	String edit(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO loggedUser = login(req);
@@ -85,7 +85,7 @@ public class Bookmarks extends MainServlet {
 				subject.length() > Messages.MAX_SUBJECT_LENGTH
 				? subject.substring(0, Messages.MAX_SUBJECT_LENGTH)
 				: subject);
-		getPersistence().editBookmark(bookmark);
+		bookmarksDAO.editBookmark(bookmark);
 		return list(req,res);
 	}
 }

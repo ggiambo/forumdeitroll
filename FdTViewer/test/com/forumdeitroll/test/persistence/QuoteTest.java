@@ -1,16 +1,15 @@
 package com.forumdeitroll.test.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.QuoteDTO;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.junit.Test;
-
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.QuoteDTO;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class QuoteTest extends BaseTest {
 
@@ -18,7 +17,7 @@ public class QuoteTest extends BaseTest {
 	public void test_getQuotes() {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("Sfigato");
-		List<QuoteDTO> res = persistence.getQuotes(author);
+		List<QuoteDTO> res = quotesDAO.getQuotes(author);
 
 		assertNotNull(res);
 		assertEquals(2, res.size());
@@ -37,11 +36,10 @@ public class QuoteTest extends BaseTest {
 
 	@Test
 	public void test_getAllQuotes() {
-		List<QuoteDTO> res = persistence.getAllQuotes();
+		List<QuoteDTO> res = quotesDAO.getAllQuotes();
 
 		// sort by id
 		Collections.sort(res, new Comparator<QuoteDTO>() {
-			@Override
 			public int compare(QuoteDTO q1, QuoteDTO q2) {
 				double delta = q1.getId() - q2.getId();
 				return (int) delta;
@@ -77,9 +75,9 @@ public class QuoteTest extends BaseTest {
 		newQuote.setContent("A new funny quote");
 		newQuote.setNick(author.getNick());
 
-		persistence.insertUpdateQuote(newQuote);
+		quotesDAO.insertUpdateQuote(newQuote);
 
-		List<QuoteDTO> res = persistence.getQuotes(author);
+		List<QuoteDTO> res = quotesDAO.getQuotes(author);
 
 		assertNotNull(res);
 		assertEquals(3, res.size());
@@ -112,8 +110,8 @@ public class QuoteTest extends BaseTest {
 		existingQuote.setId(2);
 		existingQuote.setNick(author.getNick());
 
-		persistence.removeQuote(existingQuote);
-		List<QuoteDTO> res = persistence.getQuotes(author);
+		quotesDAO.removeQuote(existingQuote);
+		List<QuoteDTO> res = quotesDAO.getQuotes(author);
 
 		assertNotNull(res);
 		assertEquals(1, res.size());

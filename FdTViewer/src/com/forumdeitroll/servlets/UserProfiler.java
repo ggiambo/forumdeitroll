@@ -31,7 +31,7 @@ public class UserProfiler extends MainServlet {
 		super.init(config);
 		profiler.isProfilerEnabled =
 				! "checked".equals(
-					getPersistence()
+						miscDAO
 						.getSysinfoValue(Admin.ADMIN_PREF_DISABLE_PROFILER));
 	}
 

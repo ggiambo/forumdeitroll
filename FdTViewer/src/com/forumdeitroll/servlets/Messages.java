@@ -26,12 +26,7 @@ import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.IPersistence;
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.MessagesDTO;
-import com.forumdeitroll.persistence.QuoteDTO;
-import com.forumdeitroll.persistence.TagDTO;
+import com.forumdeitroll.persistence.*;
 import com.forumdeitroll.profiler.UserProfile;
 import com.forumdeitroll.profiler.UserProfiler;
 import com.forumdeitroll.servlets.Action.Method;
@@ -40,6 +35,21 @@ import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
@@ -73,7 +83,7 @@ public class Messages extends MainServlet {
 	public void doAfter(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO author = (AuthorDTO) req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (author != null) {
-			req.setAttribute("notifications", getPersistence().getNotifications(null, author.getNick()));
+			req.setAttribute("notifications", miscDAO.getNotifications(null, author.getNick()));
 		}
 	}
 
@@ -104,7 +114,7 @@ public class Messages extends MainServlet {
 		addSpecificParam(req, "forum", forum);
 		setWebsiteTitlePrefix(req, "Messaggi di " + author);
 		setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + author + "</i>"));
-		MessagesDTO messages = getPersistence().getMessages(forum, author, PAGE_SIZE, getPageNr(req), hiddenForums(req));
+		MessagesDTO messages = messagesDAO.getMessages(forum, author, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
@@ -127,7 +137,7 @@ public class Messages extends MainServlet {
 
 		addSpecificParam(req, "forum", forum);
 		setNavigationMessage(req, NavigationMessage.info("Cronologia messaggi"));
-		MessagesDTO messages = getPersistence().getMessages(forum, null, PAGE_SIZE, getPageNr(req), null);
+		MessagesDTO messages = messagesDAO.getMessages(forum, null, PAGE_SIZE, getPageNr(req), null);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
@@ -147,7 +157,7 @@ public class Messages extends MainServlet {
 		Long msgId = Long.parseLong(req.getParameter("msgId"));
 		setWebsiteTitlePrefix(req, "Singolo messaggio");
 		List<MessageDTO> messages = new ArrayList<MessageDTO>();
-		messages.add(getPersistence().getMessage(msgId));
+		messages.add(messagesDAO.getMessage(msgId));
 		req.setAttribute("messages", messages);
 		req.setAttribute("resultSize", messages.size());
 		if (req.getParameter("stripped") == null) {
@@ -162,7 +172,7 @@ public class Messages extends MainServlet {
 			// remove this notification once clicked
 			try {
 				long id = Long.parseLong(notificationId);
-				getPersistence().removeNotification(fromNick, loggedUser.getNick(), id);
+				miscDAO.removeNotification(fromNick, loggedUser.getNick(), id);
 			} catch (NumberFormatException e) {
 				// Ma che c'� frega ma che ce 'mporta ...
 			}
@@ -217,7 +227,7 @@ public class Messages extends MainServlet {
 		setWebsiteTitlePrefix(req, "Nuovo messaggi");
 		// faccine - ordinate per key
 		final String ip = IPMemStorage.requestToIP(req);
-		if (getPersistence().blockTorExitNodes()) {
+		if (adminDAO.blockTorExitNodes()) {
 			if (CacheTorExitNodes.check(ip)) {
 				req.setAttribute("warnTorUser", "true");
 			}
@@ -296,7 +306,7 @@ public class Messages extends MainServlet {
 		long parentId = Long.parseLong(req.getParameter("parentId"));
 		req.setAttribute("parentId", parentId);
 		MessageDTO newMsg = new MessageDTO();
-		MessageDTO msgDTO = getPersistence().getMessage(parentId);
+		MessageDTO msgDTO = messagesDAO.getMessage(parentId);
 		newMsg.setText(getReplyText(msgDTO.getText(), type, msgDTO.getAuthor().getNick()));
 		newMsg.setForum(msgDTO.getForum());
 		// setta il subject: aggiungi "Re: " e se necessario tronca a 40 caratteri
@@ -314,7 +324,6 @@ public class Messages extends MainServlet {
 	/**
 	 * Ritorna una stringa diversa da null da mostrare come messaggio d'errore all'utente
 	 * @param req
-	 * @param res
 	 * @return
 	 * @throws Exception
 	 */
@@ -348,12 +357,12 @@ public class Messages extends MainServlet {
 
 		// qualcuno prova a creare un forum ;) ?
 		String forum = req.getParameter("forum");
-		if (!StringUtils.isEmpty(forum) && !getPersistence().getForums().contains(forum)) {
+		if (!StringUtils.isEmpty(forum) && !miscDAO.getForums().contains(forum)) {
 			return "Ma che cacchio di forum e' '" + forum + "' ?!?";
 		}
 
-		if ((forum != null) && forum.equals(IPersistence.FORUM_ASHES)) {
-			return "Postare nel forum " + IPersistence.FORUM_ASHES + " e' vietato e stupido";
+		if ((forum != null) && forum.equals(DAOFactory.FORUM_ASHES)) {
+			return "Postare nel forum " + DAOFactory.FORUM_ASHES + " e' vietato e stupido";
 		}
 
 		return null;
@@ -371,7 +380,7 @@ public class Messages extends MainServlet {
 		// check se l'uente loggato corrisponde a chi ha scritto il messaggio
 		AuthorDTO user = login(req);
 		String msgId = req.getParameter("msgId");
-		MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
+		MessageDTO msg = messagesDAO.getMessage(Long.parseLong(msgId));
 		if (!user.isValid() || !user.getNick().equals(msg.getAuthor().getNick())) {
 			return getMessages(req, res, NavigationMessage.error("Non puoi editare un messaggio non tuo !"));
 		}
@@ -417,7 +426,7 @@ public class Messages extends MainServlet {
 	@Action(method=Method.GET)
 	String getSingleMessageContent(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String msgId = req.getParameter("msgId");
-		MessageDTO msg = getPersistence().getMessage(Long.parseLong(msgId));
+		MessageDTO msg = messagesDAO.getMessage(Long.parseLong(msgId));
 		// crea la preview del messaggio
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
@@ -476,7 +485,7 @@ public class Messages extends MainServlet {
 			// utente loggato che posta come anonimo
 			return new AuthorDTO(loggedUser);
 		} else if (StringUtils.isNotEmpty(nick) && StringUtils.isNotEmpty(pass)) {
-			AuthorDTO sockpuppet = getPersistence().getAuthor(nick);
+			AuthorDTO sockpuppet = messagesDAO.getAuthor(nick);
 			if (PasswordUtils.hasUserPassword(sockpuppet, pass)) {
 				// posta come altro utente
 				return sockpuppet;
@@ -525,7 +534,7 @@ public class Messages extends MainServlet {
 
 		// check se ANOnimo usa TOR
 		if (!author.isValid()) {
-			if (getPersistence().blockTorExitNodes()) {
+			if (adminDAO.blockTorExitNodes()) {
 				if (CacheTorExitNodes.check(ip)) {
 					return true;
 				}
@@ -601,7 +610,7 @@ public class Messages extends MainServlet {
 			long id = Long.parseLong(req.getParameter("id"));
 			if (id > -1) {
 				// modify
-				msg = getPersistence().getMessage(id);
+				msg = messagesDAO.getMessage(id);
 				if (msg.getAuthor() == null || !msg.getAuthor().getNick().equals(author.getNick())) {
 					insertMessageAjaxFail(res, "Imbroglione, non puoi modificare questo messaggio !");
 					return null;
@@ -611,13 +620,13 @@ public class Messages extends MainServlet {
 				msg.setSubject(InputSanitizer.sanitizeSubject(req.getParameter("subject")));
 			} else {
 				// reply
-				MessageDTO replyMsg = getPersistence().getMessage(parentId);
+				MessageDTO replyMsg = messagesDAO.getMessage(parentId);
 				msg.setForum(replyMsg.getForum());
 				msg.setThreadId(replyMsg.getThreadId());
 				// incrementa il numero di messaggi scritti
 				if (author.isValid()) {
 					author.setMessages(author.getMessages() + 1);
-					getPersistence().updateAuthor(author);
+					authorsDAO.updateAuthor(author);
 				}
 			}
 
@@ -633,17 +642,17 @@ public class Messages extends MainServlet {
 				forum = InputSanitizer.sanitizeForum(forum);
 			}
 			if (bannato) {
-				forum = IPersistence.FORUM_ASHES;
+				forum = DAOFactory.FORUM_ASHES;
 			}
 			msg.setForum(forum);
 			msg.setThreadId(-1);
 			// incrementa il numero di messaggi scritti
 			if (author.isValid()) {
 				author.setMessages(author.getMessages() + 1);
-				getPersistence().updateAuthor(author);
+				authorsDAO.updateAuthor(author);
 			}
 		}
-		msg = getPersistence().insertMessage(msg);
+		msg = messagesDAO.insertMessage(msg);
 		String m_id = Long.toString(msg.getId());
 		IPMemStorage.store(req, m_id, author);
 		try {
@@ -718,7 +727,7 @@ public class Messages extends MainServlet {
 	}
 
 	protected void restoreTitleFromParent(final MessageDTO msg, final long parentId) {
-		final MessageDTO parent = getPersistence().getMessage(parentId);
+		final MessageDTO parent = messagesDAO.getMessage(parentId);
 		if (parent == null) return;
 		msg.setSubject(parent.getSubjectReal());
 	}
@@ -732,7 +741,7 @@ public class Messages extends MainServlet {
 		msg.setSubject(shameTitle);
 		msg.setForum("FreeBan");
 		msg.setThreadId(-1);
-		getPersistence().insertMessage(msg);
+		messagesDAO.insertMessage(msg);
 	}
 
 	/**
@@ -744,7 +753,7 @@ public class Messages extends MainServlet {
 		if (loggedUser == null) {
 			return getMessages(req, res, NavigationMessage.error("Non furmigare !"));
 		}
-		boolean isAdmin = "yes".equals(getPersistence().getPreferences(loggedUser).get("pedonizeThread"));
+		boolean isAdmin = "yes".equals(messagesDAO.getPreferences(loggedUser).get("pedonizeThread"));
 		if (! isAdmin) {
 			return getMessages(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
 		}
@@ -754,11 +763,11 @@ public class Messages extends MainServlet {
 		}
 
 		final long rootMessageId = Long.parseLong(req.getParameter("rootMessageId"));
-
-		getPersistence().moveThreadTree(rootMessageId, IPersistence.FORUM_PROC);
+		MessageDTO rootMessage = messagesDAO.getMessage(rootMessageId);
+		adminDAO.moveThreadTree(rootMessage, DAOFactory.FORUM_PROC);
 
 		{ // moderator shaming block
-			final MessageDTO movedMessage = getPersistence().getMessage(rootMessageId);
+			final MessageDTO movedMessage = messagesDAO.getMessage(rootMessageId);
 			StringBuilder msg = new StringBuilder(loggedUser.getNick());
 			msg.append(" ha spostato in procura questo [url=");
 			msg.append("Threads?action=getByThread&threadId=").append(rootMessageId);
@@ -778,7 +787,7 @@ public class Messages extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String hideMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
+		return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
 	}
 
 	/**
@@ -786,26 +795,26 @@ public class Messages extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String restoreHiddenMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 1);
+		return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 1);
 	}
 
 	private String restoreOrHideMessage(HttpServletRequest req, HttpServletResponse res, long msgId, int visible)  throws Exception {
-    	AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
-    	if (loggedUser == null) {
-    		return getMessages(req, res, NavigationMessage.error("Non furmigare !"));
-    	}
-    	boolean isAdmin = "yes".equals(getPersistence().getPreferences(loggedUser).get("hideMessages"));
-    	if (! isAdmin) {
-    		return getMessages(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
-    	}
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
+		if (loggedUser == null) {
+			return getMessages(req, res, NavigationMessage.error("Non furmigare !"));
+		}
+		boolean isAdmin = "yes".equals(miscDAO.getPreferences(loggedUser).get("hideMessages"));
+		if (! isAdmin) {
+			return getMessages(req, res, NavigationMessage.error("Non furmigare "+loggedUser.getNick()+" !!!"));
+		}
 
-    	if (!antiXssOk(req)) {
-    		return getMessages(req, res, NavigationMessage.error("Verifica token fallita"));
-    	}
+		if (!antiXssOk(req)) {
+			return getMessages(req, res, NavigationMessage.error("Verifica token fallita"));
+		}
 
-    	getPersistence().restoreOrHideMessage(msgId, visible);
+		adminDAO.restoreOrHideMessage(msgId, visible);
 
-    	return getMessages(req, res, NavigationMessage.info("Messaggio infernale nascosto agli occhi dei giovini troll."));
+		return getMessages(req, res, NavigationMessage.info("Messaggio infernale nascosto agli occhi dei giovini troll."));
 	}
 
 	/**
@@ -829,11 +838,11 @@ public class Messages extends MainServlet {
 			insertMessageAjaxFail(res, "Verifica token fallita");
 			return null;
 		}
-    	AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
-    	if (loggedUser == null) {
-    		insertMessageAjaxFail(res, "Non furmigare !");
-    		return null;
-    	}
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
+		if (loggedUser == null) {
+			insertMessageAjaxFail(res, "Non furmigare !");
+			return null;
+		}
 		String id = req.getParameter("msgId");
 		if (StringUtils.isEmpty(id)) {
 			insertMessageAjaxFail(res, "Nessun messaggio selezionato");
@@ -851,7 +860,7 @@ public class Messages extends MainServlet {
 			insertMessageAjaxFail(res, "+1 o -1, deciditi cribbio !");
 			return null;
 		}
-		int voteValue = getPersistence().like(msgId, loggedUser.getNick(), Boolean.parseBoolean(upvote));
+		int voteValue = miscDAO.like(msgId, loggedUser.getNick(), Boolean.parseBoolean(upvote));
 		if (voteValue != 0) {
 			JsonWriter writer = new JsonWriter(res.getWriter());
 			writer.beginObject();
@@ -878,7 +887,7 @@ public class Messages extends MainServlet {
 			tag.setM_id(msgId);
 			tag.setAuthor(login(req).getNick());
 			tag.setValue(value);
-			tag = getPersistence().addTag(tag);
+			tag = miscDAO.addTag(tag);
 			JsonWriter writer = new JsonWriter(res.getWriter());
 			writer.beginObject();
 			writer.name("resultCode").value("OK");
@@ -908,7 +917,7 @@ public class Messages extends MainServlet {
 			tag.setT_id(Long.parseLong(req.getParameter("t_id")));
 			tag.setM_id(Long.parseLong(req.getParameter("m_id")));
 			boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
-			getPersistence().deleTag(tag, isAdmin);
+			miscDAO.deleTag(tag, isAdmin);
 			JsonWriter writer = new JsonWriter(res.getWriter());
 			writer.beginObject();
 			writer.name("resultCode").value("OK");
@@ -930,8 +939,8 @@ public class Messages extends MainServlet {
 	@Action(method=Method.GET)
 	String getMessagesByTag(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		long t_id = Long.parseLong(req.getParameter("t_id"));
-		MessagesDTO messages = getPersistence().getMessagesByTag(PAGE_SIZE, getPageNr(req), t_id, hiddenForums(req));
-		getPersistence().getTags(messages);
+		MessagesDTO messages = messagesDAO.getMessagesByTag(PAGE_SIZE, getPageNr(req), t_id, hiddenForums(req));
+		miscDAO.getTags(messages);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
@@ -942,8 +951,8 @@ public class Messages extends MainServlet {
 
 	private String getMessages(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
 		String forum = req.getParameter("forum");
-		MessagesDTO messages = getPersistence().getMessages(forum, null, PAGE_SIZE, getPageNr(req), hiddenForums(req));
-		getPersistence().getTags(messages);
+		MessagesDTO messages = messagesDAO.getMessages(forum, null, PAGE_SIZE, getPageNr(req), hiddenForums(req));
+		miscDAO.getTags(messages);
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
@@ -968,7 +977,7 @@ public class Messages extends MainServlet {
 	String mobileComposer(HttpServletRequest req, HttpServletResponse res) {
 		setWebsiteTitlePrefix(req, "Nuovo messaggio");
 		final String ip = IPMemStorage.requestToIP(req);
-		if (getPersistence().blockTorExitNodes()) {
+		if (adminDAO.blockTorExitNodes()) {
 			if (CacheTorExitNodes.check(ip)) {
 				req.setAttribute("warnTorUser", "true");
 			}
@@ -980,7 +989,7 @@ public class Messages extends MainServlet {
 			long messageId = Long.parseLong(sMessageId);
 			long replyToId = Long.parseLong(sReplyToId);
 			setWebsiteTitlePrefix(req, "Modifica messaggio");
-			MessageDTO msg = getPersistence().getMessage(messageId);
+			MessageDTO msg = messagesDAO.getMessage(messageId);
 			if (msg.getAuthor().getNick().equals(login(req).getNick()) && !login(req).isBanned()) {
 				req.setAttribute("messageId", sMessageId);
 				req.setAttribute("replyToId", sReplyToId);
@@ -992,7 +1001,7 @@ public class Messages extends MainServlet {
 			}
 		} else if (sReplyToId != null) { // risposta a un messaggio
 			long replyToId = Long.parseLong(sReplyToId);
-			MessageDTO parent = getPersistence().getMessage(replyToId);
+			MessageDTO parent = messagesDAO.getMessage(replyToId);
 			setWebsiteTitlePrefix(req, "Rispondi a " + parent.getAuthor().getNick());
 			if (StringUtils.isEmpty(parent.getAuthor().getNick())) {
 				setWebsiteTitlePrefix(req, "Rispondi ad un anonimo");
@@ -1005,7 +1014,7 @@ public class Messages extends MainServlet {
 		} else {
 			req.setAttribute("messageId", "-1");
 			req.setAttribute("replyToId", "-1");
-			req.setAttribute("forums", getPersistence().getForums());
+			req.setAttribute("forums", miscDAO.getForums());
 		}
 		req.setAttribute("username", login(req).getNick());
 		return "composer.jsp";

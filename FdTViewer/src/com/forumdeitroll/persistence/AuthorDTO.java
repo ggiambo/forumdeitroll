@@ -24,7 +24,7 @@ public class AuthorDTO implements Serializable {
 	private Map<String, String> preferences = new ConcurrentHashMap<String, String>();
 
 	protected final AuthorDTO shadowAuthor;
-	
+
 	private byte[] signatureImage = null;
 
 	public byte[] getSignatureImage() {
@@ -33,7 +33,7 @@ public class AuthorDTO implements Serializable {
 	public void setSignatureImage(byte[] signatureImage) {
 		this.signatureImage = signatureImage;
 	}
-	
+
 	public AuthorDTO(final AuthorDTO shadowAuthor) {
 		this.shadowAuthor = shadowAuthor;
 	}

@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.concurrent.ConcurrentHashMap;
-
 import com.forumdeitroll.markup.util.Chars;
 import com.forumdeitroll.markup.util.EntityEscaper;
 import com.forumdeitroll.markup.util.FaviconWhiteList;
 import com.forumdeitroll.markup.util.Images;
 import com.forumdeitroll.markup.util.Links;
 import com.forumdeitroll.markup.util.YouTube;
-import com.forumdeitroll.persistence.PersistenceFactory;
+import com.forumdeitroll.persistence.DAOFactory;
 
 class Rendering {
 	static final int MAX_DESC_LENGTH = 50;
@@ -323,7 +322,7 @@ class Rendering {
 			return titleCache.get(id);
 		}
 		try {
-			String title = PersistenceFactory.getInstance().getMessageTitle(id);
+			String title = DAOFactory.getMessagesDAO().getMessageTitle(id);
 			titleCache.put(id, title);
 			return title;
 		} catch (Exception e) {

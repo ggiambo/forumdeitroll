@@ -1,21 +1,5 @@
 package com.forumdeitroll.servlets;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.lang3.StringUtils;
-
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.markup.InputSanitizer;
@@ -26,6 +10,20 @@ import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.Ratelimiter;
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 public class User extends MainServlet {
 
@@ -52,8 +50,8 @@ public class User extends MainServlet {
 	public static final String PREF_LARGE_STYLE = "largeStyle";
 	public static final String PREF_THEME = "theme";
 	public static final String PREF_HIDE_FAKE_ADS = "hideFakeAds";
-    public static final String PREF_SOFTV = "softv";
-    public static final String PREF_USER_TITLE = "userTitle";
+	public static final String PREF_SOFTV = "softv";
+	public static final String PREF_USER_TITLE = "userTitle";
 
 	public static final List<String> PREF_THEMES = Arrays.asList("Classico", "Scuro", "Flat");
 
@@ -61,10 +59,10 @@ public class User extends MainServlet {
 
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
-    public static final int LOGIN_TIME_LIMIT = 3 * 60 * 1000;
-    public static final int LOGIN_NUMBER_LIMIT = 5;
+	public static final int LOGIN_TIME_LIMIT = 3 * 60 * 1000;
+	public static final int LOGIN_NUMBER_LIMIT = 5;
 
-    protected final Ratelimiter<String> loginRatelimiter = new Ratelimiter<String>(LOGIN_TIME_LIMIT, LOGIN_NUMBER_LIMIT);
+	protected final Ratelimiter<String> loginRatelimiter = new Ratelimiter<String>(LOGIN_TIME_LIMIT, LOGIN_NUMBER_LIMIT);
 
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
@@ -81,7 +79,7 @@ public class User extends MainServlet {
 		AuthorDTO loggedUser = login(req);
 		setWebsiteTitlePrefix(req, "");
 		if (loggedUser != null && loggedUser.isValid()) {
-			req.setAttribute(PREF_HIDDEN_FORUMS, getPersistence().getHiddenForums(loggedUser));
+			req.setAttribute(PREF_HIDDEN_FORUMS, authorsDAO.getHiddenForums(loggedUser));
 			if (isMobileView(req)) {
 				res.setHeader("Location", "Messages?action=getMessages");
 				res.sendError(HttpServletResponse.SC_TEMPORARY_REDIRECT);
@@ -144,7 +142,7 @@ public class User extends MainServlet {
 			return "user.jsp";
 		}
 
-		if (!getPersistence().updateAuthorPassword(loggedUser, pass1)) {
+		if (!authorsDAO.updateAuthorPassword(loggedUser, pass1)) {
 			setNavigationMessage(req, NavigationMessage.error("Errore in User.updatePass / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :("));
 			return "user.jsp";
 		}
@@ -199,7 +197,7 @@ public class User extends MainServlet {
 			}
 			// modifica loggedUser
 			loggedUser.setAvatar(avatar.get());
-			getPersistence().updateAuthor(loggedUser);
+			authorsDAO.updateAuthor(loggedUser);
 		} else {
 			setNavigationMessage(req, NavigationMessage.warn("Nessun Avatar ?"));
 			return "user.jsp";
@@ -233,7 +231,7 @@ public class User extends MainServlet {
 	 */
 	@Action
 	String registerNewUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		if (getPersistence().blockTorExitNodes()) {
+		if (adminDAO.blockTorExitNodes()) {
 			if (CacheTorExitNodes.check(IPMemStorage.requestToIP(req))) {
 				if (!availableTorRegistrations.available()) {
 					setNavigationMessage(req, NavigationMessage.warn("Iscrizioni tramite TOR sopra il limite orario"));
@@ -261,7 +259,7 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Scegli una password migliore, giovane jedi ..."));
 			return "register.jsp";
 		}
-		AuthorDTO loggedUser = getPersistence().registerUser(nick, pass);
+		AuthorDTO loggedUser = authorsDAO.registerUser(nick, pass);
 		if (!loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick, probabilmente gia' esiste"));
 			return "register.jsp";
@@ -287,7 +285,7 @@ public class User extends MainServlet {
 			return loginAction(req,  res);
 		}
 
-		List<QuoteDTO> list = getPersistence().getQuotes(loggedUser);
+		List<QuoteDTO> list = quotesDAO.getQuotes(loggedUser);
 		int size = list.size();
 		if (size < 5) {
 			for (int i = 0; i < 5 - size; i++) {
@@ -328,7 +326,7 @@ public class User extends MainServlet {
 		quote.setId(quoteId);
 		quote.setNick(loggedUser.getNick());
 
-		getPersistence().insertUpdateQuote(quote);
+		quotesDAO.insertUpdateQuote(quote);
 		return getQuotes(req,  res);
 	}
 
@@ -352,7 +350,7 @@ public class User extends MainServlet {
 		quote.setNick(loggedUser.getNick());
 		quote.setId(quoteId);
 
-		getPersistence().removeQuote(quote);
+		quotesDAO.removeQuote(quote);
 		return getQuotes(req,  res);
 	}
 
@@ -366,9 +364,9 @@ public class User extends MainServlet {
 	@Action
 	String getUserInfo(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String nick = req.getParameter("nick");
-		AuthorDTO author = getPersistence().getAuthor(nick);
+		AuthorDTO author = authorsDAO.getAuthor(nick);
 		req.setAttribute("author", author);
-		req.setAttribute("quotes", getPersistence().getQuotes(author));
+		req.setAttribute("quotes", quotesDAO.getQuotes(author));
 
 		final AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 
@@ -419,7 +417,7 @@ public class User extends MainServlet {
 		final String pass = req.getParameter("pass");
 		final String pass2 = req.getParameter("pass2");
 
-		final AuthorDTO author = getPersistence().getAuthor(nick);
+		final AuthorDTO author = authorsDAO.getAuthor(nick);
 
 		if ((author == null) || !author.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Il nickname è sparito!?"));
@@ -432,7 +430,7 @@ public class User extends MainServlet {
 				return getUserInfo(req,  res);
 			}
 
-			if (!getPersistence().updateAuthorPassword(author, pass)) {
+			if (!authorsDAO.updateAuthorPassword(author, pass)) {
 				setNavigationMessage(req, NavigationMessage.error("Errore in User.editUser / updateAuthorPassword -- molto probabilmente e` colpa di sarrusofono, faglielo sapere -- sempre ammesso che tu riesca a postare sul forum a questo punto :("));
 				return getUserInfo(req,  res);
 			}
@@ -440,9 +438,9 @@ public class User extends MainServlet {
 
 		final String pedonizeThread = req.getParameter("pedonizeThread");
 		if (!StringUtils.isEmpty(pedonizeThread)) {
-			author.setPreferences(getPersistence().setPreference(author, "pedonizeThread", pedonizeThread));
+			author.setPreferences(authorsDAO.setPreference(author, "pedonizeThread", pedonizeThread));
 		} else {
-			author.setPreferences(getPersistence().setPreference(author, "pedonizeThread", ""));
+			author.setPreferences(authorsDAO.setPreference(author, "pedonizeThread", ""));
 		}
 
 		return getUserInfo(req,  res);
@@ -465,14 +463,14 @@ public class User extends MainServlet {
 				PREF_LARGE_STYLE, PREF_HIDE_FAKE_ADS, PREF_SOFTV}) {
 			String value = req.getParameter(key);
 			if (StringUtils.isNotEmpty(value)) {
-				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, "checked"));
+				loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, key, "checked"));
 				if (key.equals(PREF_LARGE_STYLE)) {
-					loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "sidebarStatus", "hide"));
+					loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, "sidebarStatus", "hide"));
 				}
 			} else {
-				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, key, ""));
+				loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, key, ""));
 				if (key.equals(PREF_LARGE_STYLE)) {
-					loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "sidebarStatus", "show"));
+					loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, "sidebarStatus", "show"));
 				}
 			}
 		}
@@ -482,18 +480,18 @@ public class User extends MainServlet {
 		if (hiddenForums != null) {
 			forumsToHide.addAll(Arrays.asList(hiddenForums));
 		}
-		getPersistence().setHiddenForums(loggedUser, forumsToHide);
-		req.setAttribute(PREF_HIDDEN_FORUMS, getPersistence().getHiddenForums(loggedUser));
+		authorsDAO.setHiddenForums(loggedUser, forumsToHide);
+		req.setAttribute(PREF_HIDDEN_FORUMS, authorsDAO.getHiddenForums(loggedUser));
 
 		String theme = req.getParameter(PREF_THEME);
 		if (StringUtils.isNotEmpty(theme)) {
-			loggedUser.setPreferences(getPersistence().setPreference(loggedUser, PREF_THEME, theme));
+			loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, PREF_THEME, theme));
 		}
 
-        String userTitle = req.getParameter(PREF_USER_TITLE);
-        if (userTitle!=null) {
-            loggedUser.setPreferences(getPersistence().setPreference(loggedUser, PREF_USER_TITLE, userTitle));
-        }
+		String userTitle = req.getParameter(PREF_USER_TITLE);
+		if (userTitle!=null) {
+			loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, PREF_USER_TITLE, userTitle));
+		}
 
 		return "user.jsp";
 	}
@@ -513,8 +511,8 @@ public class User extends MainServlet {
 		}
 
 		setWebsiteTitlePrefix(req, "Notifiche");
-		req.setAttribute("notificationsFrom", getPersistence().getNotifications(loggedUser.getNick(), null));
-		req.setAttribute("notificationsTo", getPersistence().getNotifications(null, loggedUser.getNick()));
+		req.setAttribute("notificationsFrom", miscDAO.getNotifications(loggedUser.getNick(), null));
+		req.setAttribute("notificationsTo", miscDAO.getNotifications(null, loggedUser.getNick()));
 
 		return "notifications.jsp";
 	}
@@ -536,7 +534,7 @@ public class User extends MainServlet {
 		setWebsiteTitlePrefix(req, "Notifiche");
 
 		long notificationId = Long.parseLong(req.getParameter("notificationId"));
-		getPersistence().removeNotification(loggedUser.getNick(), null, notificationId);
+		miscDAO.removeNotification(loggedUser.getNick(), null, notificationId);
 
 		return getNotifications(req, res);
 	}
@@ -585,7 +583,7 @@ public class User extends MainServlet {
 			return null;
 		}
 
-		if (getPersistence().getNotifications(loggedUser.getNick(), null).size() > 9) {
+		if (miscDAO.getNotifications(loggedUser.getNick(), null).size() > 9) {
 			writer.beginObject();
 			writer.name("resultCode").value("ERROR");
 			writer.name("content").value("Hai gia' 10 notifiche: Vergognati spammone !!");
@@ -595,7 +593,7 @@ public class User extends MainServlet {
 			return null;
 		}
 
-		getPersistence().createNotification(loggedUser.getNick(), toNick, msgId);
+		miscDAO.createNotification(loggedUser.getNick(), toNick, msgId);
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
 		writer.endObject();
@@ -663,15 +661,15 @@ public class User extends MainServlet {
 			}
 			if (signature_image != null) {
 				loggedUser.setSignatureImage(signature_image);
-				getPersistence().updateAuthor(loggedUser);
-				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "signature", signature));
+				authorsDAO.updateAuthor(loggedUser);
+				loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, "signature", signature));
 			} else {
-				loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "signature", signature));
+				loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, "signature", signature));
 			}
 		} else if ("Elimina".equals(submitBtn)) {
 			loggedUser.setSignatureImage(null);
-			getPersistence().updateAuthor(loggedUser);
-			loggedUser.setPreferences(getPersistence().setPreference(loggedUser, "signature", ""));
+			authorsDAO.updateAuthor(loggedUser);
+			loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, "signature", ""));
 		} else {
 			setNavigationMessage(req, NavigationMessage.error("Nessuna operazione eseguita !"));
 			return "user.jsp";

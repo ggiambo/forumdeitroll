@@ -1,18 +1,14 @@
 package com.forumdeitroll.test.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.BookmarkDTO;
+import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.junit.Test;
-
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.BookmarkDTO;
+import static org.junit.Assert.*;
 
 public class BookmarkTest extends BaseTest {
 
@@ -22,13 +18,12 @@ public class BookmarkTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("Sfigato");
 
-		List<BookmarkDTO> res = persistence.getBookmarks(author);
+		List<BookmarkDTO> res = bookmarksDAO.getBookmarks(author);
 		assertNotNull(res);
 		assertEquals(2, res.size());
 
 		// sort by msgid
 		Collections.sort(res, new Comparator<BookmarkDTO>() {
-			@Override
 			public int compare(BookmarkDTO q1, BookmarkDTO q2) {
 				double delta = q1.getMsgId() - q2.getMsgId();
 				return (int) delta;
@@ -53,12 +48,12 @@ public class BookmarkTest extends BaseTest {
 		BookmarkDTO bookmark = new BookmarkDTO();
 		bookmark.setNick("Sfigato");
 		bookmark.setMsgId(4);
-		assertTrue(persistence.existsBookmark(bookmark));
+		assertTrue(bookmarksDAO.existsBookmark(bookmark));
 
 		bookmark = new BookmarkDTO();
 		bookmark.setNick("Sfigato");
 		bookmark.setMsgId(1);
-		assertFalse(persistence.existsBookmark(bookmark));
+		assertFalse(bookmarksDAO.existsBookmark(bookmark));
 	}
 
 	@Test
@@ -71,15 +66,14 @@ public class BookmarkTest extends BaseTest {
 		newBookmark.setNick(author.getNick());
 		newBookmark.setMsgId(9);
 		newBookmark.setSubject("Reply del reply");
-		persistence.addBookmark(newBookmark);
+		bookmarksDAO.addBookmark(newBookmark);
 
-		List<BookmarkDTO> res = persistence.getBookmarks(author);
+		List<BookmarkDTO> res = bookmarksDAO.getBookmarks(author);
 		assertNotNull(res);
 		assertEquals(2, res.size());
 
 		// sort by msgid
 		Collections.sort(res, new Comparator<BookmarkDTO>() {
-			@Override
 			public int compare(BookmarkDTO q1, BookmarkDTO q2) {
 				double delta = q1.getMsgId() - q2.getMsgId();
 				return (int) delta;
@@ -108,15 +102,14 @@ public class BookmarkTest extends BaseTest {
 		BookmarkDTO removedBookmark = new BookmarkDTO();
 		removedBookmark.setNick(author.getNick());
 		removedBookmark.setMsgId(4);
-		persistence.deleteBookmark(removedBookmark);
+		bookmarksDAO.deleteBookmark(removedBookmark);
 
-		List<BookmarkDTO> res = persistence.getBookmarks(author);
+		List<BookmarkDTO> res = bookmarksDAO.getBookmarks(author);
 		assertNotNull(res);
 		assertEquals(1, res.size());
 
 		// sort by msgid
 		Collections.sort(res, new Comparator<BookmarkDTO>() {
-			@Override
 			public int compare(BookmarkDTO q1, BookmarkDTO q2) {
 				double delta = q1.getMsgId() - q2.getMsgId();
 				return (int) delta;
@@ -141,15 +134,14 @@ public class BookmarkTest extends BaseTest {
 		editedBookmark.setMsgId(4);
 		editedBookmark.setSubject("Nuovo soggetto !!");
 
-		persistence.editBookmark(editedBookmark);
+		bookmarksDAO.editBookmark(editedBookmark);
 
-		List<BookmarkDTO> res = persistence.getBookmarks(author);
+		List<BookmarkDTO> res = bookmarksDAO.getBookmarks(author);
 		assertNotNull(res);
 		assertEquals(2, res.size());
 
 		// sort by msgid
 		Collections.sort(res, new Comparator<BookmarkDTO>() {
-			@Override
 			public int compare(BookmarkDTO q1, BookmarkDTO q2) {
 				double delta = q1.getMsgId() - q2.getMsgId();
 				return (int) delta;

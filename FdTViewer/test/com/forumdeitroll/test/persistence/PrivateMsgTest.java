@@ -1,17 +1,13 @@
 package com.forumdeitroll.test.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
-import org.junit.Test;
-
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
+import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class PrivateMsgTest extends BaseTest {
 
@@ -20,7 +16,7 @@ public class PrivateMsgTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("admin");
 
-		List<PrivateMsgDTO> messages = persistence.getSentPvts(author, 99, 0);
+		List<PrivateMsgDTO> messages = pvtDAO.getSentPvts(author, 99, 0);
 		assertNotNull(messages);
 		assertEquals(1, messages.size());
 
@@ -44,7 +40,7 @@ public class PrivateMsgTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("admin");
 
-		List<PrivateMsgDTO> messages = persistence.getInbox(author, 99, 0);
+		List<PrivateMsgDTO> messages = pvtDAO.getInbox(author, 99, 0);
 
 		assertNotNull(messages);
 		assertEquals(2, messages.size());
@@ -82,7 +78,7 @@ public class PrivateMsgTest extends BaseTest {
 	public void test_getInboxPages() {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("admin");
-		int inboxPages = persistence.getInboxPages(author);
+		int inboxPages = pvtDAO.getInboxPages(author);
 		assertEquals(0, inboxPages);
 	}
 
@@ -90,7 +86,7 @@ public class PrivateMsgTest extends BaseTest {
 	public void test_getOutboxPages() {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("admin");
-		int inboxPages = persistence.getOutboxPages(author);
+		int inboxPages = pvtDAO.getOutboxPages(author);
 		assertEquals(0, inboxPages);
 	}
 
@@ -109,21 +105,21 @@ public class PrivateMsgTest extends BaseTest {
 		privateMsg.setText("Nuovo messaggio");
 		privateMsg.setSubject("Per tutti gli utenti coccolosi (love)");
 
-		persistence.sendAPvtForGreatGoods(author, privateMsg, recipients);
+		pvtDAO.sendAPvtForGreatGoods(author, privateMsg, recipients);
 
-		List<PrivateMsgDTO> messages = persistence.getInbox(author, 99, 0);
+		List<PrivateMsgDTO> messages = pvtDAO.getInbox(author, 99, 0);
 		assertEquals(3, messages.size());
 		long newPvtId = messages.get(0).getId();
-		PrivateMsgDTO newPvt = persistence.getPvtDetails(newPvtId, author);
+		PrivateMsgDTO newPvt = pvtDAO.getPvtDetails(newPvtId, author);
 		assertEquals(privateMsg.getText(), newPvt.getText());
 		assertEquals(privateMsg.getSubject(), newPvt.getSubject());
 
 		author = new AuthorDTO(null);
 		author.setNick("Sfigato");
-		messages = persistence.getInbox(author, 99, 0);
+		messages = pvtDAO.getInbox(author, 99, 0);
 		assertEquals(2, messages.size());
 		newPvtId = messages.get(0).getId();
-		newPvt = persistence.getPvtDetails(newPvtId, author);
+		newPvt = pvtDAO.getPvtDetails(newPvtId, author);
 		assertEquals(privateMsg.getText(), newPvt.getText());
 		assertEquals(privateMsg.getSubject(), newPvt.getSubject());
 	}
@@ -135,9 +131,9 @@ public class PrivateMsgTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("admin");
 
-		persistence.notifyRead(author, pvt);
+		pvtDAO.notifyRead(author, pvt);
 
-		List<PrivateMsgDTO> messages = persistence.getInbox(author, 99, 0);
+		List<PrivateMsgDTO> messages = pvtDAO.getInbox(author, 99, 0);
 		assertNotNull(messages);
 		assertEquals(2, messages.size());
 
@@ -178,9 +174,9 @@ public class PrivateMsgTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("Sfigato");
 
-		persistence.notifyUnread(author, pvt);
+		pvtDAO.notifyUnread(author, pvt);
 
-		List<PrivateMsgDTO> messages = persistence.getInbox(author, 99, 0);
+		List<PrivateMsgDTO> messages = pvtDAO.getInbox(author, 99, 0);
 		assertNotNull(messages);
 		assertEquals(1, messages.size());
 
@@ -204,13 +200,13 @@ public class PrivateMsgTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("Sfigato");
 
-		boolean checkForNewPvts = persistence.checkForNewPvts(author);
+		boolean checkForNewPvts = pvtDAO.checkForNewPvts(author);
 		assertFalse(checkForNewPvts);
 
 		author = new AuthorDTO(null);
 		author.setNick("admin");
 
-		checkForNewPvts = persistence.checkForNewPvts(author);
+		checkForNewPvts = pvtDAO.checkForNewPvts(author);
 		assertTrue(checkForNewPvts);
 	}
 
@@ -221,15 +217,15 @@ public class PrivateMsgTest extends BaseTest {
 		AuthorDTO authorSfigato = new AuthorDTO(null);
 		authorSfigato.setNick("Sfigato");
 
-		List<PrivateMsgDTO> messages = persistence.getInbox(authorAdmin, 99, 0);
+		List<PrivateMsgDTO> messages = pvtDAO.getInbox(authorAdmin, 99, 0);
 		assertEquals(2, messages.size());
 
-		persistence.deletePvt(2, authorSfigato); // not allowed
-		messages = persistence.getInbox(authorAdmin, 99, 0);
+		pvtDAO.deletePvt(2, authorSfigato); // not allowed
+		messages = pvtDAO.getInbox(authorAdmin, 99, 0);
 		assertEquals(2, messages.size());
 
-		persistence.deletePvt(2, authorAdmin);
-		messages = persistence.getInbox(authorAdmin, 99, 0);
+		pvtDAO.deletePvt(2, authorAdmin);
+		messages = pvtDAO.getInbox(authorAdmin, 99, 0);
 		assertEquals(1, messages.size());
 	}
 
@@ -239,7 +235,7 @@ public class PrivateMsgTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("Sfigato");
 
-		PrivateMsgDTO pvtSfigato = persistence.getPvtDetails(2, author);
+		PrivateMsgDTO pvtSfigato = pvtDAO.getPvtDetails(2, author);
 		assertNotNull(pvtSfigato);
 		assertEquals(getDateFromDatabaseString("2014-08-29 13:10:50"), pvtSfigato.getDate());
 		assertEquals("Sfigato", pvtSfigato.getFromNick());
@@ -259,7 +255,7 @@ public class PrivateMsgTest extends BaseTest {
 		author = new AuthorDTO(null);
 		author.setNick("admin");
 
-		PrivateMsgDTO pvtAdmin = persistence.getPvtDetails(2, author);
+		PrivateMsgDTO pvtAdmin = pvtDAO.getPvtDetails(2, author);
 		assertNotNull(pvtAdmin);
 		assertEquals(pvtSfigato.getDate(), pvtAdmin.getDate());
 		assertEquals(pvtSfigato.getFromNick(), pvtAdmin.getFromNick());

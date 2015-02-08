@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,10 +30,9 @@ import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.IPersistence;
+import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
-import com.forumdeitroll.persistence.PersistenceFactory;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
@@ -56,23 +54,12 @@ public class JSonServlet extends HttpServlet {
 
 	private static final int MAX_PAGE_SIZE = 100;
 
-	private IPersistence persistence;
 
 	private SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
-			return persistence.getForums();
+			return  DAOFactory.getMiscDAO().getForums();
 		}
 	};
-
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-		try {
-			persistence = PersistenceFactory.getInstance();
-		} catch (Exception e) {
-			throw new ServletException("Cannot instantiate persistence", e);
-		}
-	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
@@ -148,7 +135,7 @@ public class JSonServlet extends HttpServlet {
 		int pageSize = getPageSize(params);
 		String forum = getStringValue(params, "forum", null);
 
-		ThreadsDTO result = persistence.getThreads(forum, pageSize, page, null);
+		ThreadsDTO result =  DAOFactory.getThreadsDAO().getThreads(forum, pageSize, page, null);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
@@ -185,7 +172,7 @@ public class JSonServlet extends HttpServlet {
 		RenderOptions opts = renderOpts != null ? new Gson().fromJson(renderOpts, RenderOptions.class) : null;
 
 		String nick = getStringValue(params, "nick", null);
-		MessagesDTO result = persistence.getMessages(forum, nick, pageSize, page, null);
+		MessagesDTO result = DAOFactory.getMessagesDAO().getMessages(forum, nick, pageSize, page, null);
 
 		if (opts != null) {
 			for (MessageDTO message : result.getMessages()) {
@@ -229,7 +216,7 @@ public class JSonServlet extends HttpServlet {
 			return;
 		}
 
-		List<MessageDTO> result = persistence.getMessagesByThread(threadId);
+		List<MessageDTO> result = DAOFactory.getMessagesDAO().getMessagesByThread(threadId);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
@@ -264,7 +251,7 @@ public class JSonServlet extends HttpServlet {
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
-		MessageDTO result = persistence.getMessage(msgId);
+		MessageDTO result = DAOFactory.getMessagesDAO().getMessage(msgId);
 		encodeMessage(result, out);
 
 		closeJsonWriter(out, time);
@@ -283,7 +270,7 @@ public class JSonServlet extends HttpServlet {
 			return;
 		}
 
-		AuthorDTO result = persistence.getAuthor(nick);
+		AuthorDTO result = DAOFactory.getAuthorsDAO().getAuthor(nick);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
@@ -307,7 +294,7 @@ public class JSonServlet extends HttpServlet {
 			onlyActive = Boolean.parseBoolean(paramOnlyActive);
 		}
 
-		List<AuthorDTO> result = persistence.getAuthors(onlyActive);
+		List<AuthorDTO> result = DAOFactory.getAuthorsDAO().getAuthors(onlyActive);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
@@ -341,8 +328,8 @@ public class JSonServlet extends HttpServlet {
 			return;
 		}
 
-		AuthorDTO author = persistence.getAuthor(nick);
-		List<QuoteDTO> result = persistence.getQuotes(author);
+		AuthorDTO author = DAOFactory.getAuthorsDAO().getAuthor(nick);
+		List<QuoteDTO> result = DAOFactory.getQuotesDAO().getQuotes(author);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
@@ -368,7 +355,6 @@ public class JSonServlet extends HttpServlet {
 
 	/**
 	 * Ritorna una stringa JSON contenente tutte le emoticons
-	 * @param out
 	 * @param params
 	 * @throws IOException
 	 */
@@ -420,12 +406,11 @@ public class JSonServlet extends HttpServlet {
 
 	/**
 	 * fornisce l'ultimo id della tabella
-	 * @param out
 	 * @param params
 	 * @throws IOException
 	 */
 	protected void getLastId(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
-		long id = persistence.getLastId();
+		long id = DAOFactory.getMiscDAO().getLastId();
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
@@ -487,7 +472,7 @@ public class JSonServlet extends HttpServlet {
 			writeErrorMessage(writer, "Manca la password", time);
 			return;
 		}
-		AuthorDTO author = persistence.getAuthor(nick);
+		AuthorDTO author = DAOFactory.getAuthorsDAO().getAuthor(nick);
 		if (!PasswordUtils.hasUserPassword(author, password)) {
 			writeErrorMessage(writer, "Password errata", time);
 			return;
@@ -502,9 +487,9 @@ public class JSonServlet extends HttpServlet {
 		if (type.equals("new")) {
 			// forum
 			String forum = getStringValue(params, "forum", null);
-			if (forum != null && !forum.equals(IPersistence.FORUM_ASHES)) {
+			if (forum != null && !forum.equals(DAOFactory.FORUM_ASHES)) {
 				forum = InputSanitizer.sanitizeForum(forum);
-				if (!persistence.getForums().contains(forum)) {
+				if (!DAOFactory.getMiscDAO().getForums().contains(forum)) {
 					writeErrorMessage(writer, "Ma che cacchio di forum e' '" + forum + "' ?!?", time);
 					return;
 				}
@@ -512,7 +497,7 @@ public class JSonServlet extends HttpServlet {
 			}
 			author.setMessages(author.getMessages() + 1);
 			message.setDate(new Date());
-			persistence.updateAuthor(author);
+			DAOFactory.getAuthorsDAO().updateAuthor(author);
 		} else if (type.equals("edit") || type.equals("quote") || type.equals("reply")) {
 			// msgId / parentId
 			long msgId = getLongValue(params, "msgId", -1);
@@ -522,7 +507,7 @@ public class JSonServlet extends HttpServlet {
 			}
 
 			// evita il post in un altro forum !
-			MessageDTO oldMessage = persistence.getMessage(msgId);
+			MessageDTO oldMessage = DAOFactory.getMessagesDAO().getMessage(msgId);
 			message.setForum(oldMessage.getForum());
 
 			if (type.equals("edit")) {
@@ -547,7 +532,7 @@ public class JSonServlet extends HttpServlet {
 			return;
 		}
 
-		message = persistence.insertMessage(message);
+		message = DAOFactory.getMessagesDAO().insertMessage(message);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
@@ -561,7 +546,6 @@ public class JSonServlet extends HttpServlet {
 	/**
 	 * Scrive l'exception in formato JSON direttamente nella response.
 	 * @param e
-	 * @param res
 	 * @throws IOException
 	 */
 	private void handleException(Throwable e, Writer writer, long time) throws IOException {
@@ -621,7 +605,6 @@ public class JSonServlet extends HttpServlet {
 
 	/**
 	 * Codifica JSON un MessageDTO
-	 * @param threadDTO
 	 * @param out
 	 * @throws Exception
 	 */
@@ -646,7 +629,6 @@ public class JSonServlet extends HttpServlet {
 
 	/**
 	 * Codifica JSON un AuthorDTO
-	 * @param threadDTO
 	 * @param out
 	 * @throws Exception
 	 */
@@ -665,7 +647,6 @@ public class JSonServlet extends HttpServlet {
 	/**
 	 * Inizializza un writer JSON con quel resultCode e un oggetto "content".
 	 * @param resultCode
-	 * @param out
 	 * @return
 	 * @throws IOException
 	 */

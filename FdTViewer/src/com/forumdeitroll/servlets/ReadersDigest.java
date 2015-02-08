@@ -14,11 +14,11 @@ public class ReadersDigest extends MainServlet {
 	@Override
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		List<DigestArticleDTO> articles = getPersistence().getReadersDigest();
+		List<DigestArticleDTO> articles = digestDAO.getReadersDigest();
 		req.setAttribute("excludeSidebar", "true");
 		req.setAttribute("articles", articles);
 		setWebsiteTitlePrefix(req, "The Troll's Digest");
 		return "readersdigest.jsp";
 	}
-	
+
 }

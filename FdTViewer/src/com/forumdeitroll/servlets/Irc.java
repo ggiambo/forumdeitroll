@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.PersistenceFactory;
+import com.forumdeitroll.persistence.DAOFactory;
 
 /**
  * Servlet implementation class Irc
@@ -65,11 +65,11 @@ public class Irc extends HttpServlet {
 			if (StringUtils.isEmpty(lista_utenti)) throw new Exception("lista_utenti is null");
 			if (StringUtils.isEmpty(topic)) throw new Exception("topic is null");
 
-			AuthorDTO author = PersistenceFactory.getInstance().getAuthor(username);
+			AuthorDTO author = DAOFactory.getAuthorsDAO().getAuthor(username);
 			if (!PasswordUtils.hasUserPassword(author, password)) {
 				throw new Exception("pazzword ezzere zbagliata");
 			}
-			String admin = PersistenceFactory.getInstance().getPreferences(author).get("super");
+			String admin = DAOFactory.getAuthorsDAO().getPreferences(author).get("super");
 			if (!"yes".equals(admin)) {
 				throw new Exception("utente non ezzere admin");
 			}

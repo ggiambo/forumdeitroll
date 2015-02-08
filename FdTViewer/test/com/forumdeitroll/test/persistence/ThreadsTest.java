@@ -1,14 +1,13 @@
 package com.forumdeitroll.test.persistence;
 
-import static org.junit.Assert.assertEquals;
+import com.forumdeitroll.persistence.ThreadDTO;
+import com.forumdeitroll.persistence.ThreadsDTO;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
-import com.forumdeitroll.persistence.ThreadDTO;
-import com.forumdeitroll.persistence.ThreadsDTO;
+import static org.junit.Assert.assertEquals;
 
 public class ThreadsTest extends BaseTest {
 
@@ -17,7 +16,7 @@ public class ThreadsTest extends BaseTest {
 
 		ThreadsDTO res;
 
-		res = persistence.getThreads("", 99, 0, null);
+		res = threadsDAO.getThreads("", 99, 0, null);
 		assertEquals(2, res.getMessages().size());
 		assertEquals(2, res.getMaxNrOfMessages());
 		ThreadDTO thread = res.getMessages().get(0);
@@ -41,7 +40,7 @@ public class ThreadsTest extends BaseTest {
 		assertEquals("Nel Forum Principale", thread.getSubject());
 		assertEquals(true, thread.isVisible());
 
-		res = persistence.getThreads("Forum iniziale", 99, 0, null);
+		res = threadsDAO.getThreads("Forum iniziale", 99, 0, null);
 		assertEquals(1, res.getMessages().size());
 		assertEquals(1, res.getMaxNrOfMessages());
 		thread = res.getMessages().get(0);
@@ -55,7 +54,7 @@ public class ThreadsTest extends BaseTest {
 		assertEquals("benvenuto nel fdt !", thread.getSubject());
 		assertEquals(true, thread.isVisible());
 
-		res = persistence.getThreads(null, 99, 0, null);
+		res = threadsDAO.getThreads(null, 99, 0, null);
 		assertEquals(4, res.getMessages().size());
 		assertEquals(4, res.getMaxNrOfMessages());
 		thread = res.getMessages().get(0);
@@ -99,7 +98,7 @@ public class ThreadsTest extends BaseTest {
 		assertEquals("benvenuto nel fdt !", thread.getSubject());
 		assertEquals(true, thread.isVisible());
 
-		res = persistence.getThreads(null, 2, 0, null);
+		res = threadsDAO.getThreads(null, 2, 0, null);
 		assertEquals(2, res.getMessages().size());
 		assertEquals(4, res.getMaxNrOfMessages());
 		thread = res.getMessages().get(0);
@@ -125,7 +124,7 @@ public class ThreadsTest extends BaseTest {
 
 		List<String> filtered = new ArrayList<String>();
 		filtered.add("Forum iniziale");
-		res = persistence.getThreads(null, 99, 0, filtered);
+		res = threadsDAO.getThreads(null, 99, 0, filtered);
 		assertEquals(3, res.getMessages().size());
 		assertEquals(1, res.getMaxNrOfMessages());
 		thread = res.getMessages().get(0);
@@ -145,7 +144,7 @@ public class ThreadsTest extends BaseTest {
 
 		ThreadsDTO res;
 
-		res = persistence.getThreadsByLastPost("", 99, 0, null);
+		res = threadsDAO.getThreadsByLastPost("", 99, 0, null);
 		assertEquals(2, res.getMessages().size());
 		ThreadDTO thread = res.getMessages().get(0);
 		assertEquals("admin", thread.getAuthor().getNick());
@@ -168,7 +167,7 @@ public class ThreadsTest extends BaseTest {
 		assertEquals("Nel Forum Principale", thread.getSubject());
 		assertEquals(true, thread.isVisible());
 
-		res = persistence.getThreadsByLastPost("Forum iniziale", 99, 0, null);
+		res = threadsDAO.getThreadsByLastPost("Forum iniziale", 99, 0, null);
 		assertEquals(1, res.getMessages().size());
 		thread = res.getMessages().get(0);
 		assertEquals("admin", thread.getAuthor().getNick());
@@ -181,7 +180,7 @@ public class ThreadsTest extends BaseTest {
 		assertEquals("benvenuto nel fdt !", thread.getSubject());
 		assertEquals(true, thread.isVisible());
 
-		res = persistence.getThreadsByLastPost(null, 99, 0, null);
+		res = threadsDAO.getThreadsByLastPost(null, 99, 0, null);
 		assertEquals(4, res.getMessages().size());
 		thread = res.getMessages().get(0);
 		assertEquals("admin", thread.getAuthor().getNick());
@@ -224,7 +223,7 @@ public class ThreadsTest extends BaseTest {
 		assertEquals("benvenuto nel fdt !", thread.getSubject());
 		assertEquals(true, thread.isVisible());
 
-		res = persistence.getThreadsByLastPost(null, 2, 0, null);
+		res = threadsDAO.getThreadsByLastPost(null, 2, 0, null);
 		assertEquals(2, res.getMessages().size());
 		thread = res.getMessages().get(0);
 		assertEquals("admin", thread.getAuthor().getNick());
@@ -249,7 +248,7 @@ public class ThreadsTest extends BaseTest {
 
 		List<String> filtered = new ArrayList<String>();
 		filtered.add("Forum iniziale");
-		res = persistence.getThreadsByLastPost(null, 99, 0, filtered);
+		res = threadsDAO.getThreadsByLastPost(null, 99, 0, filtered);
 		assertEquals(3, res.getMessages().size());
 		thread = res.getMessages().get(0);
 		assertEquals("admin", thread.getAuthor().getNick());
@@ -288,13 +287,13 @@ public class ThreadsTest extends BaseTest {
 
 		ThreadsDTO res;
 
-		res = persistence.getAuthorThreadsByLastPost("", 99, 0, null);
+		res = threadsDAO.getAuthorThreadsByLastPost("", 99, 0, null);
 		assertEquals(0, res.getMessages().size());
 
-		res = persistence.getAuthorThreadsByLastPost(null, 99, 0, null);
+		res = threadsDAO.getAuthorThreadsByLastPost(null, 99, 0, null);
 		assertEquals(0, res.getMessages().size());
 
-		res = persistence.getAuthorThreadsByLastPost("Sfigato", 99, 0, null);
+		res = threadsDAO.getAuthorThreadsByLastPost("Sfigato", 99, 0, null);
 		assertEquals(1, res.getMessages().size());
 		ThreadDTO thread = res.getMessages().get(0);
 		assertEquals("admin", thread.getAuthor().getNick());
@@ -307,10 +306,10 @@ public class ThreadsTest extends BaseTest {
 		assertEquals("Re: Ieri", thread.getSubject());
 		assertEquals(true, thread.isVisible());
 
-		res = persistence.getAuthorThreadsByLastPost("Admin", 99, 0, null);
+		res = threadsDAO.getAuthorThreadsByLastPost("Admin", 99, 0, null);
 		assertEquals(0, res.getMessages().size());
 
-		res = persistence.getAuthorThreadsByLastPost("admin", 99, 0, null);
+		res = threadsDAO.getAuthorThreadsByLastPost("admin", 99, 0, null);
 		assertEquals(2, res.getMessages().size());
 		thread = res.getMessages().get(0);
 		assertEquals("admin", thread.getAuthor().getNick());
@@ -335,7 +334,7 @@ public class ThreadsTest extends BaseTest {
 
 		List<String> filtered = new ArrayList<String>();
 		filtered.add("Forum iniziale");
-		res = persistence.getAuthorThreadsByLastPost("Sfigato", 99, 0, filtered);
+		res = threadsDAO.getAuthorThreadsByLastPost("Sfigato", 99, 0, filtered);
 		assertEquals(1, res.getMessages().size());
 		thread = res.getMessages().get(0);
 		assertEquals("admin", thread.getAuthor().getNick());

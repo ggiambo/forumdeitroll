@@ -1,19 +1,15 @@
 package com.forumdeitroll.test.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Test;
-
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.PollDTO;
 import com.forumdeitroll.persistence.PollQuestion;
 import com.forumdeitroll.persistence.PollsDTO;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class PollTest extends BaseTest {
 
@@ -37,9 +33,9 @@ public class PollTest extends BaseTest {
 
 		newPoll.setPollQuestions(pollQuestions);
 
-		persistence.createPoll(newPoll);
+		pollsDAO.createPoll(newPoll);
 
-		PollsDTO polls = persistence.getPollsByDate(1, 0);
+		PollsDTO polls = pollsDAO.getPollsByDate(1, 0);
 		assertNotNull(polls);
 		List<PollDTO> res = polls.getPolls();
 		assertNotNull(res);
@@ -79,12 +75,12 @@ public class PollTest extends BaseTest {
 		AuthorDTO author = new AuthorDTO(null);
 		author.setNick("Sfigato");
 
-		PollsDTO polls = persistence.getPollsByDate(1, 0);
+		PollsDTO polls = pollsDAO.getPollsByDate(1, 0);
 		PollDTO poll = polls.getPolls().get(0);
 		PollQuestion updatedQuestion = poll.getPollQuestions().get(0);
-		assertTrue(persistence.updatePollQuestion(updatedQuestion, author));
+		assertTrue(pollsDAO.updatePollQuestion(updatedQuestion, author));
 
-		polls = persistence.getPollsByDate(1, 0);
+		polls = pollsDAO.getPollsByDate(1, 0);
 		poll = polls.getPolls().get(0);
 		poll.getAuthor().contains(author.getNick());
 		PollQuestion question = poll.getPollQuestions().get(0);
@@ -93,14 +89,14 @@ public class PollTest extends BaseTest {
 		assertEquals(updatedQuestion.getText(), question.getText());
 		assertEquals(2, question.getVotes());
 
-		assertFalse(persistence.updatePollQuestion(updatedQuestion, author));
+		assertFalse(pollsDAO.updatePollQuestion(updatedQuestion, author));
 
 	}
 
 	@Test
 	public void test_getPollsByDate() throws Exception {
 
-		PollsDTO polls = persistence.getPollsByDate(99, 0);
+		PollsDTO polls = pollsDAO.getPollsByDate(99, 0);
 		assertNotNull(polls);
 		List<PollDTO> res = polls.getPolls();
 		assertNotNull(res);
@@ -175,7 +171,7 @@ public class PollTest extends BaseTest {
 	@Test
 	public void test_getPollsByLastVote() throws Exception {
 
-		PollsDTO polls = persistence.getPollsByLastVote(99, 0);
+		PollsDTO polls = pollsDAO.getPollsByLastVote(99, 0);
 		assertNotNull(polls);
 		List<PollDTO> res = polls.getPolls();
 		assertNotNull(res);
@@ -249,7 +245,7 @@ public class PollTest extends BaseTest {
 
 	@Test
 	public void test_getPoll() throws Exception {
-		PollsDTO polls = persistence.getPollsByDate(99, 0);
+		PollsDTO polls = pollsDAO.getPollsByDate(99, 0);
 		assertNotNull(polls);
 
 		List<PollDTO> res = polls.getPolls();

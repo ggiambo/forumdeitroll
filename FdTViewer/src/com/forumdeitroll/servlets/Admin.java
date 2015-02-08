@@ -44,10 +44,10 @@ public class Admin extends MainServlet {
 
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
-		req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
-		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
-		req.setAttribute(ADMIN_WEBSITE_TITLES, getPersistence().getTitles());
-		req.setAttribute(ADMIN_FAKE_ADS, getPersistence().getAllAds());
+		req.setAttribute(ADMIN_PREF_BLOCK_TOR, miscDAO.getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
+		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, miscDAO.getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
+		req.setAttribute(ADMIN_WEBSITE_TITLES, adminDAO.getTitles());
+		req.setAttribute(ADMIN_FAKE_ADS, adminDAO.getAllAds());
 	}
 
 	@Action
@@ -105,20 +105,20 @@ public class Admin extends MainServlet {
 
 		String blockTorExitNodes = req.getParameter(ADMIN_PREF_BLOCK_TOR);
 		if (!StringUtils.isEmpty(blockTorExitNodes)) {
-			getPersistence().setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "checked");
+			adminDAO.setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "checked");
 		} else {
-			getPersistence().setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "");
+			adminDAO.setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "");
 		}
-		req.setAttribute(ADMIN_PREF_BLOCK_TOR, getPersistence().getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
+		req.setAttribute(ADMIN_PREF_BLOCK_TOR, adminDAO.getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
 		String disableUserProfiler = req.getParameter(ADMIN_PREF_DISABLE_PROFILER);
 		if (!StringUtils.isEmpty(disableUserProfiler)) {
-			getPersistence().setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "checked");
+			adminDAO.setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "checked");
 			UserProfiler.getInstance().isProfilerEnabled = false;
 		} else {
-			getPersistence().setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "");
+			adminDAO.setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "");
 			UserProfiler.getInstance().isProfilerEnabled = true;
 		}
-		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
+		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, adminDAO.getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 
 		String javascript = req.getParameter("javascript");
 		if (StringUtils.isNotEmpty(javascript) && javascript.length() > 255) {
@@ -126,7 +126,7 @@ public class Admin extends MainServlet {
 			errMsg.append(javascript .length()).append(" caratteri, max 255");
 			setNavigationMessage(req, NavigationMessage.warn(errMsg.toString()));
 		} else {
-			getPersistence().setSysinfoValue("javascript", javascript);
+			adminDAO.setSysinfoValue("javascript", javascript);
 		}
 		req.setAttribute("javascript", javascript);
 
@@ -138,7 +138,7 @@ public class Admin extends MainServlet {
 					titles.add(title);
 				}
 			}
-			getPersistence().setTitles(titles);
+			adminDAO.setTitles(titles);
 			cachedTitles.invalidate();
 		}
 		req.setAttribute(ADMIN_WEBSITE_TITLES, titles);
@@ -171,13 +171,12 @@ public class Admin extends MainServlet {
 		allAds.addAll(ads.values());
 		// ordina cosi' come sono sulla GUI -> cosi' saranno salvati nel database
 		Collections.sort(allAds, new Comparator<AdDTO>() {
-			@Override
 			public int compare(AdDTO ad1, AdDTO ad2) {
 				long res = ad1.getId() - ad2.getId();
 				return (int) res;
 			}
 		});
-		getPersistence().setAllAds(allAds);
+		adminDAO.setAllAds(allAds);
 		cachedAds.invalidate();
 		req.setAttribute(ADMIN_FAKE_ADS, allAds);
 

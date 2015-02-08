@@ -83,7 +83,7 @@ public class AdminDAO extends BaseDAO {
 	}
 
 	public List<String> getTitles() {
-		 Result<Record1<String>> records = jooq.select(SYSINFO.VALUE)
+		Result<Record1<String>> records = jooq.select(SYSINFO.VALUE)
 			.from(SYSINFO)
 			.where(SYSINFO.KEY.like("title.%"))
 			.orderBy(SYSINFO.KEY.asc())
@@ -144,6 +144,10 @@ public class AdminDAO extends BaseDAO {
 		dto.setVisurl(record.getVisurl());
 		dto.setContent(record.getContent());
 		return dto;
+	}
+
+	public boolean blockTorExitNodes() {
+		return "checked".equals(getSysinfoValue("blockTorExitNodes"));
 	}
 
 }

@@ -28,7 +28,7 @@ public abstract class BaseDAO {
 		this.jooq = jooq;
 	}
 
-	protected AuthorDTO getAuthor(String nick) {
+	public AuthorDTO getAuthor(String nick) {
 
 		if (StringUtils.isEmpty(nick)) {
 			return new AuthorDTO(null);
@@ -52,10 +52,11 @@ public abstract class BaseDAO {
 		authorDTO.setSignatureImage(record.getSignatureImage());
 		authorDTO.setPreferences(getPreferences(authorDTO));
 
+		authorDTO.setPreferences(getPreferences(authorDTO));
 		return authorDTO;
 	}
 
-	protected Map<String, String> getPreferences(AuthorDTO user) {
+	public Map<String, String> getPreferences(AuthorDTO user) {
 
 		if (user == null || !user.isValid()) {
 			return new ConcurrentHashMap<String, String>();
@@ -116,7 +117,7 @@ public abstract class BaseDAO {
 		return record.getValue(SYSINFO.VALUE);
 	}
 
-	protected void setSysinfoValue(String key, String value) {
+	public void setSysinfoValue(String key, String value) {
 		if (getSysinfoValue(key) == null) {
 			// insert
 			jooq.insertInto(SYSINFO)

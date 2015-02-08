@@ -1,13 +1,5 @@
 package com.forumdeitroll.servlets;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.ThreadTree;
 import com.forumdeitroll.persistence.AuthorDTO;
@@ -15,6 +7,12 @@ import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
 import com.forumdeitroll.servlets.Action.Method;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
 
 public class Threads extends MainServlet {
 
@@ -35,22 +33,22 @@ public class Threads extends MainServlet {
 		res.sendError(301);
 		return null;
 	}
-	
+
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		if (REFRESHABLE_ACTIONS.contains(req.getAttribute("action"))) {
 			req.setAttribute("refreshable", "1");
 		}
 	}
-	
+
 	@Override
 	public void doAfter(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO author = (AuthorDTO) req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (author != null) {
-			req.setAttribute("notifications", getPersistence().getNotifications(null, author.getNick()));
+			req.setAttribute("notifications", miscDAO.getNotifications(null, author.getNick()));
 		}
 	}
-	
+
 	/**
 	 * Recupera la discussione a partire da un messaggio in essa contenuto
 	 * Usato in conversione di url da .it a .com
@@ -62,12 +60,12 @@ public class Threads extends MainServlet {
 	@Action
 	String getByMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		long msgId = Long.parseLong(req.getParameter("msgId"));
-		long threadId = getPersistence().getMessage(msgId).getThreadId();
+		long threadId = messagesDAO.getMessage(msgId).getThreadId();
 		res.setHeader("Location", "Threads?action=getByThread&threadId=" + threadId + "#msg" + msgId);
 		res.sendError(302);
 		return null;
 	}
-	
+
 	/**
 	 * Tutti i messaggi di questo thread
 	 */
@@ -80,17 +78,17 @@ public class Threads extends MainServlet {
 		String forum = req.getParameter("forum");
 		addSpecificParam(req, "forum",  forum);
 		Long threadId = Long.parseLong(stringThreadId);
-		List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
-		getPersistence().getTags(new MessagesDTO(msgs,0));
+		List<MessageDTO> msgs = messagesDAO.getMessagesByThread(threadId);
+		miscDAO.getTags(new MessagesDTO(msgs, 0));
 		req.setAttribute("root", new ThreadTree(msgs).getRoot());
-		setWebsiteTitlePrefix(req, getPersistence().getMessage(threadId).getSubject());
-		setNavigationMessage(req, NavigationMessage.info("Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>"));
+		setWebsiteTitlePrefix(req, messagesDAO.getMessage(threadId).getSubject());
+		setNavigationMessage(req, NavigationMessage.info("Thread <i>" + messagesDAO.getMessage(threadId).getSubject() + "</i>"));
 
 		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 
 		return "thread.jsp";
 	}
-	
+
 	/**
 	* Tutti i messaggi del thread, ma mostra solo i titoli
 	*/
@@ -108,7 +106,7 @@ public class Threads extends MainServlet {
 		String forum = req.getParameter("forum");
 		addSpecificParam(req, "forum",  forum);
 		Long threadId = Long.parseLong(stringThreadId);
-		List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
+		List<MessageDTO> msgs = messagesDAO.getMessagesByThread(threadId);
 		MessageDTO showMsg = null;
 		for (final MessageDTO msg: msgs) {
 			if (msg.getId() == showId) {
@@ -121,9 +119,9 @@ public class Threads extends MainServlet {
 		root.setNext(null);
 		req.setAttribute("root", root);
 		req.setAttribute("show", showMsg);
-		setWebsiteTitlePrefix(req, getPersistence().getMessage(threadId).getSubject());
-		setNavigationMessage(req, NavigationMessage.info("Thread <i>" + getPersistence().getMessage(threadId).getSubject() + "</i>"));
-		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3)); 
+		setWebsiteTitlePrefix(req, messagesDAO.getMessage(threadId).getSubject());
+		setNavigationMessage(req, NavigationMessage.info("Thread <i>" + messagesDAO.getMessage(threadId).getSubject() + "</i>"));
+		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 		return "softv.jsp";
 	}
 
@@ -133,16 +131,16 @@ public class Threads extends MainServlet {
 	@Action
 	String openThreadTree(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		Long threadId = Long.parseLong(req.getParameter("threadId"));
-		List<MessageDTO> msgs = getPersistence().getMessagesByThread(threadId);
+		List<MessageDTO> msgs = messagesDAO.getMessagesByThread(threadId);
 		req.setAttribute("msg", new ThreadTree(msgs).getRoot());
 
 		getServletContext().getRequestDispatcher("/pages/threads/incThreadTree.jsp").forward(req, res);
 		return null;
 	}
-	
+
 	/**
 	 * Ordinati per thread / data iniziale
-	  Se il parametro forum non e` presente restituisce i thread di tutti i forum, se e` presente ma contiene la stringa vuota restituisce i thread del forum principale, altrimenti restituisce i thread del forum specificato
+	Se il parametro forum non e` presente restituisce i thread di tutti i forum, se e` presente ma contiene la stringa vuota restituisce i thread del forum principale, altrimenti restituisce i thread del forum specificato
 	 */
 	@Action
 	String getThreads(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -155,7 +153,7 @@ public class Threads extends MainServlet {
 	@Action
 	String getThreadsByLastPost(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		String forum = req.getParameter("forum");
-		ThreadsDTO messages = getPersistence().getThreadsByLastPost(forum, PAGE_SIZE, getPageNr(req), hiddenForums(req));
+		ThreadsDTO messages = threadsDAO.getThreadsByLastPost(forum, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
@@ -179,7 +177,7 @@ public class Threads extends MainServlet {
 		if (!author.isValid()) {
 			throw new Exception("Furmigamento detected !");
 		}
-		ThreadsDTO messages = getPersistence().getAuthorThreadsByLastPost(author.getNick(), PAGE_SIZE, getPageNr(req), hiddenForums(req));
+		ThreadsDTO messages = threadsDAO.getAuthorThreadsByLastPost(author.getNick(), PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
@@ -190,7 +188,7 @@ public class Threads extends MainServlet {
 
 	private String getThreads(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
 		String forum = req.getParameter("forum");
-		ThreadsDTO messages = getPersistence().getThreads(forum, PAGE_SIZE, getPageNr(req), hiddenForums(req));
+		ThreadsDTO messages = threadsDAO.getThreads(forum, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
