@@ -7,9 +7,10 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import org.apache.log4j.Logger;
+
 public class ProfilerStorage {
-	//public static String baseDir = "/opt/fdt/";
-	public static String baseDir = "/home/milky/fdt/webdev/";
+	public static String baseDir = "/opt/fdt/";
 	public static void load() {
 		Object o = load(baseDir + "rules.javabean");
 		if (o != null) {
@@ -33,6 +34,7 @@ public class ProfilerStorage {
 			in.close();
 			return o;
 		} catch (Exception e) {
+			Logger.getLogger(ProfilerStorage.class).error(e);
 			return null;
 		}
 	}
@@ -44,7 +46,7 @@ public class ProfilerStorage {
 			oout.close();
 			out.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.getLogger(ProfilerStorage.class).error(e);
 		}
 	}
 }
