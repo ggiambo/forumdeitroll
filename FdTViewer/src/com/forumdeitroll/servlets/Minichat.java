@@ -18,8 +18,7 @@ import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.profiler.UserProfile;
-import com.forumdeitroll.profiler.UserProfiler;
+import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Action.Method;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -117,11 +116,7 @@ public class Minichat extends MainServlet {
 		if (author != null && author.isBanned()) {
 			return null;
 		}
-		UserProfile candidate = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
-		candidate.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
-		candidate.setNick(author != null ? author.getNick() : null);
-		UserProfile profile = UserProfiler.getInstance().guess(candidate);
-		if (profile.isBannato()) {
+		if (ProfilerAPI.blockedByRules(req, author)) {
 			return null;
 		}
 		

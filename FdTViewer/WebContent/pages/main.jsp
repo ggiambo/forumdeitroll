@@ -100,11 +100,13 @@
 			<%--- notifiche per moderatori --%>
 			<c:if test="${not empty loggedUser}">
 				<c:if test="${loggedUser.preferences['super'] == 'yes'}">
+					<%--
 					<% if (!com.forumdeitroll.servlets.UserProfiler.unbanRequests.isEmpty()) {%>
 						<div class="notifications">
 							<a href="UserProfiler?action=snoop">Lavoro per moderatori</a>
 						</div>
 					<% } %>
+					 --%>
 				</c:if>
 			</c:if>
 

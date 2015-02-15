@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.forumdeitroll.persistence.AdDTO;
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.profiler.UserProfiler;
+import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.Ratelimiter;
 
@@ -113,10 +113,10 @@ public class Admin extends MainServlet {
 		String disableUserProfiler = req.getParameter(ADMIN_PREF_DISABLE_PROFILER);
 		if (!StringUtils.isEmpty(disableUserProfiler)) {
 			getPersistence().setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "checked");
-			UserProfiler.getInstance().isProfilerEnabled = false;
+			ProfilerAPI.enabled = false;
 		} else {
 			getPersistence().setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "");
-			UserProfiler.getInstance().isProfilerEnabled = true;
+			ProfilerAPI.enabled = true;
 		}
 		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, getPersistence().getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 

@@ -32,13 +32,11 @@ import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.TagDTO;
-import com.forumdeitroll.profiler.UserProfile;
-import com.forumdeitroll.profiler.UserProfiler;
+import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.taglibs.MessageTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
@@ -557,21 +555,10 @@ public class Messages extends MainServlet {
 			insertMessageAjaxBan(res);
 			return null;
 		}
-
-		UserProfile profile = null;
 		boolean bannato = false;
 		try {
-			// un errore nel profiler non preclude la funzionalita' del forum, ma bisogna tenere d'occhio i logs
-			UserProfile candidate = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
-			candidate.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
-			candidate.setNick(author.getNick());
-			profile = UserProfiler.getInstance().guess(candidate);
-			if (profile.isBannato()) {
+			if (ProfilerAPI.blockedByRules(req, author)) {
 				insertMessageAjaxBan(res);
-				Logger.getLogger(Messages.class).info(
-						"E` stato riconosciuto come bannato il seguente profilo utente: "+new Gson().toJson(candidate));
-				Logger.getLogger(Messages.class).info(
-						"Il profilo utente a cui e` stato associato è "+new Gson().toJson(profile));
 				bannato = true;
 			}
 		} catch (Exception e) {
@@ -646,12 +633,7 @@ public class Messages extends MainServlet {
 		msg = getPersistence().insertMessage(msg);
 		String m_id = Long.toString(msg.getId());
 		IPMemStorage.store(req, m_id, author);
-		try {
-			if (profile != null)
-				UserProfiler.getInstance().bind(profile, m_id);
-		} catch (Exception e) {
-
-		}
+		ProfilerAPI.log(req, author, "message-post-" + m_id);
 
 		// redirect
 		JsonWriter writer = new JsonWriter(res.getWriter());
