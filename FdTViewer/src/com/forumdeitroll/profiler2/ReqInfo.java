@@ -25,7 +25,7 @@ public class ReqInfo implements Serializable {
 		this.ua = that.ua;
 		this.screenres = that.screenres;
 		this.ipAddress = IPMemStorage.requestToIP(req);
-		this.nick = author.getNick();
+		this.nick = author.realNickname();
 		this.tor = CacheTorExitNodes.check(this.ipAddress);
 		this.geoip = GeoIP.lookup(this.ipAddress);
 	}
