@@ -28,4 +28,8 @@ public class ProfilerAPI {
 		ProfilerLogger.log(new ReqInfo(req, author), label);
 		ProfilerStorage.save();
 	}
+	public static void logSimple(String label) {
+		ProfilerLogger.logSimple(label);
+		ProfilerStorage.save();
+	}
 }

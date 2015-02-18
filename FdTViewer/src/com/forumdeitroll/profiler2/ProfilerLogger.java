@@ -15,4 +15,13 @@ public class ProfilerLogger {
 			records.removeLast();
 		}
 	}
+	public static void logSimple(String label) {
+		ProfileRecord record = new ProfileRecord();
+		record.setTstamp(System.currentTimeMillis());
+		record.setLabel(label);
+		records.addFirst(record);
+		while (records.size() > 1000) {
+			records.removeLast();
+		}
+	}
 }

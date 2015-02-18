@@ -760,7 +760,9 @@ public class Messages extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String hideMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
+        String ret = restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
+        ProfilerAPI.logSimple("manual-hide-message-" + req.getParameter("msgId") + "-by-" + login(req).getNick());
+        return ret;
 	}
 
 	/**
