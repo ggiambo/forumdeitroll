@@ -12,7 +12,10 @@
 				<input type=hidden name=action value=saveRule>
 				<input type=hidden name=uuid value=${rule.uuid}>
 				<input type=text name=label value="${rule.label}">
-				<textarea name=code>${rule.code}</textarea>
+				<br>
+				<textarea name=code style='width:100%; font-family: monospace;' rows=15>${rule.code}</textarea>
+				<br>
+				<input type=button value=test onclick=testRule()>
 				<input type=submit value=salva>
 			</form>
 		</c:if>

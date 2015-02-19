@@ -1,7 +1,6 @@
 package com.forumdeitroll.profiler2;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -29,5 +28,17 @@ public class ProfilerRules {
 			}
 		}
 		return null;
+	}
+
+	public static String checkRule(String code, ReqInfo reqInfo) {
+		ScriptEngineManager manager = new ScriptEngineManager();
+		ScriptEngine engine = manager.getEngineByName("JavaScript");
+		engine.put("reqInfo", reqInfo);
+		try {
+			Boolean result = (Boolean) engine.eval(prefix + code + suffix);
+			return String.valueOf(result);
+		} catch (ScriptException e) {
+			return e.getMessage();
+		}
 	}
 }

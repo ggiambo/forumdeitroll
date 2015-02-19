@@ -5,6 +5,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.UUID;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,8 @@ import com.forumdeitroll.profiler2.ProfilerLogger;
 import com.forumdeitroll.profiler2.ProfilerRule;
 import com.forumdeitroll.profiler2.ProfilerRules;
 import com.forumdeitroll.profiler2.ProfilerStorage;
+import com.forumdeitroll.profiler2.ReqInfo;
+import com.google.gson.Gson;
 
 public class UserProfiler extends MainServlet {
 
@@ -117,6 +121,18 @@ public class UserProfiler extends MainServlet {
 		}
 		ProfilerStorage.save();
 		res.sendRedirect("UserProfiler");
+		return null;
+	}
+
+	@Action(method=Action.Method.POST)
+	String testRule(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		boolean isAdmin = "yes".equals(login(req).getPreferences().get("super"));
+		if (!isAdmin) {
+			return null;
+		}
+		String code = req.getParameter("code");
+		ReqInfo reqInfo = new Gson().fromJson(req.getParameter("reqInfo"), ReqInfo.class);
+		res.getWriter().print(ProfilerRules.checkRule(code, reqInfo));
 		return null;
 	}
 
