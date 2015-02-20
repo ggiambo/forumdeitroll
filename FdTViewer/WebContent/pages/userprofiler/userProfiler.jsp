@@ -4,88 +4,79 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
-<fdt:delayedScript dump="false">
-(function(w) {
-	var hash = w.location.hash;
-	if (hash && hash.match(/^#msgId=\d+$/)) {
-		var id = hash.match(/^#msgId=(\d+)$/)[1];
-		var url = 'Messages?action=getById&msgId=' + id;
-		var selector = 'a[href="' + url + '"]';
-		$(selector).focus();
-	}
-})(window);
-</fdt:delayedScript>
-
-<div id="geoIpContainer"></div>
-
-<div id="main">
-	<div class="userPanelCaption">Panopticon</div>
-	<form action="UserProfiler" method="post">
-		<input type="submit" name="action" value="cleanup">
-	</form>
-	<c:forEach items="${profiles}" var="profile" varStatus="index">
-		<div class="userPanel">
-			<p>uuid: ${profile.uuid}</p>
-			<form action="UserProfiler" method="post">
-				<input type="hidden" name="action" value="switchBan">
-				<input type="hidden" name="uuid" value="${profile.uuid }">
-				<c:choose>
-					<c:when test="${profile.bannato}">
-						<input type="submit" name="submit" value=" togli ban ">
-						<c:set var="border" value="border: 2px solid red; border-radius: 5px 5px 5px 5px;"/>
-					</c:when>
-					<c:otherwise>
-						<input type="submit" name="submit" value=" ban! ">
-						<c:set var="border" value=""/>
-					</c:otherwise>
-				</c:choose>
+<div class=main>
+	<div class=userPanel>
+		<div class=userPanelCaption>Regole</div>
+		<c:if test="${not empty rule}">
+			<form action=UserProfiler method=post>
+				<input type=hidden name=action value=saveRule>
+				<input type=hidden name=uuid value=${rule.uuid}>
+				<input type=text name=label value="${rule.label}">
+				<br>
+				<textarea name=code style='width:100%; font-family: monospace;' rows=15>${rule.code}</textarea>
+				<br>
+				<input type=button value=test onclick=testRule()>
+				<input type=submit value=salva>
 			</form>
-			<form action="UserProfiler" method="post" onsubmit="return confirm('Cancellare il profilo? Sei sicuro? E` irreversibile. Non sei Giambo che pastrugna un ipad, vero?')">
-				<input type="hidden" name="action" value="deleteProfile">
-				<input type="hidden" name="uuid" value="${profile.uuid }">
-				<input type="submit" name="submit" value=" cancella ">
-			</form>
-			<div class="userPanelContent" style="${border}">
-				<p>nicknames: ${profile.nicknames }</p>
-				<p>ip addresses:
-				<c:forEach items="${profile.ipAddresses }" var="ip" varStatus="ipIdx">
-					<span class="ip-container">${ip}</span>
+		</c:if>
+		<a href=UserProfiler?action=newRule>Nuova</a>
+		<table style="width: 100%">
+			<tbody>
+				<c:forEach var="r" items="${rules}">
+					<tr>
+						<td>
+							${r.label}
+						</td>
+						<td>
+							<a href="UserProfiler?action=editRule&amp;uuid=${r.uuid}">
+								Modifica
+							</a>
+						</td>
+						<td>
+							<a href="UserProfiler?action=deleteRule&amp;uuid=${r.uuid}">
+								Elimina
+							</a>
+						</td>
+					</tr>
 				</c:forEach>
-				</p>
-				<p>permr: ${profile.permr }</p>
-				<p>etag: ${profile.etag }</p>
-				<p>userAgents: ${profile.userAgents }</p>
-				<p>resolutions: ${profile.screenResolutions }</p>
-				<p>plugin (hash): ${profile.pluginHashes }</p>
-				<p>Ultimi 100 messaggi di questo utente: <c:forEach items="${profile.msgIds }" var="msgId" varStatus="indexMsg">
-						<a href="Messages?action=getById&msgId=${msgId }" onfocus="blink(this)">${msgId }</a>
-					</c:forEach></p>
-				<p>ultimo riconoscimento: <fmt:formatDate value="${profile.ultimoRiconoscimentoUtenteDate}" pattern="dd.MM.yyyy@HH:mm:ss"/></p>
-				<p>Cancella un attributo:
-				<form action="UserProfiler" method="post" onsubmit="return confirm('Ci vuoi ripensare? Lo cancelliamo?')">
-					<input type="hidden" name="action" value="deleteAttribute">
-					<input type="hidden" name="uuid" value="${profile.uuid }">
-					<select name="attributeName">
-						<option value="ipAddress">ipAddress</option>
-						<option value="nickname">nickname</option>
-						<option value="userAgent">userAgent</option>
-						<option value="screenRes">screenRes</option>
-						<option value="pluginHash">pluginHash</option>
-						<option value="msgId">msgId</option>
-						<option value="permr+etag">permr+etag</option>
-					</select>
-					<input type="text" name="attributeValue" value="">
-					<input type="submit" name="submit" value=" cancella ">
-				</form>
-			</div>
-		</div>
-		<br>
-	</c:forEach>
-	<form action="UserProfiler" method="POST">
-		<input type="hidden" name="action" value="merge">
-		<input type="text" name="one">
-		<input type="text" name="two">
-		<input type="submit" name="submit" value=" unisci " onclick="return confirm('Unire i dati dei due profili(ua, ip, posts,..) in uno unico?\nNon sarà più possibile tornare indietro.')">
-	</form>
+			</tbody>
+		</table>
+	</div>
+	<div class=userPanel>
+		<div class=userPanelCaption>Log</div>
+		<table style="width: 100%">
+			<thead>
+				<tr>
+					<th>tstamp</th>
+					<th>label</th>
+					<th>reqInfo</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="record" items="${records}">
+					<tr>
+						<td>
+							<jsp:useBean id="dateValue" class="java.util.Date"/>
+							<jsp:setProperty name="dateValue" property="time" value="${record.tstamp}"/>
+							<fmt:formatDate value="${dateValue}" pattern="dd/MM/yyyy HH:mm:ss"/>
+						</td>
+						<td>
+							<a name="${record.label}">
+								${record.label}
+							</a>
+						</td>
+						<td>
+							<c:set var="reqInfo" value="${record.reqInfo}"/>
+							<pre><%=
+								new com.google.gson.GsonBuilder()
+								.setPrettyPrinting()
+								.create()
+								.toJson(pageContext.getAttribute("reqInfo"))
+							%></pre>
+						</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</div>
 </div>
-<div id="footer"></div>
