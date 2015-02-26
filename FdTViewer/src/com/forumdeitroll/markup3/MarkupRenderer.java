@@ -110,18 +110,22 @@ public class MarkupRenderer implements TokenListener {
 		int newQuoteLevel = countQuoteLevel(token);
 		boolean scrittoda = token.name.endsWith("SCRITTO_DA");
 		if (quoteLevel == 0 && newQuoteLevel == 0) {
+			emitOpenTags();
 			return;
 		} else if (quoteLevel != 0 && quoteLevel == newQuoteLevel) {
 			if (!scrittoda && !multiLineQuoteStarted && opts.collapseQuotes) {
+				emitCloseTags();
 				emitCloseQuote();
 				emitOpenMultiLineQuote();
 				multiLineQuoteStarted = true;
 				emitOpenQuote(token);
+				emitOpenTags();
 				emitQuoteText(token);
 			} else {
 				emitQuoteText(token);
 			}
 		} else if (newQuoteLevel == 0) {
+			emitCloseTags();
 			emitCloseQuote();
 			if (multiLineQuoteStarted) {
 				emitCloseMultiLineQuote();
@@ -135,15 +139,18 @@ public class MarkupRenderer implements TokenListener {
 			}
 			quoteLevel = newQuoteLevel;
 			emitOpenQuote(token);
+			emitOpenTags();
 			emitQuoteText(token);
 		} else {
 			quoteLevel = newQuoteLevel;
+			emitCloseTags();
 			emitCloseQuote();
 			if (!scrittoda && opts.collapseQuotes && !multiLineQuoteStarted) {
 				emitOpenMultiLineQuote();
 				multiLineQuoteStarted = true;
 			}
 			emitOpenQuote(token);
+			emitOpenTags();
 			emitQuoteText(token);
 		}
 	}
@@ -215,6 +222,44 @@ public class MarkupRenderer implements TokenListener {
 
 	private void emitCloseQuote() {
 		out.append("</span>");
+	}
+
+	private void emitCloseTags() {
+		int n = tagsCounter[0];
+		while (n --> 0) {
+			out.append("</b>");
+		}
+		n = tagsCounter[1];
+		while (n --> 0) {
+			out.append("</i>");
+		}
+		n = tagsCounter[2];
+		while (n --> 0) {
+			out.append("</s>");
+		}
+		n = tagsCounter[3];
+		while (n --> 0) {
+			out.append("</u>");
+		}
+	}
+
+	private void emitOpenTags() {
+		int n = tagsCounter[0];
+		while (n --> 0) {
+			out.append("<b>");
+		}
+		n = tagsCounter[1];
+		while (n --> 0) {
+			out.append("<i>");
+		}
+		n = tagsCounter[2];
+		while (n --> 0) {
+			out.append("<s>");
+		}
+		n = tagsCounter[3];
+		while (n --> 0) {
+			out.append("<u>");
+		}
 	}
 
 	private void onCode(TokenMatcher token) {
