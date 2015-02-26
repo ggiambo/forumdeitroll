@@ -323,7 +323,7 @@ public class MarkupRenderer implements TokenListener {
 
 	private void onUrl(TokenMatcher token, TokenMatcher additional) {
 		if (token.name.equals("URL")) {
-			emitLink(additional.group(2), additional.name, null, false);
+			emitLink(additional.group(), additional.name, null, false);
 		} else if (token.name.equals("URL_OPEN_WITH_LINK")) {
 			alternateOut = out;
 			out = new StringBuilder();
@@ -438,7 +438,7 @@ public class MarkupRenderer implements TokenListener {
 				out.append(String.format(
 					"<a href=\"%s\" onmouseover='YTCreateScriptTag(this, \"%s\")'>" +
 					"<img src='http://img.youtube.com/vi/%s/2.jpg'></a>"
-					, link.startsWith("http") ? "" : "https://" + escape(link), youcode, youcode));
+					, (link.startsWith("http") ? "" : "https://") + escape(link), youcode, youcode));
 			} else {
 				out.append(String.format(
 					"<a href=\"http://www.youtube.com/watch?v=%s\" onmouseover='YTCreateScriptTag(this, \"%s\")'>"
