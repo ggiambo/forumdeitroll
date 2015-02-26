@@ -110,7 +110,6 @@ public class MarkupRenderer implements TokenListener {
 		int newQuoteLevel = countQuoteLevel(token);
 		boolean scrittoda = token.name.endsWith("SCRITTO_DA");
 		if (quoteLevel == 0 && newQuoteLevel == 0) {
-			emitOpenTags();
 			return;
 		} else if (quoteLevel != 0 && quoteLevel == newQuoteLevel) {
 			if (!scrittoda && !multiLineQuoteStarted && opts.collapseQuotes) {
@@ -131,6 +130,7 @@ public class MarkupRenderer implements TokenListener {
 				emitCloseMultiLineQuote();
 				multiLineQuoteStarted = false;
 			}
+			emitOpenTags();
 			quoteLevel = 0;
 		} else if (quoteLevel == 0) {
 			if (!scrittoda && opts.collapseQuotes && !multiLineQuoteStarted) {
@@ -138,6 +138,7 @@ public class MarkupRenderer implements TokenListener {
 				multiLineQuoteStarted = true;
 			}
 			quoteLevel = newQuoteLevel;
+			emitCloseTags();
 			emitOpenQuote(token);
 			emitOpenTags();
 			emitQuoteText(token);
