@@ -50,6 +50,35 @@ public class Pvt extends MainServlet {
 		return "pvts.jsp";
 	}
 
+	// apre direttamente il pvt da leggere se ce n'e' solo uno (nella prima pagina dell'inbox)
+	@Action(method=Method.GET)
+	String pvtOrInbox(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		AuthorDTO author = login(req);
+		String page = req.getParameter("page");
+		int npage = 0;
+		try {
+			npage = Integer.parseInt(page);
+		} catch (Exception e) {
+			
+		}
+		String location = null;
+		for (PrivateMsgDTO pvt : privateMsgDAO.getInbox(author, PVT_PER_PAGE, npage)) {
+			if (!pvt.isRead()) {
+				if (location == null) {
+					location = "Pvt?action=show&id=" + pvt.getId();
+				} else {
+					location = "Pvt?action=inbox";
+				}
+			}
+		}
+		if (location == null) {
+			location = "Pvt?action=inbox";
+		}
+		res.setHeader("Location", location);
+		res.sendError(HttpServletResponse.SC_MOVED_TEMPORARILY);
+		return null;
+	}
+
 	@Action(method=Method.GET)
 	String sendNew(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		if (req.getParameter("action").equals("sendNew")) {

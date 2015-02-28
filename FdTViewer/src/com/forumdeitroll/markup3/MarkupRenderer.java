@@ -111,20 +111,24 @@ public class MarkupRenderer implements TokenListener {
 			return;
 		} else if (quoteLevel != 0 && quoteLevel == newQuoteLevel) {
 			if (!scrittoda && !multiLineQuoteStarted && opts.collapseQuotes) {
+				emitCloseTags();
 				emitCloseQuote();
 				emitOpenMultiLineQuote();
 				multiLineQuoteStarted = true;
 				emitOpenQuote(token);
+				emitOpenTags();
 				emitQuoteText(token);
 			} else {
 				emitQuoteText(token);
 			}
 		} else if (newQuoteLevel == 0) {
+			emitCloseTags();
 			emitCloseQuote();
 			if (multiLineQuoteStarted) {
 				emitCloseMultiLineQuote();
 				multiLineQuoteStarted = false;
 			}
+			emitOpenTags();
 			quoteLevel = 0;
 		} else if (quoteLevel == 0) {
 			if (!scrittoda && opts.collapseQuotes && !multiLineQuoteStarted) {
@@ -132,16 +136,20 @@ public class MarkupRenderer implements TokenListener {
 				multiLineQuoteStarted = true;
 			}
 			quoteLevel = newQuoteLevel;
+			emitCloseTags();
 			emitOpenQuote(token);
+			emitOpenTags();
 			emitQuoteText(token);
 		} else {
 			quoteLevel = newQuoteLevel;
+			emitCloseTags();
 			emitCloseQuote();
 			if (!scrittoda && opts.collapseQuotes && !multiLineQuoteStarted) {
 				emitOpenMultiLineQuote();
 				multiLineQuoteStarted = true;
 			}
 			emitOpenQuote(token);
+			emitOpenTags();
 			emitQuoteText(token);
 		}
 	}
@@ -213,6 +221,44 @@ public class MarkupRenderer implements TokenListener {
 
 	private void emitCloseQuote() {
 		out.append("</span>");
+	}
+
+	private void emitCloseTags() {
+		int n = tagsCounter[0];
+		while (n --> 0) {
+			out.append("</b>");
+		}
+		n = tagsCounter[1];
+		while (n --> 0) {
+			out.append("</i>");
+		}
+		n = tagsCounter[2];
+		while (n --> 0) {
+			out.append("</s>");
+		}
+		n = tagsCounter[3];
+		while (n --> 0) {
+			out.append("</u>");
+		}
+	}
+
+	private void emitOpenTags() {
+		int n = tagsCounter[0];
+		while (n --> 0) {
+			out.append("<b>");
+		}
+		n = tagsCounter[1];
+		while (n --> 0) {
+			out.append("<i>");
+		}
+		n = tagsCounter[2];
+		while (n --> 0) {
+			out.append("<s>");
+		}
+		n = tagsCounter[3];
+		while (n --> 0) {
+			out.append("<u>");
+		}
 	}
 
 	private void onCode(TokenMatcher token) {
@@ -321,7 +367,7 @@ public class MarkupRenderer implements TokenListener {
 
 	private void onUrl(TokenMatcher token, TokenMatcher additional) {
 		if (token.name.equals("URL")) {
-			emitLink(additional.group(2), additional.name, null, false);
+			emitLink(additional.group(), additional.name, null, false);
 		} else if (token.name.equals("URL_OPEN_WITH_LINK")) {
 			alternateOut = out;
 			out = new StringBuilder();
@@ -436,7 +482,7 @@ public class MarkupRenderer implements TokenListener {
 				out.append(String.format(
 					"<a href=\"%s\" onmouseover='YTCreateScriptTag(this, \"%s\")'>" +
 					"<img src='http://img.youtube.com/vi/%s/2.jpg'></a>"
-					, escape(link), youcode, youcode));
+					, (link.startsWith("http") ? "" : "https://") + escape(link), youcode, youcode));
 			} else {
 				out.append(String.format(
 					"<a href=\"http://www.youtube.com/watch?v=%s\" onmouseover='YTCreateScriptTag(this, \"%s\")'>"

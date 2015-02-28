@@ -26,30 +26,18 @@ import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
-import com.forumdeitroll.persistence.*;
-import com.forumdeitroll.profiler.UserProfile;
-import com.forumdeitroll.profiler.UserProfiler;
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.DAOFactory;
+import com.forumdeitroll.persistence.MessageDTO;
+import com.forumdeitroll.persistence.MessagesDTO;
+import com.forumdeitroll.persistence.QuoteDTO;
+import com.forumdeitroll.persistence.TagDTO;
+import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.taglibs.MessageTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
-import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
@@ -566,21 +554,10 @@ public class Messages extends MainServlet {
 			insertMessageAjaxBan(res);
 			return null;
 		}
-
-		UserProfile profile = null;
 		boolean bannato = false;
 		try {
-			// un errore nel profiler non preclude la funzionalita' del forum, ma bisogna tenere d'occhio i logs
-			UserProfile candidate = new Gson().fromJson(req.getParameter("jsonProfileData"), UserProfile.class);
-			candidate.setIpAddress(req.getHeader("X-Forwarded-For") != null ? req.getHeader("X-Forwarded-For") : req.getRemoteAddr());
-			candidate.setNick(author.getNick());
-			profile = UserProfiler.getInstance().guess(candidate);
-			if (profile.isBannato()) {
+			if (ProfilerAPI.blockedByRules(req, author)) {
 				insertMessageAjaxBan(res);
-				Logger.getLogger(Messages.class).info(
-						"E` stato riconosciuto come bannato il seguente profilo utente: "+new Gson().toJson(candidate));
-				Logger.getLogger(Messages.class).info(
-						"Il profilo utente a cui e` stato associato è "+new Gson().toJson(profile));
 				bannato = true;
 			}
 		} catch (Exception e) {
@@ -655,12 +632,7 @@ public class Messages extends MainServlet {
 		msg = messagesDAO.insertMessage(msg);
 		String m_id = Long.toString(msg.getId());
 		IPMemStorage.store(req, m_id, author);
-		try {
-			if (profile != null)
-				UserProfiler.getInstance().bind(profile, m_id);
-		} catch (Exception e) {
-
-		}
+		ProfilerAPI.log(req, author, "message-post-" + m_id);
 
 		// redirect
 		JsonWriter writer = new JsonWriter(res.getWriter());
@@ -787,7 +759,9 @@ public class Messages extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String hideMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
+		String ret = restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
+        ProfilerAPI.logSimple("manual-hide-message-" + req.getParameter("msgId") + "-by-" + login(req).getNick());
+        return ret;
 	}
 
 	/**

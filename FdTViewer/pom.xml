@@ -114,16 +114,6 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/WebContent/WEB-INF/lib/simplecaptcha-1.2.1.jar</systemPath>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.uadetector</groupId>
-			<artifactId>uadetector-core</artifactId>
-			<version>0.9.9</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.uadetector</groupId>
-			<artifactId>uadetector-resources</artifactId>
-			<version>2013.09</version>
-		</dependency>
 		<!-- dipendenze indirette (container) -->
 		<dependency>
 			<groupId>mysql</groupId>

@@ -96,8 +96,9 @@
 			<li>|</li>
 			<li><a id="Polls_createNewPoll" href="Polls?action=createNewPoll">Nuovo sondaggio</a></li>
 		</c:if>
-
-		<div style="float: right; ">
+		
+	</ul>
+	<ul style="float: right; ">
 		<c:choose>
 			<c:when test="${not empty loggedUser}">
 				<li>Loggato come <a href="User">${loggedUser.nick}</a></li>
@@ -112,17 +113,17 @@
 				<li><a href="User?action=registerAction">Registrati</a></li>
 			</c:otherwise>
 		</c:choose>
+	</ul>
+	<c:if test="${hasPvts}">
+		<div class=pvt-notification-enhancer>
+			Nuovi messaggi in casella ! &#8593;
 		</div>
-		<c:if test="${hasPvts}">
-			<div class=pvt-notification-enhancer>
-				Nuovi messaggi in casella ! &#8593;
-			</div>
-		</c:if>
-		<br>
+	</c:if>
+	<br>
+	<ul>
 		<c:if test="${!empty page}">
 			<li id='pager'><fdt:pager handler="Messages"></fdt:pager></li>
 		</c:if>
-		
 		<li>|</li>
 		<li><a href="javascript:ircbox()">##fdt@freenode</a></li>
 		<li><a id=ciattina href="Minichat" onclick="window.open('Minichat', 'la ciattina', 'left=100px,top=100px,height=600px,width=400px,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes'); return false;">la ciattina</a></li>

@@ -17,6 +17,7 @@ import org.jooq.Record;
 import org.jooq.Record2;
 import org.jooq.Record3;
 import org.jooq.Result;
+import org.jooq.impl.DSL;
 
 import com.forumdeitroll.FdTException;
 import com.forumdeitroll.persistence.AuthorDTO;
@@ -163,7 +164,14 @@ public class PrivateMsgDAO extends BaseDAO {
 				.where(PVT_CONTENT.ID.eq((int)pvt_id))
 				.and(
 						PVT_CONTENT.SENDER.eq(user.getNick())
-						.or(PVT_RECIPIENT.RECIPIENT.eq(user.getNick()))
+						.or(
+							DSL.exists(
+								jooq.select(PVT_RECIPIENT.RECIPIENT)
+								.from(PVT_RECIPIENT)
+								.where(PVT_RECIPIENT.PVT_ID.eq((int)pvt_id))
+								.and(PVT_RECIPIENT.RECIPIENT.eq(user.getNick()))
+							)
+						)
 				)
 				.fetch();
 
