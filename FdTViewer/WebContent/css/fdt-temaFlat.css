@@ -1,5 +1,5 @@
 /* rimpicciolisce avatar anonimo */
-img[src='Misc?action=getAvatar&nick='] {
+img[src='Misc?action=getAvatar'] {
     width: 50px;
     height: 50px;
 }
