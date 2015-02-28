@@ -1,8 +1,12 @@
 package com.forumdeitroll.persistence;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,6 +44,36 @@ public class AuthorDTO implements Serializable {
 
 	public String getNick() {
 		return nick;
+	}
+
+	public String getNickUrlsafe() {
+		if (nick == null) return null;
+		try {
+			return URLEncoder.encode(nick, "UTF-8").replace(' ', '+');
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
+	}
+
+	public String getAvatarUrl() {
+		return "Misc?action=getAvatar&amp;nick=" + getNickUrlsafe();
+	}
+
+	public String getUserInfoUrl() {
+		return "User?action=getUserInfo&amp;nick=" + getNickUrlsafe();
+	}
+
+	public String getMessagesUrl(String specificParam) {
+		if (StringUtils.isNotEmpty(specificParam)) {
+			try {
+				return "Messages?action=getByAuthor&amp;nick=" + getNickUrlsafe() +
+						"&amp;forum=" + URLEncoder.encode(specificParam, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				return null;
+			}
+		} else {
+			return "Messages?action=getByAuthor&amp;nick=" + getNickUrlsafe();
+		}
 	}
 
 	public void setNick(String nick) {

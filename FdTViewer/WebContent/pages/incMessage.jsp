@@ -27,22 +27,14 @@
 
 	<div class="msgInfo">
 		<div>
-			<c:url value="" var="avatarURL">
-				<c:param name="action" value="getAvatar"/>
-				<c:param name="nick" value="${msg.author.nick}"/>
-			</c:url>
 			<c:choose>
 				<c:when test="${!empty msg.author.nick}">
-					<c:url value="User" var="userInfoUrl">
-						<c:param name="action" value="getUserInfo"/>
-						<c:param name="nick" value="${msg.author.nick}"/>
-					</c:url>
-					<a href="<c:out value="${userInfoUrl}" escapeXml="true"/>">
-						<img class="avatarImg avatarImgLinkable" alt="Avatar" src="Misc<c:out value="${avatarURL}" escapeXml="true" />" />
+					<a href="${msg.author.userInfoUrl}">
+						<img class="avatarImg avatarImgLinkable" alt="Avatar" src="${msg.author.avatarUrl}" />
 					</a>
 				</c:when>
 				<c:otherwise>
-					<img class="avatarImg" alt="Avatar" src="Misc<c:out value="${avatarURL}" escapeXml="true" />" />
+					<img class="avatarImg" alt="Avatar" src="Misc?action=getAvatar" />
 				</c:otherwise>
 			</c:choose>
 			<fdt:nickcode nick="${msg.author.nick}"/>
@@ -58,14 +50,7 @@
 						Non Autenticato
 					</c:when>
 					<c:otherwise>
-						<c:url value="Messages" var="messagesUrl">
-							<c:param name="action" value="getByAuthor"/>
-							<c:param name="author" value="${msg.author.nick}"/>
-							<c:if test="${specificParams['forum'] != null}">
-								<c:param name="forum" value="${specificParams['forum']}"/>
-							</c:if>
-						</c:url>
-						<a href="<c:out value="${messagesUrl}" escapeXml="true" />">${msg.author.nick}</a>
+						<a href="${msg.author.getMessagesUrl(specificParams['forum'])}">${msg.author.nick}</a>
 					</c:otherwise>
 				</c:choose>
                 <c:choose>
@@ -92,7 +77,7 @@
 
 	<span style="width:100%; margin:5px;">
 		<b>
-			<a href="Threads?action=getByThread&threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a>
+			<a href="Threads?action=getByThread&amp;threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a>
 		</b>
 	</span>
 	
@@ -171,7 +156,7 @@
 	<c:if test="${not empty loggedUser}">
 		<%-- Segnalibri --%>
 		<div class="buttonBarButton">
-			<a class="buttonBarLink" href="Bookmarks?action=add&msgId=${msg.id}">
+			<a class="buttonBarLink" href="Bookmarks?action=add&amp;msgId=${msg.id}">
 				<span class="buttonBarImg buttonBarImgBookmark"></span>
 				Aggiungi ai segnalibri
 			</a>

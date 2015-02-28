@@ -1,10 +1,13 @@
 package com.forumdeitroll.markup3;
 
+import java.net.URLEncoder;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+
 import com.forumdeitroll.markup.Emoticon;
 import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.RenderOptions;
@@ -210,7 +213,7 @@ public class MarkupRenderer implements TokenListener {
 				return;
 			}
 			out.append("<a href=\"User?action=getUserInfo&amp;nick=");
-			out.append(escape(nick));
+			out.append(urlencode(escape(nick)));
 			out.append("\">");
 			out.append(escape(nick));
 			out.append("</a><BR>");
@@ -360,7 +363,7 @@ public class MarkupRenderer implements TokenListener {
 		}
 		out.append(String.format(
 			"<a href=\"https://www.google.com/searchbyimage?image_url=%s\""
-			+ " alt='Ricerca immagini simili' title='Ricerca immagini simili'"
+			+ " title='Ricerca immagini simili'"
 			+ " rel='nofollow noreferrer' target='_blank'>"
 			+ "<img src=\"https://www.google.com/favicon.ico\" alt='' style='width: 16px; height: 16px;'></a>", link));
 	}
@@ -405,8 +408,8 @@ public class MarkupRenderer implements TokenListener {
 		}
 		link = escape(link);
 		out.append(String.format(
-				"<a rel='nofollow noreferrer' target='_blank' href=\"%s\" title=\"%s\" alt=\"%s\">"
-			, link, desc != null ? escape(desc) : escape(orig), desc != null ? escape(desc) : escape(orig)));
+				"<a rel='nofollow noreferrer' target='_blank' href=\"%s\" title=\"%s\" >"
+			, link, desc != null ? escape(desc) : escape(orig)));
 		if (autolink) {
 			for (String domain : DOMAINS_STR) {
 				if (link.indexOf(domain) != -1) {
@@ -430,7 +433,7 @@ public class MarkupRenderer implements TokenListener {
 		if (!internal) {
 			out.append(String.format(
 				" <a rel='nofollow noreferrer' target='_blank'"
-				+ " href=\"http://anonym.to/?%s\" alt='Link anonimizzato(referer)'"
+				+ " href=\"http://anonym.to/?%s\" "
 				+ " title='Link anonimizzato(referer)'><img src='images/anonymlink.png'></a>"
 				, link));
 		}
@@ -645,5 +648,13 @@ public class MarkupRenderer implements TokenListener {
 
 	private static String escape(String string) {
 		return StringEscapeUtils.escapeHtml4(string);
+	}
+
+	private static String urlencode(String string) {
+		try {
+			return URLEncoder.encode(string, "UTF-8");
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
