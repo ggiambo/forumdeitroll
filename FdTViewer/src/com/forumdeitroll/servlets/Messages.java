@@ -14,14 +14,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
-
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
@@ -759,8 +756,8 @@ public class Messages extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String hideMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String ret = restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
-        ProfilerAPI.logSimple("manual-hide-message-" + req.getParameter("msgId") + "-by-" + login(req).getNick());
+        String ret = restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
+		ProfilerAPI.logSimple("manual-hide-message-" + req.getParameter("msgId") + "-by-" + login(req).getNick());
         return ret;
 	}
 
