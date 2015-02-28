@@ -1,14 +1,25 @@
 package com.forumdeitroll.persistence;
 
-import com.forumdeitroll.FdTConfig;
-import com.forumdeitroll.persistence.dao.*;
-import org.apache.commons.dbcp.BasicDataSource;
+import java.util.Properties;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.apache.log4j.Logger;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
-import java.util.Properties;
+import com.forumdeitroll.FdTConfig;
+import com.forumdeitroll.persistence.dao.AdminDAO;
+import com.forumdeitroll.persistence.dao.AuthorsDAO;
+import com.forumdeitroll.persistence.dao.BookmarksDAO;
+import com.forumdeitroll.persistence.dao.DigestDAO;
+import com.forumdeitroll.persistence.dao.MessagesDAO;
+import com.forumdeitroll.persistence.dao.MiscDAO;
+import com.forumdeitroll.persistence.dao.PollsDAO;
+import com.forumdeitroll.persistence.dao.PrivateMsgDAO;
+import com.forumdeitroll.persistence.dao.QuotesDAO;
+import com.forumdeitroll.persistence.dao.ThreadsDAO;
 
 public class DAOFactory {
 
@@ -56,10 +67,10 @@ public class DAOFactory {
 		String url = databaseConfig.getProperty("url");
 
 		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setMaxActive(15);
+		dataSource.setMaxTotal(15);
 		dataSource.setMaxIdle(10);
 		dataSource.setMinIdle(3);
-		dataSource.setMaxWait(100);
+		dataSource.setMaxWaitMillis(30000);
 		dataSource.setTestOnBorrow(true);
 		dataSource.setTestWhileIdle(true);
 		dataSource.setUrl(url);
