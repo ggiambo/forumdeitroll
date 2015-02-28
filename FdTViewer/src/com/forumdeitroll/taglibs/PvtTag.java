@@ -21,7 +21,7 @@ public class PvtTag extends TagSupport {
     		try {
     			JspWriter out = pageContext.getOut();
     			if (hasPvts != null && hasPvts) {
-    				out.write("<a href='Pvt?action=inbox' class='pvt' title='Nuovi messaggi!'><img src='images/icona_pibox_a.gif' alt='Nuovi Messaggi Privati' /></a>");
+    				out.write("<a href='Pvt?action=pvtOrInbox' class='pvt' title='Nuovi messaggi!'><img src='images/icona_pibox_a.gif' alt='Nuovi Messaggi Privati' /></a>");
     			} else {
     				out.write("<a href='Pvt?action=inbox' class='pvt' title='Nessun nuovo messaggio'><img src='images/icona_pibox.png' alt='Messaggi Privati' /></a>");
     			}
