@@ -5,8 +5,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.UUID;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
