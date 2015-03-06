@@ -71,7 +71,7 @@ public class TokenCatalog {
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_HTTPS", "https://"),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_MAILTO", "mailto:"),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_FTP", "ftp://"),
-			new TokenMatcher.Regex("LINK_TLD", "^(([a-z0-9]+\\.)+(it|com|org|net|info|de|fr|co\\.uk|es|eu|biz|name|edu|gov|mil)(/.*)?)", Pattern.CASE_INSENSITIVE),
+			new TokenMatcher.Regex("LINK_TLD", "^(([a-z][a-z0-9\\-]{1,61}[a-z0-9]\\.)+(it|com|org|net|info|de|fr|co\\.uk|es|eu|biz|name|edu|gov|mil)(/.*)?)", Pattern.CASE_INSENSITIVE),
 		};
 		ArrayList<TokenMatcher> tmText = new ArrayList<TokenMatcher>();
 		ArrayList<TokenMatcher> tmBeginningWord = new ArrayList<TokenMatcher>();
