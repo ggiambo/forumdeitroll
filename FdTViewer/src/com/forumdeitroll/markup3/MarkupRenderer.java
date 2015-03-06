@@ -478,7 +478,7 @@ public class MarkupRenderer implements TokenListener {
 				}
 			}
 			out.append(String.format(
-				"<iframe width=\"400\" height=\"329\" src=\"//www.youtube-nocookie.com/embed/%s%s\" frameborder=\"0\" allowfullscreen></iframe>"
+				"<iframe width=\"400\" height=\"329\" src=\"//www.youtube.com/embed/%s%s\" frameborder=\"0\" allowfullscreen></iframe>"
 				, youcode, "?start=" + start));
 		} else {
 			if (link != null) {
