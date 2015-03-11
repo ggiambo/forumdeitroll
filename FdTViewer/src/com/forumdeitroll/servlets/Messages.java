@@ -1,40 +1,31 @@
 package com.forumdeitroll.servlets;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.DAOFactory;
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.MessagesDTO;
-import com.forumdeitroll.persistence.QuoteDTO;
-import com.forumdeitroll.persistence.TagDTO;
+import com.forumdeitroll.persistence.*;
 import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.taglibs.MessageTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
@@ -93,13 +84,13 @@ public class Messages extends MainServlet {
 	 */
 	@Action
 	String getByAuthor(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String author = req.getParameter("author");
-		addSpecificParam(req, "author", author);
+		String nick = req.getParameter("nick");
+		addSpecificParam(req, "nick", nick);
 		String forum = req.getParameter("forum");
 		addSpecificParam(req, "forum", forum);
-		setWebsiteTitlePrefix(req, "Messaggi di " + author);
-		setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + author + "</i>"));
-		MessagesDTO messages = messagesDAO.getMessages(forum, author, PAGE_SIZE, getPageNr(req), hiddenForums(req));
+		setWebsiteTitlePrefix(req, "Messaggi di " + nick);
+		setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + nick + "</i>"));
+		MessagesDTO messages = messagesDAO.getMessages(forum, nick, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
