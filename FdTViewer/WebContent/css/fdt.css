@@ -1730,3 +1730,75 @@ div.softvMsg {
 	color: red;
 	font-weight: bold;
 }
+
+
+/* suoranciata's dead simple grid layout
+   riportato da versione mobile
+   modificati i col- per dividere in 12 invece di 6
+ */
+.row {
+	width: 100%;
+	margin: 0 auto;
+	display: block;
+	margin: 0;
+	padding: 0;
+	clear: both;
+}
+
+.row.sep {
+	height: 1px;
+}
+
+.row > .col-1 {
+  width: 8.333333333333334%;
+}
+.row > .col-2 {
+  width: 16.666666666666668%;
+}
+.row > .col-3 {
+  width: 25%;
+}
+.row > .col-4 {
+  width: 33.333333333333336%;
+}
+.row > .col-5 {
+  width: 41.66666666666667%;
+}
+.row > .col-6 {
+  width: 50%;
+}
+.row > .col-7 {
+  width: 58.333333333333336%;
+}
+.row > .col-8 {
+  width: 66.66666666666667%;
+}
+.row > .col-9 {
+  width: 75%;
+}
+.row > .col-10 {
+  width: 83.33333333333334%;
+}
+.row > .col-11 {
+  width: 91.66666666666667%;
+}
+.row > .col-12 {
+  width: 100%;
+}
+
+.row > [class^='col-'] {
+	margin: 0;
+	padding: 0;
+	float: left;
+}
+.row > [class^='col']:last-child {
+	float: right;
+}
+
+.row > [class^='col']:first-child {
+	float: left;
+}
+
+.row > [class^='col-'].pull-right {
+	text-align:right;
+}

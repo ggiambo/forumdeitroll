@@ -109,6 +109,18 @@
 	</tag>
 
 	<tag>
+		<name>lessPrettyDate</name>
+		<tag-class>com.forumdeitroll.taglibs.LessPrettyDateTag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>date</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Date</type>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>nickcode</name>
 		<tag-class>com.forumdeitroll.taglibs.NickCodeTag</tag-class>
 		<body-content>empty</body-content>
