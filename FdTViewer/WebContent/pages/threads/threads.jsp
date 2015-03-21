@@ -14,7 +14,7 @@
 				<c:set var="rowclass" value="msgOdd"/>
 			</c:otherwise>
 		</c:choose>
-		<div class="${rowclass} row">
+		<div class="${rowclass} threadBox row">
 			<div class=col-1>
 				<c:choose>
 					<c:when test="${empty thread.author.nick}">
