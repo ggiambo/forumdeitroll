@@ -31,6 +31,11 @@
 			</div>
 			<div class=col-11>
 				<div class=row>
+					<div class=col-12>
+						<span  style="float:right; background-color: green; width: ${thread.numberOfMessages}px; height: 5px"></span>
+					</div>
+				</div>
+				<div class=row>
 					<div class=col-9>
 						<span class=threadTitle>
 							<c:choose>
@@ -54,10 +59,10 @@
 						${thread.numberOfMessages}
 						<c:choose>
 							<c:when test="${thread.numberOfMessages != 1}">
-								messaggi
+								<span class=hide-me>messaggi</span>
 							</c:when>
 							<c:otherwise>
-								messaggio
+								<span class=hide-me>messaggio</span>
 							</c:otherwise>
 						</c:choose>
 					</div>
@@ -70,10 +75,10 @@
 						</c:if>
 						<c:choose>
 							<c:when test="${param['action'] == 'getThreadsByLastPost' || param['action'] == 'getAuthorThreadsByLastPost'}">
-								Ultimo messaggio di
+								<span class=hide-me>Ultimo messaggio di</span>
 							</c:when>
 							<c:when test="${param['action'] == 'getThreads'}">
-								Iniziato da
+								<span class=hide-me>Iniziato da</span>
 							</c:when>
 							<c:otherwise></c:otherwise>
 						</c:choose>

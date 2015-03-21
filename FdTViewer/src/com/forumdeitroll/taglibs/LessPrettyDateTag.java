@@ -22,7 +22,7 @@ public class LessPrettyDateTag extends TagSupport {
 			Date today = truncFmt.parse(truncFmt.format(new Date()));
 			if (date.getTime() < today.getTime()) {
 				pageContext.getOut().print(
-					longFmt.format(date).replace(":::", "alle")
+					longFmt.format(date).replace(":::", "<span class=hide-me>alle</span>")
 				);
 			} else {
 				pageContext.getOut().print(
