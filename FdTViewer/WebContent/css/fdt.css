@@ -220,6 +220,14 @@ img.avatarImg {
 	border-radius: 5px;
 }
 
+img.avatarImgThreadlist {
+	height: 42px;
+	padding: 3px;
+	border: 1px solid;
+	margin: 3px;
+	max-width: 50px; 
+}
+
 img.avatarImgLinkable:hover {
 	box-shadow: 0 0 8px #0A78FF;
 	border: 2px solid lightGray;

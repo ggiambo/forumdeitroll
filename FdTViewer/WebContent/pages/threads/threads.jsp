@@ -15,17 +15,17 @@
 			</c:otherwise>
 		</c:choose>
 		<div class="${rowclass} threadBox row">
-			<div class=col-1>
+			<div class=col-1 style=text-align:center>
 				<c:choose>
 					<c:when test="${empty thread.author.nick}">
-						<img src=Misc?action=getAvatar style=max-width:50px>
+						<img src=Misc?action=getAvatar class=avatarImgThreadlist>
 					</c:when>
 					<c:otherwise>
 						<c:url value="Misc" var="avatarURL">
 							<c:param name="action" value="getAvatar"/>
 							<c:param name="nick" value="${thread.author.nick}"/>
 						</c:url>
-						<img src="${avatarURL}" style=max-width:50px>
+						<img src="${avatarURL}" class=avatarImgThreadlist>
 					</c:otherwise>
 				</c:choose>
 			</div>
