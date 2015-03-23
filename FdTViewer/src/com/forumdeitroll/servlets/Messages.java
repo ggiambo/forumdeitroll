@@ -11,12 +11,15 @@ import com.forumdeitroll.taglibs.MessageTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.google.gson.stream.JsonWriter;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -84,13 +87,13 @@ public class Messages extends MainServlet {
 	 */
 	@Action
 	String getByAuthor(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		String nick = req.getParameter("nick");
-		addSpecificParam(req, "nick", nick);
+		String author = req.getParameter("author");
+		addSpecificParam(req, "author", author);
 		String forum = req.getParameter("forum");
 		addSpecificParam(req, "forum", forum);
-		setWebsiteTitlePrefix(req, "Messaggi di " + nick);
-		setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + nick + "</i>"));
-		MessagesDTO messages = messagesDAO.getMessages(forum, nick, PAGE_SIZE, getPageNr(req), hiddenForums(req));
+		setWebsiteTitlePrefix(req, "Messaggi di " + author);
+		setNavigationMessage(req, NavigationMessage.info("Messaggi scritti da <i>" + StringEscapeUtils.escapeHtml4(author) + "</i>"));
+		MessagesDTO messages = messagesDAO.getMessages(forum, author, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());

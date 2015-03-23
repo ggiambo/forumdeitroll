@@ -66,13 +66,13 @@ public class AuthorDTO implements Serializable {
 	public String getMessagesUrl(String specificParam) {
 		if (StringUtils.isNotEmpty(specificParam)) {
 			try {
-				return "Messages?action=getByAuthor&amp;nick=" + getNickUrlsafe() +
+				return "Messages?action=getByAuthor&amp;author=" + getNickUrlsafe() +
 						"&amp;forum=" + URLEncoder.encode(specificParam, "UTF-8");
 			} catch (UnsupportedEncodingException e) {
 				return null;
 			}
 		} else {
-			return "Messages?action=getByAuthor&amp;nick=" + getNickUrlsafe();
+			return "Messages?action=getByAuthor&amp;author=" + getNickUrlsafe();
 		}
 	}
 
