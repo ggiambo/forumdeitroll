@@ -59,10 +59,10 @@
 						${thread.numberOfMessages}
 						<c:choose>
 							<c:when test="${thread.numberOfMessages != 1}">
-								<span class=hide-me>messaggi</span>
+								<span class=hide-me> messaggi</span>
 							</c:when>
 							<c:otherwise>
-								<span class=hide-me>messaggio</span>
+								<span class=hide-me> messaggio</span>
 							</c:otherwise>
 						</c:choose>
 					</div>
