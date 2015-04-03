@@ -340,10 +340,6 @@ public class Messages extends MainServlet {
 			return "Ma che cacchio di forum e' '" + forum + "' ?!?";
 		}
 
-		if ((forum != null) && forum.equals(DAOFactory.FORUM_ASHES)) {
-			return "Postare nel forum " + DAOFactory.FORUM_ASHES + " e' vietato e stupido";
-		}
-
 		return null;
 	}
 
