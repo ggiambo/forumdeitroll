@@ -163,6 +163,9 @@ ul.pager-9 > li {width: 11.11111111111111%;}
 ul.pager-10 > li {width: 10%;}
 ul.pager-11 > li {width: 9.090909090909092%;}
 
+li.pager-current > a.btn {
+	background: linear-gradient(#7D91A6, #272D33)
+}
 
 /* cronologia */
 .msgContent {
