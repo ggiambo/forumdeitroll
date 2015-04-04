@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.forumdeitroll.PasswordUtils;
+import com.forumdeitroll.MessagePenetrator;
 import com.forumdeitroll.SingleValueCache;
 import com.forumdeitroll.markup.Emoticon;
 import com.forumdeitroll.markup.Emoticons;
@@ -37,6 +38,7 @@ import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
 import com.forumdeitroll.util.VisitorCounters;
+import com.forumdeitroll.util.IPMemStorage;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 
@@ -72,7 +74,9 @@ public class JSonServlet extends HttpServlet {
 		StringBuilderWriter writer = new StringBuilderWriter();
 		try {
 			Method m = this.getClass().getDeclaredMethod(action, StringBuilderWriter.class, Map.class, Long.TYPE);
-			m.invoke(this, writer, Collections.unmodifiableMap(req.getParameterMap()), time);
+			final Map<String, String[]> parmap = req.getParameterMap();
+			parmap.put("IP", new String[]{ IPMemStorage.requestToIP(req) });
+			m.invoke(this, writer, Collections.unmodifiableMap(parmap), time);
 		} catch (NoSuchMethodException e) {
 			printUsage(req, res);
 			return;
@@ -423,121 +427,37 @@ public class JSonServlet extends HttpServlet {
 
 	/**
 	 * Posta un messaggio (Nuovo o editato).
-	 * @param params
-	 * @return
-	 * @throws Exception
 	 */
 	protected void addMessage(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+		final MessagePenetrator mp = new MessagePenetrator();
 
-		String type = getStringValue(params, "type", null);
-		if (type == null) {
-			writeErrorMessage(writer, "Manca il parametro 'type'", time);
-			return;
-		}
+		mp
+			.setForum(getStringValue(params, "forum", null))
+			.setParentId(getStringValue(params, "msgId", null))
+			.setSubject(getStringValue(params, "subject", null))
+			.setText(getStringValue(params, "text", null))
+			.setCredentials(
+				null,
+				getStringValue(params, "nick", null), getStringValue(params, "password", ""),
+				null, "nocaptcha")
+			.setType(getStringValue(params, "type", null));
 
-		MessageDTO message = new MessageDTO();
-
-		// text
-		String text = getStringValue(params, "text", null);
-		if (text == null || text.length() < 5) {
-			writeErrorMessage(writer, "Un po di fantasia, scrivi almeno 5 caratteri ...", time);
-			return;
-		}
-		if (text.length() > Messages.MAX_MESSAGE_LENGTH) {
-			writeErrorMessage(writer, "Sei piu' logorroico di una Wakka, stai sotto i " + Messages.MAX_MESSAGE_LENGTH + " caratteri !", time);
-			return;
-		}
-		message.setText(InputSanitizer.sanitizeText(text));
-
-		// subject
-		String subject = getStringValue(params, "subject", null);
-		if (subject == null || subject.length() < 3) {
-			writeErrorMessage(writer, "Oggetto di almeno di 3 caratteri, cribbio !", time);
-			return;
-		}
-		if (subject.length() > Messages.MAX_SUBJECT_LENGTH) {
-			writeErrorMessage(writer, "LOL oggetto piu' lungo di " + Messages.MAX_SUBJECT_LENGTH + " caratteri !", time);
-			return;
-		}
-		message.setSubject(InputSanitizer.sanitizeSubject(subject));
-
-		// author - non e' possibile postare da ANOnimi !
-		String nick = getStringValue(params, "nick", null);
-		if (nick == null) {
-			writeErrorMessage(writer, "Non puoi postare da ANOnimo", time);
-			return;
-		}
-		String password = getStringValue(params, "password", "");
-		if (password == null) {
-			writeErrorMessage(writer, "Manca la password", time);
-			return;
-		}
-		AuthorDTO author = DAOFactory.getAuthorsDAO().getAuthor(nick);
-		if (!PasswordUtils.hasUserPassword(author, password)) {
-			writeErrorMessage(writer, "Password errata", time);
-			return;
-		}
-		String anonymous = getStringValue(params, "anonymous", null);
-		if (StringUtils.isEmpty(anonymous)) {
-			message.setAuthor(author);
-		} else {
-			message.setAuthor(new AuthorDTO(author));
+		if (!StringUtils.isEmpty(getStringValue(params, "anonymous", null))) {
+			mp.setAnonymous();
 		}
 
-		if (type.equals("new")) {
-			// forum
-			String forum = getStringValue(params, "forum", null);
-			if (forum != null && !forum.equals(DAOFactory.FORUM_ASHES)) {
-				forum = InputSanitizer.sanitizeForum(forum);
-				if (!DAOFactory.getMiscDAO().getForums().contains(forum)) {
-					writeErrorMessage(writer, "Ma che cacchio di forum e' '" + forum + "' ?!?", time);
-					return;
-				}
-				message.setForum(forum);
-			}
-			author.setMessages(author.getMessages() + 1);
-			message.setDate(new Date());
-			DAOFactory.getAuthorsDAO().updateAuthor(author);
-		} else if (type.equals("edit") || type.equals("quote") || type.equals("reply")) {
-			// msgId / parentId
-			long msgId = getLongValue(params, "msgId", -1);
-			if (msgId == -1) {
-				writeErrorMessage(writer, "Manca il parametro 'msgId'", time);
-				return;
-			}
+		mp.isBanned(null, getStringValue(params, "IP", null), null);
 
-			// evita il post in un altro forum !
-			MessageDTO oldMessage = DAOFactory.getMessagesDAO().getMessage(msgId);
-			message.setForum(oldMessage.getForum());
-
-			if (type.equals("edit")) {
-				// check se l'autore e' lo stesso
-				AuthorDTO messageAuthor = oldMessage.getAuthor();
-				if (messageAuthor != null && !nick.equalsIgnoreCase(messageAuthor.getNick())) {
-					writeErrorMessage(writer, "Imbroglione, non puoi modificare questo messaggio !", time);
-					return;
-				}
-				// nuovo testo & subject
-				oldMessage.setText(message.getText() + "<BR><BR><b>**Modificato dall'autore il " +
-						new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>");
-				oldMessage.setSubject(message.getSubject());
-				message = oldMessage;
-			} else { // quote / reply
-				message.setDate(new Date());
-				message.setParentId(msgId);
-				message.setThreadId(oldMessage.getThreadId());
-			}
-		} else {
-			writeErrorMessage(writer, "Tipo '" + type + "' non valido", time);
+		final MessageDTO msg = mp.penetrate();
+		if (msg == null) {
+			writeErrorMessage(writer, mp.Error(), time);
 			return;
 		}
-
-		message = DAOFactory.getMessagesDAO().insertMessage(message);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
 		out.beginObject();
-		out.name("id").value(message.getId());
+		out.name("id").value(msg.getId());
 		out.endObject();
 
 		closeJsonWriter(out, time);

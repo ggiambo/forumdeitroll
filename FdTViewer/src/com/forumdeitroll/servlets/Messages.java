@@ -1,6 +1,7 @@
 package com.forumdeitroll.servlets;
 
 import com.forumdeitroll.PasswordUtils;
+import com.forumdeitroll.MessagePenetrator;
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
@@ -37,10 +38,10 @@ public class Messages extends MainServlet {
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR> *(&gt;\\ ?)*");
 
+	public static final Set<String> BANNED_IPs = new HashSet<String>();
+
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 80;
-
-	protected static final Set<String> BANNED_IPs = new HashSet<String>();
 
 	@Action
 	@Override
@@ -299,50 +300,6 @@ public class Messages extends MainServlet {
 		getServletContext().getRequestDispatcher("/pages/messages/incReplyMessage.jsp").forward(req, res);
 		return null;
 	}
-
-	/**
-	 * Ritorna una stringa diversa da null da mostrare come messaggio d'errore all'utente
-	 * @param req
-	 * @return
-	 * @throws Exception
-	 */
-	private String validateInsertMessage(HttpServletRequest req) throws Exception {
-
-		String text = req.getParameter("text");
-
-		// testo di almeno di 5 caratteri ...
-		if (StringUtils.isEmpty(text) || text.length() < 5) {
-			return "Un po di fantasia, scrivi almeno 5 caratteri ...";
-		}
-
-		// testo al massimo di 10000 caratteri ...
-		if (text.length() > MAX_MESSAGE_LENGTH) {
-			return "Sei piu' logorroico di una Wakka, stai sotto i " + MAX_MESSAGE_LENGTH + " caratteri !";
-		}
-
-		// subject almeno di 5 caratteri, cribbio !
-		try {
-			Long.parseLong(req.getParameter("parentId"));
-		} catch (NumberFormatException e) {
-			return "Il valore " + req.getParameter("parentId") + " assomiglia poco a un numero ...";
-		}
-		String subject = req.getParameter("subject");
-		if (StringUtils.isEmpty(subject) || subject.trim().length() < 3) {
-			return "Oggetto di almeno di 3 caratteri, cribbio !";
-		}
-		if (subject.length() > MAX_SUBJECT_LENGTH) {
-			return "LOL oggetto piu' lungo di " + MAX_SUBJECT_LENGTH + " caratteri !";
-		}
-
-		// qualcuno prova a creare un forum ;) ?
-		String forum = req.getParameter("forum");
-		if (!StringUtils.isEmpty(forum) && !miscDAO.getForums().contains(forum)) {
-			return "Ma che cacchio di forum e' '" + forum + "' ?!?";
-		}
-
-		return null;
-	}
-
 	/**
 	 * Modifica un messaggio esistente
 	 * @param req
@@ -449,36 +406,6 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
-	protected AuthorDTO insertMessageAuthentication(final HttpServletRequest req) throws Exception {
-		final AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
-		String nick = req.getParameter("nick");
-		String pass = req.getParameter("pass");
-		if (loggedUser != null && loggedUser.getNick() != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
-			// posta come utente loggato
-			return loggedUser;
-		} else if ((loggedUser != null) && StringUtils.isEmpty(nick)) {
-			// utente loggato che posta come anonimo
-			return new AuthorDTO(loggedUser);
-		} else if (StringUtils.isNotEmpty(nick) && StringUtils.isNotEmpty(pass)) {
-			AuthorDTO sockpuppet = messagesDAO.getAuthor(nick);
-			if (PasswordUtils.hasUserPassword(sockpuppet, pass)) {
-				// posta come altro utente
-				return sockpuppet;
-			}
-		} else {
-			// se non e` stato inserito nome utente/password e l'utente non e` loggato
-			String captcha = req.getParameter("captcha");
-			String correctAnswer = (String)req.getSession().getAttribute("captcha");
-			if (StringUtils.isNotEmpty(correctAnswer) && correctAnswer.equals(captcha)) {
-				// posta da anonimo
-				return new AuthorDTO(loggedUser);
-			}
-		}
-
-		// autenticazione fallita, no utente loggato, no username/password inserita e no captcha corretto
-		return null;
-	}
-
 	protected void insertMessageAjaxBan(final HttpServletResponse res) throws IOException {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
@@ -499,127 +426,35 @@ public class Messages extends MainServlet {
 		writer.close();
 	}
 
-	protected boolean authorIsBanned(final AuthorDTO author, final HttpServletRequest req) {
-		if (author.isBanned()) return true;
-		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) return true;
-
-		final String ip = IPMemStorage.requestToIP(req);
-
-		if (BANNED_IPs.contains(ip)) return true;
-
-		// check se ANOnimo usa TOR
-		if (!author.isValid()) {
-			if (adminDAO.blockTorExitNodes()) {
-				if (CacheTorExitNodes.check(ip)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
 
 	/**
 	 * Inserisce un messaggio nuovo o editato
 	 */
 	private String insertMessageAjax(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		// se c'e' un'errore, mostralo
-		String validationMessage = validateInsertMessage(req);
-		if (validationMessage != null) {
-			insertMessageAjaxFail(res, validationMessage);
-			return null;
-		}
+		final MessagePenetrator mp = new MessagePenetrator();
 
-		final AuthorDTO author = insertMessageAuthentication(req);
+		mp
+			.setForum(req.getParameter("forum"))
+			.setParentId(req.getParameter("parentId"))
+			.setSubject(req.getParameter("subject"))
+			.setText(req.getParameter("text"))
+			.setCredentials(
+				(AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR),
+				req.getParameter("nick"), req.getParameter("pass"),
+				req.getParameter("captcha"), (String)req.getSession().getAttribute("captcha"))
+			.deduceType(req.getParameter("id"));
 
-		if (author == null) {
-			insertMessageAjaxFail(res, "Autenticazione / verifica captcha fallita");
-			return null;
-		}
-
-		if (authorIsBanned(author, req)) {
+		if (mp.isBanned(req.getSession().getAttribute(SESSION_IS_BANNED), IPMemStorage.requestToIP(req), req)) {
 			insertMessageAjaxBan(res);
-			return null;
-		}
-		boolean bannato = false;
-		try {
-			if (ProfilerAPI.blockedByRules(req, author)) {
-				insertMessageAjaxBan(res);
-				bannato = true;
-			}
-		} catch (Exception e) {
-			Logger.getLogger(Messages.class).error("ERRORE IN PROFILAZIONE!! "+e.getClass().getName() + ": "+e.getMessage(), e);
-			insertMessageAjaxFail(res, "Errore durante l'inserimento del messaggio. La suora sa perché.");
-			bannato = true;
 		}
 
 		req.getSession().removeAttribute("captcha");
 
-		String text = req.getParameter("text");
-
-		text = InputSanitizer.sanitizeText(text);
-
-		// reply o messaggio nuovo ?
-		long parentId = Long.parseLong(req.getParameter("parentId"));
-		MessageDTO msg = new MessageDTO();
-		msg.setAuthor(author);
-		msg.setParentId(parentId);
-		msg.setDate(new Date());
-		msg.setText(text);
-		if (bannato) {
-			msg.setIsVisible(-1);
+		final MessageDTO msg = mp.penetrate();
+		if (msg == null) {
+			insertMessageAjaxFail(res, mp.Error());
+			return null;
 		}
-		msg.setSubject(InputSanitizer.sanitizeSubject(req.getParameter("subject")));
-		if (parentId > 0) {
-			long id = Long.parseLong(req.getParameter("id"));
-			if (id > -1) {
-				// modify
-				msg = messagesDAO.getMessage(id);
-				if (msg.getAuthor() == null || !msg.getAuthor().getNick().equals(author.getNick())) {
-					insertMessageAjaxFail(res, "Imbroglione, non puoi modificare questo messaggio !");
-					return null;
-				}
-				text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
-				msg.setText(text);
-				msg.setSubject(InputSanitizer.sanitizeSubject(req.getParameter("subject")));
-			} else {
-				// reply
-				MessageDTO replyMsg = messagesDAO.getMessage(parentId);
-				msg.setForum(replyMsg.getForum());
-				msg.setThreadId(replyMsg.getThreadId());
-				// incrementa il numero di messaggi scritti
-				if (author.isValid()) {
-					author.setMessages(author.getMessages() + 1);
-					authorsDAO.updateAuthor(author);
-				}
-			}
-
-			if (bannato) {
-				restoreTitleFromParent(msg, parentId);
-			}
-		} else {
-			// nuovo messaggio
-			String forum = req.getParameter("forum");
-			if (StringUtils.isEmpty(forum)) {
-				forum = null;
-			} else {
-				forum = InputSanitizer.sanitizeForum(forum);
-			}
-			if (bannato) {
-				forum = DAOFactory.FORUM_ASHES;
-			}
-			msg.setForum(forum);
-			msg.setThreadId(-1);
-			// incrementa il numero di messaggi scritti
-			if (author.isValid()) {
-				author.setMessages(author.getMessages() + 1);
-				authorsDAO.updateAuthor(author);
-			}
-		}
-		msg = messagesDAO.insertMessage(msg);
-		String m_id = Long.toString(msg.getId());
-		IPMemStorage.store(req, m_id, author);
-		ProfilerAPI.log(req, author, "message-post-" + m_id);
 
 		// redirect
 		JsonWriter writer = new JsonWriter(res.getWriter());
@@ -627,9 +462,8 @@ public class Messages extends MainServlet {
 		writer.name("resultCode").value("OK");
 		StringBuilder content = new StringBuilder();
 
-		/*
-		Costruiamo l'url di destinazione a partire dall'url da cui e` stato effettuato il submit -- sarrusofono
-		*/
+
+		//Costruiamo l'url di destinazione a partire dall'url da cui e` stato effettuato il submit -- sarrusofono
 
 		final String submitLocation = req.getParameter("submitLocation");
 		//System.out.println("submitLocation [" + submitLocation + "]");
