@@ -673,6 +673,8 @@ pre.code, div.code {
 
 img.userPostedImage {
 	max-width: 150px;
+	min-height: 100px;
+	min-width: 100px;
 }
 
 img.signatureImage {
