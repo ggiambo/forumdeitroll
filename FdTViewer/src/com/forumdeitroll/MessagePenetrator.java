@@ -190,7 +190,7 @@ public class MessagePenetrator {
 		return this;
 	}
 
-	protected boolean authorIsBanned(final AuthorDTO author, final Object sessionIsBanned, final String ip) {
+	protected boolean authorIsBanned(final AuthorDTO author, final Object sessionIsBanned, final String ip, HttpServletRequest req) {
 		if (author.isBanned()) return true;
 		if (sessionIsBanned != null) return true;
 
@@ -220,7 +220,7 @@ public class MessagePenetrator {
 		if (error != null) return false;
 		isBannedCalled = true;
 		if (author == null) return false;
-		if (authorIsBanned(author, sessionIsBanned, ip)) {
+		if (authorIsBanned(author, sessionIsBanned, ip, req)) {
 			banned = true;
 			return true;
 		}
