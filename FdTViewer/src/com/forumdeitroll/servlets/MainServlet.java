@@ -238,7 +238,7 @@ public abstract class MainServlet extends HttpServlet {
 			String retval = (String)actionMethod.invoke(this, new Object[] {req, res});
 			if (!StringUtils.isEmpty(loggedUserNick)) {
 				// pvts ?
-				req.setAttribute("hasPvts", privateMsgDAO.checkForNewPvts(login(req)));
+				req.setAttribute("hasPvts", privateMsgDAO.checkForNewPvts(getLogin(req)));
 			}
 			return retval;
 		}
@@ -258,8 +258,6 @@ public abstract class MainServlet extends HttpServlet {
 	/**
 	 * Tenta un login: Ritorna AuthorDTO valido se OK, AuthorDTO invalido se e'
 	 * stato inserito un captcha giusto, null se autenticazione fallita.
-	 * @param req
-	 * @return
 	 */
 	protected AuthorDTO login(final HttpServletRequest req) {
 		// check username and pass, se inseriti
@@ -296,6 +294,11 @@ public abstract class MainServlet extends HttpServlet {
 
 		// captcha corretto, restituisce l'Author di default
 		return new AuthorDTO(null);
+	}
+
+	protected AuthorDTO getLogin(final HttpServletRequest req) {
+		final AuthorDTO author = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
+		return (author != null) ? author : new AuthorDTO(null);
 	}
 
 	/**
@@ -535,7 +538,7 @@ public abstract class MainServlet extends HttpServlet {
 	}
 
 	protected List<String> hiddenForums(HttpServletRequest req) {
-		AuthorDTO loggedUser = login(req);
+		AuthorDTO loggedUser = getLogin(req);
 		if (loggedUser.isValid()) {
 			return authorsDAO.getHiddenForums(loggedUser);
 		}
