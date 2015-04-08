@@ -7,11 +7,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 import com.forumdeitroll.persistence.MessageDTO;
 
 public class ThreadTree {
-	
+
 	private TreeNode rootNode;
 
 	public ThreadTree(List<MessageDTO> msgs) {
@@ -21,7 +22,7 @@ public class ThreadTree {
 				return (int) (nc1.getId() - nc2.getId());
 			}
 		});
-		
+
 		Map<Long, TreeNode> tempMap = new HashMap<Long, TreeNode>();
 		rootNode = null;
 
@@ -42,11 +43,11 @@ public class ThreadTree {
 			parent.addChild(treeNode);
 		}
 	}
-	
+
 	public TreeNode getRoot() {
 		return rootNode;
 	}
-	
+
 	public static class TreeNode {
 		private MessageDTO content;
 		private List<TreeNode> children;
@@ -88,6 +89,25 @@ public class ThreadTree {
 			for (final TreeNode child: children) {
 				child.subjectElision(prevTitle);
 			}
+		}
+
+		public Date sortChildByMostRecentDescendant() {
+			final Map<Long, Date> mrds = new HashMap<Long, Date>();
+			Date mrd = getContent().getDate();
+			for (final TreeNode child: children) {
+				final Date cur = child.sortChildByMostRecentDescendant();
+				mrds.put(child.getContent().getId(), cur);
+				if (cur.compareTo(mrd) > 0) {
+					mrd = cur;
+				}
+			}
+			Collections.sort(children, new Comparator<TreeNode>() {
+				public int compare(final TreeNode n1, final TreeNode n2) {
+					return -mrds.get(n1.getContent().getId()).compareTo(mrds.get(n2.getContent().getId()));
+				}
+			});
+			orderedChldren = true;
+			return mrd;
 		}
 
 		public TreeNode setNext(final MessageDTO prev) {

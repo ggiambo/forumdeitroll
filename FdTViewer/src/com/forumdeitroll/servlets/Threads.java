@@ -116,6 +116,7 @@ public class Threads extends MainServlet {
 		}
 		final ThreadTree.TreeNode root = new ThreadTree(msgs).getRoot();
 		root.subjectElision("");
+		root.sortChildByMostRecentDescendant();
 		root.setNext(null);
 		req.setAttribute("root", root);
 		req.setAttribute("show", showMsg);
