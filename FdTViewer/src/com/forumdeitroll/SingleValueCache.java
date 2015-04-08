@@ -27,7 +27,7 @@ public abstract class SingleValueCache<V> {
 		if (expired()) {
 			synchronized (this) {
 				if (expired()) {
-					LOG.info(getClass().getName() + ": Reloading");
+					//LOG.info(getClass().getName() + ": Reloading");
 					timestamp = System.currentTimeMillis();
 					v = update();
 				}

@@ -48,17 +48,17 @@ public class RenderTag extends TagSupport {
 					: "yes");
 		if (target.equals("message")) {
 			MessageDTO message = (MessageDTO) pageContext.findAttribute("message");
-			LOG.debug("rendering message " + message.getId());
+			//LOG.debug("rendering message " + message.getId());
 			text = message.getText();
 			opts.authorIsAnonymous = message.getAuthor() == null || message.getAuthor().getNick() == null;
 		} else if (target.equals("privateMessage")) {
 			PrivateMsgDTO pvt = (PrivateMsgDTO) pageContext.findAttribute("privateMessage");
-			LOG.debug("rendering private message" + pvt.getId());
+			//LOG.debug("rendering private message" + pvt.getId());
 			text = pvt.getText();
 			opts.authorIsAnonymous = false;
 		} else if (target.equals("signature")) {
 			MessageDTO referencedMessage = (MessageDTO) pageContext.findAttribute("message");
-			LOG.debug("rendering signature for author " + referencedMessage.getAuthor());
+			//LOG.debug("rendering signature for author " + referencedMessage.getAuthor());
 			text = referencedMessage.getAuthor().getPreferences().get("signature");
 			opts.authorIsAnonymous = false;
 			opts.renderImages = false;
