@@ -292,6 +292,13 @@ jQuery("document").ready(function(){
 		buttonBarImgAdmin.css('background-image', 'url("css/images/ui-icons_ef8c08_256x240.png")');
 	});
 	
+	if (window.location.href.match(/action=softvThread/)) {
+		if (!window.location.href.match(/sftvMsg\d+$/)) {
+			m = window.location.href.match(/threadId=(\d+)/);
+			window.location.href += "#softvMsg" + m[1];
+		}
+	}
+
 	// refresh ogni 2 minuti
 	setInterval(function() {
 		if (refreshable > 0) {
