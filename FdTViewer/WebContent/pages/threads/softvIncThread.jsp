@@ -32,7 +32,7 @@
 		<div id="softvEntry${message.content.id}" class="softvMsg ${rowclass} ${softvSelectedClass} ">
 			<div class="msgVisible" id="msg${msg.id}">
 				<a onclick="return softvSwap(${msg.threadId}, ${msg.id}, event);" href="Threads?action=softvThread&threadId=${msg.threadId}#softvMsg${msg.id}">
-					${msg.subject}
+					${msg.subject} @ <fmt:formatDate value="${msg.date}" pattern="yyyy-MM-dd HH:mm"/>
 				</a> di
 				<c:choose>
 					<c:when test="${empty msg.author.nick}">
@@ -42,7 +42,6 @@
 						${msg.author.nick}&nbsp;
 					</c:otherwise>
 				</c:choose>
-				<fmt:formatDate value="${msg.date}" pattern="yyyy-MM-dd HH:mm"/>
 			</div>
 		</div>
 		<c:if test="${not empty message.children}">
