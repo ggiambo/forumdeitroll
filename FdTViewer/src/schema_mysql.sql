@@ -274,3 +274,11 @@ insert into ads (id, title, visurl, content) values (6, 'MILF Svizzere di qualit
 insert into ads (id, title, visurl, content) values (7, 'Amuleti anti Wakko', 'www.amuletiwakkosi.it', 'Tieni lontani i wakki da questo forum, garantiti al 100%');
 insert into ads (id, title, visurl, content) values (8, 'Cydonia', 'www.sitovuoto.it', 'Esplora l''incantanto mondo di Cydonia a bordo dell''Argent !');
 insert into ads (id, title, visurl, content) values (9, 'Lozioni per capelli Yoda', 'www.lozionimiracolose.it', 'Per una pelata lucida e splendente !');
+
+create table threads (threadId int(11), lastId int(11));
+
+insert into threads  select threadid, max(id) from messages group by threadid;
+
+create index idx_threads_threadId on threads(threadId);
+
+create index idx_threads_lastId on threads(lastId);
