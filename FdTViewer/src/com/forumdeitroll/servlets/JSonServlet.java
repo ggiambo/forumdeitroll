@@ -10,6 +10,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +75,7 @@ public class JSonServlet extends HttpServlet {
 		StringBuilderWriter writer = new StringBuilderWriter();
 		try {
 			Method m = this.getClass().getDeclaredMethod(action, StringBuilderWriter.class, Map.class, Long.TYPE);
-			final Map<String, String[]> parmap = req.getParameterMap();
+			final Map<String, String[]> parmap = new HashMap<String, String[]>(req.getParameterMap());
 			parmap.put("IP", new String[]{ IPMemStorage.requestToIP(req) });
 			m.invoke(this, writer, Collections.unmodifiableMap(parmap), time);
 		} catch (NoSuchMethodException e) {
