@@ -3,6 +3,7 @@ package com.forumdeitroll.profiler2;
 import java.io.Serializable;
 
 public class ProfileRecord implements Serializable {
+	private static final long serialVersionUID = -1290457865531419544l;
 	private ReqInfo reqInfo;
 	private long tstamp;
 	private String label;
@@ -23,5 +24,14 @@ public class ProfileRecord implements Serializable {
 	}
 	public void setLabel(String label) {
 		this.label = label;
+	}
+	public String getLabelLink() {
+		if (label.startsWith("message-post-")) {
+			String id = label.substring("message-post-".length());
+			return String.format(
+					"<a name=\"%s\" href=\"Messages?action=getById&amp;msgId=%s\">%s</a>"
+					, label, id, label);
+		}
+		return String.format("<a name=\"%s\">%s</a>", label, label);
 	}
 }

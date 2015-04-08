@@ -47,8 +47,9 @@
 		<table style="width: 100%">
 			<thead>
 				<tr>
-					<th>tstamp</th>
-					<th>label</th>
+					<th width=10%>tstamp</th>
+					<th width=10%>label</th>
+					<th width=10%>ip</th>
 					<th>reqInfo</th>
 				</tr>
 			</thead>
@@ -61,13 +62,15 @@
 							<fmt:formatDate value="${dateValue}" pattern="dd/MM/yyyy HH:mm:ss"/>
 						</td>
 						<td>
-							<a name="${record.label}">
-								${record.label}
-							</a>
+							${record.labelLink}
+						</td>
+						<td>
+							${record.reqInfo.ipAddress}
 						</td>
 						<td>
 							<c:set var="reqInfo" value="${record.reqInfo}"/>
-							<pre><%=
+							<a href="#" onclick="$(this).next('pre').toggle(); return false">Apri/Chiudi</a>
+							<pre style="display: none"><%=
 								new com.google.gson.GsonBuilder()
 								.setPrettyPrinting()
 								.create()
