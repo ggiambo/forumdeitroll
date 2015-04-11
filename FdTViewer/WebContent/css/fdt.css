@@ -873,6 +873,12 @@ div.userPanel, div.modInfoPanel {
 	box-shadow: 0px 0px 4px gray;
 }
 
+div.userPanel > table th {
+	width: auto;
+	background-color: #D6D6D6;
+	font-weight: bold;
+}
+
 div.userPanelContent, div.modInfoPanelContent {
 	padding: 0.5em;
 }

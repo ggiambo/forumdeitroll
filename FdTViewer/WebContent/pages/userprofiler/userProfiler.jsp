@@ -47,9 +47,9 @@
 		<table style="width: 100%">
 			<thead>
 				<tr>
-					<th width=10%>tstamp</th>
-					<th width=10%>label</th>
-					<th width=10%>ip</th>
+					<th>tstamp</th>
+					<th>label</th>
+					<th>ip</th>
 					<th>reqInfo</th>
 				</tr>
 			</thead>
