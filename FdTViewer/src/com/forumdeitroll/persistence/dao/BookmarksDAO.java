@@ -1,18 +1,17 @@
 package com.forumdeitroll.persistence.dao;
 
-import static com.forumdeitroll.persistence.jooq.Tables.BOOKMARKS;
-import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.BookmarkDTO;
+import com.forumdeitroll.persistence.jooq.tables.records.BookmarksRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.jooq.Result;
 
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.BookmarkDTO;
-import com.forumdeitroll.persistence.jooq.tables.records.BookmarksRecord;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.forumdeitroll.persistence.jooq.Tables.BOOKMARKS;
+import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 public class BookmarksDAO extends BaseDAO {
 
@@ -64,8 +63,8 @@ public class BookmarksDAO extends BaseDAO {
 	public void editBookmark(BookmarkDTO bookmark) {
 		jooq.update(BOOKMARKS)
 			.set(BOOKMARKS.SUBJECT, bookmark.getSubject())
-			.set(BOOKMARKS.NICK, bookmark.getNick())
 			.where(BOOKMARKS.MSGID.eq((int) bookmark.getMsgId()))
+			.and(BOOKMARKS.NICK.equal(bookmark.getNick()))
 			.execute();
 	}
 
