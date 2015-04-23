@@ -9,5 +9,4 @@ public enum TokenizerMode {
 	TEXT,
 	BEGINNING_OF_WORD,
 	WORDSCAN,
-	CARET_EXCLUSION,
 }

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.persistence.DAOFactory;
@@ -53,17 +54,47 @@ public class GreatRendereresShootout {
 //			testSingleMessage(2775233);
 //			testSingleMessage(2798073);
 //			printTokensDb("Cosa fai il 4 Dicembre (geek) ?<BR>http://www.cdt.ch/ticino/cronaca/118658/kalashnikov-e-colt-in-un-sol-colpo.html<BR>[url]http://www4.ti.ch/di/dg/uef/aste/dettaglio/?user_diasteonline_pi1[id]=99258[/url]<BR><BR><BR><b>**Modificato dall'autore il 07.11.2014 09:05**</b>");
-			testFromUser("> quote<i>\nno quote\n>quote</i>\n> quote");
+//			testFromUser("> quote<i>\nno quote\n>quote</i>\n> quote");
 //			testFromUser("[url=Messages?action=getById&msgId=2779559]abcde fghil jkmno pqrst uvwyx zabcd efghi ljkmn opqrs tuwyx z[/url]");
 //			testFromUser("[url=http://en.wikipedia.org/wiki/Richard_A._Gardner]abcde fghil jkmno pqrst uvwyx zabcd efghi ljkmn opqrs tuwyx z[/url]");
 //			printTokens("[yt]https://www.youtube.com/watch?v=eDXnjIpLJFs[/yt]");
 //			testFromUser("[yt]https://www.youtube.com/watch?v=eDXnjIpLJFs[/yt]");
 //			runFromUser("\n\nbla bla bla^ritardato\n\n", new RenderOptions());
 //			printTokensDb("[yt]2vjPBrBU-TM[/yt]<BR>[yt]YUTTn0KjHsY[/yt]<BR><BR>Maddie Ziegler, 12 anni.<BR>http://en.wikipedia.org/wiki/Maddie_Ziegler");
+//			testFromUser("e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e^e");
+			testFromUser("e^e e^e");
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
 		printRunTimes();
+	}
+
+	private static void testDefaultRenderer(String text) throws Exception {
+		MarkupRenderer renderer = new MarkupRenderer();
+		renderer.render(text, new RenderOptions());
+		long start = System.nanoTime();
+		renderer.render(text, new RenderOptions());
+		runTimes[2] += (System.nanoTime() - start);
+	}
+
+	private static void testTokenizer(String text) throws Exception {
+		Tokenizer tokenizer = new Tokenizer();
+		tokenizer.tokenize(text, new TokenListener() {
+			@Override
+			public void on(TokenMatcher token, TokenMatcher additional)
+					throws Exception {
+				
+			}
+		});
+		long start = System.nanoTime();
+		tokenizer.tokenize(text, new TokenListener() {
+			@Override
+			public void on(TokenMatcher token, TokenMatcher additional)
+					throws Exception {
+				
+			}
+		});
+		runTimes[2] += (System.nanoTime() - start);
 	}
 
 	private static void runCompetition() throws Exception {

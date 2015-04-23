@@ -174,14 +174,6 @@ public class Tokenizer {
 						}
 					}
 					TokenMatcher sub = tryMatch(TokenizerMode.TEXT, word.start(), word.end());
-					if (sub != null && sub.name.equals("TEXT_CARETS")) {
-						TokenMatcher excl = tryMatch(TokenizerMode.CARET_EXCLUSION, sub.start(), word.end());
-						if (excl != null) {
-							sub = new TokenMatcher.Wrapper("TEXT", excl);
-						} else if (sub.end() == word.end(1)) {
-							sub = null;
-						}
-					}
 					if (sub != null) {
 						skipBow = sub.end() < token.end();
 						if (sub.start() == token.start()) {

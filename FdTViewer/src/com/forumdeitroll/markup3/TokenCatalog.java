@@ -85,14 +85,10 @@ public class TokenCatalog {
 		for (Snippet snippet : Snippet.list) {
 			tmText.add(new TokenMatcher.InTheMiddleIgnoreCase("TEXT_SNIPPET_" + snippet.sequence, snippet.sequence));
 		}
-		tmText.add(new TokenMatcher.Regex("TEXT_CARETS", "(\\^+)"));
 		tmText.toArray(matchers[TokenizerMode.TEXT.ordinal()] = new TokenMatcher[tmText.size()]);
 		tmBeginningWord.toArray(matchers[TokenizerMode.BEGINNING_OF_WORD.ordinal()] = new TokenMatcher[tmBeginningWord.size()]);
 		matchers[TokenizerMode.WORDSCAN.ordinal()] = new TokenMatcher[] {
 			new TokenMatcher.Regex("INTERNAL_WORD", "([^ ]+)( *)"),
-		};
-		matchers[TokenizerMode.CARET_EXCLUSION.ordinal()] = new TokenMatcher[]{
-			new TokenMatcher.Regex("TEXT_SKIP_CARET_SMILE", "^(\\^_+\\^)( *)"),
 		};
 		return matchers;
 	}

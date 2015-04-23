@@ -18,7 +18,6 @@ public abstract class TokenMatcher implements MatchResult {
 		return String.format("%s,%s(%s,%d,%d)"
 			, name, getClass().getSimpleName(), group(), start(), end());
 	}
-
 	public static class Wrapper extends TokenMatcher {
 		private TokenMatcher matcher;
 		public Wrapper(String name, TokenMatcher matcher) {

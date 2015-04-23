@@ -67,11 +67,6 @@ public class MarkupRenderer implements TokenListener {
 
 	@Override public void on(TokenMatcher token, TokenMatcher additional) throws Exception {
 		int nextOutStart = out.length();
-		if (!token.name.startsWith("TEXT")) {
-			if (hasOpenCarets()) {
-				finalizeCarets(lastOutStart);
-			}
-		}
 		if (token.name.startsWith("QUOTES")) {
 			onQuotes(token);
 		} else if (token.name.equals("BR")) {
@@ -93,13 +88,12 @@ public class MarkupRenderer implements TokenListener {
 		} else if (token.name.startsWith("LINK")) {
 			onLink(token);
 		} else if (token.name.startsWith("TEXT")) {
-			onWord(token);
+			onText(token);
 		}
 		this.lastOutStart = nextOutStart;
 	}
 
 	private void finalizeRender() {
-		finalizeCarets(out.length());
 		finalizeQuotes();
 		finalizeCode();
 		finalizeTags();
@@ -590,14 +584,8 @@ public class MarkupRenderer implements TokenListener {
 
 	}
 
-	private void onWord(TokenMatcher token) {
-		if (token.name.equals("TEXT_CARETS")) {
-			int n = token.end() - token.start();
-			while (n-- > 0) {
-				out.append("<sup>");
-				tagsCounter[6]++;
-			}
-		} else if (token.name.startsWith("TEXT_SNIPPET")) {
+	private void onText(TokenMatcher token) {
+		if (token.name.startsWith("TEXT_SNIPPET")) {
 			String snippetSeq = token.group().toUpperCase();
 			for (Snippet snippet : Snippet.list) {
 				if (snippet.sequenceUpcase.equals(snippetSeq)) {
@@ -619,31 +607,31 @@ public class MarkupRenderer implements TokenListener {
 				}
 			}
 		} else {
-			int oldLen = out.length();
-			out.append(text, token.start(), token.end());
-			if (-1 != TokenMatcher.Section.indexOf(
-					text, token.start(), token.end() - token.start(), " ", 0, 1, 0, false, false)) {
-				if (hasOpenCarets()) {
-					finalizeCarets(oldLen);
+			if (-1 != TokenMatcher.Section.indexOf(text, token.start(), token.end() - token.start(), "^", 0, 1, 0, false, false)) {
+				// gestione caret
+				for (int i = token.start(); i < token.end(); i++) {
+					char c = text.charAt(i);
+					if (c == '^') {
+						tagsCounter[6]++;
+						out.append("<sup>");
+					} else if (c == ' ') {
+						while (tagsCounter[6] --> 0) {
+							out.append("</sup>");
+						}
+						tagsCounter[6] = 0;
+						out.append(c);
+					} else {
+						out.append(c);
+					}
 				}
-			}
-		}
-	}
-
-	private void finalizeCarets(int fromIndex) {
-		int insertionPoint = out.indexOf(" ", fromIndex);
-		while (tagsCounter[6] > 0) {
-			if (insertionPoint == -1) {
-				out.append("</sup>");
+				while (tagsCounter[6] --> 0) {
+					out.append("</sup>");
+				}
+				tagsCounter[6] = 0;
 			} else {
-				out.insert(insertionPoint, "</sup>");
+				out.append(text, token.start(), token.end());
 			}
-			tagsCounter[6]--;
 		}
-	}
-
-	private boolean hasOpenCarets() {
-		return tagsCounter[6] > 0;
 	}
 
 	private static String escape(String string) {
