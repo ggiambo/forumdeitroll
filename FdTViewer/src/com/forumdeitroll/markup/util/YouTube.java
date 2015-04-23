@@ -8,12 +8,12 @@ import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.RenderState;
 
 public class YouTube {
-	
+
 	private static final char[] YT = "[yt]".toCharArray();
 	private static final char[] YT_END = "[/yt]".toCharArray();
-	
+
 	public static final int MAX_EMBED = 10;
-	
+
 	public static boolean yt(RenderIO io, RenderState state, RenderOptions opts) throws IOException {
 		if (state.embedCount >= MAX_EMBED)
 			return false;
@@ -49,7 +49,7 @@ public class YouTube {
 		state.embedCount++;
 		return true;
 	}
-	
+
 	private static final char[] YT_EMBED_START = "<iframe width=\"400\" height=\"329\" src=\"//www.youtube-nocookie.com/embed/".toCharArray();
 	private static final char[] YT_EMBED_END = "\" frameborder=\"0\" allowfullscreen></iframe>".toCharArray();
 	public static void writeYtEmbed(Writer out, char[] buffer, int offset, int length) throws IOException {
@@ -61,7 +61,7 @@ public class YouTube {
 	private static final char[] YT_IMAGE_MID1 = "\" onmouseover='YTCreateScriptTag(this, \"".toCharArray();
 	private static final char[] YT_IMAGE_MID2 = "\")'><img src='http://img.youtube.com/vi/".toCharArray();
 	private static final char[] YT_IMAGE_END = "/2.jpg'></a>".toCharArray();
-	
+
 	public static void writeYTImage(Writer out, char[] buffer, int offset, int length) throws IOException {
 		out.write(YT_IMAGE_START);
 		EntityEscaper.writeEscaped(out, buffer, offset, length);
@@ -71,16 +71,34 @@ public class YouTube {
 		EntityEscaper.writeEscaped(out, buffer, offset, length);
 		out.write(YT_IMAGE_END);
 	}
-	
+
+	/*
+	Per quando le API v2 di youtube cessano di funzionare, sostituire al precedente metodo
+	NB: codice mai compilato
+	public static void writeYTImage(Write out, char[] buffer, int offset, int length) throws IOException {
+		final String url = "http://www.youtube.com/watch?v=" + buffer;
+
+		final char[] title = WebTitles.Cache.lookup(url).toCharArray();
+
+		out.write("<a href=\"http://www.youtube.com/watch?v=");
+		EntityEscaper.writeEscaped(out, buffer, offset, length);
+		out.write("\"><img src='http://img.youtube.com/vi/");
+		EntityEscaper.writeEscaped(out, buffer, offset, length);
+		out.write("/2.jpg'>");
+		EntityEscaper.writeEscaped(out, title, 0, title.length);
+		out.write("</a>");
+	}
+	*/
+
 	public static final int YOUCODE_MAX_LENGTH = 11;
-	
+
 	private static final char[] YT_CLASSIC = ".youtube.com/watch?".toCharArray();
 	private static final char[] YT_SHORTENED = "youtu.be/".toCharArray();
 	private static final char[] INIT_YOUCODE1 = "?v=".toCharArray();
 	private static final char[] INIT_YOUCODE2 = "&v=".toCharArray();
 	private static final char[] AMPERSAND = "&".toCharArray();
 	private static final char[] OCTOTHORPE = "#".toCharArray();
-	
+
 	public static int[] extractYoucode(char[] buffer, int offset, int length) {
 		if (!Links.isLink(buffer, offset, length)) return null;
 		int p = Chars.indexOf(buffer, offset, length, YT_CLASSIC, 0, YT_CLASSIC.length, 0, false, false);
@@ -115,5 +133,5 @@ public class YouTube {
 		}
 		return new int[] {offset + p, offset + length};
 	}
-	
+
 }
