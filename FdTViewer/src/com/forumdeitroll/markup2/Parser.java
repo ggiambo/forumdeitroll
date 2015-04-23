@@ -3,6 +3,7 @@ package com.forumdeitroll.markup2;
 import com.forumdeitroll.markup.RenderOptions;
 
 class Parser {
+	static final int MAX_PUTTANATA_MICIDIALE = 100;
 	static final boolean debug = false;
 	static final boolean shitCodeComp = true;
 
@@ -165,7 +166,7 @@ class Parser {
 					continue CHUNK_LOOP;
 				}
 
-				final ParserNode.PuttanataMicidialeSeq pms = parsePuttanataMicidialeSeq(tokv);
+				final ParserNode.PuttanataMicidialeSeq pms = parsePuttanataMicidialeSeq(tokv, 0);
 				if (pms != null) {
 					c.childs.add(pms);
 					continue CHUNK_LOOP;
@@ -216,7 +217,7 @@ class Parser {
 	Un <PuttanataMicidialeSeq> e` una sequenza di puttanate micidiali
 	<PuttanataMicidialeSeq> ::= PUTTANATA_MICIDIALE <PuttanataMicidialeSeq>?
 	*/
-	public static ParserNode.PuttanataMicidialeSeq parsePuttanataMicidialeSeq(final RTokenizer tokv) throws ParseException {
+	public static ParserNode.PuttanataMicidialeSeq parsePuttanataMicidialeSeq(final RTokenizer tokv, final int seq) throws ParseException {
 		final Token t = tokv.peek(0);
 		if (t.tokenType != Token.Type.PUTTANATA_MICIDIALE)
 			return null;
@@ -224,7 +225,8 @@ class Parser {
 		tokv.advance(1);
 
 		final ParserNode.PuttanataMicidialeSeq pms = new ParserNode.PuttanataMicidialeSeq(t);
-		pms.rest = parsePuttanataMicidialeSeq(tokv);
+		if (seq < MAX_PUTTANATA_MICIDIALE)
+			pms.rest = parsePuttanataMicidialeSeq(tokv, seq + 1);
 		return pms;
 	}
 }

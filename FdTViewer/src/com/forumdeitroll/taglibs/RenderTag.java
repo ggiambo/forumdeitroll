@@ -23,6 +23,7 @@ public class RenderTag extends TagSupport {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(RenderTag.class);
 	private String target;
+	protected static final boolean alt = false;
 	public void setTarget(String target) {
 		this.target = target;
 	}
@@ -74,7 +75,14 @@ public class RenderTag extends TagSupport {
 			opts.authorIsAnonymous = true;// nel dubbio si`
 		}
 		try {
-			String html = com.forumdeitroll.markup3.Renderer.render(text, opts);
+			String html;
+			if (alt) {
+				StringWriter sw = new StringWriter();
+				com.forumdeitroll.markup2.Renderer.render(text, sw, opts);
+				html = sw.toString();
+			} else {
+				html = com.forumdeitroll.markup3.Renderer.render(text, opts);
+			}
 			if (pageContext.getRequest().getParameter("compareRendering") != null) {
 				StringWriter sw = new StringWriter();
 				sw.write(html);

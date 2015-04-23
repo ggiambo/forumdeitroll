@@ -8,7 +8,6 @@ import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.*;
 import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Action.Method;
-import com.forumdeitroll.taglibs.MessageTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.google.gson.stream.JsonWriter;
