@@ -6,6 +6,14 @@
 	<version>0.0.1-UPPETE</version>
 	<packaging>war</packaging>
 
+	<repositories>
+		<repository>
+			<id>simplecaptcha</id>
+			<name>simplecaptcha</name>
+			<url>http://maven.nfms4redd.org</url>
+		</repository>
+	</repositories>
+
 	<build>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
 		<testSourceDirectory>${basedir}/test</testSourceDirectory>
@@ -109,10 +117,8 @@
 		</dependency>
 		<dependency>
 			<groupId>nl.captcha</groupId>
-			<artifactId>simplecaptcha</artifactId>
+			<artifactId>simpleCaptcha</artifactId>
 			<version>1.2.1</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/WebContent/WEB-INF/lib/simplecaptcha-1.2.1.jar</systemPath>
 		</dependency>
 		<!-- dipendenze indirette (container) -->
 		<dependency>
