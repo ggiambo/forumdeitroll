@@ -7,7 +7,7 @@ import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.*;
 import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Action.Method;
-import com.forumdeitroll.taglibs.MessageTag;
+import com.forumdeitroll.taglibs.RenderTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.google.gson.stream.JsonWriter;
@@ -341,7 +341,7 @@ public class Messages extends MainServlet {
 		text = InputSanitizer.sanitizeText(text);
 
 
-		writer.name("content").value(MessageTag.getMessagePreview(text, author, author));
+		writer.name("content").value(RenderTag.getMessagePreview(text, author, author));
 		writer.endObject();
 		writer.flush();
 		writer.close();

@@ -31,22 +31,7 @@ public class RenderTag extends TagSupport {
 	public int doEndTag() throws JspException {
 		AuthorDTO loggedUser = (AuthorDTO) pageContext.getRequest().getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		String text = null;
-		RenderOptions opts = new RenderOptions();
-		opts.collapseQuotes =
-			"checked".equals(
-				loggedUser != null
-					? loggedUser.getPreferences().get(User.PREF_COLLAPSE_QUOTES)
-					: null);
-		opts.embedYoutube =
-			! StringUtils.isEmpty(
-				loggedUser != null
-					? loggedUser.getPreferences().get(User.PREF_EMBEDDYT)
-					: "yes");
-		opts.showImagesPlaceholder =
-			StringUtils.isEmpty(
-				loggedUser != null
-					? loggedUser.getPreferences().get(User.PREF_SHOWANONIMG)
-					: "yes");
+		final RenderOptions opts = loggedUserRenderOptions(loggedUser);
 		if (target.equals("message")) {
 			MessageDTO message = (MessageDTO) pageContext.findAttribute("message");
 			//LOG.debug("rendering message " + message.getId());
@@ -103,4 +88,27 @@ public class RenderTag extends TagSupport {
 		}
 		return SKIP_BODY;
 	}
+	
+	public static String getMessagePreview(String body, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
+		final RenderOptions opts = loggedUserRenderOptions(loggedUser);
+		opts.authorIsAnonymous = author != null && StringUtils.isEmpty(author.getNick());
+		StringReader in = new StringReader(body);
+		StringWriter out = new StringWriter();
+		com.forumdeitroll.markup3.Renderer.render(in, out, opts);
+		return out.toString();
+	}
+	
+	public static RenderOptions loggedUserRenderOptions(final AuthorDTO loggedUser) {
+		final boolean luv = loggedUser != null && loggedUser.getNick() != null;
+		final RenderOptions opts = new RenderOptions();
+		opts.collapseQuotes =
+			"checked".equals(luv ? loggedUser.getPreferences().get(User.PREF_COLLAPSE_QUOTES) : null);
+		opts.embedYoutube =
+			!StringUtils.isEmpty(luv ? loggedUser.getPreferences().get(User.PREF_EMBEDDYT) : "yes");
+		opts.showImagesPlaceholder =
+			StringUtils.isEmpty(luv ? loggedUser.getPreferences().get(User.PREF_SHOWANONIMG) : "yes");
+		
+		return opts;
+	}
+
 }
