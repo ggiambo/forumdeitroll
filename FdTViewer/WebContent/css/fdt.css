@@ -1841,6 +1841,6 @@ div.softvMsg {
 
 .youtube-buttons > a {
 	text-decoration: none;
-	color: white;
+	color: white !important;
 	font-weight: bold;
 }
