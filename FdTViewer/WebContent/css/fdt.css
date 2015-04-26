@@ -1818,3 +1818,28 @@ div.softvMsg {
 .row > [class^='col-'].pull-right {
 	text-align:right;
 }
+
+.youtube-video-box {
+	width: 480px;
+	height: 360px;
+	background-repeat: no-repeat;
+	clear: right;
+}
+
+.youtube-video-title {
+	background-color: black;
+	color: white;
+	font-weight: bold;
+}
+
+.youtube-buttons {
+	top: 340px;
+	position: relative;
+	background-color: black;
+}
+
+.youtube-buttons > a {
+	text-decoration: none;
+	color: white;
+	font-weight: bold;
+}

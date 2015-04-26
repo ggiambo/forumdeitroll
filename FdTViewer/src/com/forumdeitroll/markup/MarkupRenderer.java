@@ -13,6 +13,7 @@ import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Snippet;
 import com.forumdeitroll.markup.util.FaviconWhiteList;
+import com.forumdeitroll.markup.util.WebTitles;
 import com.forumdeitroll.persistence.DAOFactory;
 
 public class MarkupRenderer implements TokenListener {
@@ -455,38 +456,40 @@ public class MarkupRenderer implements TokenListener {
 	private void emitYoutube(String youcode, String link) {
 		youcode = escape(youcode);
 		String t = link != null ? extractTFromYoutubeUrl(link) : null;
-		if (opts.embedYoutube) {
-			int start = 0;
-			if (t != null) {
-				if (t.indexOf('m') != -1) { // XXmXXs | XXm
-					String m = t.substring(0, t.indexOf('m'));
-					start += 60 * Integer.parseInt(m);
-					if (t.indexOf('s') != -1) {
-						String s = t.substring(t.indexOf('m') + 1, t.indexOf('s'));
-						start += Integer.parseInt(s);
-					}
-				} else if (t.indexOf('s') != -1) { // XXs
-					start += Integer.parseInt(t.substring(0, t.indexOf('s')));
-				} else { // XX
-					start += Integer.parseInt(t);
+		int start = 0;
+		if (t != null) {
+			if (t.indexOf('m') != -1) { // XXmXXs | XXm
+				String m = t.substring(0, t.indexOf('m'));
+				start += 60 * Integer.parseInt(m);
+				if (t.indexOf('s') != -1) {
+					String s = t.substring(t.indexOf('m') + 1, t.indexOf('s'));
+					start += Integer.parseInt(s);
 				}
-			}
-			out.append(String.format(
-				"<iframe width=\"400\" height=\"329\" src=\"//www.youtube.com/embed/%s%s\" frameborder=\"0\" allowfullscreen></iframe>"
-				, youcode, "?start=" + start));
-		} else {
-			if (link != null) {
-				out.append(String.format(
-					"<a href=\"%s\" onmouseover='YTCreateScriptTag(this, \"%s\")'>" +
-					"<img src='http://img.youtube.com/vi/%s/2.jpg'></a>"
-					, (link.startsWith("http") ? "" : "https://") + escape(link), youcode, youcode));
-			} else {
-				out.append(String.format(
-					"<a href=\"http://www.youtube.com/watch?v=%s\" onmouseover='YTCreateScriptTag(this, \"%s\")'>"
-					+ "<img src='http://img.youtube.com/vi/%s/2.jpg'></a>"
-					, youcode, youcode, youcode));
+			} else if (t.indexOf('s') != -1) { // XXs
+				start += Integer.parseInt(t.substring(0, t.indexOf('s')));
+			} else { // XX
+				start += Integer.parseInt(t);
 			}
 		}
+		String page = String.format("http://www.youtube.com/watch?v=%s", youcode);
+		String title = WebTitles.get(page);
+		if (title.endsWith(" - YouTube")) {
+			title = title.substring(0, title.length() - 10);
+		}
+		out.append(String.format(
+			"<div class=youtube-video-box style=\"background-image: url(http://img.youtube.com/vi/%s/0.jpg)\">" +
+				"<div class=youtube-video-title>%s</div>" +
+				"<div class='youtube-buttons'>" +
+					"<a href=\"%s\" target=_blank>Vai alla pagina</a>" +
+					"<br>" +
+					"<a href=# onclick=\"youtube_embed(this, '%s', '%s'); return false\">Visualizza embed</a>" +
+				"</div>" +
+			"</div>"
+		, youcode
+		, title != null ? title : ""
+		, link != null ? link : page
+		, youcode
+		, "?start=" + start));
 	}
 
 	private static Pattern t_pattern = Pattern.compile("[&\\?#]t=([0-9]+m[0-9]+s|[0-9]+[ms]|[0-9]+)");

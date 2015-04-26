@@ -14,8 +14,8 @@ import com.forumdeitroll.LRACache;
 public class WebTitles {
 	protected static final int BUFFER_SIZE = 8 * 1024;
 	protected static final Pattern TITLE_REGEX = Pattern.compile("(?i)<title>([^<]*?)</title>");
-	protected static final int CONNECT_TIMEOUT = 1000;
-	protected static final int READ_TIMEOUT = 3000;
+	protected static final int CONNECT_TIMEOUT = 400;
+	protected static final int READ_TIMEOUT = 1000;
 	protected static final int MAX_REDIRECT = 3;
 	protected static final int CACHE_SIZE = 100;
 

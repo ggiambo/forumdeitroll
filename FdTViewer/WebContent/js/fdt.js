@@ -380,30 +380,11 @@ $("body").on("keypress", function(e) {
 	}
 });
 
-var YTCounter = 0;
-var YTTitleCache = {};
-
-var YTCreateScriptTag = function(elem, youcode) {
-	if (YTTitleCache[youcode]) {
-		elem.appendChild(document.createTextNode(YTTitleCache[youcode]));
-		elem.onmouseover = null;
-		return;
-	}
-	YTCounter++;
-	var myId = YTCounter;
-	elem.id = 'yt_' + myId;
-	elem.onmouseover = null;
-	window['YTCallback_' + myId] = function(ytResponse) {
-		var title = ytResponse.entry.title.$t;
-		window.YTTitleCache[youcode] = title;
-		elem.appendChild(document.createTextNode(title));
-	};
-	var script = document.createElement('script');
-	script.type = 'text/javascript';
-	script.src = '//gdata.youtube.com/feeds/api/videos/' +
-		youcode + '?v=2&alt=json-in-script&callback=YTCallback_' + myId;
-	document.body.appendChild(script);
-	
+var youtube_embed = function(aTag, youcode, start) {
+	var container = aTag.parentNode.parentNode;
+	container.innerHTML =
+		"<iframe width=\"480\" height=\"360\" src=\"//www.youtube.com/embed/" +
+		youcode + start + " frameborder=\"0\" allowfullscreen></iframe>";
 };
 
 function pedonizeThreadTree(msgId) {
