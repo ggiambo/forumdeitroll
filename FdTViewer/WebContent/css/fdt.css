@@ -1833,7 +1833,8 @@ div.softvMsg {
 }
 
 .youtube-buttons {
-	top: 340px;
+	top: 320px;
+	height: 40px;
 	position: relative;
 	background-color: black;
 }
