@@ -1,4 +1,4 @@
-package com.forumdeitroll.markup3;
+package com.forumdeitroll.markup;
 
 public class Tokenizer {
 	private final TokenMatcher[][] matchers = TokenCatalog.get();

@@ -1,4 +1,4 @@
-package com.forumdeitroll.markup3;
+package com.forumdeitroll.markup;
 
 import java.net.URLEncoder;
 import java.util.concurrent.ConcurrentHashMap;

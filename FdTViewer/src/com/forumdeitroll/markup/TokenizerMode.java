@@ -1,4 +1,4 @@
-package com.forumdeitroll.markup3;
+package com.forumdeitroll.markup;
 
 public enum TokenizerMode {
 	BEGINNING_OF_LINE,

@@ -1,4 +1,4 @@
-package com.forumdeitroll.markup3;
+package com.forumdeitroll.markup;
 
 public interface TokenListener {
 	public void on(TokenMatcher token, TokenMatcher additional) throws Exception;

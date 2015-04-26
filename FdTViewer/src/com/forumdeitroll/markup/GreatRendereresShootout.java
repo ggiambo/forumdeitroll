@@ -1,4 +1,4 @@
-package com.forumdeitroll.markup3;
+package com.forumdeitroll.markup;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -329,7 +329,7 @@ public class GreatRendereresShootout {
 	}
 	private static String renderNoParser(String dbmarkup, RenderOptions opts) throws Exception {
 		StringWriter out = new StringWriter();
-		com.forumdeitroll.markup3.Renderer.render(dbmarkup, out, opts);
+		com.forumdeitroll.markup.Renderer.render(dbmarkup, out, opts);
 		return out.toString();
 	}
 	private static void printTokens(String markup) throws Exception {

@@ -1,4 +1,4 @@
-package com.forumdeitroll.markup3;
+package com.forumdeitroll.markup;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;

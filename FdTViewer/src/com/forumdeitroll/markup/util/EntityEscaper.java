@@ -6,7 +6,6 @@ import java.io.Writer;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 
 public class EntityEscaper {
-
 	private static char[][] entityMapping = entityMapping();
 	private static char[][] entityMapping() {
 		int size = EntityArrays.BASIC_ESCAPE().length + EntityArrays.ISO8859_1_ESCAPE().length + EntityArrays.HTML40_EXTENDED_ESCAPE().length + EntityArrays.APOS_ESCAPE().length;

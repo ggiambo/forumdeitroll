@@ -1,4 +1,4 @@
-package com.forumdeitroll.markup3;
+package com.forumdeitroll.markup;
 
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;

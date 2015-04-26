@@ -3,52 +3,12 @@ package com.forumdeitroll.markup.util;
 import java.io.IOException;
 import java.io.Writer;
 
-import com.forumdeitroll.markup.RenderIO;
+//import com.forumdeitroll.markup.RenderIO;
 import com.forumdeitroll.markup.RenderOptions;
-import com.forumdeitroll.markup.RenderState;
+//import com.forumdeitroll.markup.RenderState;
 
 public class YouTube {
-
-	private static final char[] YT = "[yt]".toCharArray();
-	private static final char[] YT_END = "[/yt]".toCharArray();
-
 	public static final int MAX_EMBED = 10;
-
-	public static boolean yt(RenderIO io, RenderState state, RenderOptions opts) throws IOException {
-		if (state.embedCount >= MAX_EMBED)
-			return false;
-		if (!opts.renderYoutube)
-			return false;
-		if (!io.startWith(YT))
-			return false;
-		int end = io.indexOf(YT_END, YT.length);
-		if (end == -1 || end == YT.length)
-			return false;
-		if (end - YT.length > YOUCODE_MAX_LENGTH) {
-			if (! Links.isLink(io.buffer, YT.length, end - YT.length))
-				return false;
-			int[] boundaries = YouTube.extractYoucode(io.buffer, YT.length, end - YT.length);
-			if (boundaries == null)
-				return false;
-			if (opts.embedYoutube) {
-				writeYtEmbed(io.out, io.buffer, boundaries[0], boundaries[1] - boundaries[0]);
-			} else {
-				writeYTImage(io.out, io.buffer, boundaries[0], boundaries[1] - boundaries[0]);
-			}
-			io.skip(end + YT_END.length);
-			return true;
-		}
-		if (Links.isLink(io.buffer, YT.length, end - YT.length))
-			return false;
-		if (opts.embedYoutube) {
-			writeYtEmbed(io.out, io.buffer, YT.length, end - YT.length);
-		} else {
-			writeYTImage(io.out, io.buffer, YT.length, end - YT.length);
-		}
-		io.skip(end + YT_END.length);
-		state.embedCount++;
-		return true;
-	}
 
 	private static final char[] YT_EMBED_START = "<iframe width=\"400\" height=\"329\" src=\"//www.youtube-nocookie.com/embed/".toCharArray();
 	private static final char[] YT_EMBED_END = "\" frameborder=\"0\" allowfullscreen></iframe>".toCharArray();
@@ -57,6 +17,7 @@ public class YouTube {
 		EntityEscaper.writeEscaped(out, buffer, offset, length);
 		out.write(YT_EMBED_END);
 	}
+
 	private static final char[] YT_IMAGE_START = "<a href=\"http://www.youtube.com/watch?v=".toCharArray();
 	private static final char[] YT_IMAGE_MID1 = "\" onmouseover='YTCreateScriptTag(this, \"".toCharArray();
 	private static final char[] YT_IMAGE_MID2 = "\")'><img src='http://img.youtube.com/vi/".toCharArray();
@@ -133,5 +94,4 @@ public class YouTube {
 		}
 		return new int[] {offset + p, offset + length};
 	}
-
 }

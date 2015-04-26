@@ -66,7 +66,7 @@ public class RenderTag extends TagSupport {
 				com.forumdeitroll.markup2.Renderer.render(text, sw, opts);
 				html = sw.toString();
 			} else {
-				html = com.forumdeitroll.markup3.Renderer.render(text, opts);
+				html = com.forumdeitroll.markup.Renderer.render(text, opts);
 			}
 			if (pageContext.getRequest().getParameter("compareRendering") != null) {
 				StringWriter sw = new StringWriter();
@@ -94,7 +94,7 @@ public class RenderTag extends TagSupport {
 		opts.authorIsAnonymous = author != null && StringUtils.isEmpty(author.getNick());
 		StringReader in = new StringReader(body);
 		StringWriter out = new StringWriter();
-		com.forumdeitroll.markup3.Renderer.render(in, out, opts);
+		com.forumdeitroll.markup.Renderer.render(in, out, opts);
 		return out.toString();
 	}
 	

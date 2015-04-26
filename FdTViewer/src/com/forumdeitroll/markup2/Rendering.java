@@ -7,13 +7,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.forumdeitroll.markup.util.Chars;
 import com.forumdeitroll.markup.util.EntityEscaper;
 import com.forumdeitroll.markup.util.FaviconWhiteList;
-import com.forumdeitroll.markup.util.Images;
 import com.forumdeitroll.markup.util.Links;
 import com.forumdeitroll.markup.util.YouTube;
 import com.forumdeitroll.persistence.DAOFactory;
 
 class Rendering {
 	static final int MAX_DESC_LENGTH = 50;
+	static final int MAX_IMMYS = 15;
+
+	static final char[] ANONIMG_START = "<a rel='nofollow noreferrer' target='_blank' href=\"".toCharArray();
+	static final char[] ANONIMG_END = "\">Immagine postata da ANOnimo</a>".toCharArray();
+	static final char[] EMBEDDED_IMAGE_START = "<a rel='nofollow noreferrer' target='_blank' class='preview' href=\"".toCharArray();
+	static final char[] EMBEDDED_IMAGE_MID = "\"><img class='userPostedImage' alt='Immagine postata dall&#39;utente' src=\"".toCharArray();
+	static final char[] EMBEDDED_IMAGE_END = "\"></a>".toCharArray();
+
+	static char[] THREAD_LINK_INITSEQ = "Threads?action=getByThread&threadId=".toCharArray();
+	static char[] MESSAGE_LINK_SEQ = "#msg".toCharArray();
+	static char[] AMPERSAND_SIGN = "&".toCharArray();
+	static char[] OCTOTHORPE_SIGN = "#".toCharArray();
 
 	interface OfTag {
 		public void render(final Writer w, final Parser.Status status, final ParserNode.TagDelimited tag) throws Exception;
@@ -26,7 +37,7 @@ class Rendering {
 				td.writeBadTag(w, status);
 				return;
 			}
-			if (!status.rops.renderImages || (status.immyCount > Images.MAX_IMMYS)) {
+			if (!status.rops.renderImages || (status.immyCount > MAX_IMMYS)) {
 				w.write("[img]");
 				w.write(tn.t.text.buf, tn.t.text.start, tn.t.text.length());
 				w.write("[/img]");
@@ -34,15 +45,15 @@ class Rendering {
 			}
 			++status.immyCount;
 			if (status.rops.authorIsAnonymous && status.rops.showImagesPlaceholder) {
-				w.write(Images.ANONIMG_START);
+				w.write(ANONIMG_START);
 				Links.writeUrl(w, tn.t.text.buf, tn.t.text.start, tn.t.text.length());
-				w.write(Images.ANONIMG_END);
+				w.write(ANONIMG_END);
 			} else {
-				w.write(Images.EMBEDDED_IMAGE_START);
+				w.write(EMBEDDED_IMAGE_START);
 				Links.writeUrl(w, tn.t.text.buf, tn.t.text.start, tn.t.text.length());
-				w.write(Images.EMBEDDED_IMAGE_MID);
+				w.write(EMBEDDED_IMAGE_MID);
 				Links.writeUrl(w, tn.t.text.buf, tn.t.text.start, tn.t.text.length());
-				w.write(Images.EMBEDDED_IMAGE_END);
+				w.write(EMBEDDED_IMAGE_END);
 			}
 			w.write("<a href=\"https://www.google.com/searchbyimage?&image_url=");
 			Links.writeUrl(w, tn.t.text.buf, tn.t.text.start, tn.t.text.length());
@@ -335,7 +346,7 @@ class Rendering {
 		int offset = link.start;
 		int length = link.length();
 		try {
-			int pos = Chars.indexOf(link.buf, offset, length, Links.THREAD_LINK_INITSEQ, 0, Links.THREAD_LINK_INITSEQ.length, 0, false, false);
+			int pos = Chars.indexOf(link.buf, offset, length, THREAD_LINK_INITSEQ, 0, THREAD_LINK_INITSEQ.length, 0, false, false);
 			if (pos == -1) {
 				return 0;
 			}
@@ -343,24 +354,24 @@ class Rendering {
 			length -= pos;
 			// casistiche:
 			// Threads?action=getByThread&threadId=0000000
-			offset = offset + Links.THREAD_LINK_INITSEQ.length;
-			length = length - Links.THREAD_LINK_INITSEQ.length;
+			offset = offset + THREAD_LINK_INITSEQ.length;
+			length = length - THREAD_LINK_INITSEQ.length;
 			boolean endsWithThreadId = Chars.isNumeric(link.buf, offset, length);
 			if (endsWithThreadId) {
 				return Long.parseLong(new String(link.buf, offset, length));
 			}
 			// Threads?action=getByThread&threadId=0000000&...
-			int offsetAmp = indexOf(link.buf, Links.AMPERSAND_SIGN, offset);
+			int offsetAmp = indexOf(link.buf, AMPERSAND_SIGN, offset);
 			if (offsetAmp == -1 || (offsetAmp - offset) > 12) {
 				// Threads?action=getByThread&threadId=0000000#...
-				int offsetOct = indexOf(link.buf, Links.OCTOTHORPE_SIGN, offset);
+				int offsetOct = indexOf(link.buf, OCTOTHORPE_SIGN, offset);
 				if (offsetOct == -1 || (offsetOct - offset) > 12) {
 					return 0;
 				} else {
 					// Threads?action=getByThread&threadId=0000000#msg000000
-					int offsetMsgId = indexOf(link.buf, Links.MESSAGE_LINK_SEQ, offset);
+					int offsetMsgId = indexOf(link.buf, MESSAGE_LINK_SEQ, offset);
 					if (offsetMsgId != -1) {
-						offsetMsgId += Links.MESSAGE_LINK_SEQ.length;
+						offsetMsgId += MESSAGE_LINK_SEQ.length;
 						int lengthMsgId = link.start + link.length();
 						lengthMsgId -= offsetMsgId;
 						if (Chars.isNumeric(link.buf, offsetMsgId, lengthMsgId)) {

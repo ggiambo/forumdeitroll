@@ -15,39 +15,6 @@ public class Emoticons {
 	
 	public static final int MAX_EMOTICONS = 200;
 	
-	public int replace(StringBuilder word, int emotiCount) {
-		int count = 0;
-		for (Emoticon e : tutte) {
-			if (emotiCount == MAX_EMOTICONS) return emotiCount;
-			if (count == 0 && word.indexOf(e.initialSequence) == 0 && e.sequenceStartWithSpace) {
-				word.replace(0, e.initialSequence.length(), e.htmlReplacement);
-				count++;
-				emotiCount++;
-			} else if (count == 0 && word.indexOf(e.initialSequenceUpcase) == 0 && e.sequenceStartWithSpace) {
-				word.replace(0, e.initialSequenceUpcase.length(), e.htmlReplacement);
-				count++;
-				emotiCount++;
-			}
-			if (e.sequenceStartWithSpace) {
-				continue;
-			}
-			do {
-				if (emotiCount == MAX_EMOTICONS) return emotiCount;
-				int p = word.indexOf(e.sequence);
-				if (p == -1) {
-					p = word.indexOf(e.sequenceUpcase);
-				}
-				if (p == -1) {
-					break;
-				}
-				word.replace(p, p + e.sequence.length(), e.htmlReplacement);
-				count++;
-				emotiCount++;
-			} while (true);
-		}
-		return emotiCount;
-	}
-	
 	public static final List<Emoticon> serieClassica = new ArrayList<Emoticon>() {
 		
 		private void addEmo(String imgName, String sequence, String altText) {

@@ -1,6 +1,7 @@
 package com.forumdeitroll.markup.util;
 
 public class Chars {
+
 	public static boolean isAlphanum(char ch) {
 		int type = Character.getType(ch);
 		return type == Character.UPPERCASE_LETTER
@@ -38,7 +39,7 @@ public class Chars {
 		int max = sourceOffset + (sourceCount - targetCount);
 
 		for (int i = sourceOffset + fromIndex; i <= max; i++) {
-			/* Look for first character. */
+			// Look for first character.
 			if (source[i] != first) {
 				while (
 					++i <= max &&
@@ -52,7 +53,7 @@ public class Chars {
 			if (startWith && i > sourceOffset + fromIndex)
 				return -1;
 
-			/* Found first character, now look at the rest of v2 */
+			// Found first character, now look at the rest of v2 
 			if (i <= max) {
 				int j = i + 1;
 				int end = j + targetCount - 1;
@@ -66,7 +67,7 @@ public class Chars {
 				);
 
 				if (j == end) {
-					/* Found whole string. */
+					// Found whole string.
 					return i - sourceOffset;
 				}
 			}
