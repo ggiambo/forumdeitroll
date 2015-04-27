@@ -7,9 +7,10 @@ public class Emoticon {
 	public final String initialSequence;
 	public final String initialSequenceUpcase;
 	public final String altText;
-	public String htmlReplacement;
+	public final String htmlReplacement;
 	public final boolean sequenceStartWithSpace;
-	public Emoticon(String imgName, String sequence, String altText) {
+
+	private Emoticon(final String imgName, final String sequence, final String altText, final String htmlReplacement) {
 		this.imgName = imgName;
 		this.sequence = sequence;
 		this.sequenceUpcase = sequence.toUpperCase();
@@ -17,8 +18,19 @@ public class Emoticon {
 		this.initialSequence = sequenceStartWithSpace ? sequence.substring(1) : sequence;
 		this.initialSequenceUpcase = initialSequence.toUpperCase();
 		this.altText = altText;
-		htmlReplacement = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emo/%s.gif'>", altText, altText, imgName);
+		this.htmlReplacement = htmlReplacement;
 	}
+
+	public static Emoticon make(String imgName, String sequence, String altText) {
+		final String htmlReplacement = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emo/%s.gif'>", altText, altText, imgName);
+		return new Emoticon(imgName, sequence, altText, htmlReplacement);
+	}
+
+	public static Emoticon makeExt(String imgName, String sequence, String altText) {
+		final String htmlReplacement = String.format("<img alt='%s' title='%s' class='emoticon' src='images/emoextended/%s.gif'>", altText, altText, imgName);
+		return new Emoticon(imgName, sequence, altText, htmlReplacement);
+	}
+
 	// getters per el/jstl
 	public String getImgName() {
 		return imgName;

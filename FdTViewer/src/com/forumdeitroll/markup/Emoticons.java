@@ -18,7 +18,7 @@ public class Emoticons {
 	public static final List<Emoticon> serieClassica = new ArrayList<Emoticon>() {
 		
 		private void addEmo(String imgName, String sequence, String altText) {
-			add(new Emoticon(imgName, sequence, altText));
+			add(Emoticon.make(imgName, sequence, altText));
 		}
 		
 		{
@@ -65,7 +65,7 @@ public class Emoticons {
 	public static final List<Emoticon> serieEstesa = new ArrayList<Emoticon>() {
 		
 		private void addEmo(String imgName, String sequence, String altText) {
-			add(new EmoticonExtended(imgName, sequence, altText));
+			add(Emoticon.makeExt(imgName, sequence, altText));
 		}
 		
 		{
