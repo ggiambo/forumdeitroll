@@ -365,3 +365,30 @@ div.author {
 	margin: 0;
 	padding: 0;
 }
+
+
+.youtube-video-box {
+	width: 480px;
+	height: 360px;
+	background-repeat: no-repeat;
+	clear: right;
+}
+
+.youtube-video-title {
+	background-color: black;
+	color: white;
+	font-weight: bold;
+}
+
+.youtube-buttons {
+	top: 320px;
+	height: 40px;
+	position: relative;
+	background-color: black;
+}
+
+.youtube-buttons > a {
+	text-decoration: none;
+	color: white !important;
+	font-weight: bold;
+}
