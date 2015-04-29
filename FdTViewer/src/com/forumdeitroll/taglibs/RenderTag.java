@@ -79,7 +79,7 @@ public class RenderTag extends TagSupport {
 			}
 			pageContext.getOut().print(html);
 		} catch (Exception e) {
-			LOG.error(e);
+			LOG.error(e.getMessage(), e);
 			try {
 				pageContext.getOut().print("Impossibile visualizzare il messaggio! Segnala questo post alla suora! E di corsa!");
 			} catch (IOException e1) {
