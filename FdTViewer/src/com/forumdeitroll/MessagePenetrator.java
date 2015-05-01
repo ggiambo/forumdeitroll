@@ -44,7 +44,7 @@ public class MessagePenetrator {
 	public MessagePenetrator setForum(final String _forum) {
 		if (error != null) return this;
 
-		forum = InputSanitizer.sanitizeForum(_forum);
+		forum = InputSanitizer.sanitizeForum(StringUtils.defaultString(_forum));
 
 		// qualcuno prova a creare un forum ;) ?
 		if (!StringUtils.isEmpty(forum) && !DAOFactory.getMiscDAO().getForums().contains(forum)) {
@@ -70,7 +70,7 @@ public class MessagePenetrator {
 	public MessagePenetrator setSubject(final String _subject) {
 		if (error != null) return this;
 
-		subject = InputSanitizer.sanitizeSubject(_subject);
+		subject = InputSanitizer.sanitizeSubject(StringUtils.defaultString(_subject));
 
 		if (StringUtils.isEmpty(subject) || subject.trim().length() < 3) {
 			setError("Oggetto di almeno di 3 caratteri, cribbio !");
@@ -176,7 +176,13 @@ public class MessagePenetrator {
 		}
 
 		if (parentId > 0) {
-			long id = Long.parseLong(_id);
+			Long id = null;
+            try {
+                id = Long.parseLong(_id);
+            } catch (NumberFormatException e) {
+                setError("Sono consufo, non riesco a interpretare l'id '" + _id + "'");
+                return this;
+            }
 			if (id > -1) {
 				parentId = id;
 				type = "edit";

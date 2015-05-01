@@ -465,7 +465,7 @@ public class Messages extends MainServlet {
 		//System.out.println("submitLocation [" + submitLocation + "]");
 		URI submitURI = null;
 		try {
-			submitURI = new URI(submitLocation);
+			submitURI = new URI(StringUtils.defaultString(submitLocation));
 		} catch (URISyntaxException e) {
 			content.append("/Messages?action=init");
 		}

@@ -1,10 +1,13 @@
 package com.forumdeitroll.markup;
 
 
+import org.apache.commons.lang3.StringUtils;
+
 public class InputSanitizer {
 	
 	public static String sanitizeText(String text) {
 		// replace dei caratteri HTML
+		text = StringUtils.defaultString(text);
 		text = text.replaceAll(">", "&gt;").replaceAll("<", "&lt;").replaceAll("\n", "<BR>");
 
 		// restore <i>, <b>, <u> e <s>
