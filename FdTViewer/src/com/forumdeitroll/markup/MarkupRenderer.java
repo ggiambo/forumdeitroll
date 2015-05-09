@@ -456,6 +456,9 @@ public class MarkupRenderer implements TokenListener {
 	private void emitYoutube(String youcode, String link) {
 		youcode = escape(youcode);
 		String t = link != null ? extractTFromYoutubeUrl(link) : null;
+		if (link != null && !link.startsWith("http")) {
+			link = "http://" + link;
+		}
 		int start = 0;
 		if (t != null) {
 			if (t.indexOf('m') != -1) { // XXmXXs | XXm
