@@ -109,7 +109,10 @@ function send(parentId) {
 					window.location.assign(newUrl + data.content);
 				} else if (data.resultCode == "MSG") {
 					alert(data.content);
-					$(".msgCaptcha img").get(0).src = "Misc?action=getCaptcha&v=" + Math.random()
+					var captchaimg = $(".msgCaptcha img").get(0);
+					if (captchaimg != null) {
+						captchaimg.src = "Misc?action=getCaptcha&v=" + Math.random();
+					}
 				} else if (data.resultCode == "BAN") {
 					alert(data.content);
 					$('#reply_' + parentId).remove();
