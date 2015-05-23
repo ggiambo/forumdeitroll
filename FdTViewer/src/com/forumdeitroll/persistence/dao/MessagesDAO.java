@@ -269,15 +269,15 @@ public class MessagesDAO extends BaseDAO {
 
 	private MessageDTO recordToDTO(Record record, boolean search) {
 		MessageDTO message = new MessageDTO();
-		message.setId(record.getValue(MESSAGES.ID));
-		message.setParentId(record.getValue(MESSAGES.PARENTID));
-		message.setThreadId(record.getValue(MESSAGES.THREADID));
+		message.setId(record.getValue(MESSAGES.ID).longValue());
+		message.setParentId(record.getValue(MESSAGES.PARENTID).longValue());
+		message.setThreadId(record.getValue(MESSAGES.THREADID).longValue());
 		message.setText(record.getValue(MESSAGES.TEXT));
 		message.setSubject(record.getValue(MESSAGES.SUBJECT));
 		message.setAuthor(getAuthor(record.getValue(MESSAGES.AUTHOR)));
 		message.setForum(record.getValue(MESSAGES.FORUM));
 		message.setDate(record.getValue(MESSAGES.DATE));
-		message.setIsVisible(record.getValue(MESSAGES.VISIBLE));
+		message.setIsVisible(record.getValue(MESSAGES.VISIBLE).intValue());
 		message.setRank(record.getValue(MESSAGES.RANK));
 
 		// TODO, usati nel search

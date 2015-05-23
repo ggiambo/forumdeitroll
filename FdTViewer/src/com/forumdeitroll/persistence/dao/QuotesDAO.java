@@ -50,7 +50,7 @@ public class QuotesDAO extends BaseDAO {
 		final List<QuoteDTO> out = new ArrayList<QuoteDTO>(records.size());
 		for (Record record : records) {
 			QuoteDTO dto = new QuoteDTO();
-			dto.setId(record.getValue(QUOTES.ID));
+			dto.setId(record.getValue(QUOTES.ID).longValue());
 			dto.setContent(record.getValue(QUOTES.CONTENT));
 			dto.setNick(record.getValue(QUOTES.NICK));
 			out.add(dto);

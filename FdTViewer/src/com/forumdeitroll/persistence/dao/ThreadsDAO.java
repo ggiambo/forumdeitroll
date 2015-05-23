@@ -180,14 +180,14 @@ public class ThreadsDAO extends BaseDAO {
 	private ThreadDTO recordToDTO(Record record, boolean fetchLastId) {
 		ThreadDTO thread = new ThreadDTO();
 		if (fetchLastId) {
-			thread.setLastId(record.getValue(THREADS.LASTID));
+			thread.setLastId(record.getValue(THREADS.LASTID).longValue());
 		}
 		thread.setAuthor(getAuthor(record.getValue(MESSAGES.AUTHOR)));
 		thread.setDate(record.getValue(MESSAGES.DATE));
 		thread.setForum(record.getValue(MESSAGES.FORUM));
-		thread.setNumberOfMessages(getNumberOfMessages(record.getValue(MESSAGES.THREADID)));
-		thread.setId(record.getValue(THREADS.THREADID));
-		thread.setIsVisible(record.getValue(MESSAGES.VISIBLE));
+		thread.setNumberOfMessages(getNumberOfMessages(record.getValue(MESSAGES.THREADID).longValue()));
+		thread.setId(record.getValue(THREADS.THREADID).longValue());
+		thread.setIsVisible(record.getValue(MESSAGES.VISIBLE).intValue());
 		thread.setRank(record.getValue(MESSAGES.RANK));
 		thread.setSubject(record.getValue(MESSAGES.SUBJECT));
 

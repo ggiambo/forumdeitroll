@@ -173,4 +173,8 @@
     <servlet-name>ReadersDigest</servlet-name>
     <url-pattern>/ReadersDigest</url-pattern>
   </servlet-mapping>
+  <session-config>
+  	<!-- una settimana -->
+  	<session-timeout>10080</session-timeout>
+  </session-config>
 </web-app>

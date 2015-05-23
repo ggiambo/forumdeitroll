@@ -39,7 +39,7 @@ public class DigestDAO extends BaseDAO {
 		for (Record record : records) {
 			if (current == null || current.getThreadId() != record.getValue(DIGEST.THREADID)) {
 				current = new DigestArticleDTO();
-				current.setThreadId(record.getValue(DIGEST.THREADID));
+				current.setThreadId(record.getValue(DIGEST.THREADID).longValue());
 				current.setAuthor(record.getValue(DIGEST.AUTHOR));
 				current.setSubject(record.getValue(DIGEST.SUBJECT));
 				current.setOpenerText(record.getValue(DIGEST.OPENER_TEXT));

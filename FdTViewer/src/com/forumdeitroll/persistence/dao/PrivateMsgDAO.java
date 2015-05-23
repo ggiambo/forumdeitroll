@@ -47,7 +47,7 @@ public class PrivateMsgDAO extends BaseDAO {
 		for (Record3<Integer, String, Timestamp> record : records) {
 				PrivateMsgDTO msg = new PrivateMsgDTO();
 				msg.setRead(true); // se l'ho mandato io...
-				msg.setId(record.getValue(PVT_CONTENT.ID));
+				msg.setId(record.getValue(PVT_CONTENT.ID).longValue());
 				msg.setSubject(record.getValue(PVT_CONTENT.SUBJECT));
 				msg.setDate(record.getValue(PVT_CONTENT.SENDDATE));
 				msg.setToNick(getRecipients((int)msg.getId()));
@@ -183,7 +183,7 @@ public class PrivateMsgDAO extends BaseDAO {
 				msg.setId(pvt_id);
 				//msg.setFromNick(user.getNick());
 				msg.setText(record.getValue(PVT_CONTENT.CONTENT));
-				msg.setReplyTo(record.getValue(PVT_CONTENT.REPLYTO));
+				msg.setReplyTo(record.getValue(PVT_CONTENT.REPLYTO).longValue());
 				msg.setSubject(record.getValue(PVT_CONTENT.SUBJECT));
 				msg.setDate(record.getValue(PVT_CONTENT.SENDDATE));
 				msg.setFromNick(record.getValue(PVT_CONTENT.SENDER));

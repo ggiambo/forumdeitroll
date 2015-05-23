@@ -111,8 +111,8 @@ public class MiscDAO extends BaseDAO {
 		MessageDTO currentMessage = null;
 		for (Record4<Integer, Integer, String, String> record : records) {
 			TagDTO tag = new TagDTO();
-			tag.setT_id(record.getValue(TAGNAMES.T_ID));
-			tag.setM_id(record.getValue(TAGS_BIND.M_ID));
+			tag.setT_id(record.getValue(TAGNAMES.T_ID).longValue());
+			tag.setM_id(record.getValue(TAGS_BIND.M_ID).longValue());
 			tag.setAuthor(record.getValue(TAGS_BIND.AUTHOR));
 			tag.setValue(record.getValue(TAGNAMES.VALUE));
 			if (tag.getM_id() != currentMid) {
