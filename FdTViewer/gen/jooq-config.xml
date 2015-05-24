@@ -42,7 +42,7 @@
       <!-- All elements that are excluded from your schema (A Java regular expression. 
            Use the pipe to separate several expressions). Excludes match before
            includes -->
-      <excludes></excludes>
+      <excludes>blogger_.*</excludes>
 
       <!-- The schema that is used locally as a source for meta information.
            This could be your development schema or the production schema, etc
@@ -68,7 +68,7 @@
       <packageName>com.forumdeitroll.persistence.jooq</packageName>
 
       <!-- The destination directory of your generated classes -->
-      <directory>../src/</directory>
+      <directory>src/</directory>
     </target>
   </generator>
 </configuration>
