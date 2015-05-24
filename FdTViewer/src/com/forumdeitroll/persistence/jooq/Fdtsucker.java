@@ -10,6 +10,7 @@ import com.forumdeitroll.persistence.jooq.tables.Bookmarks;
 import com.forumdeitroll.persistence.jooq.tables.Digest;
 import com.forumdeitroll.persistence.jooq.tables.DigestParticipant;
 import com.forumdeitroll.persistence.jooq.tables.Likes;
+import com.forumdeitroll.persistence.jooq.tables.Logins;
 import com.forumdeitroll.persistence.jooq.tables.Messages;
 import com.forumdeitroll.persistence.jooq.tables.Notification;
 import com.forumdeitroll.persistence.jooq.tables.Poll;
@@ -48,7 +49,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Fdtsucker extends SchemaImpl {
 
-	private static final long serialVersionUID = -227639616;
+	private static final long serialVersionUID = 829853017;
 
 	/**
 	 * The reference instance of <code>fdtsucker</code>
@@ -77,6 +78,7 @@ public class Fdtsucker extends SchemaImpl {
 			Digest.DIGEST,
 			DigestParticipant.DIGEST_PARTICIPANT,
 			Likes.LIKES,
+			Logins.LOGINS,
 			Messages.MESSAGES,
 			Notification.NOTIFICATION,
 			Poll.POLL,

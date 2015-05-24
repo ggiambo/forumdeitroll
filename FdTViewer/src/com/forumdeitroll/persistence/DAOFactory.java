@@ -14,6 +14,7 @@ import com.forumdeitroll.persistence.dao.AdminDAO;
 import com.forumdeitroll.persistence.dao.AuthorsDAO;
 import com.forumdeitroll.persistence.dao.BookmarksDAO;
 import com.forumdeitroll.persistence.dao.DigestDAO;
+import com.forumdeitroll.persistence.dao.LoginsDAO;
 import com.forumdeitroll.persistence.dao.MessagesDAO;
 import com.forumdeitroll.persistence.dao.MiscDAO;
 import com.forumdeitroll.persistence.dao.PollsDAO;
@@ -40,6 +41,7 @@ public class DAOFactory {
 	private MiscDAO miscDAO;
 	private PrivateMsgDAO privateMsgDAO;
 	private DigestDAO digestDAO;
+	private LoginsDAO loginsDAO;
 
 	private DAOFactory() throws ClassNotFoundException {
 	}
@@ -91,6 +93,7 @@ public class DAOFactory {
 		miscDAO = new MiscDAO(jooq);
 		privateMsgDAO = new PrivateMsgDAO(jooq);
 		digestDAO = new DigestDAO(jooq);
+		loginsDAO = new LoginsDAO(jooq);
 	}
 
 	public static final AuthorsDAO getAuthorsDAO() {
@@ -131,6 +134,10 @@ public class DAOFactory {
 
 	public static final DigestDAO getDigestDAO() {
 		return getInstance().digestDAO;
+	}
+
+	public static final LoginsDAO getLoginsDAO() {
+		return getInstance().loginsDAO;
 	}
 
 }

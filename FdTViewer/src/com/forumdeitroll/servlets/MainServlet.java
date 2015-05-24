@@ -28,6 +28,7 @@ import com.forumdeitroll.persistence.dao.AdminDAO;
 import com.forumdeitroll.persistence.dao.AuthorsDAO;
 import com.forumdeitroll.persistence.dao.BookmarksDAO;
 import com.forumdeitroll.persistence.dao.DigestDAO;
+import com.forumdeitroll.persistence.dao.LoginsDAO;
 import com.forumdeitroll.persistence.dao.MessagesDAO;
 import com.forumdeitroll.persistence.dao.MiscDAO;
 import com.forumdeitroll.persistence.dao.PollsDAO;
@@ -61,6 +62,7 @@ public abstract class MainServlet extends HttpServlet {
 	protected MiscDAO miscDAO;
 	protected PrivateMsgDAO privateMsgDAO;
 	protected DigestDAO digestDAO;
+	protected LoginsDAO loginsDAO;
 
 	protected SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
@@ -99,6 +101,7 @@ public abstract class MainServlet extends HttpServlet {
 		miscDAO = DAOFactory.getMiscDAO();
 		privateMsgDAO = DAOFactory.getPrivateMsgDAO();
 		digestDAO = DAOFactory.getDigestDAO();
+		loginsDAO = DAOFactory.getLoginsDAO();
 
 		actionMethodCache = new HashMap<String, Method>();
 	}

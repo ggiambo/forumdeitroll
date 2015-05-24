@@ -282,3 +282,12 @@ insert into threads  select threadid, max(id) from messages group by threadid;
 create index idx_threads_threadId on threads(threadId);
 
 create index idx_threads_lastId on threads(lastId);
+
+CREATE TABLE logins (
+	nick VARCHAR(255) NOT NULL,
+	loginKey VARCHAR(255) NOT NULL,
+	tstamp DATETIME NOT NULL
+)
+ENGINE=MyISAM
+DEFAULT CHARSET=utf8
+;

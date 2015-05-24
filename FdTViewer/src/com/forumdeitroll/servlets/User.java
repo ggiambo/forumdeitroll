@@ -1,5 +1,22 @@
 package com.forumdeitroll.servlets;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang3.StringUtils;
+
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.markup.InputSanitizer;
@@ -10,20 +27,6 @@ import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.Ratelimiter;
 import com.google.gson.stream.JsonWriter;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 public class User extends MainServlet {
 
@@ -677,6 +680,25 @@ public class User extends MainServlet {
 		setNavigationMessage(req, NavigationMessage.info("Firma modificato con successo !"));
 		return "user.jsp";
 
+	}
+
+	@Action(method=Method.POST)
+	String extLogin(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String callback = req.getParameter("callback");
+		if (StringUtils.isEmpty(callback)) {
+			setNavigationMessage(req, NavigationMessage.warn("callback non impostato."));
+			return "user.jsp";
+		}
+		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
+		if (loggedUser == null || !loggedUser.isValid()) {
+			setNavigationMessage(req, NavigationMessage.warn("Devi essere loggato per accedere alla funzione."));
+			return loginAction(req, res);
+		}
+		String key = loginsDAO.createLogin(loggedUser.getNick());
+		String redirectUrl = callback + URLEncoder.encode(key, "UTF-8");
+		res.setHeader("Location", redirectUrl);
+		res.sendError(HttpServletResponse.SC_MOVED_TEMPORARILY);
+		return null;
 	}
 
 	protected static final class AvailableTorRegistrations {
