@@ -27,11 +27,14 @@ public class ProfileRecord implements Serializable {
 	}
 	public String getLabelLink() {
 		if (label.startsWith("message-post-")) {
-			String id = label.substring("message-post-".length());
+			String id = getMsgId();
 			return String.format(
 					"<a name=\"%s\" href=\"Messages?action=getById&amp;msgId=%s\">%s</a>"
 					, label, id, label);
 		}
 		return String.format("<a name=\"%s\">%s</a>", label, label);
+	}
+	public String getMsgId() {
+		return label.substring("message-post-".length());
 	}
 }

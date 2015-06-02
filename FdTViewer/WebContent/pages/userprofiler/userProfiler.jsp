@@ -55,7 +55,15 @@
 			</thead>
 			<tbody>
 				<c:forEach var="record" items="${records}">
-					<tr>
+                    <c:choose>
+                        <c:when test="${param.messagePost eq record.msgId}">
+                            <c:set var="selectedRowStyle" value="border: 1px solid #AAA;background-color: #EEE"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="selectedRowStyle" value=""/>
+                        </c:otherwise>
+                    </c:choose>
+					<tr style="${selectedRowStyle}">
 						<td>
 							<jsp:useBean id="dateValue" class="java.util.Date"/>
 							<jsp:setProperty name="dateValue" property="time" value="${record.tstamp}"/>
