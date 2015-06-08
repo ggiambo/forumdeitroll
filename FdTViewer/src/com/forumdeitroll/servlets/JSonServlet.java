@@ -33,6 +33,7 @@ import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
+import com.forumdeitroll.persistence.dao.ThreadsDAO;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
@@ -97,6 +98,9 @@ public class JSonServlet extends HttpServlet {
 		}
 		// write in response
 		res.setContentType("application/json; charset=UTF-8");
+		if (action.startsWith("get")) {
+			res.setHeader("Access-Control-Allow-Origin", "*");
+		}
 		res.getWriter().write(writer.getBuilder().toString());
 		VisitorCounters.add(req);
 	}
@@ -137,10 +141,16 @@ public class JSonServlet extends HttpServlet {
 	 */
 	protected void getThreads(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
 		int page = getIntValue(params, "page", 0);
+		String order = getStringValue(params, "sort", "start");
 		int pageSize = getPageSize(params);
 		String forum = getStringValue(params, "forum", null);
 
-		ThreadsDTO result =  DAOFactory.getThreadsDAO().getThreads(forum, pageSize, page, null);
+		if (pageSize > 200) {
+			pageSize = 200;
+		}
+
+		final ThreadsDAO tdao = DAOFactory.getThreadsDAO();
+		ThreadsDTO result = order.equals("start") ? tdao.getThreads(forum, pageSize, page, null) : tdao.getThreadsByLastPost(forum, pageSize, page, null);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 

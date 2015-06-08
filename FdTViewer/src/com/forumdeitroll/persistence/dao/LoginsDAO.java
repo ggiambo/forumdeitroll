@@ -17,7 +17,7 @@ public class LoginsDAO extends BaseDAO {
 
 	public String createLogin(String nick) {
 		// cleanup login vecchie oltre il minuto
-		jooq.deleteFrom(Logins.LOGINS)
+		jooq.delete(Logins.LOGINS)
 			.where(Logins.LOGINS.TSTAMP.lt(DSL.field("date_add(current_timestamp, INTERVAL -1 MINUTE)", Timestamp.class)))
 			.execute()
 		;
