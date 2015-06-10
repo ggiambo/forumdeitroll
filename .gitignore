@@ -7,3 +7,4 @@ FdTViewer/target/
 .idea
 .metadata/
 FdTViewer/WebContent/WEB-INF/classes/
+FdTViewer/WebContent/WEB-INF/lib/
