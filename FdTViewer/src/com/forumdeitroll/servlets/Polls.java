@@ -238,7 +238,7 @@ public class Polls extends MainServlet {
 		req.setAttribute("poll", poll);
 
 		// sanitized pollText
-		String pollText = StringEscapeUtils.escapeXml(poll.getText()).replaceAll("\n", "<br/>");
+		String pollText = StringEscapeUtils.escapeXml11(poll.getText()).replaceAll("\n", "<br/>");
 		req.setAttribute("pollText", pollText);
 
 		// can vote ?

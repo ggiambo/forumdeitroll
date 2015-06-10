@@ -195,10 +195,10 @@ public class ThreadsDAO extends BaseDAO {
 	}
 
 	private int getNumberOfMessages(long threadId) {
-		return jooq.selectFrom(MESSAGES)
-				.where(MESSAGES.THREADID.eq((int) threadId))
-				.fetchCount();
-
+		return jooq.fetchCount(
+				jooq.selectFrom(MESSAGES)
+						.where(MESSAGES.THREADID.eq((int) threadId))
+		);
 	}
 
 }
