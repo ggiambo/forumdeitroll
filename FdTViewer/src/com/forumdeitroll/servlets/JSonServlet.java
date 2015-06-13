@@ -526,6 +526,7 @@ public class JSonServlet extends HttpServlet {
 		out.name("subject").value(threadDTO.getSubject());
 		out.name("forum").value(threadDTO.getForum());
 		out.name("numberOfMessages").value(threadDTO.getNumberOfMessages());
+		out.name("lastId").value(threadDTO.getLastId());
 		AuthorDTO author = threadDTO.getAuthor();
 		if (author.isValid()) {
 			encodeAuthor(author, out);
