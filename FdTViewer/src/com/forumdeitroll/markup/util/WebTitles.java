@@ -17,7 +17,7 @@ public class WebTitles {
 	protected static final int CONNECT_TIMEOUT = 400;
 	protected static final int READ_TIMEOUT = 1000;
 	protected static final int MAX_REDIRECT = 3;
-	protected static final int CACHE_SIZE = 100;
+	protected static final int CACHE_SIZE = 1000;
 
 	public static String get(final String url) {
 		try {
