@@ -475,7 +475,7 @@ public class MarkupRenderer implements TokenListener {
 			}
 		}
 		String page = String.format("http://www.youtube.com/watch?v=%s", youcode);
-		String title = WebTitles.get(page);
+		String title = WebTitles.Cache.lookup(page);
 		if (title != null && title.endsWith(" - YouTube")) {
 			title = title.substring(0, title.length() - 10);
 		}
