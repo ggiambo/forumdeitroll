@@ -121,12 +121,14 @@ public class Admin extends MainServlet {
 		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, adminDAO.getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 
 		String javascript = req.getParameter("javascript");
-		if (StringUtils.isNotEmpty(javascript) && javascript.length() > 255) {
-			StringBuilder errMsg = new StringBuilder("javascript troppo lungo: ");
-			errMsg.append(javascript .length()).append(" caratteri, max 255");
-			setNavigationMessage(req, NavigationMessage.warn(errMsg.toString()));
-		} else {
-			adminDAO.setSysinfoValue("javascript", javascript);
+		if (StringUtils.isNotEmpty(javascript)) {
+			if (javascript.length() > 255) {
+				StringBuilder errMsg = new StringBuilder("javascript troppo lungo: ");
+				errMsg.append(javascript.length()).append(" caratteri, max 255");
+				setNavigationMessage(req, NavigationMessage.warn(errMsg.toString()));
+			} else {
+				adminDAO.setSysinfoValue("javascript", javascript);
+			}
 		}
 		req.setAttribute("javascript", javascript);
 
