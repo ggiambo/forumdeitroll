@@ -16,13 +16,15 @@ insert into preferences (nick, `key`, `value`) values ('admin', 'hideBannerone',
 insert into preferences (nick, `key`, `value`) values ('admin', 'hideForum.Procura Svizzera', 'Procura Svizzera');
 insert into preferences (nick, `key`, `value`) values ('admin', 'theme', 'Classico');
 insert into preferences (nick, `key`, `value`) values ('admin', 'sidebarStatus', 'hide');
+insert into preferences (nick, `key`, `value`) values ('admin', 'pedonizeThread', 'yes');
+insert into preferences (nick, `key`, `value`) values ('admin', 'hideMessages', 'yes');
 
 insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (1, 'qui comando io $cool', '2010-05-13 14:30:15', 'benvenuto nel fdt !', 1, 1, 'admin', 'Forum iniziale', 'true', 0);
 insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (2, 'Proot !', '2010-05-13 14:35:03', 'benvenuto nel fdt !', 1, 1, null, 'Forum iniziale', 'true', 0);
 insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (3, 'Scritto da: <BR>&gt; Proot !<BR><BR>:@ !', '2010-05-13 14:55:45', 'benvenuto nel fdt !', 1, 2, 'admin', 'Forum iniziale', 'true', 0);
 insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (4, 'Blah Banf montanari orologio a cucu', '2010-05-13 18:03:12', 'Primo !', 4, 4, null, 'Procura Svizzera', 'true', 0);
-insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (5, ':(', '2010-05-14 09:15:54', 'Secondo !', 4, 4, null, 'Procura Svizzera', 'true', 0);
-insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (6, 'Nel Forum Principale', '2010-05-14 12:23:13', 'Nel Forum Principale', 6, 6, null, null, 'true', 0);
+insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (5, ':(<BR>[img]http://caravanpark.it/imgNoCrop/600/600/1-1/mediaDB/TUB1238_1.jpg[/img]', '2010-05-14 09:15:54', 'Secondo !', 4, 4, null, 'Procura Svizzera', 'true', 0);
+insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (6, 'Nel Forum Principale<BR>[yt]cA9gUspn6gc[/yt]', '2010-05-14 12:23:13', 'Nel Forum Principale', 6, 6, null, null, 'true', 0);
 insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (7, 'Ho incontrato yoda. Che ragazzo fortunato :( ...', '2014-08-16 14:54:11', 'Ieri', 7, 7, 'Sfigato', null, 'true', 1);
 insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (8, 'Scritto da: Sfigato<BR>&gt; Ho incontrato yoda. Che ragazzo fortunato :( ...<BR><BR>Mi trovi un lavoro ?<BR><BR>- idyoda -',  '2014-08-16 14:54:46', 'Re: Ieri', 7, 7, null, null, 'true', 0);
 insert into messages (id, text, date, subject, threadid, parentid, author, forum, visible, rank) values (9, 'Scritto da: <BR>&gt; Scritto da: Sfigato<BR>&gt; &gt; Ho incontrato yoda. Che ragazzo fortunato :( ...<BR>&gt; <BR>&gt; Mi trovi un lavoro ?<BR>&gt; <BR>&gt; - idyoda -<BR><BR>(rotfl)(rotfl)', '2014-08-16 14:55:14', 'Re: Ieri', 7, 8, 'admin', null, 'true', 0);

@@ -1,10 +1,9 @@
-FdTSucker/bin/
-FdTViewer/build/
-FdTViewer/classes/
-FdTViewer/target/
 .classpath
 .metadata
 .idea
 .metadata/
+FdTViewer/build/
+FdTViewer/classes/
 FdTViewer/WebContent/WEB-INF/classes/
-FdTViewer/WebContent/WEB-INF/lib/
+FdTViewer/WebContent/WEB-INF/lib
+FdTViewer/target/

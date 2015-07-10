@@ -1,6 +1,7 @@
 package com.forumdeitroll.test.persistence;
 
 import com.forumdeitroll.persistence.*;
+import com.forumdeitroll.test.BaseTest;
 import org.junit.Ignore;
 import org.junit.Test;
 

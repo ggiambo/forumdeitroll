@@ -2,6 +2,7 @@ package com.forumdeitroll.test.persistence;
 
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
+import com.forumdeitroll.test.BaseTest;
 import org.junit.Test;
 
 import java.util.ArrayList;

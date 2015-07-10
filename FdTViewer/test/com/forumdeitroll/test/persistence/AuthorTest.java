@@ -1,16 +1,22 @@
 package com.forumdeitroll.test.persistence;
 
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.servlets.User;
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
+
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.servlets.User;
+import com.forumdeitroll.test.BaseTest;
+
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class AuthorTest extends BaseTest {
 
@@ -91,7 +97,7 @@ public class AuthorTest extends BaseTest {
 		assertEquals("admin", author.getNick());
 		assertNull(author.getAvatar());
 		assertEquals(2, author.getMessages());
-		assertEquals(5, author.getPreferences().size());
+		assertEquals(7, author.getPreferences().size());
 	}
 
 	@Test

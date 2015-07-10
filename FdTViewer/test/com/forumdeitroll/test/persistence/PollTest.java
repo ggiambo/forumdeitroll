@@ -4,6 +4,7 @@ import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.PollDTO;
 import com.forumdeitroll.persistence.PollQuestion;
 import com.forumdeitroll.persistence.PollsDTO;
+import com.forumdeitroll.test.BaseTest;
 import org.junit.Test;
 
 import java.util.ArrayList;

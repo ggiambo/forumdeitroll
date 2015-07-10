@@ -155,5 +155,5 @@ CREATE ALIAS IF NOT EXISTS FT_INIT FOR "org.h2.fulltext.FullText.init";
 
 CALL FT_INIT();
 
-CALL FT_CREATE_INDex('fdtsucker', 'messages', 'text,subject');
+CALL FT_CREATE_INDEX('FDTSUCKER', 'MESSAGES', 'TEXT,SUBJECT');
 

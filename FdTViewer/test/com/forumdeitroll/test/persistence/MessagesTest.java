@@ -3,6 +3,7 @@ package com.forumdeitroll.test.persistence;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
+import com.forumdeitroll.test.BaseTest;
 import org.junit.Test;
 
 import java.util.Date;
@@ -122,7 +123,7 @@ public class MessagesTest extends BaseTest {
 		assertEquals(0, msg.getRank());
 		assertEquals("Secondo !", msg.getSubject());
 		assertNull(msg.getTags());
-		assertEquals(":(", msg.getText());
+		assertEquals(":(<BR>[img]http://caravanpark.it/imgNoCrop/600/600/1-1/mediaDB/TUB1238_1.jpg[/img]", msg.getText());
 		assertEquals(4, msg.getThreadId());
 		assertTrue(msg.isVisible());
 	}
@@ -208,7 +209,7 @@ public class MessagesTest extends BaseTest {
 		assertEquals(0, msg.getRank());
 		assertEquals("Secondo !", msg.getSubject());
 		assertNull(msg.getTags());
-		assertEquals(":(", msg.getText());
+		assertEquals(":(<BR>[img]http://caravanpark.it/imgNoCrop/600/600/1-1/mediaDB/TUB1238_1.jpg[/img]", msg.getText());
 		assertEquals(4, msg.getThreadId());
 		assertTrue(msg.isVisible());
 

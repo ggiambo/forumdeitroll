@@ -1,12 +1,14 @@
 package com.forumdeitroll.test.persistence;
 
-import com.forumdeitroll.persistence.AdDTO;
-import com.forumdeitroll.persistence.MessageDTO;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.forumdeitroll.persistence.AdDTO;
+import com.forumdeitroll.persistence.MessageDTO;
+import com.forumdeitroll.test.BaseTest;
 
 public class AdminTest extends BaseTest {
 

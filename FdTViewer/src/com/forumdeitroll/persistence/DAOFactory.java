@@ -29,7 +29,7 @@ public class DAOFactory {
 
 	private static final Logger LOG = Logger.getLogger(DAOFactory.class);
 
-	private static DAOFactory instance;
+	static DAOFactory instance;
 
 	private AuthorsDAO authorsDAO;
 	private ThreadsDAO threadsDAO;
@@ -43,10 +43,12 @@ public class DAOFactory {
 	private DigestDAO digestDAO;
 	private LoginsDAO loginsDAO;
 
-	private DAOFactory() throws ClassNotFoundException {
+    BasicDataSource dataSource;
+
+	DAOFactory() throws ClassNotFoundException {
 	}
 
-	private static synchronized DAOFactory getInstance() {
+	static synchronized DAOFactory getInstance() {
 		if (instance == null) {
 			String persistenceName = FdTConfig.getProperty("persistence.name");
 			try {
@@ -60,7 +62,7 @@ public class DAOFactory {
 		return instance;
 	}
 
-	private void init(Properties databaseConfig) throws ClassNotFoundException {
+	void init(Properties databaseConfig) throws ClassNotFoundException {
 		String driver = databaseConfig.getProperty("driverclass");
 		Class.forName(driver);
 
@@ -68,7 +70,7 @@ public class DAOFactory {
 		String password = databaseConfig.getProperty("password");
 		String url = databaseConfig.getProperty("url");
 
-		BasicDataSource dataSource = new BasicDataSource();
+		dataSource = new BasicDataSource();
 		dataSource.setMaxTotal(15);
 		dataSource.setMaxIdle(10);
 		dataSource.setMinIdle(3);
