@@ -617,6 +617,7 @@ public class Messages extends MainServlet {
 		res.setContentType("text/plain");
 		QuoteDTO quote = getRandomQuoteDTO(req, res);
 		res.getWriter().write(quote.getContent()+'\n'+quote.getNick());
+		res.flushBuffer();
 		return null;
 	}
 
