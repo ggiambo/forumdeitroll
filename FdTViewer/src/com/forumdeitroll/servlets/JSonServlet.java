@@ -7,9 +7,7 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,30 +17,28 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonWriter;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.MessagePenetrator;
 import com.forumdeitroll.SingleValueCache;
 import com.forumdeitroll.markup.Emoticon;
 import com.forumdeitroll.markup.Emoticons;
-import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
-import com.forumdeitroll.persistence.dao.ThreadsDAO;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
-import com.forumdeitroll.util.VisitorCounters;
+import com.forumdeitroll.persistence.dao.ThreadsDAO;
 import com.forumdeitroll.util.IPMemStorage;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonWriter;
+import com.forumdeitroll.util.VisitorCounters;
 
 /*
 QUESTA CLASSE E` UN MERDAIO, IL 90% DEL CODICE IN QUESTA CLASSE E` STATO COPINCOLLATO QUI SENZA RIGUARDO.
@@ -337,14 +333,14 @@ public class JSonServlet extends HttpServlet {
 	 * @throws Exception
 	 */
 	protected void getQuotes(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+		List<QuoteDTO> result;
 		String nick = getStringValue(params, "nick", null);
 		if (nick == null) {
-			writeErrorMessage(writer, "Manca il parametro  'nick'", time);
-			return;
+			result = DAOFactory.getQuotesDAO().getAllQuotes();
+		} else {
+			AuthorDTO author = DAOFactory.getAuthorsDAO().getAuthor(nick);
+			result = DAOFactory.getQuotesDAO().getQuotes(author);
 		}
-
-		AuthorDTO author = DAOFactory.getAuthorsDAO().getAuthor(nick);
-		List<QuoteDTO> result = DAOFactory.getQuotesDAO().getQuotes(author);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
@@ -358,6 +354,7 @@ public class JSonServlet extends HttpServlet {
 			out.beginObject();
 			out.name("id").value(quote.getId());
 			out.name("content").value(quote.getContent());
+			out.name("nick").value(quote.getNick());
 			out.endObject();
 			out.endObject();
 		}
