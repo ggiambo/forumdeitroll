@@ -4,10 +4,13 @@
 		<fileset dir="WebContent/WEB-INF/lib">
 			<include name="*.jar"/>
 		</fileset>
-	</path>
-	<target name="fetch-deps">
+  </path>
+  <target name="fetch-deps">
+    <delete dir="WebContent/WEB-INF/lib"/>
+    <mkdir dir="WebContent/WEB-INF/lib"/>
 		<exec command="mvn">
-			<arg value="dependency:copy-dependencies"/>
+      <arg value="dependency:copy-dependencies"/>
+      <arg value="-DincludeScope=compile"/>
 		</exec>
 		<copy todir="WebContent/WEB-INF/lib">
 			<fileset dir="target/dependency">
@@ -42,7 +45,7 @@
 			<classes dir="WebContent/WEB-INF/classes"/>
 		</war>
 	</target>
-	<target name="jooq-generate">
+  <target name="jooq-generate">
 		<java classname="org.jooq.util.GenerationTool" fork="true">
 			<classpath refid="compile.classpath"/>
 			<arg value="gen/jooq-config.xml"/>
