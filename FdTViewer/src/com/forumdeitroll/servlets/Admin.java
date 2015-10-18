@@ -1,26 +1,18 @@
 package com.forumdeitroll.servlets;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.forumdeitroll.persistence.AdDTO;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.Ratelimiter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Admin extends MainServlet {
 
@@ -121,14 +113,12 @@ public class Admin extends MainServlet {
 		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, adminDAO.getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 
 		String javascript = req.getParameter("javascript");
-		if (StringUtils.isNotEmpty(javascript)) {
-			if (javascript.length() > 255) {
-				StringBuilder errMsg = new StringBuilder("javascript troppo lungo: ");
-				errMsg.append(javascript.length()).append(" caratteri, max 255");
-				setNavigationMessage(req, NavigationMessage.warn(errMsg.toString()));
-			} else {
-				adminDAO.setSysinfoValue("javascript", javascript);
-			}
+		if (javascript.length() > 255) {
+			StringBuilder errMsg = new StringBuilder("javascript troppo lungo: ");
+			errMsg.append(javascript.length()).append(" caratteri, max 255");
+			setNavigationMessage(req, NavigationMessage.warn(errMsg.toString()));
+		} else {
+			adminDAO.setSysinfoValue("javascript", javascript);
 		}
 		req.setAttribute("javascript", javascript);
 
