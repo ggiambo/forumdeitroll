@@ -71,6 +71,14 @@
 			</c:if>
 		</c:url>
 		
+		<%-- "Discussioni: Ultime per utente" --%>
+		<c:url value="Threads" var="getThreadsByLastPostGroupByUser">
+			<c:param name="action" value="getThreadsByLastPostGroupByUser"></c:param>
+			<c:if test="${forum != null}">
+				<c:param name="forum" value="${forum}"></c:param>
+			</c:if>
+		</c:url>
+		
 		<%-- "Nuovo Messaggio" --%>
 		<c:url value="Messages" var="newMessage">
 			<c:param name="action" value="newMessage"></c:param>
@@ -84,6 +92,7 @@
 		<li>Discussioni: 
 			<a id="Threads_getThreads" href="${getThreads}">Nuove</a>&nbsp;
 			<a id="Threads_getThreadsByLastPost" href="${getThreadsByLastPost}">Ultime</a>
+			<a id="Threads_getThreadsByLastPostGroupByUser" href="${getThreadsByLastPostGroupByUser}">Ultime per utente</a>
 			<c:if test="${not empty loggedUser}">
 				&nbsp;<a id="Threads_getAuthorThreadsByLastPost" href="Threads?action=getAuthorThreadsByLastPost">Tue</a>
 			</c:if>

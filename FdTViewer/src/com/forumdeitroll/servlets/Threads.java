@@ -169,6 +169,28 @@ public class Threads extends MainServlet {
 		return "threads.jsp";
 	}
 
+
+	/**
+	 * Ordinati per thread / ultimo post e per utente
+	 */
+	@Action
+	String getThreadsByLastPostGroupByUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		String forum = req.getParameter("forum");
+		ThreadsDTO messages = threadsDAO.getThreadsByLastPostGroupByUser(forum, PAGE_SIZE, getPageNr(req), hiddenForums(req));
+		req.setAttribute("messages", messages.getMessages());
+		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
+		req.setAttribute("resultSize", messages.getMessages().size());
+		addSpecificParam(req, "forum",  forum);
+		if (forum == null) {
+			setWebsiteTitlePrefix(req, "");
+		} else {
+			setWebsiteTitlePrefix(req, forum.equals("") ? "Forum principale" : forum);
+		}
+		setNavigationMessage(req, NavigationMessage.info("Discussioni aggiornate per utente"));
+		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
+		return "threads.jsp";
+	}
+
 	/**
 	 * Tutti i threads dell'utente loggato, ordinati per ultimo post
 	 */

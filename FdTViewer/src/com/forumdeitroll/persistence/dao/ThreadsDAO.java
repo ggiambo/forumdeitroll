@@ -1,24 +1,17 @@
 package com.forumdeitroll.persistence.dao;
 
-import static com.forumdeitroll.persistence.jooq.Tables.MESSAGES;
-import static com.forumdeitroll.persistence.jooq.Tables.SYSINFO;
-import static com.forumdeitroll.persistence.jooq.Tables.THREADS;
+import com.forumdeitroll.persistence.ThreadDTO;
+import com.forumdeitroll.persistence.ThreadsDTO;
+import com.forumdeitroll.persistence.jooq.tables.Messages;
+import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
+import org.jooq.*;
+import org.jooq.impl.DSL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.SelectConditionStep;
-import org.jooq.impl.DSL;
-
-import com.forumdeitroll.persistence.ThreadDTO;
-import com.forumdeitroll.persistence.ThreadsDTO;
-import com.forumdeitroll.persistence.jooq.tables.Messages;
-import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
+import static com.forumdeitroll.persistence.jooq.Tables.*;
 
 public class ThreadsDAO extends BaseDAO {
 
@@ -65,6 +58,48 @@ public class ThreadsDAO extends BaseDAO {
 		List<ThreadDTO> res = new ArrayList<ThreadDTO>(records.size());
 		for (Record record : records) {
 			res.add(recordToDTO(record, true));
+		}
+
+		return new ThreadsDTO(res, threadsCount);
+
+	}
+
+	public ThreadsDTO getThreadsByLastPostGroupByUser(String forum, int limit, int page, List<String> hiddenForums) {
+
+		SelectConditionStep<Record> where = jooq.selectDistinct(MESSAGES.THREADID).select(MESSAGES.fields())
+				.from(MESSAGES)
+				.where(MESSAGES.ID.eq(MESSAGES.THREADID))
+				.and(MESSAGES.AUTHOR.isNotNull());
+
+		if ("".equals(forum)) {
+			where = where.and(MESSAGES.FORUM.isNull());
+		} else if (forum == null) {
+			if (hiddenForums != null && !hiddenForums.isEmpty()) {
+				where = where.and(MESSAGES.FORUM.isNull().or(MESSAGES.FORUM.notIn(hiddenForums)));
+			}
+
+		} else {
+			where = where.and(MESSAGES.FORUM.equal(forum));
+		}
+
+		Result<Record> records = where.orderBy(MESSAGES.THREADID.desc())
+				.limit(limit).offset(limit * page)
+				.fetch();
+
+		if (records.isEmpty()) {
+			return new ThreadsDTO();
+		}
+
+		int threadsCount = countThreads(forum);
+		if (hiddenForums != null && !hiddenForums.isEmpty() && forum == null) {
+			for (String hiddenForum : hiddenForums) {
+				threadsCount -= countMessages(hiddenForum);
+			}
+		}
+
+		List<ThreadDTO> res = new ArrayList<ThreadDTO>(records.size());
+		for (Record record : records) {
+			res.add(recordToDTO(record, false));
 		}
 
 		return new ThreadsDTO(res, threadsCount);
