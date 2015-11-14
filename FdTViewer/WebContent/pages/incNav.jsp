@@ -90,9 +90,9 @@
 		<li><a id="Messages_getMessages" href="${getMessages}">Cronologia</a></li>
 		<li>|</li>
 		<li>Discussioni: 
-			<a id="Threads_getThreads" href="${getThreads}">Nuove</a>&nbsp;
+			<a id="Threads_getThreads" href="${getThreads}">Nuove</a>
+			(<a id="Threads_getThreadsByLastPostGroupByUser" href="${getThreadsByLastPostGroupByUser}">Per utente</a>)
 			<a id="Threads_getThreadsByLastPost" href="${getThreadsByLastPost}">Ultime</a>
-			<a id="Threads_getThreadsByLastPostGroupByUser" href="${getThreadsByLastPostGroupByUser}">Ultime per utente</a>
 			<c:if test="${not empty loggedUser}">
 				&nbsp;<a id="Threads_getAuthorThreadsByLastPost" href="Threads?action=getAuthorThreadsByLastPost">Tue</a>
 			</c:if>

@@ -66,10 +66,12 @@ public class ThreadsDAO extends BaseDAO {
 
 	public ThreadsDTO getThreadsByLastPostGroupByUser(String forum, int limit, int page, List<String> hiddenForums) {
 
-		SelectConditionStep<Record> where = jooq.selectDistinct(MESSAGES.THREADID).select(MESSAGES.fields())
-				.from(MESSAGES)
-				.where(MESSAGES.ID.eq(MESSAGES.THREADID))
-				.and(MESSAGES.AUTHOR.isNotNull());
+		SelectConditionStep<Record> where =
+			jooq.select(MESSAGES.fields())
+			.from(MESSAGES)
+			.join(THREADS).on(THREADS.THREADID.eq(MESSAGES.ID))
+			.where(MESSAGES.AUTHOR.isNotNull())
+		;
 
 		if ("".equals(forum)) {
 			where = where.and(MESSAGES.FORUM.isNull());
@@ -82,7 +84,7 @@ public class ThreadsDAO extends BaseDAO {
 			where = where.and(MESSAGES.FORUM.equal(forum));
 		}
 
-		Result<Record> records = where.orderBy(MESSAGES.THREADID.desc())
+		Result<Record> records = where.orderBy(THREADS.THREADID.desc())
 				.limit(limit).offset(limit * page)
 				.fetch();
 
