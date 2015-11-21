@@ -85,14 +85,25 @@ public class AdminTest extends BaseServletsTest {
 
     @Test
     public void testUpdatePreferences_loginAdmin() throws Exception {
+	    String javascript = "Proot!";
+
         setUserAdmin()
+		        .setParameter("javascript", javascript)
                 .executeAction("updatePreferences", Action.Method.GET);
 
+	    Assert.assertEquals(javascript, getAttribute("javascript"));
+
         String blockTorExitNodes = getAttribute(Admin.ADMIN_PREF_BLOCK_TOR);
-        Assert.assertTrue(StringUtils.EMPTY, StringUtils.isEmpty(blockTorExitNodes));
+        Assert.assertTrue(StringUtils.isEmpty(blockTorExitNodes));
 
         String disableUserProfiler = getAttribute(Admin.ADMIN_PREF_DISABLE_PROFILER);
-        Assert.assertTrue(StringUtils.EMPTY, StringUtils.isEmpty(disableUserProfiler));
+        Assert.assertTrue(StringUtils.isEmpty(disableUserProfiler));
+
+	    List<AdDTO> adminFakeAds = getAttribute(Admin.ADMIN_FAKE_ADS);
+	    Assert.assertTrue(adminFakeAds.isEmpty());
+
+	    List<String> adminWebsiteTitles = getAttribute(Admin.ADMIN_WEBSITE_TITLES);
+	    Assert.assertTrue(adminWebsiteTitles.isEmpty());
     }
 
 }

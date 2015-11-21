@@ -4,6 +4,7 @@
 .metadata/
 FdTViewer/build/
 FdTViewer/classes/
-FdTViewer/WebContent/WEB-INF/classes/
-FdTViewer/WebContent/WEB-INF/lib
+FdTViewer/src/main/webapp/WEB-INF/classes/
+FdTViewer/src/main/webapp/WEB-INF/lib
 FdTViewer/target/
+out/
