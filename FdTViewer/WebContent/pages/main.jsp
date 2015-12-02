@@ -141,18 +141,18 @@
 		</div>
 
 		<%-- i vari scripts --%>
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-		<script src="js/underscore.1.4.4.min.js"></script>
-		<script src="js/json2.js" type="text/javascript"></script>
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="js/underscore.1.4.4.min.js"></script>
+		<script type="text/javascript" src="js/json2.js"></script>
 		<script type="text/javascript" src="js/fdt.js?v=<%=bootTime%>"></script>
 		<script type="text/javascript" src="js/preview.js?v=<%=bootTime%>"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
-		<script src="js/sh/shCore.js" type="text/javascript"></script>
-		<script src="js/sh/shAutoloader.js" type="text/javascript"></script>
-		<script src="js/jscolor/jscolor.js" type="text/javascript"></script>
-		<script src="js/PluginDetect_All.js" type="text/javascript"></script>
-		<script src="js/profiler.js?v=<%=bootTime%>" type="text/javascript"></script>
-		<script src="js/${fn:toLowerCase(servlet)}.js?v=<%=bootTime%>" type="text/javascript"></script>
+		<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="js/sh/shCore.js"></script>
+		<script type="text/javascript" src="js/sh/shAutoloader.js"></script>
+		<script type="text/javascript" src="js/jscolor/jscolor.js"></script>
+		<script type="text/javascript" src="js/PluginDetect_All.js"></script>
+		<script type="text/javascript" src="js/profiler.js?v=<%=bootTime%>"></script>
+		<script type="text/javascript" src="js/${fn:toLowerCase(servlet)}.js?v=<%=bootTime%>"></script>
 		<fdt:delayedScript dump="false">
 			<c:choose>
 				<c:when test="${not empty loggedUser && loggedUser.preferences['autoRefresh'] == 'checked'}">
