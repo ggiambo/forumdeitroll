@@ -8,7 +8,7 @@
 <html>
 	<head>
 		<title>la ciattina</title>
-		<script src=//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js></script>
+		<script type=text/javascript src=js/jquery.min.js></script>
 		<script type=text/javascript src=js/PluginDetect_All.js></script>
 		<script type=text/javascript src=js/profiler.js></script>
 		<script type=text/javascript src="js/minichat.js?v=<%=bootTime%>" ></script>
