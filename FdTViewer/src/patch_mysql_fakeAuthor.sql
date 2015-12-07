@@ -1,0 +1,1 @@
+ALTER TABLE `messages` ADD `fakeAuthor` VARCHAR( 256 ) NULL ;

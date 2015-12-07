@@ -7,19 +7,13 @@ package com.forumdeitroll.persistence.jooq.tables;
 import com.forumdeitroll.persistence.jooq.Fdtsucker;
 import com.forumdeitroll.persistence.jooq.Keys;
 import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
+import org.jooq.*;
+import org.jooq.impl.TableImpl;
 
+import javax.annotation.Generated;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.annotation.Generated;
-
-import org.jooq.Field;
-import org.jooq.Identity;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.UniqueKey;
-import org.jooq.impl.TableImpl;
 
 
 /**
@@ -35,7 +29,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Messages extends TableImpl<MessagesRecord> {
 
-	private static final long serialVersionUID = -601050939;
+	private static final long serialVersionUID = 2058189454;
 
 	/**
 	 * The reference instance of <code>fdtsucker.messages</code>
@@ -99,6 +93,11 @@ public class Messages extends TableImpl<MessagesRecord> {
 	 * The column <code>fdtsucker.messages.rank</code>.
 	 */
 	public final TableField<MessagesRecord, Integer> RANK = createField("rank", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaulted(true), this, "");
+
+	/**
+	 * The column <code>fdtsucker.messages.fakeAuthor</code>.
+	 */
+	public final TableField<MessagesRecord, String> FAKEAUTHOR = createField("fakeAuthor", org.jooq.impl.SQLDataType.VARCHAR.length(256), this, "");
 
 	/**
 	 * Create a <code>fdtsucker.messages</code> table reference

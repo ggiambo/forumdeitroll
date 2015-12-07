@@ -10,7 +10,6 @@ import com.forumdeitroll.persistence.jooq.tables.Bookmarks;
 import com.forumdeitroll.persistence.jooq.tables.Digest;
 import com.forumdeitroll.persistence.jooq.tables.DigestParticipant;
 import com.forumdeitroll.persistence.jooq.tables.Likes;
-import com.forumdeitroll.persistence.jooq.tables.Logins;
 import com.forumdeitroll.persistence.jooq.tables.Messages;
 import com.forumdeitroll.persistence.jooq.tables.Notification;
 import com.forumdeitroll.persistence.jooq.tables.Poll;
@@ -71,11 +70,6 @@ public class Tables {
 	 * The table fdtsucker.likes
 	 */
 	public static final Likes LIKES = com.forumdeitroll.persistence.jooq.tables.Likes.LIKES;
-
-	/**
-	 * The table fdtsucker.logins
-	 */
-	public static final Logins LOGINS = com.forumdeitroll.persistence.jooq.tables.Logins.LOGINS;
 
 	/**
 	 * The table fdtsucker.messages
