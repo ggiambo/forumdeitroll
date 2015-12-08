@@ -68,7 +68,7 @@
       <packageName>com.forumdeitroll.persistence.jooq</packageName>
 
       <!-- The destination directory of your generated classes -->
-      <directory>src/</directory>
+      <directory>../src/</directory>
     </target>
   </generator>
 </configuration>

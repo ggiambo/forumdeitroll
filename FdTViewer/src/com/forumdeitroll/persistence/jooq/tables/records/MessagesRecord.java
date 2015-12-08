@@ -5,14 +5,17 @@ package com.forumdeitroll.persistence.jooq.tables.records;
 
 
 import com.forumdeitroll.persistence.jooq.tables.Messages;
+
+import java.sql.Timestamp;
+
+import javax.annotation.Generated;
+
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record11;
+import org.jooq.Row;
 import org.jooq.Row11;
 import org.jooq.impl.UpdatableRecordImpl;
-
-import javax.annotation.Generated;
-import java.sql.Timestamp;
 
 
 /**
