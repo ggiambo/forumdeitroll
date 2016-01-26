@@ -9,6 +9,7 @@ public class ThreadDTO {
 	private Date date = null;
 	private String subject = null;
 	private AuthorDTO author = new AuthorDTO(null);
+	private String fakeAuthor;
 	private String forum = null;
 	private int setNumberOfMessages = -1;
 	private int isVisible = 1;
@@ -64,6 +65,14 @@ public class ThreadDTO {
 		this.author = author;
 	}
 
+	public String getFakeAuthor() {
+		return fakeAuthor;
+	}
+
+	public void setFakeAuthor(String fakeAuthor) {
+		this.fakeAuthor = fakeAuthor;
+	}
+
 	public String getForum() {
 		return forum;
 	}
@@ -104,6 +113,7 @@ public class ThreadDTO {
 		sb.append("date:").append(date).append(",");
 		sb.append("subject:").append(subject).append(",");
 		sb.append("author:").append(author).append(",");
+		sb.append("fakeAuthor:").append(fakeAuthor).append(",");
 		sb.append("forum:").append(forum).append(",");
 		sb.append("setNumberOfMessages:").append(setNumberOfMessages).append(",");
 		sb.append("isVisible:").append(isVisible).append(",");
