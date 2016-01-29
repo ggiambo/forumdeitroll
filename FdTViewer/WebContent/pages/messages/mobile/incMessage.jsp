@@ -20,7 +20,14 @@
 <div class="messageBox">
 	<div class=row onclick=toggleMessageView(this,event,${msg.id}) style='height: 48px' id="msg-toggle-${msg.id}">
 		<div class=col-1>
-			<img src="Misc?action=getAvatar&amp;&nick=${msg.author.nick}" class=avatar>
+            <c:choose>
+                <c:when test="${not empty msg.fakeAuthor}">
+                    <img src="images/avatardefault.gif" class="avatar">
+                </c:when>
+                <c:otherwise>
+			        <img src="Misc?action=getAvatar&amp;&nick=${msg.author.nick}" class=avatar>
+                </c:otherwise>
+            </c:choose>
 		</div>
 		<c:choose>
 			<c:when test="${param['action'] == 'getByThread'}">
@@ -39,6 +46,9 @@
 		<span class=msgInfo>
 			di
 			<c:choose>
+                <c:when test="${not empty msg.fakeAuthor}">
+                    <i><c:out value="${msg.fakeAuthor}" escapeXml="true"/></i>
+                </c:when>
 				<c:when test="${not empty msg.author.nick}">
 					${msg.author.nick}
 				</c:when>
