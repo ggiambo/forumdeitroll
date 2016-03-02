@@ -4,9 +4,11 @@ import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.SearchMessagesSort;
 import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jooq.*;
+import org.jooq.impl.DSL;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -244,6 +246,22 @@ public class MessagesDAO extends BaseDAO {
 
 	}
 
+	public void updateLastIdInThread(long threadId) {
+		int count = jooq.selectCount()
+					.from(THREADS)
+					.where(THREADS.THREADID.eq((int)threadId))
+					.fetchOne(0, int.class);
+		if (count == 0) {
+			insertThread(threadId);
+		} 
+		Record1<Integer> maxId = jooq.select(DSL.max(MESSAGES.ID))
+				.from(MESSAGES)
+				.where(MESSAGES.THREADID.eq((int)threadId))
+				.fetchOne();
+		Integer lastId = maxId.value1();
+		updateLastIdInThread(threadId, lastId);
+	}
+	
 	private void updateLastIdInThread(long threadId, long lastId) {
 		jooq.update(THREADS)
 				.set(THREADS.LASTID, (int) lastId)

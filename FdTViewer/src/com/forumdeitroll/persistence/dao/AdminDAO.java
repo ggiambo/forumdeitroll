@@ -14,6 +14,7 @@ import org.jooq.Record1;
 import org.jooq.Result;
 
 import com.forumdeitroll.persistence.AdDTO;
+import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.jooq.tables.records.AdsRecord;
 
@@ -72,7 +73,10 @@ public class AdminDAO extends BaseDAO {
 		// update numero di threads
 		increaseNumberOfThreadsFor(srcForum, -1);
 		increaseNumberOfThreadsFor(destForum, 1);
-
+		
+		// update tabella threads
+		DAOFactory.getMessagesDAO().updateLastIdInThread(rootMessageId);
+		DAOFactory.getMessagesDAO().updateLastIdInThread(msg.getThreadId());
 	}
 
 	public void restoreOrHideMessage(long msgId, int visible) {
