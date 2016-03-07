@@ -90,7 +90,7 @@
 	<span class=tags>
 		<c:forEach var="tag" items="${msg.tags}">
 			<span>
-				<span class=tag title="aggiunto da ${tag.author}">
+				<span class=tag>
 					<a href="Messages?action=getMessagesByTag&t_id=${tag.t_id}">
 						<c:out value="${tag.value}" escapeXml="true"/>
 					</a>
