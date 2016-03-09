@@ -1,7 +1,10 @@
-<%@page import="com.forumdeitroll.servlets.User"%>
+<%@page import="com.forumdeitroll.persistence.MessageDTO"%>
+<%@ page import="com.forumdeitroll.servlets.User" %>
+<%@ page import="com.forumdeitroll.util.MessageUtils" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 
 <c:choose>
 	<c:when test="${msg.visible}">
@@ -117,7 +120,9 @@
 		</div>
 	</c:if>
 
-	<div style="padding: 10px;" class="message">
+    <c:set var="messageClass" value="<%= MessageUtils.getMessageDivCSS((MessageDTO) request.getAttribute(\"msg\"))%>"/>
+
+	<div style="padding: 10px;" class="${messageClass}">
 		<c:set var="message" value="${msg}"/>
 		<fdt:render target="message"/>
 	</div>
