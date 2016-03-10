@@ -258,7 +258,7 @@ jQuery("document").ready(function(){
 
 	// collassa quotes
 	$(document).ready(function() {$('.quote-container').on('click', openQuotes); });
-	
+
 	$("div.buttonBarButton").mouseenter(function() {
 		var buttonBarButton = $(this);
 		buttonBarButton.css("box-shadow", "0 0 8px #0A78FF");
@@ -276,7 +276,7 @@ jQuery("document").ready(function(){
 		var buttonBarImg = buttonBarLink.find("span.buttonBarImg");
 		buttonBarImg.css('background-image', 'url("css/images/ui-icons_222222_256x240.png")');
 	});
-	
+
 	$("div.buttonBarButtonAdmin").mouseenter(function() {
 		var buttonBarButton = $(this);
 		buttonBarButton.css("box-shadow", "0 0 8px orange");
@@ -295,7 +295,7 @@ jQuery("document").ready(function(){
 		var buttonBarImgAdmin = buttonBarLink.find("span.buttonBarImgAdmin");
 		buttonBarImgAdmin.css('background-image', 'url("css/images/ui-icons_ef8c08_256x240.png")');
 	});
-	
+
 	if (window.location.href.match(/action=softvThread/)) {
 		if (!window.location.href.match(/sftvMsg\d+$/)) {
 			m = window.location.href.match(/threadId=(\d+)/);
@@ -307,11 +307,11 @@ jQuery("document").ready(function(){
 	setInterval(function() {
 		if (refreshable > 0) {
 			checkRefresh(function() {
-				location.reload();	
+				location.reload();
 			});
 		}
 	}, 120000);
-	
+
 });
 
 function blockHeader() {
@@ -490,9 +490,9 @@ function openNotifyInput(msgId) {
         open: function() {
         	$('.ui-autocomplete').css('width', '10em').css('font-size', '.8em');
         }
-        
+
 	});
-	
+
 }
 
 function showHideAdminButtons(msgId) {
@@ -546,12 +546,14 @@ function like(msgId, like) {
 			if (data.resultCode == "OK") {
 				var strval = $('#msg' + msgId + '_ranking').html();
 				var oldval = parseInt(strval);
+                var newval;
 				if (isNaN(oldval)) {
-					$('#msg' + msgId + '_ranking').html("1");
+                    newval = 1;
 				} else {
-					var newval = oldval + data.voteValue;
-					$('#msg' + msgId + '_ranking').html(""+newval);
-				}
+                    newval = oldval + data.voteValue;
+                }
+                $('#msg' + msgId + '_ranking').html(""+newval);
+                updateRankingContainer(msgId, newval);
 			} else if (data.resultCode == "MSG") {
 				alert(data.content);
 			} else if (data.resultCode == "ERROR") {
@@ -561,7 +563,19 @@ function like(msgId, like) {
 	});
 }
 
-
+function updateRankingContainer(msgId, newVoteVal) {
+    var rankingContainer = $("div#rankingContainer" + msgId);
+    rankingContainer.empty();
+    if (newVoteVal>0) {
+        for (i=0; i < newVoteVal; i++) {
+            rankingContainer.append($("<div class='rankingClassPositive'>"));
+        }
+    } else {
+        for (i=0; i > newVoteVal; i--) {
+            rankingContainer.append($("<div class='rankingClassNegative'>"));
+        }
+    }
+}
 
 //var endpointSearch = "Misc?action=searchAjax";
 var endpointSearch = "/motorino/search?dummy=true";
@@ -765,7 +779,7 @@ function deleteTag(event, t_id, m_id) {
 			}
 		}
 	})
-	
+
 }
 
 function showDropDownReply(event, msgId) {
