@@ -284,7 +284,7 @@ div.rankingClassPositive {
     width: 16px;
     height: 16px;
     background-repeat: no-repeat;
-    float: left;
+    float: right;
     vertical-align: bottom;
     border-style: none;
     background-position: -236px -44px;
@@ -297,7 +297,7 @@ div.rankingClassNegative {
     width: 16px;
     height: 16px;
     background-repeat: no-repeat;
-    float: left;
+    float: right;
     vertical-align: bottom;
     border-style: none;
     background-position: -122px -62px;
