@@ -111,6 +111,19 @@
 	</span>
 	</c:if>
 
+    <c:if test="${msg.rank gt 0}">
+        <c:forEach begin="1" end="${msg.rank}">
+            <div class="rankingClassPositive">
+            </div>
+        </c:forEach>
+    </c:if>
+    <c:if test="${msg.rank lt 0}">
+        <c:forEach begin="1" end="${-1*msg.rank}">
+            <div class="rankingClassNegative">
+            </div>
+        </c:forEach>
+    </c:if>
+
 	<c:if test="${msg.searchRelevance >= 0}">
 		<div class="searchInfo">
 			<pre><!-- Ciao wakko :-) -->Rilevanza: <fmt:formatNumber value="${msg.searchRelevance}" pattern="#0.00" />. Messaggi nel thread: ${msg.searchCount - 1}</pre>

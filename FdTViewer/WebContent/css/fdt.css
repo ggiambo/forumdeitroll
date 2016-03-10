@@ -278,6 +278,32 @@ div.msgTotalMsg {
 	color: #fff;
 }
 
+div.rankingClassPositive {
+    display: block;
+    background-image: url("../images/emoextended/emoji.png");
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    float: left;
+    vertical-align: bottom;
+    border-style: none;
+    background-position: -236px -44px;
+    padding-left: 2px;
+}
+
+div.rankingClassNegative {
+    display: block;
+    background-image: url("../images/emoextended/emoji.png");
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    float: left;
+    vertical-align: bottom;
+    border-style: none;
+    background-position: -122px -62px;
+    padding-left: 2px;
+}
+
 div.message {
 	font-size: 16px;
 	line-height: 20px;
