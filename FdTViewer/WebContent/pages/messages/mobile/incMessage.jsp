@@ -43,6 +43,20 @@
 				</div>
 			</c:otherwise>
 		</c:choose>
+        <div class=col-5>
+            <c:if test="${msg.rank gt 0}">
+                <c:forEach begin="1" end="${msg.rank}">
+                    <div class="rankingClassPositive">
+                    </div>
+                </c:forEach>
+            </c:if>
+            <c:if test="${msg.rank lt 0}">
+                <c:forEach begin="1" end="${-1*msg.rank}">
+                    <div class="rankingClassNegative">
+                    </div>
+                </c:forEach>
+            </c:if>
+        </div>
 		<span class=msgInfo>
 			di
 			<c:choose>
