@@ -1,16 +1,19 @@
 package com.forumdeitroll;
 
-import java.util.*;
-import java.text.SimpleDateFormat;
 import com.forumdeitroll.markup.InputSanitizer;
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.DAOFactory;
+import com.forumdeitroll.persistence.MessageDTO;
+import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Messages;
-import com.forumdeitroll.persistence.*;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
-import com.forumdeitroll.profiler2.ProfilerAPI;
 import org.apache.commons.lang3.StringUtils;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
 Classe di supporto per l'inserimento dei messaggi nel database
@@ -23,7 +26,8 @@ public class MessagePenetrator {
 	long parentId = -1;
 	String subject;
 	String text;
-	AuthorDTO author;
+	private AuthorDTO author;
+	String fakeAuthor;
 	String type;
 	String ip;
 	HttpServletRequest req;
@@ -111,6 +115,13 @@ public class MessagePenetrator {
 		if (loggedUser != null && loggedUser.getNick() != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
 			// posta come utente loggato
 			author = loggedUser;
+			return this;
+		}
+
+		if (StringUtils.isEmpty(pass) && StringUtils.isNotEmpty(nick) && !DAOFactory.getMessagesDAO().getAuthor(nick).isValid() && ((loggedUser != null) || correctAnswer.equals(captcha))) {
+			// post anonimo con fakeAuthor
+			author = new AuthorDTO(loggedUser);
+			fakeAuthor = nick;
 			return this;
 		}
 
@@ -289,6 +300,7 @@ public class MessagePenetrator {
 		} else {
 			msg = new MessageDTO();
 			msg.setAuthor(author);
+			msg.setFakeAuthor(fakeAuthor);
 			msg.setParentId(parentId);
 			msg.setDate(new Date());
 			msg.setText(text);

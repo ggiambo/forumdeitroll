@@ -28,6 +28,9 @@
 	<div class="msgInfo">
 		<div>
 			<c:choose>
+                <c:when test="${not empty msg.fakeAuthor}">
+                    <img class="avatarImg" alt="Avatar" src="images/avatardefault.gif" />
+                </c:when>
 				<c:when test="${!empty msg.author.nick}">
 					<a href="${msg.author.userInfoUrl}">
 						<img class="avatarImg avatarImgLinkable" alt="Avatar" src="${msg.author.avatarUrl}" />
@@ -46,6 +49,9 @@
 			<div class="msgWrittenby">Scritto da</div>
 			<div class="msgAuthor">
 				<c:choose>
+                    <c:when test="${not empty msg.fakeAuthor}">
+                        <c:out value="${msg.fakeAuthor}" escapeXml="true"/>
+                    </c:when>
 					<c:when test="${empty msg.author.nick}">
 						Non Autenticato
 					</c:when>
@@ -80,11 +86,11 @@
 			<a href="Threads?action=getByThread&amp;threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a>
 		</b>
 	</span>
-	
+
 	<span class=tags>
 		<c:forEach var="tag" items="${msg.tags}">
 			<span>
-				<span class=tag title="aggiunto da ${tag.author}">
+				<span class=tag>
 					<a href="Messages?action=getMessagesByTag&t_id=${tag.t_id}">
 						<c:out value="${tag.value}" escapeXml="true"/>
 					</a>
@@ -98,13 +104,28 @@
 			</span>
 		</c:forEach>
 	</span>
-	
+
 	<c:if test="${not empty loggedUser}">
 	<span class=add-tag onclick=openCloseAddTag(event) title="Aggiungi un tag">&nbsp;&nbsp;&nbsp;&nbsp;
 		<input type=text onkeypress="saveTag(event,'${msg.id}')" style=display:none>
 	</span>
 	</c:if>
-	
+
+    <div id="rankingContainer${msg.id}">
+        <c:if test="${msg.rank gt 0}">
+            <c:forEach begin="1" end="${msg.rank}">
+                <div class="rankingClassPositive">
+                </div>
+            </c:forEach>
+        </c:if>
+        <c:if test="${msg.rank lt 0}">
+            <c:forEach begin="1" end="${-1*msg.rank}">
+                <div class="rankingClassNegative">
+                </div>
+            </c:forEach>
+        </c:if>
+    </div>
+
 	<c:if test="${msg.searchRelevance >= 0}">
 		<div class="searchInfo">
 			<pre><!-- Ciao wakko :-) -->Rilevanza: <fmt:formatNumber value="${msg.searchRelevance}" pattern="#0.00" />. Messaggi nel thread: ${msg.searchCount - 1}</pre>
@@ -275,7 +296,7 @@
 				</li>
 			</ul>
 		</div>
-		
+
 		<div class="buttonBarButton">
 			<c:if test="${not empty loggedUser}">
 					<%-- +1 --%>

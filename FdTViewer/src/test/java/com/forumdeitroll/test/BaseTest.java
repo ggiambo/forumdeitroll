@@ -1,12 +1,5 @@
 package com.forumdeitroll.test;
 
-import com.forumdeitroll.persistence.DAOFactory;
-import com.forumdeitroll.persistence.DAOFactoryForTest;
-import com.forumdeitroll.persistence.dao.*;
-import com.forumdeitroll.test.persistence.ScriptRunner;
-import org.junit.Before;
-import org.junit.BeforeClass;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -14,6 +7,21 @@ import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import com.forumdeitroll.persistence.DAOFactory;
+import com.forumdeitroll.persistence.DAOFactoryForTest;
+import com.forumdeitroll.persistence.dao.AdminDAO;
+import com.forumdeitroll.persistence.dao.AuthorsDAO;
+import com.forumdeitroll.persistence.dao.BookmarksDAO;
+import com.forumdeitroll.persistence.dao.DigestDAO;
+import com.forumdeitroll.persistence.dao.MessagesDAO;
+import com.forumdeitroll.persistence.dao.MiscDAO;
+import com.forumdeitroll.persistence.dao.PollsDAO;
+import com.forumdeitroll.persistence.dao.PrivateMsgDAO;
+import com.forumdeitroll.persistence.dao.QuotesDAO;
+import com.forumdeitroll.persistence.dao.ThreadsDAO;
+import com.forumdeitroll.test.persistence.ScriptRunner;
 
 public class BaseTest {
 
@@ -47,9 +55,9 @@ public class BaseTest {
     @Before
     public void setupDatabase() throws Exception {
         // reset database
-        loadData("schema_h2.sql");
+        loadData( "schema_h2.sql" );
         // load testdata
-        loadData("com/forumdeitroll/test/persistence/testDatabase.sql");
+        loadData( "testDatabase.sql" );
     }
 
     private void loadData(String fileName) throws Exception {

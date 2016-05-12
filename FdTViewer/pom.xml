@@ -15,21 +15,17 @@
 	</repositories>
 
 	<build>
-		<sourceDirectory>${basedir}/src</sourceDirectory>
-		<testSourceDirectory>${basedir}/test</testSourceDirectory>
+		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
 		<resources>
 			<resource>
-				<directory>${basedir}/src/</directory>
-				<includes>
-					<include>*.properties</include>
-					<include>schema_h2.sql</include>
-				</includes>
+				<directory>${basedir}/src/main/resources</directory>
+                <excludes>
+                    <exclude>**/jooq-config.xml</exclude>
+                </excludes>
 			</resource>
 			<resource>
-				<directory>${basedir}/test/</directory>
-				<includes>
-					<include>**/testDatabase.sql</include>
-				</includes>
+				<directory>${basedir}/src/test/resources</directory>
 			</resource>
 		</resources>
 		<plugins>
@@ -47,7 +43,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1.1</version>
 				<configuration>
-					<webappDirectory>${basedir}/WebContent/</webappDirectory>
+					<webappDirectory>${basedir}/src/main/webapp</webappDirectory>
 				</configuration>
 			</plugin>
 		</plugins>

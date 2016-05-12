@@ -5,9 +5,9 @@ $(document).ready(function() {
 	});
 	$("#addFakeAd").click(function() {
 		var div = $("<div>").attr("id", "fakeAd_" + fakeAdIndex);
-		div.append('<input name="fakeAds[' + fakeAdIndex + '].title" maxlength="32" />').append(" ");
-		div.append('<input name="fakeAds[' + fakeAdIndex + '].visurl" maxlength="32" />').append(" ");
-		div.append('<input name="fakeAds[' + fakeAdIndex + '].content" maxlength="32" />').append(" ");
+		div.append('<input name="fakeAds[' + fakeAdIndex + '].title" maxlength="128" />').append(" ");
+		div.append('<input name="fakeAds[' + fakeAdIndex + '].visurl" maxlength="128" />').append(" ");
+		div.append('<input name="fakeAds[' + fakeAdIndex + '].content" maxlength="128" />').append(" ");
 		var delButton = $('<img src="images/delete.png"/>');
 		delButton.click(function() {
 			$(this).parent("div").remove();

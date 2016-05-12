@@ -1,27 +1,21 @@
 package com.forumdeitroll.persistence.dao;
 
-import static com.forumdeitroll.persistence.jooq.Tables.MESSAGES;
-import static com.forumdeitroll.persistence.jooq.Tables.SYSINFO;
-import static com.forumdeitroll.persistence.jooq.Tables.TAGS_BIND;
-import static com.forumdeitroll.persistence.jooq.Tables.THREADS;
-import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
+import com.forumdeitroll.persistence.MessageDTO;
+import com.forumdeitroll.persistence.MessagesDTO;
+import com.forumdeitroll.persistence.SearchMessagesSort;
+import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.jooq.*;
+import org.jooq.impl.DSL;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Record1;
-import org.jooq.Result;
-import org.jooq.SelectConditionStep;
-
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.MessagesDTO;
-import com.forumdeitroll.persistence.SearchMessagesSort;
-import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
+import static com.forumdeitroll.persistence.jooq.Tables.*;
+import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 public class MessagesDAO extends BaseDAO {
 
@@ -161,6 +155,7 @@ public class MessagesDAO extends BaseDAO {
 				.set(MESSAGES.TEXT, mb4safe(message.getTextReal()))
 				.set(MESSAGES.SUBJECT, mb4safe(message.getSubjectReal()))
 				.set(MESSAGES.AUTHOR, message.getAuthor().getNick())
+				.set(MESSAGES.FAKEAUTHOR, message.getFakeAuthor())
 				.set(MESSAGES.FORUM, message.getForum())
 				.set(MESSAGES.DATE, new Timestamp(message.getDate().getTime()))
 				.set(MESSAGES.VISIBLE, (byte) message.getVisibleReal())
@@ -194,6 +189,7 @@ public class MessagesDAO extends BaseDAO {
 				.set(MESSAGES.TEXT, mb4safe(message.getTextReal()))
 				.set(MESSAGES.SUBJECT, mb4safe(message.getSubjectReal()))
 				.set(MESSAGES.AUTHOR, message.getAuthor().getNick())
+				.set(MESSAGES.FAKEAUTHOR, message.getFakeAuthor())
 				.set(MESSAGES.FORUM, message.getForum())
 				.set(MESSAGES.DATE, new Timestamp(message.getDate().getTime()))
 				.set(MESSAGES.VISIBLE, (byte) message.getVisibleReal())
@@ -250,6 +246,22 @@ public class MessagesDAO extends BaseDAO {
 
 	}
 
+	public void updateLastIdInThread(long threadId) {
+		int count = jooq.selectCount()
+					.from(THREADS)
+					.where(THREADS.THREADID.eq((int)threadId))
+					.fetchOne(0, int.class);
+		if (count == 0) {
+			insertThread(threadId);
+		} 
+		Record1<Integer> maxId = jooq.select(DSL.max(MESSAGES.ID))
+				.from(MESSAGES)
+				.where(MESSAGES.THREADID.eq((int)threadId))
+				.fetchOne();
+		Integer lastId = maxId.value1();
+		updateLastIdInThread(threadId, lastId);
+	}
+	
 	private void updateLastIdInThread(long threadId, long lastId) {
 		jooq.update(THREADS)
 				.set(THREADS.LASTID, (int) lastId)
@@ -275,6 +287,7 @@ public class MessagesDAO extends BaseDAO {
 		message.setText(record.getValue(MESSAGES.TEXT));
 		message.setSubject(record.getValue(MESSAGES.SUBJECT));
 		message.setAuthor(getAuthor(record.getValue(MESSAGES.AUTHOR)));
+		message.setFakeAuthor(record.getValue(MESSAGES.FAKEAUTHOR));
 		message.setForum(record.getValue(MESSAGES.FORUM));
 		message.setDate(record.getValue(MESSAGES.DATE));
 		message.setIsVisible(record.getValue(MESSAGES.VISIBLE).intValue());

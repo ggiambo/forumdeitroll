@@ -2,8 +2,6 @@
 .metadata
 .idea
 .metadata/
-FdTViewer/build/
-FdTViewer/classes/
 FdTViewer/src/main/webapp/WEB-INF/classes/
 FdTViewer/src/main/webapp/WEB-INF/lib
 FdTViewer/target/

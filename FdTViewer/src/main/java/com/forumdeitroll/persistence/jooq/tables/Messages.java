@@ -35,7 +35,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Messages extends TableImpl<MessagesRecord> {
 
-	private static final long serialVersionUID = -601050939;
+	private static final long serialVersionUID = 2058189454;
 
 	/**
 	 * The reference instance of <code>fdtsucker.messages</code>
@@ -99,6 +99,11 @@ public class Messages extends TableImpl<MessagesRecord> {
 	 * The column <code>fdtsucker.messages.rank</code>.
 	 */
 	public final TableField<MessagesRecord, Integer> RANK = createField("rank", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaulted(true), this, "");
+
+	/**
+	 * The column <code>fdtsucker.messages.fakeAuthor</code>.
+	 */
+	public final TableField<MessagesRecord, String> FAKEAUTHOR = createField("fakeAuthor", org.jooq.impl.SQLDataType.VARCHAR.length(256), this, "");
 
 	/**
 	 * Create a <code>fdtsucker.messages</code> table reference

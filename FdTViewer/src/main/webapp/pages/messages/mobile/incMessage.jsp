@@ -20,7 +20,14 @@
 <div class="messageBox">
 	<div class=row onclick=toggleMessageView(this,event,${msg.id}) style='height: 48px' id="msg-toggle-${msg.id}">
 		<div class=col-1>
-			<img src="Misc?action=getAvatar&amp;&nick=${msg.author.nick}" class=avatar>
+            <c:choose>
+                <c:when test="${not empty msg.fakeAuthor}">
+                    <img src="images/avatardefault.gif" class="avatar">
+                </c:when>
+                <c:otherwise>
+			        <img src="Misc?action=getAvatar&amp;&nick=${msg.author.nick}" class=avatar>
+                </c:otherwise>
+            </c:choose>
 		</div>
 		<c:choose>
 			<c:when test="${param['action'] == 'getByThread'}">
@@ -36,9 +43,26 @@
 				</div>
 			</c:otherwise>
 		</c:choose>
+        <div class=col-5>
+            <c:if test="${msg.rank gt 0}">
+                <c:forEach begin="1" end="${msg.rank}">
+                    <div class="rankingClassPositive">
+                    </div>
+                </c:forEach>
+            </c:if>
+            <c:if test="${msg.rank lt 0}">
+                <c:forEach begin="1" end="${-1*msg.rank}">
+                    <div class="rankingClassNegative">
+                    </div>
+                </c:forEach>
+            </c:if>
+        </div>
 		<span class=msgInfo>
 			di
 			<c:choose>
+                <c:when test="${not empty msg.fakeAuthor}">
+                    <i><c:out value="${msg.fakeAuthor}" escapeXml="true"/></i>
+                </c:when>
 				<c:when test="${not empty msg.author.nick}">
 					${msg.author.nick}
 				</c:when>
