@@ -73,7 +73,5 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:el-api:6.0.37" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.eclipse.jdt.core.compiler:ecj:4.2.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:jasper-el:6.0.37" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.jooq:jooq-meta:3.6.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.jooq:jooq-codegen:3.6.1" level="project" />
   </component>
 </module>

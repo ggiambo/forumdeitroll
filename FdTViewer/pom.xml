@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.forumdeitroll</groupId>
 	<artifactId>FdTViewer</artifactId>
@@ -14,15 +14,17 @@
 		</repository>
 	</repositories>
 
+	<properties>
+		<jooql.version>3.6.1</jooql.version>
+		<mysql-connector.version>5.1.34</mysql-connector.version>
+	</properties>
+
 	<build>
 		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
 		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
 		<resources>
 			<resource>
 				<directory>${basedir}/src/main/resources</directory>
-                <excludes>
-                    <exclude>**/jooq-config.xml</exclude>
-                </excludes>
 			</resource>
 			<resource>
 				<directory>${basedir}/src/test/resources</directory>
@@ -46,6 +48,66 @@
 					<webappDirectory>${basedir}/src/main/webapp</webappDirectory>
 				</configuration>
 			</plugin>
+
+			<!-- generatore per JOOQ - "mvn clean jooq-codegen:generate" -->
+			<plugin>
+				<!-- Specify the maven code generator plugin -->
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen-maven</artifactId>
+				<version>${jooql.version}</version>
+
+				<!-- The plugin should hook into the generate goal -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<!-- Manage the plugin's dependency. In this example, we'll use a MySQL database -->
+				<dependencies>
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>${mysql-connector.version}</version>
+						<scope>compile</scope>
+					</dependency>
+				</dependencies>
+
+				<!-- Specify the plugin configuration.
+					 The configuration format is the same as for the standalone code generator -->
+				<configuration>
+
+					<!-- JDBC connection parameters -->
+					<jdbc>
+						<driver>com.mysql.jdbc.Driver</driver>
+						<url>jdbc:mysql://localhost:3306/fdtsucker?useUnicode=yes</url>
+						<user>fdtsucker</user>
+						<password>fdtsucker</password>
+					</jdbc>
+
+					<!-- Generator parameters -->
+					<generator>
+						<name>org.jooq.util.DefaultGenerator</name>
+						<database>
+							<name>org.jooq.util.mysql.MySQLDatabase</name>
+							<includes>.*</includes>
+							<excludes>blogger_.*</excludes>
+							<inputSchema>fdtsucker</inputSchema>
+						</database>
+						<generate>
+						<fluentSetters>true</fluentSetters>
+						</generate>
+						<target>
+							<packageName>com.forumdeitroll.persistence.jooq</packageName>
+							<directory>${project.build.sourceDirectory}</directory>
+						</target>
+					</generator>
+				</configuration>
+			</plugin>
+
+
 		</plugins>
 	</build>
 
@@ -54,99 +116,99 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-      <version>3.0.1</version>
-      <scope>compile</scope>
+			<version>3.0.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
 			<version>2.2</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
 			<version>1.51</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId>
 			<version>2.1</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.3.1</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.3.1</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
 			<version>1.0.19</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
-			<version>3.6.1</version>
-      <scope>compile</scope>
+			<version>${jooql.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.ocpsoft.prettytime</groupId>
 			<artifactId>prettytime</artifactId>
 			<version>3.2.7.Final</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>nl.captcha</groupId>
 			<artifactId>simpleCaptcha</artifactId>
 			<version>1.2.1</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<!-- dipendenze indirette (container) -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.34</version>
-      <scope>compile</scope>
+			<version>${mysql-connector.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901.jdbc4</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>jstl</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
-      <scope>compile</scope>
+			<scope>compile</scope>
 		</dependency>
 		<!-- dipendenze test/ -->
 		<dependency>
@@ -172,24 +234,6 @@
 			<artifactId>mockrunner-servlet</artifactId>
 			<version>1.0.6</version>
 			<scope>test</scope>
-		</dependency>
-    <!-- dipendenze per generazione jooq -->
-    <!-- vista la limitazione di maven di non poter definire
-         degli scopes custom, vengono definite come test
-         per poterle saltare nell'utility per scaricare
-         i jar delle dipendenze (@see build.xml#fetch-deps)
-    -->
-		<dependency>
-			<groupId>org.jooq</groupId>
-			<artifactId>jooq-meta</artifactId>
-			<version>3.6.1</version>
-      <scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jooq</groupId>
-			<artifactId>jooq-codegen</artifactId>
-			<version>3.6.1</version>
-      <scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
