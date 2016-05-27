@@ -3,10 +3,6 @@ package com.forumdeitroll.markup;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import com.forumdeitroll.markup.Emoticon;
-import com.forumdeitroll.markup.Emoticons;
-import com.forumdeitroll.markup.Snippet;
-
 public class TokenCatalog {
 	public static TokenMatcher[][] get() {
 		TokenMatcher[][] matchers = new TokenMatcher[TokenizerMode.values().length][];
@@ -60,6 +56,7 @@ public class TokenCatalog {
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL", "Messages?action="),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL", "Misc?action="),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL", "User?action="),
+			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL", "Tappeto?"),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL_WITH_DOMAIN", "http://forumdeitroll.com/"),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL_WITH_DOMAIN", "https://forumdeitroll.com/"),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL_WITH_DOMAIN", "http://www.forumdeitroll.com/"),
