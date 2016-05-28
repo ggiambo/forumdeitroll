@@ -14,7 +14,7 @@ public abstract class TokenMatcher implements MatchResult {
 	protected TokenMatcher(String name) {
 		this.name = name;
 	}
-	@Override public String toString() {
+	@Override public String toString() { // TODO: may throw IllegalStateException because of group(), start() or end()
 		return String.format("%s,%s(%s,%d,%d)"
 			, name, getClass().getSimpleName(), group(), start(), end());
 	}
