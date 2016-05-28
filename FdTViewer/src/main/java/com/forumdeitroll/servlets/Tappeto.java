@@ -12,9 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class Tappeto extends HttpServlet {
 
@@ -66,7 +64,15 @@ public class Tappeto extends HttpServlet {
 
 		BufferedImage outputImage = fromCaption.apply(tappeto);
 		outputImage = toCaption.apply(outputImage);
-		writeOutputImage(outputImage, resp.getOutputStream());
+
+    ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+		writeOutputImage(outputImage, bOut);
+    byte[] output = bOut.toByteArray();
+
+    resp.setHeader("Content-Type", "image/jpeg");
+    resp.setHeader("Content-Length", ""+output.length);
+    resp.setDateHeader("Expires", System.currentTimeMillis() + 604800000L);
+    resp.getOutputStream().write(output);
 	}
 
 	private void writeOutputImage(BufferedImage outputImage, OutputStream outputStream) throws IOException {
