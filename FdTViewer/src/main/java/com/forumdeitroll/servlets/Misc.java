@@ -1,11 +1,17 @@
 package com.forumdeitroll.servlets;
 
 import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -14,18 +20,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nl.captcha.Captcha;
-import nl.captcha.backgrounds.GradiatedBackgroundProducer;
-import nl.captcha.gimpy.RippleGimpyRenderer;
-import nl.captcha.servlet.CaptchaServletUtil;
-import nl.captcha.text.producer.NumbersAnswerProducer;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
+import com.github.bingoohuang.patchca.background.BackgroundFactory;
+import com.github.bingoohuang.patchca.custom.ConfigurableCaptchaService;
+import com.github.bingoohuang.patchca.filter.AbstractFilterFactory;
+import com.github.bingoohuang.patchca.utils.encoder.EncoderHelper;
+import com.github.bingoohuang.patchca.word.RandomWordFactory;
 
 /**
  * Servlet "speciale" che non necessita di tutto l'ambaradan di MainFilter e MainServlet
@@ -39,6 +44,8 @@ public class Misc extends HttpServlet {
 
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
+
+	private ConfigurableCaptchaService captchaService;
 
 	/**
 	 * Inizializza le immagini per non autenticato o autenticato senza avatar
@@ -68,6 +75,33 @@ public class Misc extends HttpServlet {
 				bos.write(buffer, 0, count);
 			}
 			noAvatar = bos.toByteArray();
+
+			captchaService = new ConfigurableCaptchaService();
+			captchaService.setHeight(50);
+			captchaService.setWidth(150);
+			BackgroundFactory gradientColorBackgroundFactory = new BackgroundFactory() {
+				@Override
+					public void fillBackground(BufferedImage dest) {
+						GradientPaint gp = new GradientPaint(0, 0, Color.MAGENTA, dest.getWidth(), 0, Color.CYAN);
+
+						Graphics2D g = dest.createGraphics();
+						g.setPaint(gp);
+						g.fillRect(0, 0, dest.getWidth(), dest.getHeight());
+					}
+			};
+			captchaService.setBackgroundFactory(gradientColorBackgroundFactory);
+			RandomWordFactory numberFactory = new RandomWordFactory();
+			numberFactory.setCharacters("1234567890");
+			numberFactory.setMaxLength(6);
+			numberFactory.setMinLength(6);
+			captchaService.setWordFactory(numberFactory);
+			captchaService.setFilterFactory(new AbstractFilterFactory() {
+				@Override
+				protected List<BufferedImageOp> getFilters() {
+					return Collections.EMPTY_LIST;
+				}
+			});
+
 		} catch (IOException e) {
 			LOG.error(e);
 			throw new ServletException("Cannot read default images", e);
@@ -153,18 +187,13 @@ public class Misc extends HttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	private void getCaptcha(HttpServletRequest req, HttpServletResponse res) {
-		Captcha captcha = new Captcha.Builder(150, 50)
-				.addText(new NumbersAnswerProducer(6))
-				.addBackground(new GradiatedBackgroundProducer(Color.MAGENTA, Color.CYAN))
-				.gimp(new RippleGimpyRenderer())
-				.build();
+	private void getCaptcha(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		res.setHeader("Cache-Control", "no-store");
 		res.setHeader("Pragma", "no-cache");
 		res.setDateHeader("Expires", 0);
 		res.setContentType("image/jpeg");
-		CaptchaServletUtil.writeImage(res, captcha.getImage());
-		req.getSession().setAttribute("captcha", captcha.getAnswer());
+		String answer = EncoderHelper.getChallangeAndWriteImage(captchaService, "png", res.getOutputStream());
+		req.getSession().setAttribute("captcha", answer);
 	}
 
 
