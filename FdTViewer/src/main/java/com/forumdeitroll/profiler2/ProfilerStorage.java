@@ -5,9 +5,12 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+
+import com.forumdeitroll.servlets.Messages;
 
 public class ProfilerStorage {
 	public static String baseDir = "/opt/fdt/";
@@ -20,10 +23,16 @@ public class ProfilerStorage {
 		if (o != null) {
 			ProfilerLogger.records = (LinkedList<ProfileRecord>) o;
 		}
+		o = load(baseDir + "bannedIPs.javabean");
+		if (o != null) {
+			Messages.BANNED_IPs.clear();
+			Messages.BANNED_IPs.addAll((Collection<String>) o);
+		}
 	}
 	public static void save() {
 		save(baseDir + "rules.javabean", ProfilerRules.rules);
 		save(baseDir + "records.javabean", ProfilerLogger.records);
+		save(baseDir + "bannedIPs.javabean", Messages.BANNED_IPs);
 	}
 	private static Object load(String path) {
 		try {
