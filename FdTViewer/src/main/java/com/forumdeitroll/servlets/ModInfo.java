@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.MessageDTO;
+import com.forumdeitroll.profiler2.ProfilerStorage;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.ModInfoBean;
 
@@ -111,6 +112,7 @@ public class ModInfo extends MainServlet {
 
 		if (record != null) {
 			Messages.banIP(record.ip());
+			ProfilerStorage.save();
 			setNavigationMessage(req,NavigationMessage.info("Ok"));
 		} else {
 			setNavigationMessage(req,NavigationMessage.error("Non riuscito"));

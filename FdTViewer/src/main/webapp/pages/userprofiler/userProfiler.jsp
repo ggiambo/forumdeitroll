@@ -42,6 +42,14 @@
 			</tbody>
 		</table>
 	</div>
+    <div class=userPanel>
+        <div class=userPanelCaption>IP bannati, uno per linea</div>
+        <form action="UserProfiler?action=updateBannedIPs" method="post">
+            <textarea name="bannedIPs" id="bannedIPs" rows="10" style="width:100%; font-family: monospace;"><c:out value="${bannedIPs}"/></textarea>
+            <br/>
+            <input type=submit value=salva>
+        </form>
+    </div>
 	<div class=userPanel>
 		<div class=userPanelCaption>Log</div>
 		<table style="width: 100%">

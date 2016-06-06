@@ -18,6 +18,7 @@ import com.forumdeitroll.profiler2.ProfilerRule;
 import com.forumdeitroll.profiler2.ProfilerRules;
 import com.forumdeitroll.profiler2.ProfilerStorage;
 import com.forumdeitroll.profiler2.ReqInfo;
+import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 
 public class UserProfiler extends MainServlet {
@@ -43,6 +44,7 @@ public class UserProfiler extends MainServlet {
 	private String page(HttpServletRequest req) {
 		req.setAttribute("rules", ProfilerRules.rules);
 		req.setAttribute("records", ProfilerLogger.records);
+		req.setAttribute("bannedIPs", Joiner.on("\n").join(Messages.BANNED_IPs));
 		return "userProfiler.jsp";
 	}
 
@@ -160,6 +162,17 @@ public class UserProfiler extends MainServlet {
 		}
 		res.sendError(304); // not modified
 		return null;
+	}
+
+	@Action(method = Action.Method.POST)
+	String updateBannedIPs(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		Messages.BANNED_IPs.clear();
+		String bannedIPs = req.getParameter("bannedIPs");
+		String[] ips = bannedIPs.split("\\r?\\n");
+		for (String ip : ips) {
+			Messages.banIP(ip.trim());
+		}
+		return page(req);
 	}
 
 	private static void printRequest(HttpServletRequest request) {
