@@ -91,16 +91,16 @@ public class Misc extends HttpServlet {
 			};
 			captchaService.setBackgroundFactory(gradientColorBackgroundFactory);
 			RandomWordFactory numberFactory = new RandomWordFactory();
-			numberFactory.setCharacters("1234567890");
+//			numberFactory.setCharacters("1234567890");
 			numberFactory.setMaxLength(6);
 			numberFactory.setMinLength(6);
 			captchaService.setWordFactory(numberFactory);
-			captchaService.setFilterFactory(new AbstractFilterFactory() {
-				@Override
-				protected List<BufferedImageOp> getFilters() {
-					return Collections.EMPTY_LIST;
-				}
-			});
+//			captchaService.setFilterFactory(new AbstractFilterFactory() {
+//				@Override
+//				protected List<BufferedImageOp> getFilters() {
+//					return Collections.EMPTY_LIST;
+//				}
+//			});
 
 		} catch (IOException e) {
 			LOG.error(e);
