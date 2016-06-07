@@ -752,7 +752,7 @@ function saveTag(event,msgId) {
 	$(event.target).css('display','none');
 	var value = event.target.value;
 	$.ajax({
-		method : 'POST',
+		method : 'GET',
 		url : 'Messages',
 		data : 'action=saveTag&value=' + encodeURIComponent(value) + '&msgId=' + msgId,
 		success : function(data) {
@@ -768,7 +768,7 @@ function saveTag(event,msgId) {
 
 function deleteTag(event, t_id, m_id) {
 	$.ajax({
-		method: 'POST',
+		method: 'GET',
 		url : 'Messages',
 		data : 'action=deleTag&t_id=' + t_id + '&m_id=' + m_id,
 		success: function(data) {

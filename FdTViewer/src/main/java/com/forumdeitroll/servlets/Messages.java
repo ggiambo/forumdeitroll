@@ -681,7 +681,7 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
-	@Action(method=Method.POST)
+	@Action(method=Method.GETPOST)
 	String saveTag(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		try {
 			if (login(req) == null || !login(req).isValid()) return null;
@@ -712,7 +712,7 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
-	@Action(method=Method.POST)
+	@Action(method=Method.GETPOST)
 	String deleTag(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		try {
 			if (login(req) == null || !login(req).isValid()) return null;
