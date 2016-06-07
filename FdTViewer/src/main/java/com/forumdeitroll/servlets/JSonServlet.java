@@ -23,7 +23,6 @@ import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.forumdeitroll.MessagePenetrator;
 import com.forumdeitroll.SingleValueCache;
 import com.forumdeitroll.markup.Emoticon;
 import com.forumdeitroll.markup.Emoticons;
@@ -437,38 +436,38 @@ public class JSonServlet extends HttpServlet {
 	 * Posta un messaggio (Nuovo o editato).
 	 */
 	protected void addMessage(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
-		final MessagePenetrator mp = new MessagePenetrator();
-
-		mp
-			.setForum(getStringValue(params, "forum", null))
-			.setParentId(getStringValue(params, "msgId", null))
-			.setSubject(getStringValue(params, "subject", null))
-			.setText(getStringValue(params, "text", null))
-			.setCredentials(
-				null,
-				getStringValue(params, "nick", null), getStringValue(params, "password", ""),
-				null, "nocaptcha")
-			.setType(getStringValue(params, "type", null));
-
-		if (!StringUtils.isEmpty(getStringValue(params, "anonymous", null))) {
-			mp.setAnonymous();
-		}
-
-		mp.isBanned(null, getStringValue(params, "IP", null), null);
-
-		final MessageDTO msg = mp.penetrate();
-		if (msg == null) {
-			writeErrorMessage(writer, mp.Error(), time);
-			return;
-		}
-
-		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
-
-		out.beginObject();
-		out.name("id").value(msg.getId());
-		out.endObject();
-
-		closeJsonWriter(out, time);
+//		final MessagePenetrator mp = new MessagePenetrator();
+//
+//		mp
+//			.setForum(getStringValue(params, "forum", null))
+//			.setParentId(getStringValue(params, "msgId", null))
+//			.setSubject(getStringValue(params, "subject", null))
+//			.setText(getStringValue(params, "text", null))
+//			.setCredentials(
+//				null,
+//				getStringValue(params, "nick", null), getStringValue(params, "password", ""),
+//				null, "nocaptcha")
+//			.setType(getStringValue(params, "type", null));
+//
+//		if (!StringUtils.isEmpty(getStringValue(params, "anonymous", null))) {
+//			mp.setAnonymous();
+//		}
+//
+//		mp.isBanned(null, getStringValue(params, "IP", null), null);
+//
+//		final MessageDTO msg = mp.penetrate();
+//		if (msg == null) {
+//			writeErrorMessage(writer, mp.Error(), time);
+//			return;
+//		}
+//
+//		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+//
+//		out.beginObject();
+//		out.name("id").value(msg.getId());
+//		out.endObject();
+//
+//		closeJsonWriter(out, time);
 	}
 
 	/**
