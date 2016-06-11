@@ -29,6 +29,9 @@ import com.forumdeitroll.persistence.DAOFactory;
 import com.github.bingoohuang.patchca.background.BackgroundFactory;
 import com.github.bingoohuang.patchca.custom.ConfigurableCaptchaService;
 import com.github.bingoohuang.patchca.filter.AbstractFilterFactory;
+import com.github.bingoohuang.patchca.filter.FilterFactory;
+import com.github.bingoohuang.patchca.filter.predefined.CurvesRippleFilterFactory;
+import com.github.bingoohuang.patchca.filter.predefined.DoubleRippleFilterFactory;
 import com.github.bingoohuang.patchca.utils.encoder.EncoderHelper;
 import com.github.bingoohuang.patchca.word.RandomWordFactory;
 
@@ -45,7 +48,7 @@ public class Misc extends HttpServlet {
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
 
-	private ConfigurableCaptchaService captchaService;
+	private static ConfigurableCaptchaService captchaService;
 
 	/**
 	 * Inizializza le immagini per non autenticato o autenticato senza avatar
@@ -90,17 +93,10 @@ public class Misc extends HttpServlet {
 					}
 			};
 			captchaService.setBackgroundFactory(gradientColorBackgroundFactory);
-			RandomWordFactory numberFactory = new RandomWordFactory();
-//			numberFactory.setCharacters("1234567890");
-			numberFactory.setMaxLength(6);
-			numberFactory.setMinLength(6);
-			captchaService.setWordFactory(numberFactory);
-//			captchaService.setFilterFactory(new AbstractFilterFactory() {
-//				@Override
-//				protected List<BufferedImageOp> getFilters() {
-//					return Collections.EMPTY_LIST;
-//				}
-//			});
+			RandomWordFactory wordFactory = new RandomWordFactory();
+			wordFactory.setMaxLength(6);
+			wordFactory.setMinLength(6);
+			captchaService.setWordFactory(wordFactory);
 
 		} catch (IOException e) {
 			LOG.error(e);
@@ -288,4 +284,36 @@ public class Misc extends HttpServlet {
 		res.setContentType("text/javascript");
 		res.getOutputStream().write(out.toByteArray());
 	}
+
+	public static void setCaptchaLevel(int captchaLevel) {
+
+		RandomWordFactory randomWordFactory = new RandomWordFactory();
+		randomWordFactory.setMaxLength(6);
+		randomWordFactory.setMinLength(6);
+
+		FilterFactory filterFactory;
+		switch (captchaLevel) {
+			case 1:
+				randomWordFactory.setCharacters("1234567890");
+				filterFactory = new AbstractFilterFactory() {
+					@Override
+					protected List<BufferedImageOp> getFilters() {
+						return Collections.EMPTY_LIST;
+					}
+				};
+				break;
+			default:
+			case 2:
+				filterFactory = new DoubleRippleFilterFactory();
+				randomWordFactory.setCharacters("1234567890");
+				break;
+			case 3:
+				filterFactory = new CurvesRippleFilterFactory(captchaService.getColorFactory());
+				break;
+		}
+
+		captchaService.setWordFactory(randomWordFactory);
+		captchaService.setFilterFactory(filterFactory);
+	}
+
 }
