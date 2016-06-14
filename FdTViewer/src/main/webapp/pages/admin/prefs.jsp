@@ -25,6 +25,15 @@
 							<label for="<%=Admin.ADMIN_PREF_DISABLE_PROFILER%>" class="lbl">Disattiva il profiler:</label>
 						</div>
 						<div style="clear: both;"></div>
+                        <div class="inputUserPanel">
+                            <input style="width: 10em;margin-left: 10em;" type="radio" name="<%=Admin.ADMIN_PREF_CAPTCHA_LEVEL%>" value="1">Facile<br>
+                            <input style="width: 10em;margin-left: 10em;" type="radio" name="<%=Admin.ADMIN_PREF_CAPTCHA_LEVEL%>" value="2">Giusto<br>
+                            <input style="width: 10em;margin-left: 10em;" type="radio" name="<%=Admin.ADMIN_PREF_CAPTCHA_LEVEL%>" value="3">Mal di testa
+                        </div>
+                        <div class="lblUserPanel">
+                            <label for="<%=Admin.ADMIN_PREF_BLOCK_TOR%>" class="lbl">Livello chapachapa:</label>
+                        </div>
+                        <div style="clear: both;"></div>
 						<div class="lblUserPanel">
 							<label for="javascript" class="lbl">Javascript:</label>
 						</div>

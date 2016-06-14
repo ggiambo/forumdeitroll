@@ -1,18 +1,26 @@
 package com.forumdeitroll.servlets;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
 import com.forumdeitroll.persistence.AdDTO;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.Ratelimiter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Admin extends MainServlet {
 
@@ -22,6 +30,7 @@ public class Admin extends MainServlet {
 
 	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
 	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
+	public static final String ADMIN_PREF_CAPTCHA_LEVEL = "captchaLevel";
 	public static final String ADMIN_WEBSITE_TITLES = "websiteTitles";
 	public static final String ADMIN_FAKE_ADS = "fakeAds";
 
@@ -171,6 +180,14 @@ public class Admin extends MainServlet {
 		adminDAO.setAllAds(allAds);
 		cachedAds.invalidate();
 		req.setAttribute(ADMIN_FAKE_ADS, allAds);
+
+		String captchaLevel = req.getParameter(ADMIN_PREF_CAPTCHA_LEVEL);
+		try {
+			int level = Integer.parseInt(captchaLevel);
+			Misc.setCaptchaLevel(level);
+		} catch (NumberFormatException e) {
+			// chissenefrega !
+		}
 
 		return "prefs.jsp";
 	}
