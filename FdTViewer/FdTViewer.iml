@@ -26,6 +26,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/groovy" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -74,5 +75,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:el-api:6.0.37" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.eclipse.jdt.core.compiler:ecj:4.2.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.tomcat:jasper-el:6.0.37" level="project" />
+    <orderEntry type="library" name="groovy-1.8.6" level="application" />
   </component>
 </module>
