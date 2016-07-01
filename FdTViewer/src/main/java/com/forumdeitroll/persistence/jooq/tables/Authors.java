@@ -4,8 +4,7 @@
 package com.forumdeitroll.persistence.jooq.tables;
 
 
-import com.forumdeitroll.persistence.jooq.Fdtsucker;
-import com.forumdeitroll.persistence.jooq.tables.records.AuthorsRecord;
+import java.sql.Date;
 
 import javax.annotation.Generated;
 
@@ -13,6 +12,9 @@ import org.jooq.Field;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.impl.TableImpl;
+
+import com.forumdeitroll.persistence.jooq.Fdtsucker;
+import com.forumdeitroll.persistence.jooq.tables.records.AuthorsRecord;
 
 
 /**
@@ -28,7 +30,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Authors extends TableImpl<AuthorsRecord> {
 
-	private static final long serialVersionUID = -1238651465;
+	private static final long serialVersionUID = 113301722;
 
 	/**
 	 * The reference instance of <code>fdtsucker.authors</code>
@@ -77,6 +79,16 @@ public class Authors extends TableImpl<AuthorsRecord> {
 	 * The column <code>fdtsucker.authors.signature_image</code>.
 	 */
 	public final TableField<AuthorsRecord, byte[]> SIGNATURE_IMAGE = createField("signature_image", org.jooq.impl.SQLDataType.BLOB, this, "");
+
+	/**
+	 * The column <code>fdtsucker.authors.creationDate</code>.
+	 */
+	public final TableField<AuthorsRecord, Date> CREATIONDATE = createField("creationDate", org.jooq.impl.SQLDataType.DATE.nullable(false).defaulted(true), this, "");
+
+	/**
+	 * The column <code>fdtsucker.authors.enabled</code>.
+	 */
+	public final TableField<AuthorsRecord, Byte> ENABLED = createField("enabled", org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaulted(true), this, "");
 
 	/**
 	 * Create a <code>fdtsucker.authors</code> table reference

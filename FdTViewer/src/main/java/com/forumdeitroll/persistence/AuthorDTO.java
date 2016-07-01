@@ -3,10 +3,9 @@ package com.forumdeitroll.persistence;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,6 +29,10 @@ public class AuthorDTO implements Serializable {
 	protected final AuthorDTO shadowAuthor;
 
 	private byte[] signatureImage = null;
+
+	private Date creationDate;
+
+	private boolean enabled = true;
 
 	public byte[] getSignatureImage() {
 		return signatureImage;
@@ -122,6 +125,22 @@ public class AuthorDTO implements Serializable {
 
 	public Map<String, String> getPreferences() {
 		return preferences;
+	}
+
+	public void setCreationDate(final Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getCreationDate() {
+		return this.creationDate;
+	}
+
+	public void enabled(final boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
 	}
 
 	public void setPreferences(final Map<String, String> preferences) {

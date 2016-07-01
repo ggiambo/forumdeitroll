@@ -3,6 +3,7 @@ package com.forumdeitroll.persistence.dao;
 import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
 import static com.forumdeitroll.persistence.jooq.Tables.PREFERENCES;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,8 @@ public class AuthorsDAO extends BaseDAO {
 				.set(AUTHORS.MESSAGES, 0)
 				.set(AUTHORS.SALT, authorDTO.getSalt())
 				.set(AUTHORS.HASH, authorDTO.getHash())
+				.set(AUTHORS.CREATIONDATE, new Date(System.currentTimeMillis()))
+				.set(AUTHORS.ENABLED, (byte)1)
 				.execute();
 
 		return getAuthor(nick);
