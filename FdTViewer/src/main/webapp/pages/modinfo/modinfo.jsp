@@ -11,7 +11,7 @@
 			<div class="modInfoPanelSection">
 				<h3>Informazioni</h3>
 				<p><span class="lbl">Messaggio:</span> ${modInfo.m_id}</p>
-				<p><span class="lbl">Utente:</span> ${modInfo.authorDescription}</p>
+				<p><span class="lbl">Utente:</span> <a href="User?action=getUserInfo&nick=${modInfo.authorNick}">${modInfo.authorDescription}</a></p>
 				<p><span class="lbl">IP:</span> <span class="ip-container">${modInfo.ip}</span></p>
 				<p><span class="lbl">TOR:</span> ${modInfo.tor}</p>
 				<p><span class="lbl"><a href="UserProfiler?messagePost=${modInfo.m_id}#message-post-${modInfo.m_id}">Vai alle informazioni del profiler per questo messaggio</a></span></p>
