@@ -5,6 +5,7 @@ import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.PrivateMsgDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.util.CacheTorExitNodes;
@@ -267,6 +269,7 @@ public class User extends MainServlet {
 			setNavigationMessage(req, NavigationMessage.warn("Impossibile registrare questo nick, probabilmente gia' esiste"));
 			return "register.jsp";
 		}
+		notifyNewUser(loggedUser, req.getParameter("motivation"));
 		// login
 		login(req);
 		req.setAttribute("loggedUser", loggedUser);
@@ -445,6 +448,9 @@ public class User extends MainServlet {
 		} else {
 			author.setPreferences(authorsDAO.setPreference(author, "pedonizeThread", ""));
 		}
+
+		final boolean isEnabled = "yes".equals(req.getParameter("isEnabled"));
+		authorsDAO.enableUser(author, isEnabled);
 
 		return getUserInfo(req,  res);
 	}
@@ -732,6 +738,18 @@ public class User extends MainServlet {
 				return available();
 			}
 		}
+	}
+
+	private void notifyNewUser(AuthorDTO newUser, String motivation) {
+		PrivateMsgDTO msg = new PrivateMsgDTO();
+		msg.setSubject("Nuova supplica di " + newUser.getNick());
+		msg.setText("La sua motivazione:</br>" +
+				"<i>"  + motivation + "</i></br></br>" +
+				" Clicka [url=User?action=getUserInfo&nick=" + newUser.getNick() + "]qui[/url] per decidere se ammetterlo nella Grande Famiglia o fanculizzarlo.");
+
+		AuthorDTO suora = adminDAO.getAuthor("::1");
+		Collection<String> admins = adminDAO.getAdmins();
+		privateMsgDAO.sendAPvtForGreatGoods(suora, msg, admins.toArray(new String[admins.size()]));
 	}
 
 	protected static AvailableTorRegistrations availableTorRegistrations = new AvailableTorRegistrations();

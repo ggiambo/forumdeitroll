@@ -10,8 +10,8 @@
 				<div class="lblRegistrationForm">
 					<label for="nick">Nome utente:</label>
 				</div>
-				<div class="inputRegistrationForm">	
-					<input tabindex="1" name="nick" value="${nick}"/>
+				<div class="inputRegistrationForm">
+					<input tabindex="1" name="nick" id="nick" value="${nick}"/>
 				</div>
 				<div style="clear: both;"></div>
 			</div>
@@ -20,18 +20,27 @@
 					<label for="pass">Password:</label>
 				</div>
 				<div class="inputRegistrationForm">
-					<input tabindex="2" type="password" name="pass"/>
-				</div>	
+					<input tabindex="2" type="password" id="pass" name="pass"/>
+				</div>
 				<div style="clear: both;"></div>
 			</div>
-			<div class="registrationCaptcha">		
+            <div>
+                <div class="lblRegistrationForm">
+                    <label for="motivation">Motivazione:</label>
+                </div>
+                <div class="inputRegistrationForm">
+                    <textarea name="motivation" id="motivation" rows="10">Perch&eacute, merito di essere accolto nella Grande Famiglia ?</textarea>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+			<div class="registrationCaptcha">
 				<div><img src="Misc?action=getCaptcha" /></div><div><input tabindex="3" name="captcha" size="5"/><div class="registrationCaptchaInput">Copia qui il testo dell'immagine</div></div>
 				<div style="clear: both;"></div>
 			</div>
 			<input tabindex="4" type="submit" value="Registra" class="sendRegistrationForm" />
 			<div style="clear: both;"></div>
 		</form>
-		
+
 	</div>
 </div>
 <div id="footer"></div>

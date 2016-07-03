@@ -78,7 +78,7 @@ public class AuthorsDAO extends BaseDAO {
 				.set(AUTHORS.SALT, authorDTO.getSalt())
 				.set(AUTHORS.HASH, authorDTO.getHash())
 				.set(AUTHORS.CREATIONDATE, new Date(System.currentTimeMillis()))
-				.set(AUTHORS.ENABLED, (byte)1)
+				.set(AUTHORS.ENABLED, (byte)0)
 				.execute();
 
 		return getAuthor(nick);
@@ -167,6 +167,14 @@ public class AuthorsDAO extends BaseDAO {
 					.set(PREFERENCES.VALUE, hiddenForum)
 					.execute();
 			}
+	}
+
+	public void enableUser(AuthorDTO loggedUser, boolean isEnabled) {
+		byte enabled = isEnabled ? (byte)1 : (byte)0;
+		jooq.update(AUTHORS)
+				.set(AUTHORS.ENABLED, enabled)
+				.where(AUTHORS.NICK.eq(loggedUser.getNick()))
+				.execute();
 	}
 
 }

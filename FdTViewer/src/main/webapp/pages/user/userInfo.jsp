@@ -77,6 +77,16 @@
 								<div style="clear: both;"></div>
 							</div>
 
+                            <div>
+                                <div class="lblUserPanel">
+                                    <label for="isEnabled" class="lbl">Abilitato:</label>
+                                </div>
+                                <div class="inputUserPanel">
+                                    <input type="checkbox" name="isEnabled" value="yes" id="isEnabled" ${author.enabled ? "checked" : ""} />
+                                </div>
+                                <div style="clear: both;"></div>
+                            </div>
+
 							<input type="submit" value="Modifica" class="sendUserPanel"/>
 							<div style="clear: both;"></div>
 						</form>

@@ -2,9 +2,11 @@ package com.forumdeitroll.persistence.dao;
 
 import static com.forumdeitroll.persistence.jooq.Tables.ADS;
 import static com.forumdeitroll.persistence.jooq.Tables.MESSAGES;
+import static com.forumdeitroll.persistence.jooq.Tables.PREFERENCES;
 import static com.forumdeitroll.persistence.jooq.Tables.SYSINFO;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
@@ -73,7 +75,7 @@ public class AdminDAO extends BaseDAO {
 		// update numero di threads
 		increaseNumberOfThreadsFor(srcForum, -1);
 		increaseNumberOfThreadsFor(destForum, 1);
-		
+
 		// update tabella threads
 		DAOFactory.getMessagesDAO().updateLastIdInThread(rootMessageId);
 		DAOFactory.getMessagesDAO().updateLastIdInThread(msg.getThreadId());
@@ -139,6 +141,13 @@ public class AdminDAO extends BaseDAO {
 				.set(ADS.VISURL, ad.getVisurl())
 				.execute();
 		}
+	}
+
+	public Collection<String> getAdmins() {
+		return jooq.select(PREFERENCES.NICK)
+				.from(PREFERENCES)
+				.where(PREFERENCES.KEY.like("super"))
+				.fetch(PREFERENCES.NICK);
 	}
 
 	private AdDTO recordToDTO(AdsRecord record) {

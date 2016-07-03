@@ -1,5 +1,13 @@
 package com.forumdeitroll;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
@@ -8,12 +16,6 @@ import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Messages;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
 Classe di supporto per l'inserimento dei messaggi nel database
@@ -280,6 +282,11 @@ public class MessagePenetrator {
 		}
 		if (!isBannedCalled) {
 			setError("Errore interno: chiamare isBanned");
+			return null;
+		}
+
+		if (!author.isEnabled()) {
+			setError("Non sei ancora abilitato, abbi pazienza !");
 			return null;
 		}
 

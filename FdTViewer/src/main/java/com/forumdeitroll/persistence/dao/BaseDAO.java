@@ -51,6 +51,7 @@ public abstract class BaseDAO {
 		authorDTO.setSalt(record.getSalt());
 		authorDTO.setSignatureImage(record.getSignatureImage());
 		authorDTO.setPreferences(getPreferences(authorDTO));
+		authorDTO.enabled(record.getEnabled() == 1);
 
 		authorDTO.setPreferences(getPreferences(authorDTO));
 		return authorDTO;
