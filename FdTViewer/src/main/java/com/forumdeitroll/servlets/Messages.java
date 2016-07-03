@@ -220,6 +220,9 @@ public class Messages extends MainServlet {
 				req.setAttribute("warnTorUser", "true");
 			}
 		}
+
+		req.setAttribute(Admin.ADMIN_NON_ANON_POST, miscDAO.getSysinfoValue(Admin.ADMIN_NON_ANON_POST));
+
 		return "newMessage.jsp";
 	}
 
@@ -304,6 +307,7 @@ public class Messages extends MainServlet {
 
 		//jstl non accede ai campi stitici
 		req.setAttribute("MAX_MESSAGE_LENGTH", MAX_MESSAGE_LENGTH);
+		req.setAttribute(Admin.ADMIN_NON_ANON_POST, miscDAO.getSysinfoValue(Admin.ADMIN_NON_ANON_POST));
 
 		getServletContext().getRequestDispatcher("/pages/messages/incReplyMessage.jsp").forward(req, res);
 		return null;
@@ -330,6 +334,8 @@ public class Messages extends MainServlet {
 		req.setAttribute("message", msg);
 
 		req.setAttribute("isEdit", true);
+
+		req.setAttribute(Admin.ADMIN_NON_ANON_POST, miscDAO.getSysinfoValue(Admin.ADMIN_NON_ANON_POST));
 
 		return "newMessage.jsp";
 	}
