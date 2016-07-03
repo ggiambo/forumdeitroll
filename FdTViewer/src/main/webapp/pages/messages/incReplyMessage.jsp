@@ -28,7 +28,7 @@
 		limit = ${maxMessageLength};
 		
 		var intervalID = setInterval(function() {
-			// n.b. non furmigate, il controllo della lunghezza c'è anche lato server
+			// n.b. non furmigate, il controllo della lunghezza c'ï¿½ anche lato server
 			try {
 				var counter = $('#counter_' + messageId);
 				var textarea = $('#text_' + messageId);
@@ -170,18 +170,20 @@
 				</p>
 			</c:when>
 			<c:otherwise>
-				<div class="msgCaptcha">
-					<div>
-						<img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" />
-					</div>
-					<div>
-						<input tabindex="4" name="captcha" size="5" />
-						<div class="msgCaptchaInput">
-							Copia qui il testo dell'immagine
-						</div>
-					</div>
-					<div style="clear: both;"></div>
-				</div>
+                <c:if test="${empty adminNonAnonPost}">
+                    <div class="msgCaptcha">
+                        <div>
+                            <img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" />
+                        </div>
+                        <div>
+                            <input tabindex="4" name="captcha" size="5" />
+                            <div class="msgCaptchaInput">
+                                Copia qui il testo dell'immagine
+                            </div>
+                        </div>
+                        <div style="clear: both;"></div>
+                    </div>
+                </c:if>
 			</c:otherwise>
 		</c:choose>
 	</div>
@@ -189,7 +191,7 @@
 	<input style="display:none;float:left;font-size: 90%;" tabindex="5" type="button" name="edit" value="Edit" onClick="edit(${message.parentId})"/>&nbsp;
 	<a href="Misc?action=getDisclaimer" style="font-size:80%;">disclaimer &amp; privacy policy</a>
 	<c:if test="${warnTorUser == null}">
-		<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />	
+		<input tabindex="5" type="button" value="Invia" onClick="send(${message.parentId})" class="msgSendButton" />
 	</c:if>
 	<c:if test="${warnTorUser != null}">
 		<input tabindex="5" type="button" value="BLOCCATO" onClick="alert('Post con Tor temporaneamente inibito.')" class="msgSendButton" style="background-color: red" />

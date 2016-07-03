@@ -30,6 +30,7 @@ public class Admin extends MainServlet {
 
 	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
 	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
+	public static final String ADMIN_NON_ANON_POST = "adminNonAnonPost";
 	public static final String ADMIN_PREF_CAPTCHA_LEVEL = "captchaLevel";
 	public static final String ADMIN_WEBSITE_TITLES = "websiteTitles";
 	public static final String ADMIN_FAKE_ADS = "fakeAds";
@@ -47,6 +48,7 @@ public class Admin extends MainServlet {
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		req.setAttribute(ADMIN_PREF_BLOCK_TOR, miscDAO.getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
 		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, miscDAO.getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
+		req.setAttribute(ADMIN_NON_ANON_POST, miscDAO.getSysinfoValue(ADMIN_NON_ANON_POST));
 		req.setAttribute(ADMIN_WEBSITE_TITLES, adminDAO.getTitles());
 		req.setAttribute(ADMIN_FAKE_ADS, adminDAO.getAllAds());
 	}
@@ -111,6 +113,7 @@ public class Admin extends MainServlet {
 			adminDAO.setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "");
 		}
 		req.setAttribute(ADMIN_PREF_BLOCK_TOR, adminDAO.getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
+
 		String disableUserProfiler = req.getParameter(ADMIN_PREF_DISABLE_PROFILER);
 		if (!StringUtils.isEmpty(disableUserProfiler)) {
 			adminDAO.setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "checked");
@@ -120,6 +123,14 @@ public class Admin extends MainServlet {
 			ProfilerAPI.enabled = true;
 		}
 		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, adminDAO.getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
+
+		String adminNonAnonPost = req.getParameter(ADMIN_NON_ANON_POST);
+		if (!StringUtils.isEmpty(adminNonAnonPost)) {
+			adminDAO.setSysinfoValue(ADMIN_NON_ANON_POST, "checked");
+		} else {
+			adminDAO.setSysinfoValue(ADMIN_NON_ANON_POST, "");
+		}
+		req.setAttribute(ADMIN_NON_ANON_POST, adminDAO.getSysinfoValue(ADMIN_NON_ANON_POST));
 
 		String javascript = req.getParameter("javascript");
 		if (javascript.length() > 255) {
