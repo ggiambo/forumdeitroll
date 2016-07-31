@@ -552,6 +552,7 @@ public class JSonServlet extends HttpServlet {
 		out.name("parentId").value(messageDTO.getParentId());
 		out.name("threadId").value(messageDTO.getThreadId());
 		out.name("text").value(messageDTO.getText());
+		out.name("rank").value(messageDTO.getRank());
 		AuthorDTO author = messageDTO.getAuthor();
 		if (author.isValid()) {
 			encodeAuthor(author, out);
