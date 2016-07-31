@@ -1,9 +1,9 @@
 set schema fdtsucker;
 
 -- user: admin / password: admin
-insert into authors (nick, messages, password, salt, hash) values ('admin', 2, '', 'e0342c65575601d6', 'c27a20319df29b1ab0e9046defbc192534e5a2e373b08045');
+insert into authors (nick, messages, password, salt, hash, creationDate) values ('admin', 2, '', 'e0342c65575601d6', 'c27a20319df29b1ab0e9046defbc192534e5a2e373b08045', '2010-05-13 14:30:15' );
 -- user: Sfigato / password: sfigato
-insert into authors (nick, messages, password, salt, hash) values ('Sfigato', 1, '', 'd60ef1248b73b2fb', '2ae5b31efbac8029e3ef2b668fe85a2434a838380d5d538');
+insert into authors (nick, messages, password, salt, hash, creationDate) values ('Sfigato', 1, '', 'd60ef1248b73b2fb', '2ae5b31efbac8029e3ef2b668fe85a2434a838380d5d538', '2010-05-13 14:30:15' );
 
 insert into quotes (id, nick, content) values (1, 'Sfigato', 'Che la fortuna sia con me !');
 insert into quotes (id, nick, content) values (2, 'Sfigato', 'Un quadrifoglio esplosivo ...');

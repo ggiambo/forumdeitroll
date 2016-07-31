@@ -17,8 +17,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonWriter;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -38,6 +36,8 @@ import com.forumdeitroll.persistence.ThreadsDTO;
 import com.forumdeitroll.persistence.dao.ThreadsDAO;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.VisitorCounters;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonWriter;
 
 /*
 QUESTA CLASSE E` UN MERDAIO, IL 90% DEL CODICE IN QUESTA CLASSE E` STATO COPINCOLLATO QUI SENZA RIGUARDO.
@@ -304,12 +304,17 @@ public class JSonServlet extends HttpServlet {
 			onlyActive = Boolean.parseBoolean(paramOnlyActive);
 		}
 
-		List<AuthorDTO> result = DAOFactory.getAuthorsDAO().getAuthors(onlyActive);
+		int page = getIntValue(params, "page", 0);
+		int pageSize = getPageSize(params);
+
+		List<AuthorDTO> result = DAOFactory.getAuthorsDAO().getAuthors(onlyActive, pageSize, page);
 
 		JsonWriter out = initJsonWriter(ResultCode.OK, writer);
 
 		out.beginObject();
 		out.name("resultSize").value(result.size());
+		out.name("page").value(page);
+		out.name("pageSize").value(pageSize);
 		out.name("authors");
 
 		out.beginArray();

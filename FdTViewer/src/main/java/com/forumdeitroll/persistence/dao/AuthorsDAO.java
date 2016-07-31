@@ -39,17 +39,23 @@ public class AuthorsDAO extends BaseDAO {
 		return authors;
 	}
 
-	public List<AuthorDTO> getAuthors(boolean onlyActive) {
+	public List<AuthorDTO> getAuthors(boolean onlyActive, int limit, int page) {
 
 		List<String> nicks;
 		if (onlyActive) {
 			nicks = jooq.select(AUTHORS.HASH, AUTHORS.NICK)
 					.from(AUTHORS)
 					.where(AUTHORS.HASH.isNotNull())
+					.orderBy(AUTHORS.NICK.asc())
+					.limit(limit)
+					.offset(limit * page)
 					.fetch(AUTHORS.NICK);
 		} else {
 			nicks = jooq.select(AUTHORS.NICK)
 					.from(AUTHORS)
+					.orderBy(AUTHORS.NICK.asc())
+					.limit(limit)
+					.offset(limit * page)
 					.fetch(AUTHORS.NICK);
 		}
 

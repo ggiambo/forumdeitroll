@@ -1,5 +1,12 @@
 package com.forumdeitroll.test.persistence;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -10,13 +17,6 @@ import org.junit.Test;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.servlets.User;
 import com.forumdeitroll.test.BaseTest;
-
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public class AuthorTest extends BaseTest {
 
@@ -74,7 +74,7 @@ public class AuthorTest extends BaseTest {
 
 	@Test
 	public void test_getAuthors() {
-		List<AuthorDTO> authors = authorsDAO.getAuthors(true);
+		List<AuthorDTO> authors = authorsDAO.getAuthors(true, 10, 0);
 		assertNotNull(authors);
 		assertEquals(2, authors.size());
 

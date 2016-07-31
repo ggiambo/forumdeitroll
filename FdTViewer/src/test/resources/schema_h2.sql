@@ -17,7 +17,9 @@ CREATE CACHED TABLE fdtsucker.authors (
 	password TINYTEXT NOT NULL,
 	salt TINYTEXT,
 	hash TINYTEXT,
-	signature_image MEDIUMBLOB
+	signature_image MEDIUMBLOB,
+	creationDate DATETIME NOT NULL,
+ enabled BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE CACHED TABLE fdtsucker.bookmarks (
