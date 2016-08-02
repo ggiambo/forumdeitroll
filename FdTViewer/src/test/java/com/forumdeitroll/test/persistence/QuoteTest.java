@@ -1,13 +1,14 @@
 package com.forumdeitroll.test.persistence;
 
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.QuoteDTO;
-import com.forumdeitroll.test.BaseTest;
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.junit.Test;
+
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.QuoteDTO;
+import com.forumdeitroll.test.BaseTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

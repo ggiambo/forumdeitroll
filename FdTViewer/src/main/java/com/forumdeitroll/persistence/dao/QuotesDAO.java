@@ -1,9 +1,5 @@
 package com.forumdeitroll.persistence.dao;
 
-import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
-import static com.forumdeitroll.persistence.jooq.Tables.QUOTES;
-import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,10 +7,15 @@ import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Record3;
 import org.jooq.Result;
+import org.jooq.SelectLimitStep;
 
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.jooq.tables.records.QuotesRecord;
+
+import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
+import static com.forumdeitroll.persistence.jooq.Tables.QUOTES;
+import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 public class QuotesDAO extends BaseDAO {
 
@@ -39,13 +40,26 @@ public class QuotesDAO extends BaseDAO {
 	}
 
 	public List<QuoteDTO> getAllQuotes() {
+		return getAllQuotes(-1, -1);
+	}
+	
+	public List<QuoteDTO> getAllQuotes(int limit, int page) {
 
-		Result<Record3<Integer, String, String>> records = jooq.select(QUOTES.ID, AUTHORS.NICK, QUOTES.CONTENT)
+		SelectLimitStep<Record3<Integer, String, String>> select = jooq.select(QUOTES.ID, AUTHORS.NICK, QUOTES.CONTENT)
 				.from(QUOTES)
 				.join(AUTHORS).on(QUOTES.NICK.eq(AUTHORS.NICK))
 				.where(AUTHORS.MESSAGES.greaterThan(0))
 				.and(AUTHORS.HASH.notEqual(AuthorDTO.BANNED_TAG))
-				.fetch();
+				.orderBy(QUOTES.NICK.asc());
+
+		Result<Record3<Integer, String, String>> records;
+		if (limit > 0) {
+			select = (SelectLimitStep<Record3<Integer, String, String>>) select
+					.limit(limit)
+					.offset(limit * page);
+		}
+			
+		records = select.fetch();
 
 		final List<QuoteDTO> out = new ArrayList<QuoteDTO>(records.size());
 		for (Record record : records) {

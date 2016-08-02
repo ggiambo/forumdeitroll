@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonWriter;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -36,8 +38,6 @@ import com.forumdeitroll.persistence.ThreadsDTO;
 import com.forumdeitroll.persistence.dao.ThreadsDAO;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.VisitorCounters;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonWriter;
 
 /*
 QUESTA CLASSE E` UN MERDAIO, IL 90% DEL CODICE IN QUESTA CLASSE E` STATO COPINCOLLATO QUI SENZA RIGUARDO.
@@ -339,8 +339,10 @@ public class JSonServlet extends HttpServlet {
 	protected void getQuotes(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
 		List<QuoteDTO> result;
 		String nick = getStringValue(params, "nick", null);
+		int page = getIntValue(params, "page", 0);
+		int pageSize = getPageSize(params);
 		if (nick == null) {
-			result = DAOFactory.getQuotesDAO().getAllQuotes();
+			result = DAOFactory.getQuotesDAO().getAllQuotes(pageSize, page);
 		} else {
 			AuthorDTO author = DAOFactory.getAuthorsDAO().getAuthor(nick);
 			result = DAOFactory.getQuotesDAO().getQuotes(author);
@@ -350,6 +352,8 @@ public class JSonServlet extends HttpServlet {
 
 		out.beginObject();
 		out.name("resultSize").value(result.size());
+		out.name("page").value(page);
+		out.name("pageSize").value(pageSize);
 		out.name("quotes");
 		out.beginArray();
 		for (QuoteDTO quote : result) {
