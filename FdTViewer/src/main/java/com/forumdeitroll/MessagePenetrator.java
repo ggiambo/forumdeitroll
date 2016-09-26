@@ -359,4 +359,11 @@ public class MessagePenetrator {
 	public String Error() {
 		return error;
 	}
+
+	public boolean isAuthorDisabled() {
+		if (author == null) {
+			return false;
+		}
+		return !author.isEnabled();
+	}
 }

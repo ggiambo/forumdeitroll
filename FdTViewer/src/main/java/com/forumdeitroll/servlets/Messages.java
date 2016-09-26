@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -37,7 +38,6 @@ import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.taglibs.RenderTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
-import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
@@ -458,6 +458,11 @@ public class Messages extends MainServlet {
 				req.getParameter("captcha"), (String)req.getSession().getAttribute("captcha"))
 			.deduceType(req.getParameter("id"));
 
+		if (mp.isAuthorDisabled()) {
+			insertMessageAjaxFail(res, "Questo utente non è abilitato");
+			return null;
+		}
+		
 		if (mp.isBanned(req.getSession().getAttribute(SESSION_IS_BANNED), IPMemStorage.requestToIP(req), req)) {
 			insertMessageAjaxBan(res);
 			return null;
@@ -652,6 +657,10 @@ public class Messages extends MainServlet {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null) {
 			insertMessageAjaxFail(res, "Non furmigare !");
+			return null;
+		}
+		if (!loggedUser.isEnabled()) {
+			insertMessageAjaxFail(res, "Utente non abilitato !");
 			return null;
 		}
 		String id = req.getParameter("msgId");
