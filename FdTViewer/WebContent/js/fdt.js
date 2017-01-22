@@ -431,10 +431,16 @@ function restoreHiddenMessage(msgId) {
 	}
 }
 
-function showHIddenMessage(msgId) {
+function showHiddenMessage(msgId) {
 	$("#msg" + msgId).removeClass("msgInvisible");
 	$("#msg" + msgId).addClass("msgVisible");
 	$("#msgWarning" + msgId).hide();
+}
+
+function showHiddenThread(threadId) {
+	$("#thread" + threadId).removeClass("threadInvisible");
+	$("#thread" + threadId).removeClass("threadVisible");
+	$("#threadWarning" + threadId).hide();
 }
 
 function openNotifyInput(msgId) {

@@ -14,7 +14,15 @@
 				<c:set var="rowclass" value="msgOdd"/>
 			</c:otherwise>
 		</c:choose>
-		<div class="${rowclass} threadBox row">
+		<c:if test="${loggedUser.wantsToHideThread(thread)}">
+			<div class="${rowclass} threadBox row" id="threadWarning${thread.id}" style="padding:5px;">
+				<img src="images/warning.png" style="float:right; margin-right:10px"/>
+				Questa discussione contiene roba che non ti interessa.
+				Clicka <a href="#" onClick="showHiddenThread(${thread.id});return false;">qui</a> per vederlo.
+			</div>
+			<c:set var="rowclass" value="${rowclass} threadInvisible"/>
+		</c:if>
+		<div class="${rowclass} threadBox row" id="thread${thread.id}">
 			<div class=col-1 style=text-align:center>
 				<c:choose>
 					<c:when test="${empty thread.author.nick}">

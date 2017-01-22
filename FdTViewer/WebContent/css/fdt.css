@@ -193,6 +193,16 @@ div.msgVisible {
 	padding: 5px;
 }
 
+div.threadInvisible {
+	padding: 5px;
+	display: none;
+}
+
+div.threadVisible {
+	padding: 5px;
+	display: block;
+}
+
 div.msgInvisible {
 	padding: 5px;
 	display:none;

@@ -198,17 +198,44 @@ public class AuthorDTO implements Serializable {
 				: "");
 	}
 
-	public boolean wantToHide(MessageDTO msg) {
+	public boolean wantsToHideThread(ThreadDTO thread) {
 		if (preferences.containsKey(User.PREF_MESSAGE_FILTER)) {
 			StringTokenizer tokenizer = new StringTokenizer(preferences.get(User.PREF_MESSAGE_FILTER), "\n");
 			while (tokenizer.hasMoreElements()) {
-				String token = tokenizer.nextToken();
-				boolean valid = token.startsWith("user=") || token.startsWith("content=");
+				String filter = tokenizer.nextToken();
+				boolean valid = filter.startsWith("user=") || filter.startsWith("content=");
 				if (!valid) {
 					continue;
 				}
-				String filterType = token.substring(0, token.indexOf('='));
-				String wildcard = token.substring(token.indexOf('=') + 1);
+				String filterType = filter.substring(0, filter.indexOf('='));
+				String wildcard = filter.substring(filter.indexOf('=') + 1);
+				Pattern pattern = Pattern.compile(Wildcard.toRegex(wildcard));
+				String target =
+					filterType.equals("user") && thread.getAuthor() != null && thread.getAuthor().getNick() != null
+					? thread.getAuthor().getNick()
+					: filterType.equals("content")
+						? thread.getSubject()
+						: null;
+				if (target == null) return false;
+				if (pattern.matcher(target).find()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean wantsToHideMessage(MessageDTO msg) {
+		if (preferences.containsKey(User.PREF_MESSAGE_FILTER)) {
+			StringTokenizer tokenizer = new StringTokenizer(preferences.get(User.PREF_MESSAGE_FILTER), "\n");
+			while (tokenizer.hasMoreElements()) {
+				String filter = tokenizer.nextToken();
+				boolean valid = filter.startsWith("user=") || filter.startsWith("content=");
+				if (!valid) {
+					continue;
+				}
+				String filterType = filter.substring(0, filter.indexOf('='));
+				String wildcard = filter.substring(filter.indexOf('=') + 1);
 				Pattern pattern = Pattern.compile(Wildcard.toRegex(wildcard));
 				String target =
 					filterType.equals("user") && msg.getAuthor() != null && msg.getAuthor().getNick() != null
@@ -217,8 +244,9 @@ public class AuthorDTO implements Serializable {
 						? msg.getSubject() + " " + msg.getText()
 						: null;
 				if (target == null) return false;
-				return pattern.matcher(target).find();
-				
+				if (pattern.matcher(target).find()) {
+					return true;
+				}
 			}
 		}
 		return false;
