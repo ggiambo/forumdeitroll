@@ -4,6 +4,14 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
 <c:choose>
+	<c:when test="${loggedUser.wantToHide(msg)}">
+		<c:set var="rowclass" value="msgInvisible"/>
+		<div id="msgWarning${msg.id}" style="padding:5px;">
+			<img src="images/warning.png" style="float:right; margin-right:10px"/>
+			Questo messaggio contiene roba che non ti interessa.
+			Clicka <a href="#" onClick="showHIddenMessage(${msg.id});return false;">qui</a> per vederlo.
+		</div>
+	</c:when>
 	<c:when test="${msg.visible}">
 		<c:set var="rowclass" value="msgVisible"/>
 	</c:when>

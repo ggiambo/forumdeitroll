@@ -260,6 +260,22 @@
 						</div>
 						<div style="clear: both;"></div>
 					</div>
+					<div>
+						<div class="inputUserPanel">
+							<textarea id="<%=User.PREF_MESSAGE_FILTER%>" name="<%=User.PREF_MESSAGE_FILTER%>" rows="8">${loggedUser.preferences['messageFilter']}</textarea>
+						</div>
+						<div class="lblUserPanel">
+							<label for="<%=User.PREF_MESSAGE_FILTER%>" class="lbl">Filtra i messaggi</label>
+							<br><br>
+							<p>
+								Inserisci le regole, una per linea:<br>
+								user=NickName<br>
+								content=Contenuto o titolo<br>
+								Sono supportate le wildcard semplici (? per un carattere, * per pi&ugrave; caratteri).
+							</p>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
 					<input type="submit" value="Modifica" class="sendUserPanel" />
 				</form>
 				<div style="clear: both;"></div>

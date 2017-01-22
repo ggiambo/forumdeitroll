@@ -57,6 +57,7 @@ public class User extends MainServlet {
 	public static final String PREF_HIDE_FAKE_ADS = "hideFakeAds";
 	public static final String PREF_SOFTV = "softv";
 	public static final String PREF_USER_TITLE = "userTitle";
+	public static final String PREF_MESSAGE_FILTER = "messageFilter";
 
 	public static final List<String> PREF_THEMES = Arrays.asList("Classico", "Scuro", "Flat");
 
@@ -500,6 +501,12 @@ public class User extends MainServlet {
 		String userTitle = req.getParameter(PREF_USER_TITLE);
 		if (userTitle!=null) {
 			loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, PREF_USER_TITLE, userTitle));
+		}
+	
+		String messageFilter = req.getParameter(PREF_MESSAGE_FILTER);
+		if (messageFilter!=null) {
+			messageFilter = StringUtils.join(messageFilter.split("[\\r\\n]+"), "\n");
+			loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, PREF_MESSAGE_FILTER, messageFilter));
 		}
 
 		return "user.jsp";

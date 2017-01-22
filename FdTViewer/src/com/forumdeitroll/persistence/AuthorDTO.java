@@ -5,9 +5,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+
+import com.forumdeitroll.markup.util.Wildcard;
+import com.forumdeitroll.servlets.User;
 
 public class AuthorDTO implements Serializable {
 	private static final long serialVersionUID = 2L;
@@ -191,5 +196,31 @@ public class AuthorDTO implements Serializable {
 			((shadowAuthor != null) ?
 				(" (" + ((shadowAuthor.getNick() != null) ? shadowAuthor.getNick() : "Non Autenticato") + ")")
 				: "");
+	}
+
+	public boolean wantToHide(MessageDTO msg) {
+		if (preferences.containsKey(User.PREF_MESSAGE_FILTER)) {
+			StringTokenizer tokenizer = new StringTokenizer(preferences.get(User.PREF_MESSAGE_FILTER), "\n");
+			while (tokenizer.hasMoreElements()) {
+				String token = tokenizer.nextToken();
+				boolean valid = token.startsWith("user=") || token.startsWith("content=");
+				if (!valid) {
+					continue;
+				}
+				String filterType = token.substring(0, token.indexOf('='));
+				String wildcard = token.substring(token.indexOf('=') + 1);
+				Pattern pattern = Pattern.compile(Wildcard.toRegex(wildcard));
+				String target =
+					filterType.equals("user") && msg.getAuthor() != null && msg.getAuthor().getNick() != null
+					? msg.getAuthor().getNick()
+					: filterType.equals("content")
+						? msg.getSubject() + " " + msg.getText()
+						: null;
+				if (target == null) return false;
+				return pattern.matcher(target).find();
+				
+			}
+		}
+		return false;
 	}
 }
