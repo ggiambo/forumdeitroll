@@ -1,1 +1,0 @@
-ALTER TABLE `messages` ADD `visible` BOOLEAN NOT NULL DEFAULT '1';

@@ -1,64 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
-	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_45">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v8.0">
 		<attributes>
 			<attribute name="owner.project.facets" value="jst.web"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
-		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="var" path="M2_REPO/javax/servlet/javax.servlet-api/3.0.1/javax.servlet-api-3.0.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/servlet/jsp/jsp-api/2.2/jsp-api-2.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/bouncycastle/bcprov-jdk15on/1.51/bcprov-jdk15on-1.51.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/commons/commons-dbcp2/2.1/commons-dbcp2-2.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/commons/commons-pool2/2.3/commons-pool2-2.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-fileupload/commons-fileupload/1.3.1/commons-fileupload-1.3.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-io/commons-io/2.4/commons-io-2.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar" sourcepath="M2_REPO/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar" sourcepath="M2_REPO/com/google/code/gson/gson/2.3.1/gson-2.3.1-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/jfree/jfreechart/1.0.19/jfreechart-1.0.19.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/jfree/jcommon/1.0.23/jcommon-1.0.23.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/jooq/jooq/3.6.1/jooq-3.6.1.jar" sourcepath="M2_REPO/org/jooq/jooq/3.6.1/jooq-3.6.1-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.17/log4j-1.2.17.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/ocpsoft/prettytime/prettytime/3.2.7.Final/prettytime-3.2.7.Final.jar"/>
-	<classpathentry kind="var" path="M2_REPO/nl/captcha/simpleCaptcha/1.2.1/simpleCaptcha-1.2.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/mysql/mysql-connector-java/5.1.34/mysql-connector-java-5.1.34.jar"/>
-	<classpathentry kind="var" path="M2_REPO/postgresql/postgresql/9.1-901.jdbc4/postgresql-9.1-901.jdbc4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jstl/jstl/1.2/jstl-1.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/h2database/h2/1.3.171/h2-1.3.171.jar" sourcepath="M2_REPO/com/h2database/h2/1.3.171/h2-1.3.171-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/4.12/junit-4.12.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.10.19/mockito-all-1.10.19.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/mockrunner/mockrunner-servlet/1.0.6/mockrunner-servlet-1.0.6.jar" sourcepath="M2_REPO/com/mockrunner/mockrunner-servlet/1.0.6/mockrunner-servlet-1.0.6-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/mockrunner/mockrunner-core/1.0.6/mockrunner-core-1.0.6.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jdom/jdom/1.0/jdom-1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/oro/oro/2.0.8/oro-2.0.8.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/kirkk/jaranalyzer/1.2/jaranalyzer-1.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/bcel/bcel/5.1/bcel-5.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/regexp/regexp/1.2/regexp-1.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jakarta-regexp/jakarta-regexp/1.4/jakarta-regexp-1.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/ant/ant/1.6.5/ant-1.6.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/nekohtml/nekohtml/0.9.5/nekohtml-0.9.5.jar"/>
-	<classpathentry kind="var" path="M2_REPO/xerces/xercesImpl/2.4.0/xercesImpl-2.4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/servlet-api/6.0.37/servlet-api-6.0.37.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/jasper/6.0.37/jasper-6.0.37.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/juli/6.0.37/juli-6.0.37.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/jsp-api/6.0.37/jsp-api-6.0.37.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/el-api/6.0.37/el-api-6.0.37.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/catalina/6.0.37/catalina-6.0.37.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/annotations-api/6.0.37/annotations-api-6.0.37.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/eclipse/jdt/core/compiler/ecj/4.2.2/ecj-4.2.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/tomcat/jasper-el/6.0.37/jasper-el-6.0.37.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/jooq/jooq-meta/3.6.1/jooq-meta-3.6.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/jooq/jooq-codegen/3.6.1/jooq-codegen-3.6.1.jar"/>
-	<classpathentry kind="output" path="target/classes"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="output" path="build/classes"/>
 </classpath>
