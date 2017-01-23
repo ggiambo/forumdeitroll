@@ -16,7 +16,7 @@
 		</c:choose>
 		<c:if test="${loggedUser.wantsToHideThread(thread)}">
 			<div class="${rowclass} threadBox row" id="threadWarning${thread.id}" style="padding:5px;">
-				<img src="images/warning.png" style="float:right; margin-right:10px"/>
+				<img src="images/poop.png" style="float:right; margin-right:10px"/>
 				Questa discussione contiene roba che non ti interessa.
 				Clicka <a href="#" onClick="showHiddenThread(${thread.id});return false;">qui</a> per vederlo.
 			</div>
