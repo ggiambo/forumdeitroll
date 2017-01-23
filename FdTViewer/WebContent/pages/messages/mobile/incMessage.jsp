@@ -4,20 +4,39 @@
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
 
 <c:choose>
+	<c:when test="${loggedUser.wantsToHideMessage(msg)}">
+		<c:set var="rowclass" value="msgInvisible"/>
+		<div class="messageBox">
+			<div class=row onclick="showMessage(this, '${msg.id}')">
+				<div class=col-1>
+					<img src="images/poop.png"/>
+				</div>
+				<div class=col-5>
+					Messaggio cacca
+				</div>
+			</div>
+		</div>
+	</c:when>
 	<c:when test="${msg.visible}">
 		<c:set var="rowclass" value="msgVisible"/>
 	</c:when>
 	<c:otherwise>
 		<c:set var="rowclass" value="msgInvisible"/>
-		<div id="msgWarning${msg.id}" style="padding:5px;">
-			<img src="images/warning.png" style="float:right; margin-right:10px"/>
-			Questo messaggio e' stato catalogato come "Exiled Nigerian princess".
+		<div class="messageBox">
+			<div class=row onclick="showMessage(this, '${msg.id}')">
+				<div class=col-1>
+					<img src="images/warning.png"/>
+				</div>
+				<div class=col-5>
+					Exiled Nigerian princess
+				</div>
+			</div>
 		</div>
 	</c:otherwise>
 </c:choose>
 
 <span class=msg-anchor id="msg${msg.id}"></span>
-<div class="messageBox">
+<div class="${rowclass} messageBox" id="msgbox${msg.id}">
 	<div class=row onclick=toggleMessageView(this,event,${msg.id}) style='height: 48px' id="msg-toggle-${msg.id}">
 		<div class=col-1>
             <c:choose>

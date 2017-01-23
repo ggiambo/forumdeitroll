@@ -424,3 +424,7 @@ div.rankingClassNegative {
     background-position: -122px -62px;
     padding-left: 2px;
 }
+
+div.msgInvisible {
+	display: none;
+}

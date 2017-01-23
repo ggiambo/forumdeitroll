@@ -244,3 +244,10 @@ domready(function() {
 		}
 	}, false);
 });
+
+var showMessage = function(thisElem, targetId) {
+	if (confirm('Apro? Sicuro?')) {
+		thisElem.parentNode.style.display = 'none';
+		document.querySelector('#msgbox' + targetId).style.display = 'block';
+	}
+}

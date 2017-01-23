@@ -14,7 +14,21 @@
 		</c:when>
 		<c:otherwise></c:otherwise>
 	</c:choose>
-	<div class="threadBox" onclick="gotoThread(${threadId},${messageId})">
+	<c:set var="rowclass" value="msgVisible"/>
+	<c:if test="${loggedUser.wantsToHideThread(thread)}">
+		<c:set var="rowclass" value="msgInvisible"/>
+		<div class="threadBox">
+			<div class=row onclick="showMessage(this, '${threadId}')">
+				<div class=col-1>
+					<img src="images/poop.png">
+				</div>
+				<div class=col-5>
+					Messaggio cacca
+				</div>
+			</div>
+		</div>
+	</c:if>
+	<div class="${rowclass} threadBox" id="msgbox${threadId}" onclick="gotoThread(${threadId},${messageId})">
 		<div class=row>
 			<div class=col-1>
 				<img src="Misc?action=getAvatar&amp;&nick=${thread.author.nick}" class=avatar>
