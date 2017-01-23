@@ -216,7 +216,7 @@ public class AuthorDTO implements Serializable {
 					: filterType.equals("content")
 						? thread.getSubject()
 						: null;
-				if (target == null) return false;
+				if (target == null) continue;
 				if (pattern.matcher(target).find()) {
 					return true;
 				}
@@ -243,7 +243,7 @@ public class AuthorDTO implements Serializable {
 					: filterType.equals("content")
 						? msg.getSubject() + " " + msg.getText()
 						: null;
-				if (target == null) return false;
+				if (target == null) continue;
 				if (pattern.matcher(target).find()) {
 					return true;
 				}
