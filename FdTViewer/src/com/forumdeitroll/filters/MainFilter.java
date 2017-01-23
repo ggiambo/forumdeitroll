@@ -67,6 +67,9 @@ public class MainFilter implements Filter {
 				if (StringUtils.isEmpty(originalURL)) {
 					originalURL = "Messages";
 				}
+				if ("updateMobileViewFromDisclaimer".equals(req.getParameter("action"))) {
+					session.setAttribute("mobileView", "true");
+				}
 				res.setStatus(302);
 				res.setHeader("Location", originalURL);
 				res.setHeader("Connection", "close" );
