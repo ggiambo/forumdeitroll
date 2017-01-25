@@ -34,6 +34,7 @@
 			});
 		}
 		var drawWordCloud = function(data) {
+			var width = $('#relevant-content').width();
 			$('#relevant-content').html('');
 			setTimeout(function() {
 				if (data.resultCode != "OK:1") {
@@ -54,7 +55,7 @@
 				var draw = function(words) {
 					d3.select("#relevant-content")
 						.append("svg")
-						.attr("width", 660)
+						.attr("width", width)
 						.attr("height", 960)
 						.append("g")
 						.attr("transform", "translate(450,450)")
@@ -76,7 +77,7 @@
 						.text(function(d) { return d.text; });
 				};
 				d3.layout.cloud()
-					.size([760, 960])
+					.size([width, 960])
 					.words(data)
 					.rotate(function() { return ~~ (Math.random() * 2) * 90; })
 					.font("Helvetica")
