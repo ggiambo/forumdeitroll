@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +18,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonWriter;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -38,6 +37,8 @@ import com.forumdeitroll.persistence.ThreadsDTO;
 import com.forumdeitroll.persistence.dao.ThreadsDAO;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.VisitorCounters;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonWriter;
 
 public class JSonServlet extends HttpServlet {
 
@@ -471,6 +472,23 @@ public class JSonServlet extends HttpServlet {
 //		out.endObject();
 //
 //		closeJsonWriter(out, time);
+	}
+
+	protected void getAllTags(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
+		final JsonWriter out = initJsonWriter(ResultCode.OK, writer);
+		
+		out.beginArray();
+		LinkedHashMap<String, Integer[]> tags = DAOFactory.getMiscDAO().getAllTags();
+		for (Map.Entry<String, Integer[]> tag : tags.entrySet()) {
+			out.beginObject();
+			out.name("name").value(tag.getKey());
+			out.name("id").value(tag.getValue()[0]);
+			out.name("count").value(tag.getValue()[1]);
+			out.endObject();
+		}
+		out.endArray();
+		
+		closeJsonWriter(out, time);
 	}
 
 	/**

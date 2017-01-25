@@ -21,6 +21,8 @@
 	<br>
 	<a href="javascript:forceMobileView()">Visualizzazione Mobile</a>
 	<br>
+	<a href="Messages?action=getAllTags">Tags</a>
+	<br>
 	<br>
 	<form action="Messages" method="get" id="sidebarSearchForm" onsubmit="return searchAjax();">
 		<input type="hidden" name="action" value="search"/>

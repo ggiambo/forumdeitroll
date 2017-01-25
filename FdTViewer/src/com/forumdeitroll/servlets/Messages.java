@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -38,6 +37,7 @@ import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.taglibs.RenderTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
+import com.google.gson.stream.JsonWriter;
 
 public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
@@ -765,6 +765,7 @@ public class Messages extends MainServlet {
 		req.setAttribute("totalSize", messages.getMaxNrOfMessages());
 		req.setAttribute("resultSize", messages.getMessages().size());
 		setWebsiteTitlePrefix(req, "Ricerca per tag");
+		addSpecificParam(req, "t_id", req.getParameter("t_id"));
 		setAntiXssToken(req);
 		return "messages.jsp";
 	}
@@ -838,5 +839,10 @@ public class Messages extends MainServlet {
 		}
 		req.setAttribute("username", login(req).getNick());
 		return "composer.jsp";
+	}
+
+	@Action
+	String getAllTags(HttpServletRequest req, HttpServletResponse res) {
+		return "tagcloud.jsp";
 	}
 }

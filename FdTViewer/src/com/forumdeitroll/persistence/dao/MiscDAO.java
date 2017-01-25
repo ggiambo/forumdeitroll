@@ -8,12 +8,14 @@ import static com.forumdeitroll.persistence.jooq.Tables.TAGS_BIND;
 import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.jooq.DeleteConditionStep;
 import org.jooq.Record1;
+import org.jooq.Record3;
 import org.jooq.Record4;
 import org.jooq.Result;
 import org.jooq.SelectConditionStep;
@@ -128,6 +130,22 @@ public class MiscDAO extends BaseDAO {
 			currentMessage.getTags().add(tag);
 		}
 
+	}
+
+	public LinkedHashMap<String, Integer[]> getAllTags() {
+		Result<Record3<Integer, String, Integer>> records = jooq.select(TAGNAMES.T_ID, TAGNAMES.VALUE, DSL.count(TAGNAMES.T_ID))
+			.from(TAGNAMES, TAGS_BIND)
+			.where(TAGNAMES.T_ID.eq(TAGS_BIND.T_ID))
+			.groupBy(TAGNAMES.T_ID, TAGNAMES.VALUE)
+			.orderBy(DSL.count(TAGNAMES.T_ID).desc())
+			.fetch();
+		LinkedHashMap<String, Integer[]> result = new LinkedHashMap<>();
+		for (Record3<Integer, String, Integer> record : records) {
+			result.put(record.value2(), new Integer[] {
+				record.value1(), record.value3()
+			});
+		}
+		return result;
 	}
 
 	public TagDTO addTag(TagDTO tag) {
