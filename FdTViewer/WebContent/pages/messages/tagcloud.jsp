@@ -11,7 +11,8 @@
 			<div style="clear:both"></div>
 		</div>
 		<div class="userPanelSection">
-			<div id=relevant-content></div>
+			<div id=tagcloud></div>
+			<div id=taglist></div>
 			<div style="clear:both"></div>
 		</div>
 	</div>
@@ -34,7 +35,10 @@
 			});
 		}
 		var drawWordCloud = function(data) {
-			var width = $('#relevant-content').width();
+			$('#taglist').hide();
+			$('#tagcloud').show();
+			if ($('#tagcloud').html() != "") return;
+			var width = $('#tagcloud').width();
 			$('#relevant-content').html('');
 			setTimeout(function() {
 				if (data.resultCode != "OK:1") {
@@ -53,7 +57,7 @@
 				});
 				var fill = d3.scale.category20();
 				var draw = function(words) {
-					d3.select("#relevant-content")
+					d3.select("#tagcloud")
 						.append("svg")
 						.attr("width", width)
 						.attr("height", 960)
@@ -86,16 +90,45 @@
 					.start();
 			}, 1);
 		};
-		var drawList = function(data) {
-			$('#relevant-content').html('');
-			setTimeout(function() {
-				var html = "<ul>";
-				for (var index in data.content) {
-					var tag = data.content[index];
-					html += "<ul><a href='Messages?action=getMessagesByTag&amp;t_id=" + tag.id + "'>"+escapeHtml(tag.name)+ " (" + tag.count +")</a></ul>"
+		var drawList = function(data, sortType) {
+			$('#taglist').show();
+			$('#tagcloud').hide();
+			if (sortType == null && $('#taglist').html() != "") return;
+			if (sortType != null) {
+				switch (sortType) {
+					case "count":
+						data.content.sort(function(a,b) { return b.count - a.count });
+						break;
+					case "alpha":
+						data.content.sort(function(a,b) {
+							var a_s = a.name.toLowerCase();
+							var b_s = b.name.toLowerCase();
+							if (a_s < b_s) {
+								return -1
+							}
+							if (b_s < a_s) {
+								return 1
+							}
+							return 0
+						});
+						break;
 				}
+			}
+			setTimeout(function() {
+				var html = "";
+				if (sortType == null || sortType == "count") {
+					html += "Ordinato per numero - <a href='javascript:drawList(window.tagsData, \"alpha\")'>Ordina alfabeticamente</a>";
+				} else if (sortType == "alpha") {
+					html += "Ordinato alfabeticamente - <a href='javascript:drawList(window.tagsData, \"count\")'>Ordina per numero</a>";
+				}
+				html += "<br>";
+				html += "<br>";
+				html += "<ul>";
+				html += data.content.map(function(tag) {
+					return "<ul><a href='Messages?action=getMessagesByTag&amp;t_id=" + tag.id + "'>"+escapeHtml(tag.name)+ " (" + tag.count +")</a></ul>"
+				}).join("");
 				html += "</ul>";
-				$('#relevant-content').html(html);
+				$('#taglist').html(html);
 			}, 1);
 		};
 		jQuery.get('JSon?action=getAllTags', function(data) {
