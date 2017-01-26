@@ -10,8 +10,13 @@
 		<!-- versioni bloccate: verificare prima di aggiornare -->
 		<jooql.version>3.6.1</jooql.version>
 		<mysql-connector.version>6.0.5</mysql-connector.version>
+		<!--
+			devono essere uguali alle versioni in tomcat
+			attuale: tomcat8 8.0.14
+		 -->
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<jsp-api.version>2.2</jsp-api.version>
+		<jstl.version>1.2</jstl.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -110,7 +115,7 @@
 		<dependency>
 			<groupId>jstl</groupId>
 			<artifactId>jstl</artifactId>
-			<version>1.2</version>
+			<version>${jstl.version}</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
