@@ -24,6 +24,12 @@
 		<delete dir="target/" />
 	</target>
 
+	<target name="list-updates-deps">
+		<exec command="mvn">
+			<arg value="versions:display-dependency-updates" />
+		</exec>
+	</target>
+
 	<!-- comando per pulire le directory di output di compilazione e il war prodotto -->
 	<target name="clean">
 		<delete dir="build/classes" />
