@@ -8,10 +8,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.forumdeitroll.markup.Emoticon;
-import com.forumdeitroll.markup.Emoticons;
-import com.forumdeitroll.markup.RenderOptions;
-import com.forumdeitroll.markup.Snippet;
 import com.forumdeitroll.markup.util.FaviconWhiteList;
 import com.forumdeitroll.markup.util.WebTitles;
 import com.forumdeitroll.persistence.DAOFactory;
@@ -90,6 +86,8 @@ public class MarkupRenderer implements TokenListener {
 			onLink(token);
 		} else if (token.name.startsWith("TEXT")) {
 			onText(token);
+		} else if (token.name.equals("VIDEO")) {
+			onVideo(token, additional);
 		}
 		this.lastOutStart = nextOutStart;
 	}
@@ -537,6 +535,17 @@ public class MarkupRenderer implements TokenListener {
 			out.append("</span>");
 			tagsCounter[5]--;
 		}
+	}
+
+	private void onVideo(TokenMatcher token, TokenMatcher additional) {
+		String videoUrl = additional.group();
+		String cleanVideoUrl = escape(videoUrl);
+		out.append(String.format(
+			"<span style='border: 1px solid black; padding: 2px;'>"
+			+ "&#9654; Video"
+			+ " <a href=\"%s\" class=videolink target=_blank>Vai alla pagina</a>"
+			+ " <a href=# onclick=\"var video = document.createElement('video'); video.src = $(this.parentNode).find('.videolink').attr('href'); video.controls = true; this.parentNode.appendChild(video); this.onclick = null; return false\">Visualizza embed</a>"
+			+ "</span>", cleanVideoUrl));
 	}
 
 	private static ConcurrentHashMap<Long, String> titleCache = new ConcurrentHashMap<Long, String>();

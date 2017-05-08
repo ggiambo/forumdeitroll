@@ -24,6 +24,7 @@ public class TokenCatalog {
 			new TokenMatcher.Regex("YT", "^(\\[yt\\]([^ \\[]{6,50})\\[/yt])", Pattern.CASE_INSENSITIVE),
 			new TokenMatcher.Regex("COLOR_OPEN", "^(\\[color (#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z]{1,12})\\])", Pattern.CASE_INSENSITIVE),
 			new TokenMatcher.BBCodeClose("COLOR"),
+			new TokenMatcher.Regex("VIDEO", "^\\[video\\]([^ ]+)\\[/video\\]", Pattern.CASE_INSENSITIVE),
 			new TokenMatcher.Beginning("TEXT", "["),
 			new TokenMatcher.Beginning("TEXT", "<"),
 			new TokenMatcher.Regex("TEXT", "^([^\\[<]+)"),

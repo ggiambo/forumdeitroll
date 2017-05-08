@@ -124,6 +124,14 @@ public class Tokenizer {
 					}
 				}
 			}
+			if (token.name.equals("VIDEO")) {
+				TokenMatcher link = tryMatch(TokenizerMode.LINK, position + 7, token.end() - 8);
+				if (link != null) {
+					additional = link;
+				} else {
+					token = text(position, token.end());
+				}
+			}
 			if (token.name.equals("TEXT")) {
 				if (text.charAt(position) == ' ') {
 					position++;
