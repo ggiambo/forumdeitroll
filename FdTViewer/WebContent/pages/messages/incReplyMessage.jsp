@@ -132,6 +132,7 @@
 			<span class="fakeLink" onclick="insert('[img]', '[/img]', '${message.parentId}')">[immagine]</span>&nbsp;
 			<span class="fakeLink" onclick="insert('[code]', '[/code]', '${message.parentId}')">[codice]</span>&nbsp;
 			<span class="fakeLink" onclick="insert('[yt]', '[/yt]', '${message.parentId}')">[youtube]</span>&nbsp;
+			<span class="fakeLink" onclick="insert('[video]', '[/video]', '${message.parentId}')">[video]</span>&nbsp;
 			<span class="fakeLink" onclick="insert('[spoiler]', '[/spoiler]', '${message.parentId}')">[spoiler]</span>&nbsp;
 			<span class="fakeLink" onclick="urlInput('${message.parentId}')">[url]</span>&nbsp;
 			<span class="fakeLink" onclick="insert('[color #' + $('.color').val() + ']', '[/color]', '${message.parentId}')">[color]</span>&nbsp;
