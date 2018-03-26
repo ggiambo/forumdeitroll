@@ -4,49 +4,12 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
     version="2.0">
-    
+
   <description>FDT Library</description>
   <display-name>FDT Library</display-name>
   <tlib-version>1.0</tlib-version>
   <short-name>fdt</short-name>
   <uri>http://ravanator.acmetoy.com/jsp/jstl/fdt</uri>
-
-  <tag>
-    <description>
-        Format the message to be displayed.
-    </description>
-    <name>msg</name>
-    <tag-class>com.forumdeitroll.taglibs.MessageTag</tag-class>
-    <body-content>JSP</body-content>
-	<attribute>
-		<description>Searched word to highlight</description>
-        <name>search</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-		<type>java.lang.String</type>
-    </attribute>
-	<attribute>
-		<description>Message author</description>
-        <name>author</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-		<type>com.forumdeitroll.persistence.AuthorDTO</type>
-    </attribute>
-    <attribute>
-    	<description>Request the formatting of a signature</description>
-    	<name>signature</name>
-    	<required>true</required>
-    	<rtexprvalue>true</rtexprvalue>
-    	<type>java.lang.String</type>
-    </attribute>
-    <attribute>
-        <description>La macchina del capo ha un buco in una gomma</description>
-        <name>alt</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-        <type>java.lang.String</type>
-    </attribute>
-  </tag>
 
 	<tag>
 		<name>render</name>
@@ -68,7 +31,7 @@
     <tag-class>com.forumdeitroll.taglibs.PvtTag</tag-class>
     <body-content>JSP</body-content>
   </tag>
-  
+
   <tag>
   	<description>
   		Descrizione in italiano, haha! Un pager generico, per le pagine del foro, prende come argomento l'handler

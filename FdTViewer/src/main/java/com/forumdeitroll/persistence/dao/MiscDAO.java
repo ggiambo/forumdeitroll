@@ -1,32 +1,21 @@
 package com.forumdeitroll.persistence.dao;
 
-import static com.forumdeitroll.persistence.jooq.Tables.LIKES;
-import static com.forumdeitroll.persistence.jooq.Tables.MESSAGES;
-import static com.forumdeitroll.persistence.jooq.Tables.NOTIFICATION;
-import static com.forumdeitroll.persistence.jooq.Tables.TAGNAMES;
-import static com.forumdeitroll.persistence.jooq.Tables.TAGS_BIND;
-import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.jooq.DSLContext;
-import org.jooq.DeleteConditionStep;
-import org.jooq.Record1;
-import org.jooq.Record3;
-import org.jooq.Record4;
-import org.jooq.Result;
-import org.jooq.SelectConditionStep;
-import org.jooq.impl.DSL;
-
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.NotificationDTO;
 import com.forumdeitroll.persistence.TagDTO;
 import com.forumdeitroll.persistence.jooq.tables.records.NotificationRecord;
 import com.forumdeitroll.persistence.jooq.tables.records.TagsBindRecord;
+import org.apache.commons.lang3.StringUtils;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import static com.forumdeitroll.persistence.jooq.Tables.*;
+import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 public class MiscDAO extends BaseDAO {
 

@@ -95,6 +95,7 @@
 		</b>
 	</span>
 
+<%--
 	<span class=tags>
 		<c:forEach var="tag" items="${msg.tags}">
 			<span>
@@ -112,13 +113,12 @@
 			</span>
 		</c:forEach>
 	</span>
-
 	<c:if test="${not empty loggedUser}">
 	<span class=add-tag onclick=openCloseAddTag(event) title="Aggiungi un tag">&nbsp;&nbsp;&nbsp;&nbsp;
 		<input type=text onkeypress="saveTag(event,'${msg.id}')" style=display:none>
 	</span>
 	</c:if>
-
+--%>
     <div id="rankingContainer${msg.id}">
         <c:if test="${msg.rank gt 0}">
             <c:forEach begin="1" end="${msg.rank}">
