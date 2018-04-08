@@ -1,26 +1,14 @@
 package com.forumdeitroll.persistence;
 
-import java.util.Properties;
-
+import com.forumdeitroll.FdTConfig;
+import com.forumdeitroll.persistence.dao.*;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.apache.log4j.Logger;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
-import com.forumdeitroll.FdTConfig;
-import com.forumdeitroll.persistence.dao.AdminDAO;
-import com.forumdeitroll.persistence.dao.AuthorsDAO;
-import com.forumdeitroll.persistence.dao.BookmarksDAO;
-import com.forumdeitroll.persistence.dao.DigestDAO;
-import com.forumdeitroll.persistence.dao.LoginsDAO;
-import com.forumdeitroll.persistence.dao.MessagesDAO;
-import com.forumdeitroll.persistence.dao.MiscDAO;
-import com.forumdeitroll.persistence.dao.PollsDAO;
-import com.forumdeitroll.persistence.dao.PrivateMsgDAO;
-import com.forumdeitroll.persistence.dao.QuotesDAO;
-import com.forumdeitroll.persistence.dao.ThreadsDAO;
+import java.util.Properties;
 
 public class DAOFactory {
 
@@ -34,7 +22,6 @@ public class DAOFactory {
 	private AuthorsDAO authorsDAO;
 	private ThreadsDAO threadsDAO;
 	private MessagesDAO messagesDAO;
-	private PollsDAO pollsDAO;
 	private QuotesDAO quotesDAO;
 	private BookmarksDAO bookmarksDAO;
 	private AdminDAO adminDAO;
@@ -88,7 +75,6 @@ public class DAOFactory {
 		authorsDAO = new AuthorsDAO(jooq);
 		threadsDAO = new ThreadsDAO(jooq);
 		messagesDAO = new MessagesDAO(jooq);
-		pollsDAO = new PollsDAO(jooq);
 		quotesDAO = new QuotesDAO(jooq);
 		bookmarksDAO = new BookmarksDAO(jooq);
 		adminDAO = new AdminDAO(jooq);
@@ -108,10 +94,6 @@ public class DAOFactory {
 
 	public static final MessagesDAO getMessagesDAO() {
 		return getInstance().messagesDAO;
-	}
-
-	public static final PollsDAO getPollsDAO() {
-		return getInstance().pollsDAO;
 	}
 
 	public static final QuotesDAO getQuotesDAO() {

@@ -1,12 +1,12 @@
 package com.forumdeitroll.markup2;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.forumdeitroll.markup.Emoticon;
 import com.forumdeitroll.markup.Emoticons;
 import com.forumdeitroll.markup.Snippet;
+
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
 Effettua l'analisi lessicale di un messaggio del forumdeitroll.
@@ -66,7 +66,6 @@ class RTokenizer {
 		"http://",
 		"https://",
 		"threads?action=",
-		"polls?action=",
 		"messages?action=",
 		"misc?action=",
 		"ftp://",

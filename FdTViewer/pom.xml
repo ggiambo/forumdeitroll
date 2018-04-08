@@ -108,7 +108,6 @@
         </dependency>
 
 
-
         <!-- dipendenze indirette (container) -->
         <dependency>
             <groupId>mysql</groupId>
@@ -127,7 +126,9 @@
                 <executions>
                     <execution>
                         <phase>package</phase>
-                        <goals><goal>copy</goal></goals>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
@@ -141,9 +142,44 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooql.version}</version>
+<!--
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+-->
+                <configuration>
+                    <jdbc>
+                        <driver>com.mysql.cj.jdbc.Driver</driver>
+                        <url>jdbc:mysql://localhost:3306/fdtsucker?useUnicode=yes&amp;characterEncoding=UTF-8&amp;serverTimezone=GMT</url>
+                        <user>fdtsucker</user>
+                        <password>fdtsucker</password>
+                    </jdbc>
+                    <generator>
+                        <database>
+                            <name>org.jooq.util.mysql.MySQLDatabase</name>
+                            <includes>.*</includes>
+                            <inputSchema>fdtsucker</inputSchema>
+                        </database>
+                        <generate>
+                            <fluentSetters>true</fluentSetters>
+                        </generate>
+                        <target>
+                            <packageName>com.forumdeitroll.persistence.jooq</packageName>
+                            <directory>src/main/java</directory>
+                        </target>
+                    </generator>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
 
 
 </project>

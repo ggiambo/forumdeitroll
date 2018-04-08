@@ -21,7 +21,7 @@
 								Tutto il forum
 							</c:when>
 							<c:when test="${forum != ''}">
-								<c:out value="${forum}"/> 
+								<c:out value="${forum}"/>
 							</c:when>
 						</c:choose>
 					</span>
@@ -34,7 +34,7 @@
 				</div>
 			</li>
 		</c:if>
-		
+
 		<li>
 			<c:if test="${blockHeader == 'checked'}">
 				<img src="images/icon-pin-color.png" id="unblockHeaderControl" onclick="unblockHeader()" style="" alt="">
@@ -70,7 +70,7 @@
 				<c:param name="forum" value="${forum}"></c:param>
 			</c:if>
 		</c:url>
-		
+
 		<%-- "Discussioni: Ultime per utente" --%>
 		<c:url value="Threads" var="getThreadsByLastPostGroupByUser">
 			<c:param name="action" value="getThreadsByLastPostGroupByUser"></c:param>
@@ -78,7 +78,7 @@
 				<c:param name="forum" value="${forum}"></c:param>
 			</c:if>
 		</c:url>
-		
+
 		<%-- "Nuovo Messaggio" --%>
 		<c:url value="Messages" var="newMessage">
 			<c:param name="action" value="newMessage"></c:param>
@@ -86,10 +86,10 @@
 				<c:param name="forum" value="${forum}"></c:param>
 			</c:if>
 		</c:url>
-		
+
 		<li><a id="Messages_getMessages" href="${getMessages}">Cronologia</a></li>
 		<li>|</li>
-		<li>Discussioni: 
+		<li>Discussioni:
 			<a id="Threads_getThreads" href="${getThreads}">Nuove</a>
 			(<a id="Threads_getThreadsByLastPostGroupByUser" href="${getThreadsByLastPostGroupByUser}">Per utente</a>)
 			<a id="Threads_getThreadsByLastPost" href="${getThreadsByLastPost}">Ultime</a>
@@ -99,13 +99,6 @@
 		</li>
 		<li>|</li>
 		<li><a id="Messages_newMessage" href="${newMessage}">Nuovo messaggio</a></li>
-		<li>|</li>
-		<li><a id="Polls_" href="Polls">Sondaggi</a></li>
-		<c:if test="${not empty loggedUser}">
-			<li>|</li>
-			<li><a id="Polls_createNewPoll" href="Polls?action=createNewPoll">Nuovo sondaggio</a></li>
-		</c:if>
-		
 	</ul>
 	<ul style="float: right; ">
 		<c:choose>

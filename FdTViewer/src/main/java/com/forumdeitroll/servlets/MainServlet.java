@@ -46,7 +46,6 @@ public abstract class MainServlet extends HttpServlet {
 	protected AuthorsDAO authorsDAO;
 	protected ThreadsDAO threadsDAO;
 	protected MessagesDAO messagesDAO;
-	protected PollsDAO pollsDAO;
 	protected QuotesDAO quotesDAO;
 	protected BookmarksDAO bookmarksDAO;
 	protected AdminDAO adminDAO;
@@ -85,7 +84,6 @@ public abstract class MainServlet extends HttpServlet {
 		authorsDAO = DAOFactory.getAuthorsDAO();
 		threadsDAO = DAOFactory.getThreadsDAO();
 		messagesDAO = DAOFactory.getMessagesDAO();
-		pollsDAO = DAOFactory.getPollsDAO();
 		quotesDAO = DAOFactory.getQuotesDAO();
 		bookmarksDAO = DAOFactory.getBookmarksDAO();
 		adminDAO = DAOFactory.getAdminDAO();

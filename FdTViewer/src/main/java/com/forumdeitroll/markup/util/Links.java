@@ -2,10 +2,8 @@ package com.forumdeitroll.markup.util;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.concurrent.ConcurrentHashMap;
 
 //import com.forumdeitroll.markup.RenderIO;
-import com.forumdeitroll.persistence.DAOFactory;
 
 public class Links {
 	private static final char[][] initseq = new char[][] {
@@ -13,7 +11,6 @@ public class Links {
 		"http://".toCharArray(),
 		"https://".toCharArray(),
 		"Threads?action=".toCharArray(),
-		"Polls?action=".toCharArray(),
 		"Messages?action=".toCharArray(),
 		"Misc?action=".toCharArray(),
 		"ftp://".toCharArray(),
