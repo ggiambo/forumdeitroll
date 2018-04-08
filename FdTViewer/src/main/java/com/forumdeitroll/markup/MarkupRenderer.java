@@ -1,16 +1,15 @@
 package com.forumdeitroll.markup;
 
+import com.forumdeitroll.markup.util.FaviconWhiteList;
+import com.forumdeitroll.markup.util.WebTitles;
+import com.forumdeitroll.persistence.DAOFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+
 import java.net.URLEncoder;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import com.forumdeitroll.markup.util.FaviconWhiteList;
-import com.forumdeitroll.markup.util.WebTitles;
-import com.forumdeitroll.persistence.DAOFactory;
 
 public class MarkupRenderer implements TokenListener {
 
