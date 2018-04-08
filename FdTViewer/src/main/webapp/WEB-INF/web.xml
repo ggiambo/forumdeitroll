@@ -78,14 +78,6 @@
         <url-pattern>/Bookmarks</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>Minichat</servlet-name>
-        <servlet-class>com.forumdeitroll.servlets.Minichat</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Minichat</servlet-name>
-        <url-pattern>/Minichat</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <servlet-name>Admin</servlet-name>
         <servlet-class>com.forumdeitroll.servlets.Admin</servlet-class>
     </servlet>
@@ -150,7 +142,6 @@
         <url-pattern>/UserProfiler</url-pattern>
         <url-pattern>/Bookmarks</url-pattern>
         <url-pattern>/ReadersDigest</url-pattern>
-        <url-pattern>/Minichat</url-pattern>
         <url-pattern>/Admin/*</url-pattern>
         <url-pattern>/Authors</url-pattern>
     </filter-mapping>
