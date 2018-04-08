@@ -1,15 +1,15 @@
 package com.forumdeitroll.markup.util;
 
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.net.HttpURLConnection;
+import com.forumdeitroll.LRACache;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.regex.Pattern;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.regex.Matcher;
-
-import com.forumdeitroll.LRACache;
+import java.util.regex.Pattern;
 
 public class WebTitles {
 	protected static final int BUFFER_SIZE = 8 * 1024;

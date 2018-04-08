@@ -1,30 +1,28 @@
 package com.forumdeitroll;
 
+import com.forumdeitroll.persistence.AuthorDTO;
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-
-import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import com.forumdeitroll.persistence.AuthorDTO;
-
 public class PasswordUtils {
 
 
-	private static SecretKeyFactory secretKeyFactory = null;
+	private static SecretKeyFactory secretKeyFactory;
 
 	// che cosa brutta brutta brutta !
 	static {
 		Security.addProvider(new BouncyCastleProvider());
 		try {
 			secretKeyFactory = SecretKeyFactory.getInstance("PBEWithSHAAnd3-KeyTripleDES-CBC");
-		} catch(NoSuchAlgorithmException e) {
+		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException("Algoritmo di hashing non supportato?!", e);
 		}
 	}
@@ -47,9 +45,6 @@ public class PasswordUtils {
 
 	/**
 	 * Restituisce true se la password corretta e` uguale a quella salvata sul db per opportune definizioni di "uguale".
-	 * @param user
-	 * @param password
-	 * @return
 	 */
 	public static boolean hasUserPassword(AuthorDTO user, final String password) {
 		if (password == null) return false;
@@ -64,10 +59,8 @@ public class PasswordUtils {
 		return user.getOldPassword().equals(md5(password));
 	}
 
-    /**
+	/**
 	 * Calcola l'MD5 della password, stesso valore di MD5() di MySQL
-	 * @param input
-	 * @return
 	 */
 	private static String md5(String input) {
 		try {
@@ -88,7 +81,7 @@ public class PasswordUtils {
 		try {
 			byte[] hash = secretKeyFactory.generateSecret(spec).getEncoded();
 			return RandomPool.hex(hash, true);
-		} catch(InvalidKeySpecException e) {
+		} catch (InvalidKeySpecException e) {
 			throw new RuntimeException("Algoritmo di hashing fallito per strane ragioni", e);
 		}
 	}

@@ -1,13 +1,10 @@
 package com.forumdeitroll;
 
-import org.apache.log4j.Logger;
-
 public abstract class SingleValueCache<V> {
-	protected volatile V v = null;
-	protected final long interval;
-	protected volatile long timestamp = -1;
 
-	private static final Logger LOG = Logger.getLogger(SingleValueCache.class);
+	protected volatile V v = null;
+	private final long interval;
+	protected volatile long timestamp = -1;
 
 	public SingleValueCache(final long interval) {
 		this.interval = interval;
@@ -15,7 +12,7 @@ public abstract class SingleValueCache<V> {
 
 	protected abstract V update();
 
-	protected boolean expired() {
+	private boolean expired() {
 		return (v == null) || ((System.currentTimeMillis() - timestamp) > interval);
 	}
 
