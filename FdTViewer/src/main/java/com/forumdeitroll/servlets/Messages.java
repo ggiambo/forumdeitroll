@@ -1,43 +1,32 @@
 package com.forumdeitroll.servlets;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
-
+import com.forumdeitroll.FdTConfig;
 import com.forumdeitroll.MessagePenetrator;
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.DAOFactory;
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.MessagesDTO;
-import com.forumdeitroll.persistence.QuoteDTO;
-import com.forumdeitroll.persistence.TagDTO;
+import com.forumdeitroll.persistence.*;
 import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.taglibs.RenderTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
@@ -73,6 +62,7 @@ public class Messages extends MainServlet {
 		if (author != null) {
 			req.setAttribute("notifications", miscDAO.getNotifications(null, author.getNick()));
 		}
+		req.setAttribute("captchakey", FdTConfig.getProperty("recaptcha.key.client"));
 	}
 
 	/**
@@ -309,6 +299,8 @@ public class Messages extends MainServlet {
 		req.setAttribute("MAX_MESSAGE_LENGTH", MAX_MESSAGE_LENGTH);
 		req.setAttribute(Admin.ADMIN_NON_ANON_POST, miscDAO.getSysinfoValue(Admin.ADMIN_NON_ANON_POST));
 
+		req.setAttribute("captchakey", FdTConfig.getProperty("recaptcha.key.client"));
+
 		getServletContext().getRequestDispatcher("/pages/messages/incReplyMessage.jsp").forward(req, res);
 		return null;
 	}
@@ -455,20 +447,18 @@ public class Messages extends MainServlet {
 			.setCredentials(
 				(AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR),
 				req.getParameter("nick"), req.getParameter("pass"),
-				req.getParameter("captcha"), (String)req.getSession().getAttribute("captcha"))
+				req.getParameter("g-recaptcha-response"))
 			.deduceType(req.getParameter("id"));
 
 		if (mp.isAuthorDisabled()) {
 			insertMessageAjaxFail(res, "Questo utente non è abilitato");
 			return null;
 		}
-		
+
 		if (mp.isBanned(req.getSession().getAttribute(SESSION_IS_BANNED), IPMemStorage.requestToIP(req), req)) {
 			insertMessageAjaxBan(res);
 			return null;
 		}
-
-		req.getSession().removeAttribute("captcha");
 
 		final MessageDTO msg = mp.penetrate();
 		if (msg == null) {

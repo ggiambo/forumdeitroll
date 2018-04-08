@@ -1,22 +1,6 @@
 package com.forumdeitroll.servlets;
 
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.SingleValueCache;
@@ -24,17 +8,24 @@ import com.forumdeitroll.persistence.AdDTO;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.QuoteDTO;
-import com.forumdeitroll.persistence.dao.AdminDAO;
-import com.forumdeitroll.persistence.dao.AuthorsDAO;
-import com.forumdeitroll.persistence.dao.BookmarksDAO;
-import com.forumdeitroll.persistence.dao.DigestDAO;
-import com.forumdeitroll.persistence.dao.LoginsDAO;
-import com.forumdeitroll.persistence.dao.MessagesDAO;
-import com.forumdeitroll.persistence.dao.MiscDAO;
-import com.forumdeitroll.persistence.dao.PollsDAO;
-import com.forumdeitroll.persistence.dao.PrivateMsgDAO;
-import com.forumdeitroll.persistence.dao.QuotesDAO;
-import com.forumdeitroll.persistence.dao.ThreadsDAO;
+import com.forumdeitroll.persistence.dao.*;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public abstract class MainServlet extends HttpServlet {
 

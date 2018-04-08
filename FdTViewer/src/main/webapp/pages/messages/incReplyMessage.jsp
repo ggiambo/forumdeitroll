@@ -1,7 +1,6 @@
-<%@page import="com.forumdeitroll.markup.Emoticon"%>
 <%@page import="com.forumdeitroll.markup.Emoticons"%>
-<%@page import="java.util.Map"%>
 <%@page import="com.forumdeitroll.servlets.Messages"%>
+<%@page import="java.util.Enumeration"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fn" prefix="fn" %>
 <%@ taglib uri="http://ravanator.acmetoy.com/jsp/jstl/fdt" prefix="fdt" %>
@@ -17,16 +16,11 @@
 				send(${message.parentId});
 			}
 		});
-		$("#reply_${message.parentId} :input[name='captcha']").keydown(function(e) {
-			if (e.which == 13) {
-				send(${message.parentId});
-			}
-		});
 		jscolor.init();
 		// update numero caratteri, ogni secondo
 		messageId = ${message.id};
 		limit = ${maxMessageLength};
-		
+
 		var intervalID = setInterval(function() {
 			// n.b. non furmigate, il controllo della lunghezza c'� anche lato server
 			try {
@@ -164,29 +158,9 @@
 		<input tabindex="2" name="nick" id="nick" size="10" value="${loggedUser.nick }"/>&nbsp;&nbsp;
 		<label for="password">Password:&nbsp;</label>
 		<input tabindex="3" type="password" id="password" name="pass" size="10"/>
-		<c:choose>
-			<c:when test="${loggedUser != null}">
-				<p style="font-size:75%">
-					Cancellare nome utente per postare anonimamente
-				</p>
-			</c:when>
-			<c:otherwise>
-                <c:if test="${empty adminNonAnonPost}">
-                    <div class="msgCaptcha">
-                        <div>
-                            <img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>" />
-                        </div>
-                        <div>
-                            <input tabindex="4" name="captcha" size="5" />
-                            <div class="msgCaptchaInput">
-                                Copia qui il testo dell'immagine
-                            </div>
-                        </div>
-                        <div style="clear: both;"></div>
-                    </div>
-                </c:if>
-			</c:otherwise>
-		</c:choose>
+        <div class="msgCaptcha">
+		    <div id="captcha_${message.parentId}" class="g-recaptcha" data-sitekey="${captchakey}"></div>
+        </div>
 	</div>
 	<input style="float:left;font-size: 90%;" tabindex="5" type="button" name="preview" value="Preview" onClick="preview(${message.parentId})"/>&nbsp;
 	<input style="display:none;float:left;font-size: 90%;" tabindex="5" type="button" name="edit" value="Edit" onClick="edit(${message.parentId})"/>&nbsp;

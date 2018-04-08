@@ -1,25 +1,8 @@
 package com.forumdeitroll.servlets;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.lang3.StringUtils;
-
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
+import com.forumdeitroll.ReCaptchaUtils;
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
@@ -29,6 +12,18 @@ import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.Ratelimiter;
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.URLEncoder;
+import java.util.*;
 
 public class User extends MainServlet {
 
@@ -249,9 +244,7 @@ public class User extends MainServlet {
 		String nick = req.getParameter("nick");
 		req.setAttribute("nick", nick);
 		// check del captcha
-		String captcha = req.getParameter("captcha");
-		String correctAnswer = (String)req.getSession().getAttribute("captcha");
-		if ((correctAnswer == null) || !correctAnswer.equals(captcha)) {
+		if (!ReCaptchaUtils.verifyReCaptcha(req)) {
 			setNavigationMessage(req, NavigationMessage.warn("Captcha non corretto"));
 			return "register.jsp";
 		}
@@ -502,7 +495,7 @@ public class User extends MainServlet {
 		if (userTitle!=null) {
 			loggedUser.setPreferences(authorsDAO.setPreference(loggedUser, PREF_USER_TITLE, userTitle));
 		}
-	
+
 		String messageFilter = req.getParameter(PREF_MESSAGE_FILTER);
 		if (messageFilter!=null) {
 			messageFilter = StringUtils.join(messageFilter.split("[\\r\\n]+"), "\n");

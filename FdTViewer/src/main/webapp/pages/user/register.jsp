@@ -34,8 +34,7 @@
                 <div style="clear: both;"></div>
             </div>
 			<div class="registrationCaptcha">
-				<div><img src="Misc?action=getCaptcha" /></div><div><input tabindex="3" name="captcha" size="5"/><div class="registrationCaptchaInput">Copia qui il testo dell'immagine</div></div>
-				<div style="clear: both;"></div>
+				<div class="g-recaptcha" data-sitekey="${captchakey}"></div>
 			</div>
 			<input tabindex="4" type="submit" value="Registra" class="sendRegistrationForm" />
 			<div style="clear: both;"></div>

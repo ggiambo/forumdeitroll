@@ -97,16 +97,17 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.bingoohuang</groupId>
-            <artifactId>patchca</artifactId>
-            <version>0.0.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
             <version>0.4.8</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.5</version>
+        </dependency>
+
+
 
         <!-- dipendenze indirette (container) -->
         <dependency>

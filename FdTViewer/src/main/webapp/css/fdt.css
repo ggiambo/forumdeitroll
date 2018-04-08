@@ -235,7 +235,7 @@ img.avatarImgThreadlist {
 	padding: 3px;
 	border: 1px solid;
 	margin: 3px;
-	max-width: 42px; 
+	max-width: 42px;
 }
 
 img.avatarImgLinkable:hover {
@@ -653,33 +653,7 @@ div.msgAnonBox {
 }
 
 div.msgCaptcha {
-	padding: 5px;
-	margin: 5px 0;
-	height: 50px;
-}
-
-div.msgCaptcha div {
-	float: left;
-	margin-right: 10px;
-	text-align: center;
-}
-
-div.msgCaptcha div img {
-	border: 1px solid #7BAAE7;
-}
-
-div.msgCaptcha div input {
-	width: 8em;
-	text-align: center;
-	float: left;
-}
-
-div.msgCaptcha div div.msgCaptchaInput {
-	float: none;
-	margin: 0;
-	font-size: 75%;
-	font-style: italic;
-	text-align: left;
+	padding-top: 5px;
 }
 
 div.messagesBox {

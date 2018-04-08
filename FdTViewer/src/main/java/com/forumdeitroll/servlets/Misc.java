@@ -1,17 +1,10 @@
 package com.forumdeitroll.servlets;
 
-import java.awt.Color;
-import java.awt.GradientPaint;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Collections;
-import java.util.List;
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.DAOFactory;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -19,21 +12,11 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.DAOFactory;
-import com.github.bingoohuang.patchca.background.BackgroundFactory;
-import com.github.bingoohuang.patchca.custom.ConfigurableCaptchaService;
-import com.github.bingoohuang.patchca.filter.AbstractFilterFactory;
-import com.github.bingoohuang.patchca.filter.FilterFactory;
-import com.github.bingoohuang.patchca.filter.predefined.CurvesRippleFilterFactory;
-import com.github.bingoohuang.patchca.filter.predefined.DoubleRippleFilterFactory;
-import com.github.bingoohuang.patchca.utils.encoder.EncoderHelper;
-import com.github.bingoohuang.patchca.word.RandomWordFactory;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLEncoder;
 
 /**
  * Servlet "speciale" che non necessita di tutto l'ambaradan di MainFilter e MainServlet
@@ -47,8 +30,6 @@ public class Misc extends HttpServlet {
 
 	private byte[] notAuthenticated;
 	private byte[] noAvatar;
-
-	private static ConfigurableCaptchaService captchaService;
 
 	/**
 	 * Inizializza le immagini per non autenticato o autenticato senza avatar
@@ -79,25 +60,6 @@ public class Misc extends HttpServlet {
 			}
 			noAvatar = bos.toByteArray();
 
-			captchaService = new ConfigurableCaptchaService();
-			captchaService.setHeight(50);
-			captchaService.setWidth(150);
-			BackgroundFactory gradientColorBackgroundFactory = new BackgroundFactory() {
-				@Override
-					public void fillBackground(BufferedImage dest) {
-						GradientPaint gp = new GradientPaint(0, 0, Color.MAGENTA, dest.getWidth(), 0, Color.CYAN);
-
-						Graphics2D g = dest.createGraphics();
-						g.setPaint(gp);
-						g.fillRect(0, 0, dest.getWidth(), dest.getHeight());
-					}
-			};
-			captchaService.setBackgroundFactory(gradientColorBackgroundFactory);
-			RandomWordFactory wordFactory = new RandomWordFactory();
-			wordFactory.setMaxLength(6);
-			wordFactory.setMinLength(6);
-			captchaService.setWordFactory(wordFactory);
-
 		} catch (IOException e) {
 			LOG.error(e);
 			throw new ServletException("Cannot read default images", e);
@@ -114,8 +76,6 @@ public class Misc extends HttpServlet {
 		String action = req.getParameter("action");
 		if ("getAvatar".equals(action)) {
 			getAvatar(req, res);
-		} else if ("getCaptcha".equals(action)) {
-			getCaptcha(req, res);
 		} else if ("logoutAction".equals(action)) {
 			logoutAction(req, res);
 		} else if ("getDisclaimer".equals(action)) {
@@ -175,23 +135,6 @@ public class Misc extends HttpServlet {
 		out.flush();
 		out.close();
 	}
-
-	/**
-	 * Genera un captcha
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
-	private void getCaptcha(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		res.setHeader("Cache-Control", "no-store");
-		res.setHeader("Pragma", "no-cache");
-		res.setDateHeader("Expires", 0);
-		res.setContentType("image/jpeg");
-		String answer = EncoderHelper.getChallangeAndWriteImage(captchaService, "png", res.getOutputStream());
-		req.getSession().setAttribute("captcha", answer);
-	}
-
 
 	/**
 	 * Cancella l'utente loggato dalla sessione
@@ -283,37 +226,6 @@ public class Misc extends HttpServlet {
 		in.close();
 		res.setContentType("text/javascript");
 		res.getOutputStream().write(out.toByteArray());
-	}
-
-	public static void setCaptchaLevel(int captchaLevel) {
-
-		RandomWordFactory randomWordFactory = new RandomWordFactory();
-		randomWordFactory.setMaxLength(6);
-		randomWordFactory.setMinLength(6);
-
-		FilterFactory filterFactory;
-		switch (captchaLevel) {
-			case 1:
-				randomWordFactory.setCharacters("1234567890");
-				filterFactory = new AbstractFilterFactory() {
-					@Override
-					protected List<BufferedImageOp> getFilters() {
-						return Collections.EMPTY_LIST;
-					}
-				};
-				break;
-			default:
-			case 2:
-				filterFactory = new DoubleRippleFilterFactory();
-				randomWordFactory.setCharacters("1234567890");
-				break;
-			case 3:
-				filterFactory = new CurvesRippleFilterFactory(captchaService.getColorFactory());
-				break;
-		}
-
-		captchaService.setWordFactory(randomWordFactory);
-		captchaService.setFilterFactory(filterFactory);
 	}
 
 }

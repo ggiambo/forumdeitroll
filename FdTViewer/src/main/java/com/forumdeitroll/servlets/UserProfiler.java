@@ -1,25 +1,17 @@
 package com.forumdeitroll.servlets;
 
-import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.UUID;
+import com.forumdeitroll.profiler2.*;
+import com.google.gson.Gson;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-
-import com.forumdeitroll.profiler2.ProfilerAPI;
-import com.forumdeitroll.profiler2.ProfilerLogger;
-import com.forumdeitroll.profiler2.ProfilerRule;
-import com.forumdeitroll.profiler2.ProfilerRules;
-import com.forumdeitroll.profiler2.ProfilerStorage;
-import com.forumdeitroll.profiler2.ReqInfo;
-import com.google.common.base.Joiner;
-import com.google.gson.Gson;
+import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.UUID;
 
 public class UserProfiler extends MainServlet {
 
@@ -44,7 +36,7 @@ public class UserProfiler extends MainServlet {
 	private String page(HttpServletRequest req) {
 		req.setAttribute("rules", ProfilerRules.rules);
 		req.setAttribute("records", ProfilerLogger.records);
-		req.setAttribute("bannedIPs", Joiner.on("\n").join(Messages.BANNED_IPs));
+		req.setAttribute("bannedIPs", String.join("\n", Messages.BANNED_IPs));
 		return "userProfiler.jsp";
 	}
 

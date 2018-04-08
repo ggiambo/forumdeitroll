@@ -29,6 +29,8 @@ function showReplyDiv(type, parentId) {
 			$("#reply_" + parentId + " :input[name='text']").focus();
 			$("body").css("cursor", "auto");
 			$('#replyMenu'+parentId).hide();
+			var captchaDiv = document.getElementById('captcha_' + parentId);
+            grecaptcha.render(captchaDiv);
 	});
 }
 
@@ -96,7 +98,7 @@ function send(parentId) {
 		data[val.attr("name")] = val.val();
 	});
 	// post messagge
-	profiler(function(profileData) {
+    profiler(function(profileData) {
 		data.jsonProfileData = JSON.stringify(profileData);
 		jQuery.ajax({
 			type: "POST",
@@ -109,10 +111,7 @@ function send(parentId) {
 					window.location.assign(newUrl + data.content);
 				} else if (data.resultCode == "MSG") {
 					alert(data.content);
-					var captchaimg = $(".msgCaptcha img").get(0);
-					if (captchaimg != null) {
-						captchaimg.src = "Misc?action=getCaptcha&v=" + Math.random();
-					}
+                    grecaptcha.reset();
 				} else if (data.resultCode == "BAN") {
 					alert(data.content);
 					$('#reply_' + parentId).remove();

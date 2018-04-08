@@ -130,7 +130,7 @@
 		</div>
 
 		<% VisitorCounters.add(request); %>
-		
+
 		<%-- bottom line --%>
 		<div id="bottomLine">
 			<p id="copyRight">Copyright &copy; 2012-<%= ""+Calendar.getInstance().get(Calendar.YEAR) %> Fondazione Gatto Selvaggio</p>
@@ -153,6 +153,7 @@
 		<script type="text/javascript" src="js/PluginDetect_All.js"></script>
 		<script type="text/javascript" src="js/profiler.js?v=<%=bootTime%>"></script>
 		<script type="text/javascript" src="js/${fn:toLowerCase(servlet)}.js?v=<%=bootTime%>"></script>
+		<script type="text/javascript" src="https://www.google.com/recaptcha/api.js" async defer></script>
 		<fdt:delayedScript dump="false">
 			<c:choose>
 				<c:when test="${not empty loggedUser && loggedUser.preferences['autoRefresh'] == 'checked'}">
@@ -166,7 +167,7 @@
 			jQuery.get('JSon?action=getLastId', function(data) {
 				lastId = data.content.id;
 			});
-			
+
 			jQuery("document").ready(function() {
 				<c:if test="${blockHeader == 'checked'}">
 					blockHeader();

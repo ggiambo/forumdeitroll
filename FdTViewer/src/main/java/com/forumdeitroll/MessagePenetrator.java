@@ -1,13 +1,5 @@
 package com.forumdeitroll;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
@@ -16,6 +8,12 @@ import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Messages;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
 Classe di supporto per l'inserimento dei messaggi nel database
@@ -111,8 +109,13 @@ public class MessagePenetrator {
 		return this;
 	}
 
-	public MessagePenetrator setCredentials(final AuthorDTO loggedUser, final String nick, final String pass, final String captcha, final String correctAnswer) {
+	public MessagePenetrator setCredentials(final AuthorDTO loggedUser, final String nick, final String pass, final String captcha) {
 		if (error != null) return this;
+
+		if (!ReCaptchaUtils.verifyReCaptcha(captcha)) {
+			setError("Verifica captcha fallita");
+			return this;
+		}
 
 		if (loggedUser != null && loggedUser.getNick() != null && loggedUser.getNick().equalsIgnoreCase(nick)) {
 			// posta come utente loggato
@@ -120,7 +123,7 @@ public class MessagePenetrator {
 			return this;
 		}
 
-		if (StringUtils.isEmpty(pass) && StringUtils.isNotEmpty(nick) && !DAOFactory.getMessagesDAO().getAuthor(nick).isValid() && ((loggedUser != null) || correctAnswer.equals(captcha))) {
+		if (StringUtils.isEmpty(pass) && StringUtils.isNotEmpty(nick) && !DAOFactory.getMessagesDAO().getAuthor(nick).isValid() && ((loggedUser != null))) {
 			// post anonimo con fakeAuthor
 			author = new AuthorDTO(loggedUser);
 			fakeAuthor = nick;
@@ -142,14 +145,8 @@ public class MessagePenetrator {
 			}
 		}
 
-		// se non e` stato inserito nome utente/password e l'utente non e` loggato
-		if (StringUtils.isNotEmpty(correctAnswer) && correctAnswer.equals(captcha)) {
-			// posta da anonimo
-			author = new AuthorDTO(loggedUser);
-			return this;
-		}
-
-		setError("Autenticazione/verifica captcha fallita");
+		// posta da anonimo
+		author = new AuthorDTO(loggedUser);
 		return this;
 	}
 

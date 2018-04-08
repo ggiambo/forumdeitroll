@@ -32,14 +32,6 @@
                             <label for="<%=Admin.ADMIN_NON_ANON_POST%>" class="lbl">Disabilita post dei non registrati:</label>
                         </div>
                         <div style="clear: both;"></div>
-                        <div class="inputUserPanel">
-                            <input style="width: 10em;margin-left: 10em;" type="radio" name="<%=Admin.ADMIN_PREF_CAPTCHA_LEVEL%>" value="1">Facile<br>
-                            <input style="width: 10em;margin-left: 10em;" type="radio" name="<%=Admin.ADMIN_PREF_CAPTCHA_LEVEL%>" value="2">Giusto<br>
-                            <input style="width: 10em;margin-left: 10em;" type="radio" name="<%=Admin.ADMIN_PREF_CAPTCHA_LEVEL%>" value="3">Mal di testa
-                        </div>
-                        <div class="lblUserPanel">
-                            <label class="lbl">Livello chapachapa:</label>
-                        </div>
                         <div style="clear: both;"></div>
 						<div class="lblUserPanel">
 							<label for="javascript" class="lbl">Javascript:</label>

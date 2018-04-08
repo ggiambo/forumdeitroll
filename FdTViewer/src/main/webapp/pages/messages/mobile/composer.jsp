@@ -79,8 +79,9 @@
 </div>
 <div class=row>&nbsp;</div>
 <div class=row>
-	<div class=col-1>Captcha</div>
-	<div class=col-5><img src="Misc?action=getCaptcha&amp;v=<%=System.currentTimeMillis()%>"></div>
+	<div class=col-5>
+		<div class="g-recaptcha" data-sitekey="${captchakey}"></div>
+	</div>
 </div>
 <div class=row>
 	<div class=col-1>&nbsp;</div>
