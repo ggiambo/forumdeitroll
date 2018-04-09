@@ -517,30 +517,6 @@ function showHideAdminButtons(msgId) {
 	});
 }
 
-function createIrcbox() {
-	if ($('#ircbox').length == 0) {
-		$('#nav').after('<div id="ircbox" style="display:none"></div>');
-		setTimeout(function() {$('#ircbox').show('slow');}, 1);
-	}
-}
-
-function ircbox() {
-	createIrcbox();
-	$.get('Irc', function(data) {
-		var lines = data.split(/[\r\n]/).filter(function(l) {return l !== '';});
-		if (lines.length == 1 && lines[0].match(/nessuna informazione disponibile/)) {
-			$('#ircbox').html('<a href=\"http://webchat.freenode.net/?channels=%23%23fdt\">Vieni a trovarci!</a>');
-		} else {
-			var topic = lines[0];
-			var users = lines[1];
-			var mtime = lines[2];
-			var html = '<a href=\"http://webchat.freenode.net/?channels=%23%23fdt\">' + topic + "</a><br>";
-			html += "<small>" + users + "<br>" + mtime + "</small>";
-			$('#ircbox').html(html);
-		}
-	});
-}
-
 function like(msgId, like) {
 	jQuery.ajax({
 		type: "GET",

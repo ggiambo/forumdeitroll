@@ -126,7 +126,5 @@
 		<c:if test="${!empty page}">
 			<li id='pager'><fdt:pager handler="Messages"></fdt:pager></li>
 		</c:if>
-		<li>|</li>
-		<li><a href="javascript:ircbox()">##fdt@freenode</a></li>
 	</ul>
 </div>
