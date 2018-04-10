@@ -113,40 +113,6 @@ public class MessagesDAO extends BaseDAO {
 		return new MessagesDTO(res, messagesCount);
 	}
 
-	public MessagesDTO getMessagesByTag(int limit, int page, long t_id, List<String> hiddenForums) {
-
-		SelectConditionStep<Record> where = jooq.select(MESSAGES.fields())
-				.from(MESSAGES)
-				.join(TAGS_BIND).on(MESSAGES.ID.eq(TAGS_BIND.M_ID))
-				.where(TAGS_BIND.T_ID.eq((int) t_id));
-
-		if (hiddenForums != null && !hiddenForums.isEmpty()) {
-			where = where.and(
-					MESSAGES.FORUM.isNull().or(MESSAGES.FORUM.notIn(hiddenForums))
-			);
-		}
-
-		Result<Record> records = where.orderBy(TAGS_BIND.M_ID.desc())
-				.limit(limit)
-				.offset(limit * page)
-				.fetch();
-
-		List<MessageDTO> messages = new ArrayList<MessageDTO>(records.size());
-		for (Record record : records) {
-			messages.add(recordToDTO(record, false));
-		}
-
-		Object count = jooq.selectCount()
-				.from(TAGS_BIND)
-				.where(TAGS_BIND.T_ID.eq((int) t_id))
-				.fetchOne()
-				.getValue(0);
-
-		Integer nrOfMessages = (Integer) count;
-
-		return new MessagesDTO(messages, nrOfMessages);
-	}
-
 	private long insertReplyMessage(MessageDTO message) {
 
 		MessagesRecord record = jooq.insertInto(MESSAGES)
@@ -253,7 +219,7 @@ public class MessagesDAO extends BaseDAO {
 					.fetchOne(0, int.class);
 		if (count == 0) {
 			insertThread(threadId);
-		} 
+		}
 		Record1<Integer> maxId = jooq.select(DSL.max(MESSAGES.ID))
 				.from(MESSAGES)
 				.where(MESSAGES.THREADID.eq((int)threadId))
@@ -261,7 +227,7 @@ public class MessagesDAO extends BaseDAO {
 		Integer lastId = maxId.value1();
 		updateLastIdInThread(threadId, lastId);
 	}
-	
+
 	private void updateLastIdInThread(long threadId, long lastId) {
 		jooq.update(THREADS)
 				.set(THREADS.LASTID, (int) lastId)

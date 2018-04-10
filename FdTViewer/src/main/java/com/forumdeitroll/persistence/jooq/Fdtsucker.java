@@ -18,9 +18,6 @@ import com.forumdeitroll.persistence.jooq.tables.PvtContent;
 import com.forumdeitroll.persistence.jooq.tables.PvtRecipient;
 import com.forumdeitroll.persistence.jooq.tables.Quotes;
 import com.forumdeitroll.persistence.jooq.tables.Sysinfo;
-import com.forumdeitroll.persistence.jooq.tables.Tagnames;
-import com.forumdeitroll.persistence.jooq.tables.Tags;
-import com.forumdeitroll.persistence.jooq.tables.TagsBind;
 import com.forumdeitroll.persistence.jooq.tables.Threads;
 
 import java.util.ArrayList;
@@ -46,7 +43,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Fdtsucker extends SchemaImpl {
 
-	private static final long serialVersionUID = 1946187494;
+	private static final long serialVersionUID = -246650377;
 
 	/**
 	 * The reference instance of <code>fdtsucker</code>
@@ -83,9 +80,6 @@ public class Fdtsucker extends SchemaImpl {
 			PvtRecipient.PVT_RECIPIENT,
 			Quotes.QUOTES,
 			Sysinfo.SYSINFO,
-			Tagnames.TAGNAMES,
-			Tags.TAGS,
-			TagsBind.TAGS_BIND,
 			Threads.THREADS);
 	}
 }

@@ -474,23 +474,6 @@ public class JSonServlet extends HttpServlet {
 //		closeJsonWriter(out, time);
 	}
 
-	protected void getAllTags(StringBuilderWriter writer, Map<String, String[]> params, long time) throws IOException {
-		final JsonWriter out = initJsonWriter(ResultCode.OK, writer);
-		
-		out.beginArray();
-		LinkedHashMap<String, Integer[]> tags = DAOFactory.getMiscDAO().getAllTags();
-		for (Map.Entry<String, Integer[]> tag : tags.entrySet()) {
-			out.beginObject();
-			out.name("name").value(tag.getKey());
-			out.name("id").value(tag.getValue()[0]);
-			out.name("count").value(tag.getValue()[1]);
-			out.endObject();
-		}
-		out.endArray();
-		
-		closeJsonWriter(out, time);
-	}
-
 	/**
 	 * Scrive l'exception in formato JSON direttamente nella response.
 	 * @param e

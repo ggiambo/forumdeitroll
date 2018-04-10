@@ -18,9 +18,6 @@ import com.forumdeitroll.persistence.jooq.tables.PvtContent;
 import com.forumdeitroll.persistence.jooq.tables.PvtRecipient;
 import com.forumdeitroll.persistence.jooq.tables.Quotes;
 import com.forumdeitroll.persistence.jooq.tables.Sysinfo;
-import com.forumdeitroll.persistence.jooq.tables.Tagnames;
-import com.forumdeitroll.persistence.jooq.tables.Tags;
-import com.forumdeitroll.persistence.jooq.tables.TagsBind;
 import com.forumdeitroll.persistence.jooq.tables.Threads;
 
 import javax.annotation.Generated;
@@ -108,21 +105,6 @@ public class Tables {
 	 * The table fdtsucker.sysinfo
 	 */
 	public static final Sysinfo SYSINFO = com.forumdeitroll.persistence.jooq.tables.Sysinfo.SYSINFO;
-
-	/**
-	 * The table fdtsucker.tagnames
-	 */
-	public static final Tagnames TAGNAMES = com.forumdeitroll.persistence.jooq.tables.Tagnames.TAGNAMES;
-
-	/**
-	 * The table fdtsucker.tags
-	 */
-	public static final Tags TAGS = com.forumdeitroll.persistence.jooq.tables.Tags.TAGS;
-
-	/**
-	 * The table fdtsucker.tags_bind
-	 */
-	public static final TagsBind TAGS_BIND = com.forumdeitroll.persistence.jooq.tables.TagsBind.TAGS_BIND;
 
 	/**
 	 * The table fdtsucker.threads

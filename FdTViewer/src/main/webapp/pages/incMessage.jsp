@@ -94,31 +94,6 @@
 			<a href="Threads?action=getByThread&amp;threadId=${msg.threadId}#msg${msg.id}">${msg.subject}</a>
 		</b>
 	</span>
-
-<%--
-	<span class=tags>
-		<c:forEach var="tag" items="${msg.tags}">
-			<span>
-				<span class=tag>
-					<a href="Messages?action=getMessagesByTag&t_id=${tag.t_id}">
-						<c:out value="${tag.value}" escapeXml="true"/>
-					</a>
-				</span>
-				<c:if test="${not empty loggedUser && tag.author == loggedUser.nick || loggedUser.preferences['super'] == 'yes'}">
-					<span class=del-tag onclick=deleteTag(event,${tag.t_id},${tag.m_id}) title="Elimina questo tag">
-						&nbsp;&nbsp;
-					</span>
-				</c:if>
-				&nbsp;
-			</span>
-		</c:forEach>
-	</span>
-	<c:if test="${not empty loggedUser}">
-	<span class=add-tag onclick=openCloseAddTag(event) title="Aggiungi un tag">&nbsp;&nbsp;&nbsp;&nbsp;
-		<input type=text onkeypress="saveTag(event,'${msg.id}')" style=display:none>
-	</span>
-	</c:if>
---%>
     <div id="rankingContainer${msg.id}">
         <c:if test="${msg.rank gt 0}">
             <c:forEach begin="1" end="${msg.rank}">
