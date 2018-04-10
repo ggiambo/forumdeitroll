@@ -5,13 +5,9 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 public class RandomPool {
-	public static final ThreadLocal<SecureRandom> secureRandom = new ThreadLocal<SecureRandom>() {
-		@Override protected SecureRandom initialValue() { return new SecureRandom(); }
-	};
 
-	public static final ThreadLocal<Random> insecureRandom = new ThreadLocal<Random>() {
-		@Override protected Random initialValue() { return new Random(); }
-	};
+	private static final ThreadLocal<SecureRandom> secureRandom = ThreadLocal.withInitial(SecureRandom::new);
+	private static final ThreadLocal<Random> insecureRandom = ThreadLocal.withInitial(Random::new);
 
 	public static String getString(final int entropyBytes) {
 		final byte[] bytes = new byte[entropyBytes];
@@ -19,7 +15,7 @@ public class RandomPool {
 		return hex(bytes, false);
 	}
 
-	public static String hex(final byte[] input, final boolean padding) {
+	static String hex(final byte[] input, final boolean padding) {
 		BigInteger hash = new BigInteger(1, input);
 		String result = hash.toString(16);
 		if (padding) {

@@ -1,29 +1,21 @@
 package com.forumdeitroll.persistence.dao;
 
-import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
-import static com.forumdeitroll.persistence.jooq.Tables.PVT_CONTENT;
-import static com.forumdeitroll.persistence.jooq.Tables.PVT_RECIPIENT;
-import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
+import com.forumdeitroll.FdTException;
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.PrivateMsgDTO;
+import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
+import com.forumdeitroll.taglibs.PagerTag;
+import org.apache.commons.text.StringEscapeUtils;
+import org.jooq.*;
+import org.jooq.impl.DSL;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.jooq.DSLContext;
-import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.Record2;
-import org.jooq.Record3;
-import org.jooq.Result;
-import org.jooq.impl.DSL;
-
-import com.forumdeitroll.FdTException;
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.PrivateMsgDTO;
-import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
-import com.forumdeitroll.taglibs.PagerTag;
+import static com.forumdeitroll.persistence.jooq.Tables.*;
+import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 public class PrivateMsgDAO extends BaseDAO {
 

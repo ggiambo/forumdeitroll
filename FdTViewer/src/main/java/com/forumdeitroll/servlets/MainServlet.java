@@ -9,9 +9,9 @@ import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.dao.*;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletConfig;
@@ -46,7 +46,6 @@ public abstract class MainServlet extends HttpServlet {
 	protected AuthorsDAO authorsDAO;
 	protected ThreadsDAO threadsDAO;
 	protected MessagesDAO messagesDAO;
-	protected PollsDAO pollsDAO;
 	protected QuotesDAO quotesDAO;
 	protected BookmarksDAO bookmarksDAO;
 	protected AdminDAO adminDAO;
@@ -85,7 +84,6 @@ public abstract class MainServlet extends HttpServlet {
 		authorsDAO = DAOFactory.getAuthorsDAO();
 		threadsDAO = DAOFactory.getThreadsDAO();
 		messagesDAO = DAOFactory.getMessagesDAO();
-		pollsDAO = DAOFactory.getPollsDAO();
 		quotesDAO = DAOFactory.getQuotesDAO();
 		bookmarksDAO = DAOFactory.getBookmarksDAO();
 		adminDAO = DAOFactory.getAdminDAO();

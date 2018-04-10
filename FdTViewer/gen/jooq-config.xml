@@ -3,16 +3,15 @@
   <!-- Configure the database connection here -->
   <jdbc>
     <driver>com.mysql.jdbc.Driver</driver>
-    <url>jdbc:mysql://localhost:3306/fdtsucker</url>
-    <user>root</user>
-    <password></password>
+    <url>jdbc:mysql://localhost:3306/fdtsucker?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=GMT</url>
+    <user>fdtsucker</user>
+    <password>fdtsucker</password>
   </jdbc>
 
   <generator>
     <database>
       <name>org.jooq.util.mysql.MySQLDatabase</name>
       <includes>.*</includes>
-      <excludes>blogger_.*</excludes>
       <inputSchema>fdtsucker</inputSchema>
     </database>
 
@@ -22,7 +21,7 @@
 
     <target>
       <packageName>com.forumdeitroll.persistence.jooq</packageName>
-      <directory>src/</directory>
+      <directory>src/main/java</directory>
     </target>
   </generator>
 </configuration>

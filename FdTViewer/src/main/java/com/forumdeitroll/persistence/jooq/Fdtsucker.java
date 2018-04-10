@@ -13,9 +13,6 @@ import com.forumdeitroll.persistence.jooq.tables.Likes;
 import com.forumdeitroll.persistence.jooq.tables.Logins;
 import com.forumdeitroll.persistence.jooq.tables.Messages;
 import com.forumdeitroll.persistence.jooq.tables.Notification;
-import com.forumdeitroll.persistence.jooq.tables.Poll;
-import com.forumdeitroll.persistence.jooq.tables.PollQuestion;
-import com.forumdeitroll.persistence.jooq.tables.PollUser;
 import com.forumdeitroll.persistence.jooq.tables.Preferences;
 import com.forumdeitroll.persistence.jooq.tables.PvtContent;
 import com.forumdeitroll.persistence.jooq.tables.PvtRecipient;
@@ -49,7 +46,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Fdtsucker extends SchemaImpl {
 
-	private static final long serialVersionUID = 829853017;
+	private static final long serialVersionUID = 1946187494;
 
 	/**
 	 * The reference instance of <code>fdtsucker</code>
@@ -81,9 +78,6 @@ public class Fdtsucker extends SchemaImpl {
 			Logins.LOGINS,
 			Messages.MESSAGES,
 			Notification.NOTIFICATION,
-			Poll.POLL,
-			PollQuestion.POLL_QUESTION,
-			PollUser.POLL_USER,
 			Preferences.PREFERENCES,
 			PvtContent.PVT_CONTENT,
 			PvtRecipient.PVT_RECIPIENT,

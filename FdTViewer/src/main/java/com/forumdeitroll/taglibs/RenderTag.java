@@ -1,16 +1,5 @@
 package com.forumdeitroll.taglibs;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DigestArticleDTO;
@@ -18,12 +7,20 @@ import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
 import com.forumdeitroll.servlets.MainServlet;
 import com.forumdeitroll.servlets.User;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.TagSupport;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 public class RenderTag extends TagSupport {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = Logger.getLogger(RenderTag.class);
 	private String target;
-	protected static final boolean alt = false;
 	public void setTarget(String target) {
 		this.target = target;
 	}
@@ -60,23 +57,7 @@ public class RenderTag extends TagSupport {
 			opts.authorIsAnonymous = true;// nel dubbio si`
 		}
 		try {
-			String html;
-			if (alt) {
-				StringWriter sw = new StringWriter();
-				com.forumdeitroll.markup2.Renderer.render(text, sw, opts);
-				html = sw.toString();
-			} else {
-				html = com.forumdeitroll.markup.Renderer.render(text, opts);
-			}
-			if (pageContext.getRequest().getParameter("compareRendering") != null) {
-				StringWriter sw = new StringWriter();
-				sw.write(html);
-				sw.write("<BR>--- R1 ---<BR>");
-				com.forumdeitroll.markup.Renderer.render(new StringReader(text), sw, opts);
-				sw.write("<BR>--- RS ---<BR>");
-				com.forumdeitroll.markup2.Renderer.render(text, sw, opts);
-				html = sw.toString();
-			}
+			String html = com.forumdeitroll.markup.Renderer.render(text, opts);
 			pageContext.getOut().print(html);
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
@@ -88,7 +69,7 @@ public class RenderTag extends TagSupport {
 		}
 		return SKIP_BODY;
 	}
-	
+
 	public static String getMessagePreview(String body, AuthorDTO author, AuthorDTO loggedUser) throws Exception {
 		final RenderOptions opts = loggedUserRenderOptions(loggedUser);
 		opts.authorIsAnonymous = author != null && StringUtils.isEmpty(author.getNick());
@@ -97,7 +78,7 @@ public class RenderTag extends TagSupport {
 		com.forumdeitroll.markup.Renderer.render(in, out, opts);
 		return out.toString();
 	}
-	
+
 	public static RenderOptions loggedUserRenderOptions(final AuthorDTO loggedUser) {
 		final boolean luv = loggedUser != null && loggedUser.getNick() != null;
 		final RenderOptions opts = new RenderOptions();
@@ -107,7 +88,7 @@ public class RenderTag extends TagSupport {
 			!StringUtils.isEmpty(luv ? loggedUser.getPreferences().get(User.PREF_EMBEDDYT) : "yes");
 		opts.showImagesPlaceholder =
 			StringUtils.isEmpty(luv ? loggedUser.getPreferences().get(User.PREF_SHOWANONIMG) : "yes");
-		
+
 		return opts;
 	}
 

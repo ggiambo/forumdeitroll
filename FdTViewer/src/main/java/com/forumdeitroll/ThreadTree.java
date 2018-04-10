@@ -1,15 +1,9 @@
 package com.forumdeitroll;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Date;
-
 import com.forumdeitroll.persistence.MessageDTO;
+
+import java.util.*;
 
 public class ThreadTree {
 
@@ -17,13 +11,9 @@ public class ThreadTree {
 
 	public ThreadTree(List<MessageDTO> msgs) {
 		// importante: ordinati per id !
-		Collections.sort(msgs, new Comparator<MessageDTO>() {
-			public int compare(MessageDTO nc1, MessageDTO nc2) {
-				return (int) (nc1.getId() - nc2.getId());
-			}
-		});
+		msgs.sort((nc1, nc2) -> (int) (nc1.getId() - nc2.getId()));
 
-		Map<Long, TreeNode> tempMap = new HashMap<Long, TreeNode>();
+		Map<Long, TreeNode> tempMap = new HashMap<>();
 		rootNode = null;
 
 		// build the tree
@@ -53,28 +43,24 @@ public class ThreadTree {
 		private List<TreeNode> children;
 		private boolean orderedChldren;
 
-		public TreeNode(MessageDTO content) {
+		TreeNode(MessageDTO content) {
 			this.content = content;
-			this.children = new ArrayList<TreeNode>();
+			this.children = new ArrayList<>();
 		}
 
 		public MessageDTO getContent() {
 			return content;
 		}
 
-		public void addChild(TreeNode child) {
+		void addChild(TreeNode child) {
 			orderedChldren = false;
 			children.add(child);
 		}
 
+		// called by .jsp
 		public List<TreeNode> getChildren() {
 			if (!orderedChldren) {
-				Collections.sort(children, new Comparator<TreeNode>() {
-					public int compare(TreeNode tn1, TreeNode tn2) {
-						return tn1.getContent().getDate().compareTo(
-							tn2.getContent().getDate());
-					}
-				});
+				children.sort(Comparator.comparing(tn -> tn.getContent().getDate()));
 				orderedChldren = true;
 			}
 			return children;
@@ -92,7 +78,7 @@ public class ThreadTree {
 		}
 
 		public Date sortChildByMostRecentDescendant() {
-			final Map<Long, Date> mrds = new HashMap<Long, Date>();
+			final Map<Long, Date> mrds = new HashMap<>();
 			Date mrd = getContent().getDate();
 			for (final TreeNode child: children) {
 				final Date cur = child.sortChildByMostRecentDescendant();
@@ -101,11 +87,7 @@ public class ThreadTree {
 					mrd = cur;
 				}
 			}
-			Collections.sort(children, new Comparator<TreeNode>() {
-				public int compare(final TreeNode n1, final TreeNode n2) {
-					return -mrds.get(n1.getContent().getId()).compareTo(mrds.get(n2.getContent().getId()));
-				}
-			});
+			children.sort((n1, n2) -> -mrds.get(n1.getContent().getId()).compareTo(mrds.get(n2.getContent().getId())));
 			orderedChldren = true;
 			return mrd;
 		}

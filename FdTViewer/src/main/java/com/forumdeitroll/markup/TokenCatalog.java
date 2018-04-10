@@ -53,7 +53,6 @@ public class TokenCatalog {
 			new TokenMatcher.Regex("LINK_YOUTUBE_REGULAR", "^((https?://)?([a-z]{1,3})\\.youtube\\.com/watch\\?.*&v=([a-zA-Z0-9-_]{6,15})([#&].*)?)"),
 			new TokenMatcher.Regex("LINK_INTERNAL_MSGID", "^((https?://(www\\.)?forumdeitroll\\.com/)?Threads\\?action=getByThread&threadId=([0-9]+)(#msg([0-9]+))?)"),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL", "Threads?action="),
-			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL", "Polls?action="),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL", "Messages?action="),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL", "Misc?action="),
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_INTERNAL", "User?action="),

@@ -13,9 +13,6 @@ import com.forumdeitroll.persistence.jooq.tables.Likes;
 import com.forumdeitroll.persistence.jooq.tables.Logins;
 import com.forumdeitroll.persistence.jooq.tables.Messages;
 import com.forumdeitroll.persistence.jooq.tables.Notification;
-import com.forumdeitroll.persistence.jooq.tables.Poll;
-import com.forumdeitroll.persistence.jooq.tables.PollQuestion;
-import com.forumdeitroll.persistence.jooq.tables.PollUser;
 import com.forumdeitroll.persistence.jooq.tables.Preferences;
 import com.forumdeitroll.persistence.jooq.tables.PvtContent;
 import com.forumdeitroll.persistence.jooq.tables.PvtRecipient;
@@ -86,21 +83,6 @@ public class Tables {
 	 * The table fdtsucker.notification
 	 */
 	public static final Notification NOTIFICATION = com.forumdeitroll.persistence.jooq.tables.Notification.NOTIFICATION;
-
-	/**
-	 * The table fdtsucker.poll
-	 */
-	public static final Poll POLL = com.forumdeitroll.persistence.jooq.tables.Poll.POLL;
-
-	/**
-	 * The table fdtsucker.poll_question
-	 */
-	public static final PollQuestion POLL_QUESTION = com.forumdeitroll.persistence.jooq.tables.PollQuestion.POLL_QUESTION;
-
-	/**
-	 * The table fdtsucker.poll_user
-	 */
-	public static final PollUser POLL_USER = com.forumdeitroll.persistence.jooq.tables.PollUser.POLL_USER;
 
 	/**
 	 * The table fdtsucker.preferences

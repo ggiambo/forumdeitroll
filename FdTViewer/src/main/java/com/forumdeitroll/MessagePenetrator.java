@@ -22,19 +22,19 @@ TODO:
 - Modificare ProfilerAPI per non avere come argomento HttpServletRequest in modo che anche JSonServlet.addMessage possa usarla
 */
 public class MessagePenetrator {
-	String forum;
-	long parentId = -1;
-	String subject;
-	String text;
+	private String forum;
+	private long parentId = -1;
+	private String subject;
+	private String text;
 	private AuthorDTO author;
-	String fakeAuthor;
-	String type;
-	String ip;
-	HttpServletRequest req;
-	boolean banned = false;
-	boolean isBannedCalled = false;
+	private String fakeAuthor;
+	private String type;
+	private String ip;
+	private HttpServletRequest req;
+	private boolean banned = false;
+	private boolean isBannedCalled = false;
 
-	String error;
+	private String error;
 
 	public MessagePenetrator() {
 	}
@@ -150,13 +150,6 @@ public class MessagePenetrator {
 		return this;
 	}
 
-	public MessagePenetrator setAnonymous() {
-		if (error != null) return this;
-		if (author == null) return this;
-		author = new AuthorDTO(author);
-		return this;
-	}
-
 	public MessagePenetrator setType(final String _type) {
 		if (error != null) return this;
 		if (type != null) {
@@ -186,7 +179,7 @@ public class MessagePenetrator {
 		}
 
 		if (parentId > 0) {
-			Long id = null;
+			Long id;
             try {
                 id = Long.parseLong(_id);
             } catch (NumberFormatException e) {
@@ -206,7 +199,7 @@ public class MessagePenetrator {
 		return this;
 	}
 
-	protected boolean authorIsBanned(final AuthorDTO author, final Object sessionIsBanned, final String ip, HttpServletRequest req) {
+	private boolean authorIsBanned(final AuthorDTO author, final Object sessionIsBanned, final String ip, HttpServletRequest req) {
 		if (author.isBanned()) return true;
 		if (sessionIsBanned != null) return true;
 
@@ -223,9 +216,7 @@ public class MessagePenetrator {
 		// check se ANOnimo usa TOR
 		if (!author.isValid()) {
 			if (DAOFactory.getAdminDAO().blockTorExitNodes()) {
-				if (CacheTorExitNodes.check(ip)) {
-					return true;
-				}
+				return CacheTorExitNodes.check(ip);
 			}
 		}
 
@@ -287,9 +278,9 @@ public class MessagePenetrator {
 			return null;
 		}
 
-		MessageDTO msg = null;
+		MessageDTO msg;
 
-		if (type == "edit") {
+		if ("edit".equals(type)) {
 			msg = DAOFactory.getMessagesDAO().getMessage(parentId);
 			if (msg.getAuthor() == null || !msg.getAuthor().getNick().equals(author.getNick())) {
 				setError("Imbroglione, non puoi modificare questo messaggio !");
@@ -311,7 +302,7 @@ public class MessagePenetrator {
 			if (banned) msg.setIsVisible(-1);
 			msg.setSubject(subject);
 
-			if (type == "reply") {
+			if ("reply".equals(type)) {
 				MessageDTO replyMsg = DAOFactory.getMessagesDAO().getMessage(parentId);
 				msg.setForum(replyMsg.getForum());
 				msg.setThreadId(replyMsg.getThreadId());
@@ -324,7 +315,7 @@ public class MessagePenetrator {
 				if (banned) {
 					msg.setSubject(replyMsg.getSubjectReal());
 				}
-			} else if (type == "new") {
+			} else if ("new".equals(type)) {
 				if (StringUtils.isEmpty(forum)) {
 					forum = null;
 				} else {
