@@ -17,8 +17,6 @@
 	<c:if test="${not empty loggedUser}">
 		<a href="Bookmarks">Segnalibri</a><br>
 	</c:if>
-	<a href="ReadersDigest">The Troll's Digest</a>
-	<br>
 	<a href="javascript:forceMobileView()">Visualizzazione Mobile</a>
 	<br>
 	<br>

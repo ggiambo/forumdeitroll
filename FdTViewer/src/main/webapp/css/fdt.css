@@ -1520,22 +1520,6 @@ div.articleBox>a>img.avatar {
 	height: 32px;
 }
 
-p.digestTitle {
-	font-family: Garamond, Times, serif;
-	font-size: 32pt;
-	text-align: center;
-	font-weight: bolder;
-	letter-spacing: 5pt;
-}
-
-p.digestSubtitle {
-	font-family: Garamond, Times, serif;
-	font-size: 18pt;
-	text-align: center;
-	font-weight: bolder;
-	letter-spacing: 5pt;
-}
-
 .favicon {
 	width: 16px;
 	height: 16px;

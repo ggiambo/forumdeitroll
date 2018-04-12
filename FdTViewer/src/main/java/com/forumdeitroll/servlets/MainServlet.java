@@ -51,7 +51,6 @@ public abstract class MainServlet extends HttpServlet {
 	protected AdminDAO adminDAO;
 	protected MiscDAO miscDAO;
 	protected PrivateMsgDAO privateMsgDAO;
-	protected DigestDAO digestDAO;
 	protected LoginsDAO loginsDAO;
 
 	protected SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
@@ -89,7 +88,6 @@ public abstract class MainServlet extends HttpServlet {
 		adminDAO = DAOFactory.getAdminDAO();
 		miscDAO = DAOFactory.getMiscDAO();
 		privateMsgDAO = DAOFactory.getPrivateMsgDAO();
-		digestDAO = DAOFactory.getDigestDAO();
 		loginsDAO = DAOFactory.getLoginsDAO();
 
 		actionMethodCache = new HashMap<String, Method>();

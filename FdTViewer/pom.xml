@@ -79,12 +79,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-            <version>1.0.19</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
             <version>${jooql.version}</version>

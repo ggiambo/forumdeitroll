@@ -141,30 +141,10 @@
         <url-pattern>/ModInfo/*</url-pattern>
         <url-pattern>/UserProfiler</url-pattern>
         <url-pattern>/Bookmarks</url-pattern>
-        <url-pattern>/ReadersDigest</url-pattern>
         <url-pattern>/Admin/*</url-pattern>
         <url-pattern>/Authors</url-pattern>
     </filter-mapping>
-    <servlet>
-        <description></description>
-        <display-name>Irc</display-name>
-        <servlet-name>Irc</servlet-name>
-        <servlet-class>com.forumdeitroll.servlets.Irc</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Irc</servlet-name>
-        <url-pattern>/Irc</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <description></description>
-        <display-name>ReadersDigest</display-name>
-        <servlet-name>ReadersDigest</servlet-name>
-        <servlet-class>com.forumdeitroll.servlets.ReadersDigest</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ReadersDigest</servlet-name>
-        <url-pattern>/ReadersDigest</url-pattern>
-    </servlet-mapping>
+
     <session-config>
         <!-- una settimana -->
         <session-timeout>10080</session-timeout>
