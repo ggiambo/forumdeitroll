@@ -17,11 +17,7 @@
 	<c:if test="${not empty loggedUser}">
 		<a href="Bookmarks">Segnalibri</a><br>
 	</c:if>
-	<a href="ReadersDigest">The Troll's Digest</a>
-	<br>
 	<a href="javascript:forceMobileView()">Visualizzazione Mobile</a>
-	<br>
-	<a href="Messages?action=getAllTags">Tags</a>
 	<br>
 	<br>
 	<form action="Messages" method="get" id="sidebarSearchForm" onsubmit="return searchAjax();">
@@ -39,11 +35,11 @@
 		<br>
 		<a href="javascript:showAdvancedSearch()">Ricerca avanzata</a>
 	</form>
-	
+
 	<label for="getById">Per id:</label>
 	<input type="text" name="getById" id="getById" onkeyup="searchById(event)" size="7" value="${msgId}"/>
 	<br/><br/>
-	
+
 	<ul>
 		<%-- navigazione fa senso solo per Messages e Threads --%>
 		<c:set var="urlServlet" value="${servlet}" />
@@ -60,7 +56,7 @@
 		<c:if test="${action == 'getById' || action == 'getByAuthor'}">
 			<c:set var="action" value="getMessages" />
 		</c:if>
-	
+
 		<c:url value="${urlServlet}" var="allUrl" >
 			<c:param name="action" value="${action}" />
 		</c:url>

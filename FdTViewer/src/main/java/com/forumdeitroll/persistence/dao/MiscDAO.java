@@ -1,21 +1,15 @@
 package com.forumdeitroll.persistence.dao;
 
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.NotificationDTO;
-import com.forumdeitroll.persistence.TagDTO;
 import com.forumdeitroll.persistence.jooq.tables.records.NotificationRecord;
-import com.forumdeitroll.persistence.jooq.tables.records.TagsBindRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.forumdeitroll.persistence.jooq.Tables.*;
-import static com.forumdeitroll.persistence.sql.mysql.Utf8Mb4Conv.mb4safe;
 
 public class MiscDAO extends BaseDAO {
 
@@ -80,119 +74,6 @@ public class MiscDAO extends BaseDAO {
 
 			where.and(NOTIFICATION.ID.eq((int) id))
 				.execute();
-	}
-
-	public void getTags(MessagesDTO messages) {
-
-		if (messages.getMessages().size() == 0) return;
-
-		List<Integer> messageIds = new ArrayList<Integer>(messages.getMessages().size());
-		for (MessageDTO msg : messages.getMessages()) {
-			messageIds.add((int) msg.getId());
-		}
-
-		Result<Record4<Integer, Integer, String, String>> records = jooq.select(TAGNAMES.T_ID, TAGS_BIND.M_ID, TAGS_BIND.AUTHOR, TAGNAMES.VALUE)
-				.from(TAGNAMES)
-				.join(TAGS_BIND).on(TAGNAMES.T_ID.eq(TAGS_BIND.T_ID))
-				.where(TAGS_BIND.M_ID.in(messageIds))
-				.orderBy(TAGS_BIND.M_ID)
-				.fetch();
-
-		long currentMid = -1;
-		MessageDTO currentMessage = null;
-		for (Record4<Integer, Integer, String, String> record : records) {
-			TagDTO tag = new TagDTO();
-			tag.setT_id(record.getValue(TAGNAMES.T_ID).longValue());
-			tag.setM_id(record.getValue(TAGS_BIND.M_ID).longValue());
-			tag.setAuthor(record.getValue(TAGS_BIND.AUTHOR));
-			tag.setValue(record.getValue(TAGNAMES.VALUE));
-			if (tag.getM_id() != currentMid) {
-				for (MessageDTO message : messages.getMessages()) {
-					if (message.getId() == tag.getM_id()) {
-						currentMessage = message;
-						currentMid = tag.getM_id();
-						break;
-					}
-				}
-				currentMessage.setTags(new ArrayList<TagDTO>());
-			}
-			currentMessage.getTags().add(tag);
-		}
-
-	}
-
-	public LinkedHashMap<String, Integer[]> getAllTags() {
-		Result<Record3<Integer, String, Integer>> records = jooq.select(TAGNAMES.T_ID, TAGNAMES.VALUE, DSL.count(TAGNAMES.T_ID))
-			.from(TAGNAMES, TAGS_BIND)
-			.where(TAGNAMES.T_ID.eq(TAGS_BIND.T_ID))
-			.groupBy(TAGNAMES.T_ID, TAGNAMES.VALUE)
-			.orderBy(DSL.count(TAGNAMES.T_ID).desc())
-			.fetch();
-		LinkedHashMap<String, Integer[]> result = new LinkedHashMap<>();
-		for (Record3<Integer, String, Integer> record : records) {
-			result.put(record.value2(), new Integer[] {
-				record.value1(), record.value3()
-			});
-		}
-		return result;
-	}
-
-	public TagDTO addTag(TagDTO tag) {
-
-		Integer t_id = jooq.select(TAGNAMES.T_ID)
-				.from(TAGNAMES)
-				.where(TAGNAMES.VALUE.eq(tag.getValue()))
-				.fetchOne(TAGNAMES.T_ID);
-		if (t_id == null) {
-			t_id = jooq.insertInto(TAGNAMES)
-					.set(TAGNAMES.VALUE, mb4safe(tag.getValue()))
-					.returning(TAGNAMES.T_ID)
-					.fetchOne()
-					.getTId();
-		}
-
-		TagsBindRecord tagsBindRecord = jooq.selectFrom(TAGS_BIND)
-				.where(TAGS_BIND.T_ID.eq(t_id))
-				.and(TAGS_BIND.M_ID.eq((int) tag.getM_id()))
-				.fetchOne();
-		if (tagsBindRecord != null) {
-			tag.setT_id(t_id);
-			tag.setAuthor(tagsBindRecord.getAuthor());
-			return tag;
-		}
-
-		jooq.insertInto(TAGS_BIND)
-			.set(TAGS_BIND.T_ID, t_id)
-			.set(TAGS_BIND.M_ID, (int)tag.getM_id())
-			.set(TAGS_BIND.AUTHOR, tag.getAuthor())
-			.execute();
-		tag.setT_id(t_id);
-		return tag;
-	}
-
-	public void deleTag(TagDTO tag, boolean isAdmin) {
-		if (isAdmin) {
-			int res = jooq.delete(TAGS_BIND)
-					.where(TAGS_BIND.T_ID.eq((int) tag.getT_id()))
-					.and(TAGS_BIND.M_ID.eq((int) tag.getM_id()))
-					.execute();
-			if (res != 1) {
-				// e' difficile che un admin si metta a furmigare
-				// i tag non vengono mai eliminati da tagnames
-				throw new RuntimeException("Hai eliminato "+res+" recordz da tags_bind!");
-			}
-		} else {
-			int res = jooq.delete(TAGS_BIND)
-					.where(TAGS_BIND.T_ID.eq((int) tag.getT_id()))
-					.and(TAGS_BIND.M_ID.eq((int) tag.getM_id()))
-					.and(TAGS_BIND.AUTHOR.eq(tag.getAuthor()))
-					.execute();
-			if (res != 1) {
-				// se non sei l'owner del tag oppure stai furmigando
-				// i tag non vengono mai eliminati da tagnames
-				throw new RuntimeException("Hai eliminato "+res+" recordz da tags_bind!");
-			}
-		}
 	}
 
 	public int like(long msgId, String nick, boolean upvote) {

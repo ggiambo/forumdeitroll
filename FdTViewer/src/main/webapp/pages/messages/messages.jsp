@@ -28,11 +28,6 @@
 			<c:set var="msg" value="${msg}" scope="request"/>
 			<jsp:include page="../incMessage.jsp"/>
 		</div>
-		<c:if test="${index.index % 4 == 0}">
-			<c:if test="${empty loggedUser or loggedUser.preferences['hideFakeAds'] != 'checked'}">
-				<jsp:include page="../incFakeAd.jsp"/>
-			</c:if>
-		</c:if>
 	</c:forEach>
 </div>
 

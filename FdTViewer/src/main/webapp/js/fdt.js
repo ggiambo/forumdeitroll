@@ -710,59 +710,6 @@ function showAdvancedSearch() {
 	}
 }
 
-function openCloseAddTag(event) {
-	var input = $(event.target).find('input[type="text"]');
-	if (input.css('display') === 'none') {
-		input.css('display', '');
-		input.focus();
-	} else {
-		input.css('display', 'none');
-	}
-}
-
-var tmplTag =
-		_.template("<span>" +
-			"<span class=tag><%-value%></span>" +
-			"<span class=del-tag onclick=deleteTag(event,<%=t_id%>,<%=m_id%>)>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;" +
-			"</span>"+
-		"</span>");
-
-function saveTag(event,msgId) {
-	if (event.which !== 13) return;
-	$(event.target).css('display','none');
-	var value = event.target.value;
-	$.ajax({
-		method : 'GET',
-		url : 'Messages',
-		data : 'action=saveTag&value=' + encodeURIComponent(value) + '&msgId=' + msgId,
-		success : function(data) {
-			if (data.resultCode == "OK") {
-				var html = tmplTag({value:value, t_id:data.content, m_id:msgId});
-				$(event.target).before(html);
-			} else {
-				alert('Qualcosa è andato storto!');
-			}
-		}
-	});
-}
-
-function deleteTag(event, t_id, m_id) {
-	$.ajax({
-		method: 'GET',
-		url : 'Messages',
-		data : 'action=deleTag&t_id=' + t_id + '&m_id=' + m_id,
-		success: function(data) {
-			if (data.resultCode == "OK") {
-				event.target.parentNode.parentNode.removeChild(event.target.parentNode);
-			} else {
-				alert('Qualcosa è andato storto!');
-			}
-		}
-	})
-
-}
-
 function showDropDownReply(event, msgId) {
 	var offset = $(event.target).offset();
 	var el = $('#replyMenu' + msgId);

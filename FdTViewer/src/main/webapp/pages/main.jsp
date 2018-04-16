@@ -51,7 +51,7 @@
 
 			<%-- banner --%>
 			<c:if test="${empty loggedUser || loggedUser.preferences['hideBannerone'] != 'checked'}">
-				<img id="headerimg" alt="" src="./images/2.0.png" />
+				<img id="headerimg" alt="" src="./images/2.1.png" />
 				<% String banners[] = new String[]{
 					"images/banners/banner.jpg",
 					"images/banners/banner2.jpg"

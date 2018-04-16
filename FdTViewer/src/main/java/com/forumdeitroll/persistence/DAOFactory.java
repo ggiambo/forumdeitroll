@@ -27,7 +27,6 @@ public class DAOFactory {
 	private AdminDAO adminDAO;
 	private MiscDAO miscDAO;
 	private PrivateMsgDAO privateMsgDAO;
-	private DigestDAO digestDAO;
 	private LoginsDAO loginsDAO;
 
     BasicDataSource dataSource;
@@ -80,7 +79,6 @@ public class DAOFactory {
 		adminDAO = new AdminDAO(jooq);
 		miscDAO = new MiscDAO(jooq);
 		privateMsgDAO = new PrivateMsgDAO(jooq);
-		digestDAO = new DigestDAO(jooq);
 		loginsDAO = new LoginsDAO(jooq);
 	}
 
@@ -114,10 +112,6 @@ public class DAOFactory {
 
 	public static final PrivateMsgDAO getPrivateMsgDAO() {
 		return getInstance().privateMsgDAO;
-	}
-
-	public static final DigestDAO getDigestDAO() {
-		return getInstance().digestDAO;
 	}
 
 	public static final LoginsDAO getLoginsDAO() {

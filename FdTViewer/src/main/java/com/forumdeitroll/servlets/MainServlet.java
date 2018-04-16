@@ -4,7 +4,6 @@ package com.forumdeitroll.servlets;
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.SingleValueCache;
-import com.forumdeitroll.persistence.AdDTO;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.QuoteDTO;
@@ -51,7 +50,6 @@ public abstract class MainServlet extends HttpServlet {
 	protected AdminDAO adminDAO;
 	protected MiscDAO miscDAO;
 	protected PrivateMsgDAO privateMsgDAO;
-	protected DigestDAO digestDAO;
 	protected LoginsDAO loginsDAO;
 
 	protected SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
@@ -72,12 +70,6 @@ public abstract class MainServlet extends HttpServlet {
 		}
 	};
 
-	protected SingleValueCache<List<AdDTO>> cachedAds = new SingleValueCache<List<AdDTO>>(60 * 60 * 1000) {
-		@Override protected List<AdDTO> update() {
-			return adminDAO.getAllAds();
-		}
-	};
-
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -89,7 +81,6 @@ public abstract class MainServlet extends HttpServlet {
 		adminDAO = DAOFactory.getAdminDAO();
 		miscDAO = DAOFactory.getMiscDAO();
 		privateMsgDAO = DAOFactory.getPrivateMsgDAO();
-		digestDAO = DAOFactory.getDigestDAO();
 		loginsDAO = DAOFactory.getLoginsDAO();
 
 		actionMethodCache = new HashMap<String, Method>();
@@ -168,9 +159,6 @@ public abstract class MainServlet extends HttpServlet {
 
 		// random quote
 		req.setAttribute("randomQuote", getRandomQuoteDTO(req, res));
-
-		// random ads
-		req.setAttribute("randomAds", getRandomAdDTOs(req, res));
 
 		// javascript maGGico
 		req.setAttribute("javascript", miscDAO.getSysinfoValue("javascript"));
@@ -472,17 +460,6 @@ public abstract class MainServlet extends HttpServlet {
 			return newquote;
 		}
 		return new QuoteDTO();
-	}
-
-	/**
-	 * Ritorna un random ad tra quelli esistenti
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
-	List<AdDTO> getRandomAdDTOs(HttpServletRequest req, HttpServletResponse res) {
-		return cachedAds.get();
 	}
 
 	/**

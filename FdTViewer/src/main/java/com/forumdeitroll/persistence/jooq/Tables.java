@@ -4,11 +4,9 @@
 package com.forumdeitroll.persistence.jooq;
 
 
-import com.forumdeitroll.persistence.jooq.tables.Ads;
 import com.forumdeitroll.persistence.jooq.tables.Authors;
 import com.forumdeitroll.persistence.jooq.tables.Bookmarks;
-import com.forumdeitroll.persistence.jooq.tables.Digest;
-import com.forumdeitroll.persistence.jooq.tables.DigestParticipant;
+import com.forumdeitroll.persistence.jooq.tables.Forums;
 import com.forumdeitroll.persistence.jooq.tables.Likes;
 import com.forumdeitroll.persistence.jooq.tables.Logins;
 import com.forumdeitroll.persistence.jooq.tables.Messages;
@@ -18,9 +16,6 @@ import com.forumdeitroll.persistence.jooq.tables.PvtContent;
 import com.forumdeitroll.persistence.jooq.tables.PvtRecipient;
 import com.forumdeitroll.persistence.jooq.tables.Quotes;
 import com.forumdeitroll.persistence.jooq.tables.Sysinfo;
-import com.forumdeitroll.persistence.jooq.tables.Tagnames;
-import com.forumdeitroll.persistence.jooq.tables.Tags;
-import com.forumdeitroll.persistence.jooq.tables.TagsBind;
 import com.forumdeitroll.persistence.jooq.tables.Threads;
 
 import javax.annotation.Generated;
@@ -40,11 +35,6 @@ import javax.annotation.Generated;
 public class Tables {
 
 	/**
-	 * The table fdtsucker.ads
-	 */
-	public static final Ads ADS = com.forumdeitroll.persistence.jooq.tables.Ads.ADS;
-
-	/**
 	 * The table fdtsucker.authors
 	 */
 	public static final Authors AUTHORS = com.forumdeitroll.persistence.jooq.tables.Authors.AUTHORS;
@@ -55,14 +45,9 @@ public class Tables {
 	public static final Bookmarks BOOKMARKS = com.forumdeitroll.persistence.jooq.tables.Bookmarks.BOOKMARKS;
 
 	/**
-	 * The table fdtsucker.digest
+	 * The table fdtsucker.forums
 	 */
-	public static final Digest DIGEST = com.forumdeitroll.persistence.jooq.tables.Digest.DIGEST;
-
-	/**
-	 * The table fdtsucker.digest_participant
-	 */
-	public static final DigestParticipant DIGEST_PARTICIPANT = com.forumdeitroll.persistence.jooq.tables.DigestParticipant.DIGEST_PARTICIPANT;
+	public static final Forums FORUMS = com.forumdeitroll.persistence.jooq.tables.Forums.FORUMS;
 
 	/**
 	 * The table fdtsucker.likes
@@ -108,21 +93,6 @@ public class Tables {
 	 * The table fdtsucker.sysinfo
 	 */
 	public static final Sysinfo SYSINFO = com.forumdeitroll.persistence.jooq.tables.Sysinfo.SYSINFO;
-
-	/**
-	 * The table fdtsucker.tagnames
-	 */
-	public static final Tagnames TAGNAMES = com.forumdeitroll.persistence.jooq.tables.Tagnames.TAGNAMES;
-
-	/**
-	 * The table fdtsucker.tags
-	 */
-	public static final Tags TAGS = com.forumdeitroll.persistence.jooq.tables.Tags.TAGS;
-
-	/**
-	 * The table fdtsucker.tags_bind
-	 */
-	public static final TagsBind TAGS_BIND = com.forumdeitroll.persistence.jooq.tables.TagsBind.TAGS_BIND;
 
 	/**
 	 * The table fdtsucker.threads

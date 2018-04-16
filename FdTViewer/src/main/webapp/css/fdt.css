@@ -1520,22 +1520,6 @@ div.articleBox>a>img.avatar {
 	height: 32px;
 }
 
-p.digestTitle {
-	font-family: Garamond, Times, serif;
-	font-size: 32pt;
-	text-align: center;
-	font-weight: bolder;
-	letter-spacing: 5pt;
-}
-
-p.digestSubtitle {
-	font-family: Garamond, Times, serif;
-	font-size: 18pt;
-	text-align: center;
-	font-weight: bolder;
-	letter-spacing: 5pt;
-}
-
 .favicon {
 	width: 16px;
 	height: 16px;
@@ -1599,32 +1583,6 @@ ul.replyMenu>li>a {
 	text-decoration: none;
 }
 
-div.fakeAdContainer {
-	border: 1px solid lightgray;
-	margin: 8px 5px;
-	padding: 3px;
-}
-
-h3.fakeAdTitle {
-	font-size: 18px !important;
-	font-weight: normal;
-    margin: 0px;
-    padding: 0px;
-    line-height: 18px;
-    font-family: arial,sans-serif;
-}
-
-a.fakeAdLink {
-	color: #1E0FBE;
-	text-decoration: none;
-	cursor: pointer;
-	font-size: 18px !important;
-    font-weight: normal;
-    line-height: 18px;
-    font-family: arial,sans-serif;
-
-}
-
 span.fdtAd {
 	background-color: #EDB802;
 	border-radius: 2px;
@@ -1635,26 +1593,6 @@ span.fdtAd {
 	margin-right: 7px;
 	padding: 0px 3px;
 	vertical-align: baseline;
-	font-family: arial,sans-serif;
-}
-
-div.fakeAdVisurl {
-	color: #006621;
-	white-space: nowrap;
-	font-size: 13px;
-	white-space: nowrap;
-	font-family: arial,sans-serif;
-	font-style: normal;
-}
-
-cite.fakeAdUrl {
-	font-style: normal;
-}
-
-div.fakeAdContent {
-	line-height: 1.2;
-	color: #373737;
-	font-size: small;
 	font-family: arial,sans-serif;
 }
 

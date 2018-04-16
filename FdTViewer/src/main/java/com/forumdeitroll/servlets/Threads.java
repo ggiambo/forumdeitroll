@@ -4,7 +4,6 @@ import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.ThreadTree;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.MessagesDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
 import com.forumdeitroll.servlets.Action.Method;
 import org.apache.commons.lang3.StringUtils;
@@ -79,7 +78,6 @@ public class Threads extends MainServlet {
 		addSpecificParam(req, "forum",  forum);
 		Long threadId = Long.parseLong(stringThreadId);
 		List<MessageDTO> msgs = messagesDAO.getMessagesByThread(threadId);
-		miscDAO.getTags(new MessagesDTO(msgs, 0));
 		req.setAttribute("root", new ThreadTree(msgs).getRoot());
 		setWebsiteTitlePrefix(req, messagesDAO.getMessage(threadId).getSubject());
 		setNavigationMessage(req, NavigationMessage.info("Thread <i>" + messagesDAO.getMessage(threadId).getSubject() + "</i>"));

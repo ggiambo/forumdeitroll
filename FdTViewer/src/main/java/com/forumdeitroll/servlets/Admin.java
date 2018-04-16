@@ -1,6 +1,5 @@
 package com.forumdeitroll.servlets;
 
-import com.forumdeitroll.persistence.AdDTO;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.util.IPMemStorage;
@@ -10,9 +9,8 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Admin extends MainServlet {
 
@@ -24,7 +22,6 @@ public class Admin extends MainServlet {
 	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
 	public static final String ADMIN_NON_ANON_POST = "adminNonAnonPost";
 	public static final String ADMIN_WEBSITE_TITLES = "websiteTitles";
-	public static final String ADMIN_FAKE_ADS = "fakeAds";
 
 	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
@@ -33,7 +30,6 @@ public class Admin extends MainServlet {
 
 	protected final Ratelimiter<String> loginRatelimiter = new Ratelimiter<String>(LOGIN_TIME_LIMIT, LOGIN_NUMBER_LIMIT);
 
-	public static final Pattern FAKE_AD_REQ_PARAM = Pattern.compile("fakeAds\\[(-?\\d+)\\]\\.(.*)");
 
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
@@ -41,7 +37,6 @@ public class Admin extends MainServlet {
 		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, miscDAO.getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 		req.setAttribute(ADMIN_NON_ANON_POST, miscDAO.getSysinfoValue(ADMIN_NON_ANON_POST));
 		req.setAttribute(ADMIN_WEBSITE_TITLES, adminDAO.getTitles());
-		req.setAttribute(ADMIN_FAKE_ADS, adminDAO.getAllAds());
 	}
 
 	@Action
@@ -146,54 +141,7 @@ public class Admin extends MainServlet {
 		}
 		req.setAttribute(ADMIN_WEBSITE_TITLES, titles);
 
-		// Es:
-		// fakeAd[42].title
-		// fakeAd[-2].visurl
-		Map<Long, AdDTO> ads = new HashMap<Long, AdDTO>();
-		Enumeration<String> paramNames = req.getParameterNames();
-		while (paramNames.hasMoreElements()) {
-			String paramName = paramNames.nextElement();
-			Matcher matcher = FAKE_AD_REQ_PARAM.matcher(paramName);
-			if (matcher.matches()) {
-				Long id = Long.parseLong(matcher.group(1));
-				String segment = matcher.group(2);
-				AdDTO adDTO = getAdDTO(id, ads);
-				if ("title".equals(segment)) {
-					adDTO.setTitle(req.getParameter(paramName));
-				} else if ("visurl".equals(segment)) {
-					adDTO.setVisurl(req.getParameter(paramName));
-				} else if ("content".equals(segment)) {
-					adDTO.setContent(req.getParameter(paramName));
-				} else {
-					LOG.warn("Cos'e' '" + segment + "' ?");
-					ads.remove(id);
-				}
-			}
-		}
-		List<AdDTO> allAds = new ArrayList<AdDTO>();
-		allAds.addAll(ads.values());
-		// ordina cosi' come sono sulla GUI -> cosi' saranno salvati nel database
-		Collections.sort(allAds, new Comparator<AdDTO>() {
-			public int compare(AdDTO ad1, AdDTO ad2) {
-				long res = ad1.getId() - ad2.getId();
-				return (int) res;
-			}
-		});
-		adminDAO.setAllAds(allAds);
-		cachedAds.invalidate();
-		req.setAttribute(ADMIN_FAKE_ADS, allAds);
-
 		return "prefs.jsp";
-	}
-
-	private AdDTO getAdDTO(Long id, Map<Long, AdDTO> ads) {
-		AdDTO adDTO = ads.get(id);
-		if (adDTO == null) {
-			adDTO = new AdDTO();
-			adDTO.setId(id);
-			ads.put(id, adDTO);
-		}
-		return adDTO;
 	}
 
 }

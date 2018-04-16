@@ -2,7 +2,6 @@ package com.forumdeitroll.taglibs;
 
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.DigestArticleDTO;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
 import com.forumdeitroll.servlets.MainServlet;
@@ -47,14 +46,6 @@ public class RenderTag extends TagSupport {
 			opts.renderImages = false;
 			opts.renderYoutube = false;
 			opts.collapseQuotes = false;
-		} else if (target.equals("articleOpener")) {
-			DigestArticleDTO articleDTO = (DigestArticleDTO) pageContext.findAttribute("article");
-			text = articleDTO.getOpenerText();
-			opts.authorIsAnonymous = StringUtils.isEmpty(articleDTO.getAuthor());
-		} else if (target.equals("articleExcerpt")) {
-			DigestArticleDTO articleDTO = (DigestArticleDTO) pageContext.findAttribute("article");
-			text = articleDTO.getExcerpt();
-			opts.authorIsAnonymous = true;// nel dubbio si`
 		}
 		try {
 			String html = com.forumdeitroll.markup.Renderer.render(text, opts);

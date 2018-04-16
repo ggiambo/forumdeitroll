@@ -4,22 +4,14 @@
 package com.forumdeitroll.persistence.jooq;
 
 
-import com.forumdeitroll.persistence.jooq.tables.Ads;
 import com.forumdeitroll.persistence.jooq.tables.Messages;
 import com.forumdeitroll.persistence.jooq.tables.Notification;
 import com.forumdeitroll.persistence.jooq.tables.PvtContent;
 import com.forumdeitroll.persistence.jooq.tables.Quotes;
-import com.forumdeitroll.persistence.jooq.tables.Tagnames;
-import com.forumdeitroll.persistence.jooq.tables.Tags;
-import com.forumdeitroll.persistence.jooq.tables.TagsBind;
-import com.forumdeitroll.persistence.jooq.tables.records.AdsRecord;
 import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
 import com.forumdeitroll.persistence.jooq.tables.records.NotificationRecord;
 import com.forumdeitroll.persistence.jooq.tables.records.PvtContentRecord;
 import com.forumdeitroll.persistence.jooq.tables.records.QuotesRecord;
-import com.forumdeitroll.persistence.jooq.tables.records.TagnamesRecord;
-import com.forumdeitroll.persistence.jooq.tables.records.TagsBindRecord;
-import com.forumdeitroll.persistence.jooq.tables.records.TagsRecord;
 
 import javax.annotation.Generated;
 
@@ -46,25 +38,19 @@ public class Keys {
 	// IDENTITY definitions
 	// -------------------------------------------------------------------------
 
-	public static final Identity<AdsRecord, Integer> IDENTITY_ADS = Identities0.IDENTITY_ADS;
 	public static final Identity<MessagesRecord, Integer> IDENTITY_MESSAGES = Identities0.IDENTITY_MESSAGES;
 	public static final Identity<NotificationRecord, Integer> IDENTITY_NOTIFICATION = Identities0.IDENTITY_NOTIFICATION;
 	public static final Identity<PvtContentRecord, Integer> IDENTITY_PVT_CONTENT = Identities0.IDENTITY_PVT_CONTENT;
 	public static final Identity<QuotesRecord, Integer> IDENTITY_QUOTES = Identities0.IDENTITY_QUOTES;
-	public static final Identity<TagnamesRecord, Integer> IDENTITY_TAGNAMES = Identities0.IDENTITY_TAGNAMES;
 
 	// -------------------------------------------------------------------------
 	// UNIQUE and PRIMARY KEY definitions
 	// -------------------------------------------------------------------------
 
-	public static final UniqueKey<AdsRecord> KEY_ADS_PRIMARY = UniqueKeys0.KEY_ADS_PRIMARY;
 	public static final UniqueKey<MessagesRecord> KEY_MESSAGES_PRIMARY = UniqueKeys0.KEY_MESSAGES_PRIMARY;
 	public static final UniqueKey<NotificationRecord> KEY_NOTIFICATION_PRIMARY = UniqueKeys0.KEY_NOTIFICATION_PRIMARY;
 	public static final UniqueKey<PvtContentRecord> KEY_PVT_CONTENT_PRIMARY = UniqueKeys0.KEY_PVT_CONTENT_PRIMARY;
 	public static final UniqueKey<QuotesRecord> KEY_QUOTES_PRIMARY = UniqueKeys0.KEY_QUOTES_PRIMARY;
-	public static final UniqueKey<TagnamesRecord> KEY_TAGNAMES_PRIMARY = UniqueKeys0.KEY_TAGNAMES_PRIMARY;
-	public static final UniqueKey<TagsRecord> KEY_TAGS_TAGNAME = UniqueKeys0.KEY_TAGS_TAGNAME;
-	public static final UniqueKey<TagsBindRecord> KEY_TAGS_BIND_PRIMARY = UniqueKeys0.KEY_TAGS_BIND_PRIMARY;
 
 	// -------------------------------------------------------------------------
 	// FOREIGN KEY definitions
@@ -76,22 +62,16 @@ public class Keys {
 	// -------------------------------------------------------------------------
 
 	private static class Identities0 extends AbstractKeys {
-		public static Identity<AdsRecord, Integer> IDENTITY_ADS = createIdentity(Ads.ADS, Ads.ADS.ID);
 		public static Identity<MessagesRecord, Integer> IDENTITY_MESSAGES = createIdentity(Messages.MESSAGES, Messages.MESSAGES.ID);
 		public static Identity<NotificationRecord, Integer> IDENTITY_NOTIFICATION = createIdentity(Notification.NOTIFICATION, Notification.NOTIFICATION.ID);
 		public static Identity<PvtContentRecord, Integer> IDENTITY_PVT_CONTENT = createIdentity(PvtContent.PVT_CONTENT, PvtContent.PVT_CONTENT.ID);
 		public static Identity<QuotesRecord, Integer> IDENTITY_QUOTES = createIdentity(Quotes.QUOTES, Quotes.QUOTES.ID);
-		public static Identity<TagnamesRecord, Integer> IDENTITY_TAGNAMES = createIdentity(Tagnames.TAGNAMES, Tagnames.TAGNAMES.T_ID);
 	}
 
 	private static class UniqueKeys0 extends AbstractKeys {
-		public static final UniqueKey<AdsRecord> KEY_ADS_PRIMARY = createUniqueKey(Ads.ADS, Ads.ADS.ID);
 		public static final UniqueKey<MessagesRecord> KEY_MESSAGES_PRIMARY = createUniqueKey(Messages.MESSAGES, Messages.MESSAGES.ID);
 		public static final UniqueKey<NotificationRecord> KEY_NOTIFICATION_PRIMARY = createUniqueKey(Notification.NOTIFICATION, Notification.NOTIFICATION.ID);
 		public static final UniqueKey<PvtContentRecord> KEY_PVT_CONTENT_PRIMARY = createUniqueKey(PvtContent.PVT_CONTENT, PvtContent.PVT_CONTENT.ID);
 		public static final UniqueKey<QuotesRecord> KEY_QUOTES_PRIMARY = createUniqueKey(Quotes.QUOTES, Quotes.QUOTES.ID);
-		public static final UniqueKey<TagnamesRecord> KEY_TAGNAMES_PRIMARY = createUniqueKey(Tagnames.TAGNAMES, Tagnames.TAGNAMES.T_ID);
-		public static final UniqueKey<TagsRecord> KEY_TAGS_TAGNAME = createUniqueKey(Tags.TAGS, Tags.TAGS.TAGNAME);
-		public static final UniqueKey<TagsBindRecord> KEY_TAGS_BIND_PRIMARY = createUniqueKey(TagsBind.TAGS_BIND, TagsBind.TAGS_BIND.T_ID, TagsBind.TAGS_BIND.M_ID);
 	}
 }
