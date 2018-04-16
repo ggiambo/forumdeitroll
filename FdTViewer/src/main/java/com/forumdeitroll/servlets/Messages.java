@@ -30,11 +30,11 @@ import java.util.regex.Pattern;
 public class Messages extends MainServlet {
 	private static final long serialVersionUID = 1L;
 
-	private static final List<String> REFRESHABLE_ACTIONS = Arrays.asList("getMessages");
+	private static final List<String> REFRESHABLE_ACTIONS = Collections.singletonList("getMessages");
 
-	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR> *(&gt;\\ ?)*");
+	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR> *(&gt; ?)*");
 
-	public static final Set<String> BANNED_IPs = new HashSet<String>();
+	public static final Set<String> BANNED_IPs = new HashSet<>();
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 80;
@@ -50,7 +50,8 @@ public class Messages extends MainServlet {
 
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
-		if (REFRESHABLE_ACTIONS.contains(req.getAttribute("action")) && StringUtils.isEmpty(req.getParameter("page"))) {
+		String action = (String)req.getAttribute("action");
+		if (REFRESHABLE_ACTIONS.contains(action) && StringUtils.isEmpty(req.getParameter("page"))) {
 			req.setAttribute("refreshable", "1");
 		}
 	}
@@ -66,25 +67,17 @@ public class Messages extends MainServlet {
 
 	/**
 	 * I messaggi di questa pagina (Dimensione PAGE_SIZE) in ordine di data
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String getMessages(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getMessages(HttpServletRequest req, HttpServletResponse res) {
 		return getMessages(req, res, NavigationMessage.info("Cronologia messaggi"));
 	}
 
 	/**
 	 * I messaggi di questo autore in ordine di data
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String getByAuthor(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getByAuthor(HttpServletRequest req, HttpServletResponse res) {
 		String author = req.getParameter("author");
 		addSpecificParam(req, "author", author);
 		String forum = req.getParameter("forum");
@@ -104,7 +97,7 @@ public class Messages extends MainServlet {
 	 * Se il parametro forum e` la stringa vuota restituisce i soli messaggi del forum principale (NULL)
 	 */
 	@Action
-	String getByForum(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getByForum(HttpServletRequest req, HttpServletResponse res) {
 		String forum = req.getParameter("forum");
 		if (StringUtils.isEmpty(forum)) {
 			setWebsiteTitlePrefix(req, "Forum Principale");
@@ -124,16 +117,12 @@ public class Messages extends MainServlet {
 
 	/**
 	 * Questo singolo messaggio
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
 	String getById(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		Long msgId = Long.parseLong(req.getParameter("msgId"));
 		setWebsiteTitlePrefix(req, "Singolo messaggio");
-		List<MessageDTO> messages = new ArrayList<MessageDTO>();
+		List<MessageDTO> messages = new ArrayList<>();
 		messages.add(messagesDAO.getMessage(msgId));
 		req.setAttribute("messages", messages);
 		req.setAttribute("resultSize", messages.size());
@@ -165,13 +154,9 @@ public class Messages extends MainServlet {
 
 	/**
 	 * Ricerca in tutti i messaggi
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String search(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String search(HttpServletRequest req, HttpServletResponse res) {
 		final String search = req.getParameter("search");
 		final String sort = req.getParameter("sort");
 
@@ -189,13 +174,9 @@ public class Messages extends MainServlet {
 
 	/**
 	 * Popola il div per la risposta/quota messaggio
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String newMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String newMessage(HttpServletRequest req, HttpServletResponse res) {
 		MessageDTO msg = new MessageDTO();
 		msg.setForum(req.getParameter("forum"));
 		msg.setSubject(req.getParameter("subject"));
@@ -222,7 +203,7 @@ public class Messages extends MainServlet {
 		return parentSubject.substring(0, Math.min(MAX_SUBJECT_LENGTH, parentSubject.length()));
 	}
 
-	private static List<String> quoteTypes = Arrays.asList("quote", "quote1", "quote4");
+	private static final List<String> quoteTypes = Arrays.asList("quote", "quote1", "quote4");
 
 	private static String getReplyText(String parentText, String type, String author) {
 		if (!quoteTypes.contains(type)) {
@@ -249,7 +230,6 @@ public class Messages extends MainServlet {
 			for (String line : text.split("\r\n")) {
 				if (line.startsWith("Scritto da")
 						|| line.startsWith("&gt; ")
-						&& line.length() > 2
 						&& !line.startsWith("&gt; &gt;")
 						&& !line.startsWith("&gt; Scritto da")
 						) {
@@ -275,10 +255,6 @@ public class Messages extends MainServlet {
 
 	/**
 	 * Popola il div per la risposta/quota messaggio
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
 	String showReplyDiv(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -305,13 +281,9 @@ public class Messages extends MainServlet {
 	}
 	/**
 	 * Modifica un messaggio esistente
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String editMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String editMessage(HttpServletRequest req, HttpServletResponse res) {
 		// check se l'uente loggato corrisponde a chi ha scritto il messaggio
 		AuthorDTO user = login(req);
 		String msgId = req.getParameter("msgId");
@@ -333,10 +305,6 @@ public class Messages extends MainServlet {
 
 	/**
 	 * Crea la preview del messaggio
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action(method=Method.POST)
 	String getMessagePreview(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -411,7 +379,7 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
-	protected void insertMessageAjaxBan(final HttpServletResponse res) throws IOException {
+	private void insertMessageAjaxBan(final HttpServletResponse res) throws IOException {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
 		writer.name("resultCode").value("BAN");
@@ -421,7 +389,7 @@ public class Messages extends MainServlet {
 		writer.close();
 	}
 
-	protected void insertMessageAjaxFail(final HttpServletResponse res, final String error) throws IOException {
+	private void insertMessageAjaxFail(final HttpServletResponse res, final String error) throws IOException {
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
 		writer.name("resultCode").value("MSG");
@@ -486,7 +454,7 @@ public class Messages extends MainServlet {
 		boolean softvFlag = false;
 		if (submitURI != null) {
 			if (submitURI.getPath().endsWith("/Threads")) {
-				if (submitURI.getQuery().indexOf("action=softvThread") >= 0) {
+				if (submitURI.getQuery().contains("action=softvThread")) {
 					softvFlag = true;
 					content.append("/Threads?action=softvThread&threadId=").append(msg.getThreadId());
 				} else {
@@ -508,7 +476,7 @@ public class Messages extends MainServlet {
 				if (navForum == null) {
 					content.append("/Messages?action=init");
 				} else {
-					content.append("/Messages?action=getByForum&" + navForum);
+					content.append("/Messages?action=getByForum&").append(navForum);
 				}
 			} else {
 				content.append("/Messages?action=init");
@@ -528,13 +496,7 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
-	protected void restoreTitleFromParent(final MessageDTO msg, final long parentId) {
-		final MessageDTO parent = messagesDAO.getMessage(parentId);
-		if (parent == null) return;
-		msg.setSubject(parent.getSubjectReal());
-	}
-
-	protected void forShame(final AuthorDTO author, final String shameTitle, final String shameMessage) {
+	private void forShame(final AuthorDTO author, final String shameTitle, final String shameMessage) {
 		final MessageDTO msg = new MessageDTO();
 		msg.setAuthor(author);
 		msg.setParentId(-1);
@@ -602,7 +564,7 @@ public class Messages extends MainServlet {
 		return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 1);
 	}
 
-	private String restoreOrHideMessage(HttpServletRequest req, HttpServletResponse res, long msgId, int visible)  throws Exception {
+	private String restoreOrHideMessage(HttpServletRequest req, HttpServletResponse res, long msgId, int visible) {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null) {
 			return getMessages(req, res, NavigationMessage.error("Non furmigare !"));
@@ -628,7 +590,7 @@ public class Messages extends MainServlet {
 	String getRandomQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		// già escapato da getRandomQuote di MainServlet
 		res.setContentType("text/plain");
-		QuoteDTO quote = getRandomQuoteDTO(req, res);
+		QuoteDTO quote = getRandomQuoteDTO();
 		res.getWriter().write(quote.getContent()+'\n'+quote.getNick());
 		res.flushBuffer();
 		return null;
@@ -685,7 +647,7 @@ public class Messages extends MainServlet {
 		return null;
 	}
 
-	private String getMessages(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
+	private String getMessages(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) {
 		String forum = req.getParameter("forum");
 		MessagesDTO messages = messagesDAO.getMessages(forum, null, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());
@@ -702,7 +664,7 @@ public class Messages extends MainServlet {
 		return "messages.jsp";
 	}
 
-	public static void banIP(final String ip) {
+	static void banIP(final String ip) {
 		synchronized(BANNED_IPs) {
 			BANNED_IPs.add(ip);
 		}
@@ -722,7 +684,6 @@ public class Messages extends MainServlet {
 		String sReplyToId = req.getParameter("replyToId");
 		if (sMessageId != null) { // true per edit messaggio proprio
 			long messageId = Long.parseLong(sMessageId);
-			long replyToId = Long.parseLong(sReplyToId);
 			setWebsiteTitlePrefix(req, "Modifica messaggio");
 			MessageDTO msg = messagesDAO.getMessage(messageId);
 			if (msg.getAuthor().getNick().equals(login(req).getNick()) && !login(req).isBanned()) {
