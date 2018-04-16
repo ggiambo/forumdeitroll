@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.forumdeitroll</groupId>
     <artifactId>FdTViewer</artifactId>
-    <version>0.2-UPPETE</version>
+    <version>2.1-UPPETE</version>
     <packaging>war</packaging>
 
     <properties>
