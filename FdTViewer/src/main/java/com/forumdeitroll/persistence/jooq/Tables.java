@@ -4,9 +4,9 @@
 package com.forumdeitroll.persistence.jooq;
 
 
-import com.forumdeitroll.persistence.jooq.tables.Ads;
 import com.forumdeitroll.persistence.jooq.tables.Authors;
 import com.forumdeitroll.persistence.jooq.tables.Bookmarks;
+import com.forumdeitroll.persistence.jooq.tables.Forums;
 import com.forumdeitroll.persistence.jooq.tables.Likes;
 import com.forumdeitroll.persistence.jooq.tables.Logins;
 import com.forumdeitroll.persistence.jooq.tables.Messages;
@@ -35,11 +35,6 @@ import javax.annotation.Generated;
 public class Tables {
 
 	/**
-	 * The table fdtsucker.ads
-	 */
-	public static final Ads ADS = com.forumdeitroll.persistence.jooq.tables.Ads.ADS;
-
-	/**
 	 * The table fdtsucker.authors
 	 */
 	public static final Authors AUTHORS = com.forumdeitroll.persistence.jooq.tables.Authors.AUTHORS;
@@ -48,6 +43,11 @@ public class Tables {
 	 * The table fdtsucker.bookmarks
 	 */
 	public static final Bookmarks BOOKMARKS = com.forumdeitroll.persistence.jooq.tables.Bookmarks.BOOKMARKS;
+
+	/**
+	 * The table fdtsucker.forums
+	 */
+	public static final Forums FORUMS = com.forumdeitroll.persistence.jooq.tables.Forums.FORUMS;
 
 	/**
 	 * The table fdtsucker.likes

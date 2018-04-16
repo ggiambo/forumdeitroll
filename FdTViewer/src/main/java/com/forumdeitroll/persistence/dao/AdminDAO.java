@@ -1,24 +1,18 @@
 package com.forumdeitroll.persistence.dao;
 
-import static com.forumdeitroll.persistence.jooq.Tables.ADS;
-import static com.forumdeitroll.persistence.jooq.Tables.MESSAGES;
-import static com.forumdeitroll.persistence.jooq.Tables.PREFERENCES;
-import static com.forumdeitroll.persistence.jooq.Tables.SYSINFO;
+import com.forumdeitroll.persistence.DAOFactory;
+import com.forumdeitroll.persistence.MessageDTO;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Record1;
+import org.jooq.Result;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Record1;
-import org.jooq.Result;
-
-import com.forumdeitroll.persistence.AdDTO;
-import com.forumdeitroll.persistence.DAOFactory;
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.jooq.tables.records.AdsRecord;
+import static com.forumdeitroll.persistence.jooq.Tables.*;
 
 public class AdminDAO extends BaseDAO {
 
@@ -118,45 +112,11 @@ public class AdminDAO extends BaseDAO {
 		}
 	}
 
-	public List<AdDTO> getAllAds() {
-		Result<AdsRecord> records = jooq.selectFrom(ADS)
-			.orderBy(ADS.ID)
-			.fetch();
-
-		final List<AdDTO> res = new ArrayList<AdDTO>(records.size());
-		for (AdsRecord record : records) {
-			res.add(recordToDTO(record));
-		}
-		return res;
-	}
-
-	public void setAllAds(List<AdDTO> ads) {
-
-		jooq.delete(ADS).execute();
-
-		for (AdDTO ad : ads) {
-			jooq.insertInto(ADS)
-				.set(ADS.CONTENT, ad.getContent())
-				.set(ADS.TITLE, ad.getTitle())
-				.set(ADS.VISURL, ad.getVisurl())
-				.execute();
-		}
-	}
-
 	public Collection<String> getAdmins() {
 		return jooq.select(PREFERENCES.NICK)
 				.from(PREFERENCES)
 				.where(PREFERENCES.KEY.like("super"))
 				.fetch(PREFERENCES.NICK);
-	}
-
-	private AdDTO recordToDTO(AdsRecord record) {
-		final AdDTO dto = new AdDTO();
-		dto.setId(record.getId());
-		dto.setTitle(record.getTitle());
-		dto.setVisurl(record.getVisurl());
-		dto.setContent(record.getContent());
-		return dto;
 	}
 
 	public boolean blockTorExitNodes() {

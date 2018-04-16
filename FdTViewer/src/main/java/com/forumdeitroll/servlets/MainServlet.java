@@ -4,7 +4,6 @@ package com.forumdeitroll.servlets;
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.SingleValueCache;
-import com.forumdeitroll.persistence.AdDTO;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.QuoteDTO;
@@ -68,12 +67,6 @@ public abstract class MainServlet extends HttpServlet {
 	protected SingleValueCache<List<String>> cachedTitles = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
 			return adminDAO.getTitles();
-		}
-	};
-
-	protected SingleValueCache<List<AdDTO>> cachedAds = new SingleValueCache<List<AdDTO>>(60 * 60 * 1000) {
-		@Override protected List<AdDTO> update() {
-			return adminDAO.getAllAds();
 		}
 	};
 
@@ -166,9 +159,6 @@ public abstract class MainServlet extends HttpServlet {
 
 		// random quote
 		req.setAttribute("randomQuote", getRandomQuoteDTO(req, res));
-
-		// random ads
-		req.setAttribute("randomAds", getRandomAdDTOs(req, res));
 
 		// javascript maGGico
 		req.setAttribute("javascript", miscDAO.getSysinfoValue("javascript"));
@@ -470,17 +460,6 @@ public abstract class MainServlet extends HttpServlet {
 			return newquote;
 		}
 		return new QuoteDTO();
-	}
-
-	/**
-	 * Ritorna un random ad tra quelli esistenti
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
-	List<AdDTO> getRandomAdDTOs(HttpServletRequest req, HttpServletResponse res) {
-		return cachedAds.get();
 	}
 
 	/**
