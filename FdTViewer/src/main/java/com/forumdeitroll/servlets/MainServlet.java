@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class MainServlet extends HttpServlet {
 
@@ -36,35 +37,35 @@ public abstract class MainServlet extends HttpServlet {
 
 	public static final String LOGGED_USER_REQ_ATTR = "loggedUser";
 	private static final String LOGGED_USER_SESS_ATTR = "loggedUserNick";
-	public static final String SESSION_IS_BANNED = "sessionIsBanned";
+	static final String SESSION_IS_BANNED = "sessionIsBanned";
 
-	public static final String ANTI_XSS_TOKEN = "anti_xss_token";
+	private static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
 	private Map<String, Method> actionMethodCache;
 
-	protected AuthorsDAO authorsDAO;
-	protected ThreadsDAO threadsDAO;
-	protected MessagesDAO messagesDAO;
-	protected QuotesDAO quotesDAO;
-	protected BookmarksDAO bookmarksDAO;
-	protected AdminDAO adminDAO;
-	protected MiscDAO miscDAO;
-	protected PrivateMsgDAO privateMsgDAO;
-	protected LoginsDAO loginsDAO;
+	AuthorsDAO authorsDAO;
+	ThreadsDAO threadsDAO;
+	MessagesDAO messagesDAO;
+	QuotesDAO quotesDAO;
+	BookmarksDAO bookmarksDAO;
+	AdminDAO adminDAO;
+	MiscDAO miscDAO;
+	PrivateMsgDAO privateMsgDAO;
+	LoginsDAO loginsDAO;
 
-	protected SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
+	SingleValueCache<List<String>> cachedForums = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
 			return miscDAO.getForums();
 		}
 	};
 
-	protected SingleValueCache<List<QuoteDTO>> cachedQuotes = new SingleValueCache<List<QuoteDTO>>(60 * 60 * 1000) {
+	private SingleValueCache<List<QuoteDTO>> cachedQuotes = new SingleValueCache<List<QuoteDTO>>(60 * 60 * 1000) {
 		@Override protected List<QuoteDTO> update() {
 			return quotesDAO.getAllQuotes();
 		}
 	};
 
-	protected SingleValueCache<List<String>> cachedTitles = new SingleValueCache<List<String>>(60 * 60 * 1000) {
+	SingleValueCache<List<String>> cachedTitles = new SingleValueCache<List<String>>(60 * 60 * 1000) {
 		@Override protected List<String> update() {
 			return adminDAO.getTitles();
 		}
@@ -83,7 +84,7 @@ public abstract class MainServlet extends HttpServlet {
 		privateMsgDAO = DAOFactory.getPrivateMsgDAO();
 		loginsDAO = DAOFactory.getLoginsDAO();
 
-		actionMethodCache = new HashMap<String, Method>();
+		actionMethodCache = new ConcurrentHashMap<>();
 	}
 
 	public final void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -117,8 +118,6 @@ public abstract class MainServlet extends HttpServlet {
 
 	/**
 	 * Called before {@link #doDo(HttpServletRequest, HttpServletResponse, com.forumdeitroll.servlets.Action.Method)}
-	 * @param req
-	 * @param res
 	 */
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		// implement in subclassed
@@ -126,14 +125,12 @@ public abstract class MainServlet extends HttpServlet {
 
 	/**
 	 * Called after {@link #doDo(HttpServletRequest, HttpServletResponse, com.forumdeitroll.servlets.Action.Method)}
-	 * @param req
-	 * @param res
 	 */
 	public void doAfter(HttpServletRequest req, HttpServletResponse res) {
 		// implement in subclassed
 	}
 
-	protected void userSessionBanContagion(final HttpServletRequest req, final AuthorDTO loggedUser) {
+	private void userSessionBanContagion(final HttpServletRequest req, final AuthorDTO loggedUser) {
 		if (!loggedUser.isValid()) return;
 
 		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) {
@@ -149,7 +146,7 @@ public abstract class MainServlet extends HttpServlet {
 		}
 	}
 
-	private final String doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws Exception {
+	private String doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws Exception {
 
 		String servlet = this.getClass().getSimpleName();
 		req.setAttribute("servlet", servlet);
@@ -158,7 +155,7 @@ public abstract class MainServlet extends HttpServlet {
 		req.setAttribute("forums", cachedForums.get());
 
 		// random quote
-		req.setAttribute("randomQuote", getRandomQuoteDTO(req, res));
+		req.setAttribute("randomQuote", getRandomQuoteDTO());
 
 		// javascript maGGico
 		req.setAttribute("javascript", miscDAO.getSysinfoValue("javascript"));
@@ -227,10 +224,6 @@ public abstract class MainServlet extends HttpServlet {
 
 	/**
 	 * Action chiamata quando nessuna e' definita
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
 	abstract String init(HttpServletRequest req, HttpServletResponse res) throws Exception;
@@ -276,20 +269,16 @@ public abstract class MainServlet extends HttpServlet {
 		return new AuthorDTO(null);
 	}
 
-	protected AuthorDTO getLogin(final HttpServletRequest req) {
+	private AuthorDTO getLogin(final HttpServletRequest req) {
 		final AuthorDTO author = (AuthorDTO)req.getAttribute(LOGGED_USER_REQ_ATTR);
 		return (author != null) ? author : new AuthorDTO(null);
 	}
 
 	/**
 	 * Setta nella session lo stato della sidebar (Aperta/chiusa)
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String updateSidebarStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String updateSidebarStatus(HttpServletRequest req, HttpServletResponse res) {
 		String sidebarStatus = req.getParameter("sidebarStatus");
 		if (StringUtils.isEmpty(sidebarStatus)) {
 			return null;
@@ -338,7 +327,7 @@ public abstract class MainServlet extends HttpServlet {
 	 * Setta nella session lo stato dell'header fisso
 	 */
 	@Action
-	String updateBlockHeaderStatus(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String updateBlockHeaderStatus(HttpServletRequest req, HttpServletResponse res) {
 		String blockHeaderStatus = req.getParameter("blockHeader");
 		if (blockHeaderStatus == null) {
 			return null;
@@ -367,10 +356,8 @@ public abstract class MainServlet extends HttpServlet {
 
 	/**
 	 * Ritorna la pagina attuale se definita come req param, altrimenti 0. Setta il valore come req attr.
-	 * @param req
-	 * @return
 	 */
-	protected int getPageNr(HttpServletRequest req) {
+	int getPageNr(HttpServletRequest req) {
 		String page = req.getParameter("page");
 		if (page == null) {
 			page = "0";
@@ -381,18 +368,15 @@ public abstract class MainServlet extends HttpServlet {
 
 	/**
 	 * Messaggio mostrato tra l'header e la navigazione
-	 * @param req
-	 * @param navigationMessage
 	 */
-	protected void setNavigationMessage(HttpServletRequest req, NavigationMessage navigationMessage) {
+	void setNavigationMessage(HttpServletRequest req, NavigationMessage navigationMessage) {
 		req.setAttribute("navigationMessage", navigationMessage);
 	}
 
 	/**
 	 * Imposta il titolo del sito
-	 * @param req
 	 */
-	protected void setWebsiteTitlePrefix(HttpServletRequest req, String prefix) {
+	void setWebsiteTitlePrefix(HttpServletRequest req, String prefix) {
 		if (StringUtils.isNotEmpty(prefix)) {
 			prefix = prefix + " @ ";
 		}
@@ -411,7 +395,7 @@ public abstract class MainServlet extends HttpServlet {
 
 	public static class NavigationMessage {
 
-		static enum TYPE {
+		enum TYPE {
 			INFO, WARN, ERROR;
 		}
 
@@ -447,12 +431,8 @@ public abstract class MainServlet extends HttpServlet {
 
 	/**
 	 * Ritorna una random quote tra quelle esistenti
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
-	QuoteDTO getRandomQuoteDTO(HttpServletRequest req, HttpServletResponse res) {
+	QuoteDTO getRandomQuoteDTO() {
 		if (cachedQuotes.get().size() > 0) {
 			final QuoteDTO quote = cachedQuotes.get().get(RandomPool.insecureInt(cachedQuotes.get().size()));
 			final QuoteDTO newquote = new QuoteDTO(quote);
@@ -465,11 +445,6 @@ public abstract class MainServlet extends HttpServlet {
 	/**
 	 * Scrive l'exception nel log, mostra la pagina d'errore o scrive
 	 * direttamete la stacktrace nella response
-	 *
-	 * @param e
-	 * @param req
-	 * @param res
-	 * @throws IOException
 	 */
 	private void handleException(Exception e, HttpServletRequest req, HttpServletResponse res) throws IOException {
 		LOG.error(e.getMessage(), e);
@@ -487,7 +462,7 @@ public abstract class MainServlet extends HttpServlet {
 		@SuppressWarnings("unchecked")
 		Map<String, String> specificParams = (Map<String, String>)req.getAttribute("specificParams");
 		if (specificParams == null) {
-			specificParams = new HashMap<String, String>();
+			specificParams = new HashMap<>();
 			req.setAttribute("specificParams", specificParams);
 		}
 		if (value != null) {
@@ -495,18 +470,18 @@ public abstract class MainServlet extends HttpServlet {
 		}
 	}
 
-	protected void setAntiXssToken(final HttpServletRequest req) {
+	void setAntiXssToken(final HttpServletRequest req) {
 		req.getSession().setAttribute(ANTI_XSS_TOKEN, RandomPool.getString(3));
 	}
 
-	protected boolean antiXssOk(final HttpServletRequest req) {
+	boolean antiXssOk(final HttpServletRequest req) {
 		final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
 		final String inToken = req.getParameter("token");
 
-		return (token != null) && (inToken != null) && token.equals(inToken);
+		return (token != null) && token.equals(inToken);
 	}
 
-	protected List<String> hiddenForums(HttpServletRequest req) {
+	List<String> hiddenForums(HttpServletRequest req) {
 		AuthorDTO loggedUser = getLogin(req);
 		if (loggedUser.isValid()) {
 			return authorsDAO.getHiddenForums(loggedUser);
@@ -516,19 +491,16 @@ public abstract class MainServlet extends HttpServlet {
 
 	/**
 	 * Mappa action -> Actionmethod.
-	 * @param action
-	 * @return
 	 */
-	private final Method getActionMethod(String action) {
+	private Method getActionMethod(String action) {
 		Method actionMethod = null;
 		if (!actionMethodCache.containsKey(action)) {
 			Class servletClass = this.getClass();
-			synchronized (actionMethodCache) {
 				if (!actionMethodCache.containsKey(action)) {
 					while (actionMethod == null && MainServlet.class.isAssignableFrom(servletClass)) {
 						// search action method also in superclasses
 						try {
-							actionMethod = servletClass.getDeclaredMethod(action, new Class[] {HttpServletRequest.class, HttpServletResponse.class});
+							actionMethod = servletClass.getDeclaredMethod(action, HttpServletRequest.class, HttpServletResponse.class);
 						} catch (NoSuchMethodException e) {
 							servletClass = servletClass.getSuperclass();
 						}
@@ -536,7 +508,6 @@ public abstract class MainServlet extends HttpServlet {
 					// Una key puo' avere value == null, cosi' da evitare la ricerca in futuro.
 					actionMethodCache.put(action, actionMethod);
 				}
-			}
 		} else {
 			actionMethod = actionMethodCache.get(action);
 		}

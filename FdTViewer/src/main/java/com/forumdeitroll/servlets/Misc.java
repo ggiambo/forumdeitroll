@@ -44,7 +44,7 @@ public class Misc extends HttpServlet {
 			InputStream is = config.getServletContext().getResourceAsStream("/images/avataranonimo.gif");
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			byte[] buffer = new byte[1024];
-			int count = -1;
+			int count;
 			while ((count = is.read(buffer)) != -1) {
 				bos.write(buffer, 0, count);
 			}
@@ -54,7 +54,6 @@ public class Misc extends HttpServlet {
 			is = config.getServletContext().getResourceAsStream("/images/avatardefault.gif");
 			bos = new ByteArrayOutputStream();
 			buffer = new byte[1024];
-			count = -1;
 			while ((count = is.read(buffer)) != -1) {
 				bos.write(buffer, 0, count);
 			}
@@ -103,10 +102,6 @@ public class Misc extends HttpServlet {
 
 	/**
 	 * Scrive direttamente nella response i bytes che compongono l'avatar
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	private void getAvatar(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String nick = req.getParameter("nick");
@@ -138,10 +133,6 @@ public class Misc extends HttpServlet {
 
 	/**
 	 * Cancella l'utente loggato dalla sessione
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	private void logoutAction(HttpServletRequest req, HttpServletResponse res) {
 		boolean mobileView = MainServlet.isMobileView(req);
@@ -158,9 +149,7 @@ public class Misc extends HttpServlet {
 		String originalURL =
 			req.getHeader("Referer") != null
 				? req.getHeader("Referer")
-				: req.getHeader("Referrer") != null
-					? req.getHeader("Referrer")
-					: null;
+				: req.getHeader("Referrer");
 		if (StringUtils.isEmpty(originalURL)) {
 			originalURL = "Messages";
 		}
@@ -171,13 +160,8 @@ public class Misc extends HttpServlet {
 	/**
 	 * Metodo di utilità per aggirare la same origin policy quando si testa in locale il motorino
 	 * wrappando le chiamate
-	 *
-	 * @param req
-	 * @param res
-	 * @throws ServletException
-	 * @throws IOException
 	 */
-	private void searchAjax(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	private void searchAjax(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String search = req.getParameter("q");
 		String sort = req.getParameter("sort");
 		String page = req.getParameter("p");
@@ -207,12 +191,8 @@ public class Misc extends HttpServlet {
 	/**
 	 * wrapper del servizio di freegeoip, per aggirare la same-origin policy a partire da firefox 22/23
 	 * http://freegeoip.net/json/{ip}
-	 * @param req
-	 * @param res
-	 * @throws ServletException
-	 * @throws IOException
 	 */
-	private void freegeoip(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	private void freegeoip(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String ip = req.getParameter("ip");
 		String callback = req.getParameter("callback");
 		String endpoint = "http://www.telize.com/geoip/" + ip + "?callback=" + callback;
