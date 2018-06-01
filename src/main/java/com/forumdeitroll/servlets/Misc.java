@@ -142,18 +142,10 @@ public class Misc extends HttpServlet {
 		}
 		res.setStatus(302);
 		res.setContentType("text/html");
-		res.setHeader("Location", "Messages?disclaimer=OK");
+		res.setHeader("Location", "Messages");
 	}
 
 	private void getDisclaimer(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		String originalURL =
-			req.getHeader("Referer") != null
-				? req.getHeader("Referer")
-				: req.getHeader("Referrer");
-		if (StringUtils.isEmpty(originalURL)) {
-			originalURL = "Messages";
-		}
-		req.setAttribute("originalURL", originalURL);
 		getServletContext().getRequestDispatcher("/pages/disclaimer.jsp").forward(req, res);
 	}
 
