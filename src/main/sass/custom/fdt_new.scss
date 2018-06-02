@@ -1,0 +1,43 @@
+@import "../bootstrap_4.1.0/scss/bootstrap";
+
+$enable-shadows: true;
+
+$body-color: #41636B;
+
+body {
+  background-color: $body-color;
+}
+
+.messageContainer {
+  @extend .row;
+  @extend .my-3;
+  @extend .pt-2 ;
+  @extend .border;
+  @extend .shadow-sm;
+}
+
+.avatarContainer {
+  @extend .text-center;
+  @extend .border;
+  @extend .rounded;
+  @extend .pt-1;
+  @extend .bg-light;
+}
+
+.messageBottomLinks {
+  @extend .d-flex;
+  @extend .justify-content-end;
+  @extend .align-items-center;
+}
+
+.messageBottomLink {
+  @extend .px-1;
+  @extend .border;
+  @extend .border-bottom-0;
+  @extend .rounded-top;
+  @extend .ml-1;
+  small {
+    vertical-align: text-top;
+  }
+}
+
