@@ -1596,18 +1596,6 @@ span.fdtAd {
 	font-family: arial,sans-serif;
 }
 
-div.softvMsg {
-	font-family: monospace;
-}
-
-.softvSelected {
-	font-weight: bold;
-}
-
-.softvMsg a:link {
-	color: green !important;
-}
-
 .pvt-notification-enhancer {
 	float: right;
 	clear: both;
