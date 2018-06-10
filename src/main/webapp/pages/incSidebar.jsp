@@ -19,6 +19,7 @@
 	</c:if>
 	<a href="javascript:forceMobileView()">Visualizzazione Mobile</a>
 	<br>
+    <%--
 	<br>
 	<form action="Messages" method="get" id="sidebarSearchForm" onsubmit="return searchAjax();">
 		<input type="hidden" name="action" value="search"/>
@@ -35,7 +36,7 @@
 		<br>
 		<a href="javascript:showAdvancedSearch()">Ricerca avanzata</a>
 	</form>
-
+--%>
 	<label for="getById">Per id:</label>
 	<input type="text" name="getById" id="getById" onkeyup="searchById(event)" size="7" value="${msgId}"/>
 	<br/><br/>
