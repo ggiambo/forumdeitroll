@@ -158,7 +158,7 @@
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.2.11.v20150529</version>
+                <version>9.4.11.v20180605</version>
                 <configuration>
                     <webAppSourceDirectory>${project.basedir}/src/main/webapp</webAppSourceDirectory>
                 </configuration>
