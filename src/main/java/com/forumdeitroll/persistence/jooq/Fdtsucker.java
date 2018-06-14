@@ -6,7 +6,6 @@ package com.forumdeitroll.persistence.jooq;
 
 import com.forumdeitroll.persistence.jooq.tables.Authors;
 import com.forumdeitroll.persistence.jooq.tables.Bookmarks;
-import com.forumdeitroll.persistence.jooq.tables.Forums;
 import com.forumdeitroll.persistence.jooq.tables.Likes;
 import com.forumdeitroll.persistence.jooq.tables.Logins;
 import com.forumdeitroll.persistence.jooq.tables.Messages;
@@ -41,7 +40,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Fdtsucker extends SchemaImpl {
 
-	private static final long serialVersionUID = -1953605221;
+	private static final long serialVersionUID = -1580886922;
 
 	/**
 	 * The reference instance of <code>fdtsucker</code>
@@ -66,7 +65,6 @@ public class Fdtsucker extends SchemaImpl {
 		return Arrays.<Table<?>>asList(
 			Authors.AUTHORS,
 			Bookmarks.BOOKMARKS,
-			Forums.FORUMS,
 			Likes.LIKES,
 			Logins.LOGINS,
 			Messages.MESSAGES,

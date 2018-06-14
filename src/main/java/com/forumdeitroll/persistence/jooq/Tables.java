@@ -6,7 +6,6 @@ package com.forumdeitroll.persistence.jooq;
 
 import com.forumdeitroll.persistence.jooq.tables.Authors;
 import com.forumdeitroll.persistence.jooq.tables.Bookmarks;
-import com.forumdeitroll.persistence.jooq.tables.Forums;
 import com.forumdeitroll.persistence.jooq.tables.Likes;
 import com.forumdeitroll.persistence.jooq.tables.Logins;
 import com.forumdeitroll.persistence.jooq.tables.Messages;
@@ -43,11 +42,6 @@ public class Tables {
 	 * The table fdtsucker.bookmarks
 	 */
 	public static final Bookmarks BOOKMARKS = com.forumdeitroll.persistence.jooq.tables.Bookmarks.BOOKMARKS;
-
-	/**
-	 * The table fdtsucker.forums
-	 */
-	public static final Forums FORUMS = com.forumdeitroll.persistence.jooq.tables.Forums.FORUMS;
 
 	/**
 	 * The table fdtsucker.likes
