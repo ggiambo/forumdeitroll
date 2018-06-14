@@ -107,6 +107,11 @@
             <version>4.5.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.196</version>
+        </dependency>
 
         <!-- dipendenze indirette (container) -->
         <dependency>
@@ -155,6 +160,7 @@
                     </generator>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>

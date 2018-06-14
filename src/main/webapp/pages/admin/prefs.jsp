@@ -18,13 +18,6 @@
 							<label for="<%=Admin.ADMIN_PREF_BLOCK_TOR%>" class="lbl">Blocca TOR exit nodes:</label>
 						</div>
 						<div style="clear: both;"></div>
-						<div class="inputUserPanel">
-							<input type="checkbox" name="<%=Admin.ADMIN_PREF_DISABLE_PROFILER%>" id="<%=Admin.ADMIN_PREF_DISABLE_PROFILER%>" ${disableUserProfiler} />
-						</div>
-						<div class="lblUserPanel">
-							<label for="<%=Admin.ADMIN_PREF_DISABLE_PROFILER%>" class="lbl">Disattiva il profiler:</label>
-						</div>
-						<div style="clear: both;"></div>
                         <div class="inputUserPanel">
                             <input type="checkbox" name="<%=Admin.ADMIN_NON_ANON_POST%>" id="<%=Admin.ADMIN_NON_ANON_POST%>" ${adminNonAnonPost} />
                         </div>

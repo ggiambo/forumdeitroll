@@ -97,19 +97,6 @@
 				</div>
 			</c:if>
 
-			<%--- notifiche per moderatori --%>
-			<c:if test="${not empty loggedUser}">
-				<c:if test="${loggedUser.preferences['super'] == 'yes'}">
-					<%--
-					<% if (!com.forumdeitroll.servlets.UserProfiler.unbanRequests.isEmpty()) {%>
-						<div class="notifications">
-							<a href="UserProfiler?action=snoop">Lavoro per moderatori</a>
-						</div>
-					<% } %>
-					 --%>
-				</c:if>
-			</c:if>
-
 			<%-- se forum e' Proc di Catania, mostra pedobear --%>
 			<c:set var="bodyContentClass" value="" scope="page" />
 			<c:if test="${param.forum == 'Proc di Catania'}">
@@ -151,7 +138,6 @@
 		<script type="text/javascript" src="js/sh/shAutoloader.js"></script>
 		<script type="text/javascript" src="js/jscolor/jscolor.js"></script>
 		<script type="text/javascript" src="js/PluginDetect_All.js"></script>
-		<script type="text/javascript" src="js/profiler.js?v=<%=bootTime%>"></script>
 		<script type="text/javascript" src="js/${fn:toLowerCase(servlet)}.js?v=<%=bootTime%>"></script>
 		<script type="text/javascript" src="https://www.google.com/recaptcha/api.js" async defer></script>
 		<fdt:delayedScript dump="false">

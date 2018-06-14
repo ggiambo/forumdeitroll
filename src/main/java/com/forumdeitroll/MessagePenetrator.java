@@ -4,12 +4,10 @@ import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Messages;
 import com.forumdeitroll.util.CacheTorExitNodes;
 import com.forumdeitroll.util.IPMemStorage;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
@@ -231,18 +229,6 @@ public class MessagePenetrator {
 			banned = true;
 			return true;
 		}
-		if (req != null) {
-			try {
-				if (ProfilerAPI.blockedByRules(req, author)) {
-					banned = true;
-					return true;
-				}
-			} catch (Exception e) {
-				Logger.getLogger(MessagePenetrator.class).error("ERRORE IN PROFILAZIONE!! "+e.getClass().getName() + ": "+ e.getMessage(), e);
-				setError("Errore durante l'inserimento del messaggio. La suora sa perché.");
-				return false;
-			}
-		}
 		return false;
 	}
 
@@ -337,9 +323,6 @@ public class MessagePenetrator {
 		msg = DAOFactory.getMessagesDAO().insertMessage(msg);
 		final String m_id = Long.toString(msg.getId());
 		IPMemStorage.store(ip, m_id, author);
-		if (req != null) {
-			ProfilerAPI.log(req, author, "message-post-" + m_id);
-		}
 
 		return msg;
 	}

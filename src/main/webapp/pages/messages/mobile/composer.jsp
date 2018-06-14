@@ -105,10 +105,6 @@
 	</div>
 	<div class=col-1-2>&nbsp;</div>
 </div>
-<%-- profiler richiede jquery... --%>
-<script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="js/PluginDetect_All.js"></script>
-<script type="text/javascript" src="js/profiler.js?v=<%=bootTime%>"></script>
 
 <fdt:delayedScript dump="false">
 	var token = "${anti_xss_token}";

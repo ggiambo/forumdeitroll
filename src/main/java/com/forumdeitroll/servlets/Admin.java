@@ -1,7 +1,6 @@
 package com.forumdeitroll.servlets;
 
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.Ratelimiter;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +18,6 @@ public class Admin extends MainServlet {
 	private static final Logger LOG = Logger.getLogger(Admin.class);
 
 	public static final String ADMIN_PREF_BLOCK_TOR = "blockTorExitNodes";
-	public static final String ADMIN_PREF_DISABLE_PROFILER = "disableUserProfiler";
 	public static final String ADMIN_NON_ANON_POST = "adminNonAnonPost";
 	public static final String ADMIN_WEBSITE_TITLES = "websiteTitles";
 
@@ -34,7 +32,6 @@ public class Admin extends MainServlet {
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		req.setAttribute(ADMIN_PREF_BLOCK_TOR, miscDAO.getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
-		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, miscDAO.getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 		req.setAttribute(ADMIN_NON_ANON_POST, miscDAO.getSysinfoValue(ADMIN_NON_ANON_POST));
 		req.setAttribute(ADMIN_WEBSITE_TITLES, adminDAO.getTitles());
 	}
@@ -99,16 +96,6 @@ public class Admin extends MainServlet {
 			adminDAO.setSysinfoValue(ADMIN_PREF_BLOCK_TOR, "");
 		}
 		req.setAttribute(ADMIN_PREF_BLOCK_TOR, adminDAO.getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
-
-		String disableUserProfiler = req.getParameter(ADMIN_PREF_DISABLE_PROFILER);
-		if (!StringUtils.isEmpty(disableUserProfiler)) {
-			adminDAO.setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "checked");
-			ProfilerAPI.enabled = false;
-		} else {
-			adminDAO.setSysinfoValue(ADMIN_PREF_DISABLE_PROFILER, "");
-			ProfilerAPI.enabled = true;
-		}
-		req.setAttribute(ADMIN_PREF_DISABLE_PROFILER, adminDAO.getSysinfoValue(ADMIN_PREF_DISABLE_PROFILER));
 
 		String adminNonAnonPost = req.getParameter(ADMIN_NON_ANON_POST);
 		if (!StringUtils.isEmpty(adminNonAnonPost)) {

@@ -6,7 +6,6 @@ import com.forumdeitroll.markup.InputSanitizer;
 import com.forumdeitroll.markup.RenderOptions;
 import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.*;
-import com.forumdeitroll.profiler2.ProfilerAPI;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.taglibs.RenderTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
@@ -426,6 +425,7 @@ public class Messages extends MainServlet {
 		}
 
 		// redirect
+		res.setContentType("text/plain");
 		JsonWriter writer = new JsonWriter(res.getWriter());
 		writer.beginObject();
 		writer.name("resultCode").value("OK");
@@ -533,9 +533,7 @@ public class Messages extends MainServlet {
 	 */
 	@Action(method=Method.GET)
 	String hideMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
-        String ret = restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
-		ProfilerAPI.logSimple("manual-hide-message-" + req.getParameter("msgId") + "-by-" + login(req).getNick());
-        return ret;
+        return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
 	}
 
 	/**
