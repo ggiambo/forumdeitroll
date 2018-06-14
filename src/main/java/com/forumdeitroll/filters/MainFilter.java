@@ -42,7 +42,6 @@ public class MainFilter implements Filter {
 		if ("updateMobileViewFromDisclaimer".equals(req.getParameter("action"))) {
 			session.setAttribute("mobileView", "true");
 		}
-		res.setStatus(302);
 
 		String action = req.getParameter("action");
 		if (action == null || action.trim().length() == 0) {
