@@ -35,7 +35,6 @@ import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.ThreadDTO;
 import com.forumdeitroll.persistence.ThreadsDTO;
 import com.forumdeitroll.persistence.dao.ThreadsDAO;
-import com.forumdeitroll.util.IPMemStorage;
 import com.forumdeitroll.util.VisitorCounters;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
@@ -67,7 +66,6 @@ public class JSonServlet extends HttpServlet {
 		try {
 			Method m = this.getClass().getDeclaredMethod(action, StringBuilderWriter.class, Map.class, Long.TYPE);
 			final Map<String, String[]> parmap = new HashMap<String, String[]>(req.getParameterMap());
-			parmap.put("IP", new String[]{ IPMemStorage.requestToIP(req) });
 			m.invoke(this, writer, Collections.unmodifiableMap(parmap), time);
 		} catch (NoSuchMethodException e) {
 			printUsage(req, res);

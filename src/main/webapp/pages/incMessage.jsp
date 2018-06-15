@@ -179,19 +179,6 @@
 				</div>
 			</c:if>
 
-			<%-- Moderazione --%>
-			<c:if test="${loggedUser.preferences['super'] == 'yes'}">
-				<c:url value="ModInfo" var="modUrl">
-					<c:param name="m_id" value="${msg.id}"/>
-				</c:url>
-				<div class="buttonBarButton buttonBarButtonAdmin">
-					<a class="buttonBarLink" href="${modUrl}">
-						<span class="buttonBarImgAdmin buttonBarImgModerazione"></span>
-						Moderazione
-					</a>
-				</div>
-			</c:if>
-
 			<%-- Pedonize ! --%>
 			<c:if test="${loggedUser.preferences['pedonizeThread'] == 'yes'}">
 				<c:if test="${msg.forum != 'Proc di Catania'}">

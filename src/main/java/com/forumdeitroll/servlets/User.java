@@ -9,9 +9,6 @@ import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.servlets.Action.Method;
-import com.forumdeitroll.util.CacheTorExitNodes;
-import com.forumdeitroll.util.IPMemStorage;
-import com.forumdeitroll.util.Ratelimiter;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -62,8 +59,6 @@ public class User extends MainServlet {
 	public static final int LOGIN_TIME_LIMIT = 3 * 60 * 1000;
 	public static final int LOGIN_NUMBER_LIMIT = 5;
 
-	protected final Ratelimiter<String> loginRatelimiter = new Ratelimiter<String>(LOGIN_TIME_LIMIT, LOGIN_NUMBER_LIMIT);
-
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		req.setAttribute(ALL_FORUMS, cachedForums.get());
@@ -71,11 +66,6 @@ public class User extends MainServlet {
 
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		if (loginRatelimiter.limited(IPMemStorage.requestToIP(req))) {
-			setNavigationMessage(req, NavigationMessage.warn("Hai rotto il cazzo"));
-			return loginAction(req, res);
-		}
-
 		AuthorDTO loggedUser = login(req);
 		setWebsiteTitlePrefix(req, "");
 		if (loggedUser != null && loggedUser.isValid()) {
@@ -87,7 +77,6 @@ public class User extends MainServlet {
 			}
 			return "user.jsp";
 		}
-		loginRatelimiter.increment(IPMemStorage.requestToIP(req));
 		setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 		return loginAction(req,  res);
 	}
@@ -232,18 +221,8 @@ public class User extends MainServlet {
 	 */
 	@Action
 	String registerNewUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
-
 		req.setAttribute("captchakey", FdTConfig.getProperty("recaptcha.key.client"));
 		
-		if (adminDAO.blockTorExitNodes()) {
-			if (CacheTorExitNodes.check(IPMemStorage.requestToIP(req))) {
-				if (!availableTorRegistrations.available()) {
-					setNavigationMessage(req, NavigationMessage.warn("Iscrizioni tramite TOR sopra il limite orario"));
-					return "register.jsp";
-				}
-			}
-		}
-
 		String nick = req.getParameter("nick");
 		req.setAttribute("nick", nick);
 		// check del captcha

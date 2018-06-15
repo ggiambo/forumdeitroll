@@ -407,10 +407,6 @@ span.buttonBarImgOpenMod {
 	background-position: -174px -114px;
 }
 
-span.buttonBarImgModerazione {
-	background-position: -144px -130px;
-}
-
 span.buttonBarImgPedonize {
 	background-position: -176px -98px;
 }
@@ -864,7 +860,7 @@ div.quote-closer {
 	padding-top: 11px;
 }
 
-div.userPanelCaption, div.modInfoPanel h2 {
+div.userPanelCaption {
 	text-align: center;
 	font-weight: bold;
 	border-bottom: 1px solid #7BAAE7;
@@ -873,7 +869,7 @@ div.userPanelCaption, div.modInfoPanel h2 {
 	text-shadow: 1px 1px 2px gray;
 }
 
-div.userPanel, div.modInfoPanel {
+div.userPanel {
 	clear: both;
 	background-color: #D6D6D6;
 	padding: 5px;
@@ -912,7 +908,7 @@ div.userPanelContent img.avatar {
 	float: left;
 }
 
-div.userPanelContent h3, div.modInfoPanelContent h3 {
+div.userPanelContent h3 {
 	font-weight: bold;
 	font-variant: small-caps;
 	border-bottom: 1px dotted #7BAAE7;
@@ -920,7 +916,7 @@ div.userPanelContent h3, div.modInfoPanelContent h3 {
 	font-size: 110%;
 }
 
-div.userPanelContent h3:before, div.modInfoPanelContent h3:before {
+div.userPanelContent h3:before {
 	content: "‣ ";
 }
 
@@ -970,7 +966,7 @@ div.userPanelSection input.sendUserPanel {
 	margin: 5px 0px 0px 5px;
 }
 
-div.userPanelSection a.userPanelButton, div.modInfoPanelSection a.modInfoPanelButton {
+div.userPanelSection a.userPanelButton {
 	border-radius: 3px 3px 3px 3px;
 	border: 1px solid #7BAAE7;
 	font-weight: bold;
@@ -986,7 +982,7 @@ div.userPanelSection a.userPanelButton, div.modInfoPanelSection a.modInfoPanelBu
 	margin-right: 0.5em;
 }
 
-div.userPanelSection a.userPanelButton:hover, div.modInfoPanelSection a.modInfoPanelButton:hover {
+div.userPanelSection a.userPanelButton:hover {
 	box-shadow: 0 0 8px #0A78FF;
 }
 

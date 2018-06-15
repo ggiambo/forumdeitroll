@@ -37,7 +37,6 @@ public abstract class MainServlet extends HttpServlet {
 
 	public static final String LOGGED_USER_REQ_ATTR = "loggedUser";
 	private static final String LOGGED_USER_SESS_ATTR = "loggedUserNick";
-	static final String SESSION_IS_BANNED = "sessionIsBanned";
 
 	private static final String ANTI_XSS_TOKEN = "anti_xss_token";
 
@@ -130,22 +129,6 @@ public abstract class MainServlet extends HttpServlet {
 		// implement in subclassed
 	}
 
-	private void userSessionBanContagion(final HttpServletRequest req, final AuthorDTO loggedUser) {
-		if (!loggedUser.isValid()) return;
-
-		if (req.getSession().getAttribute(SESSION_IS_BANNED) != null) {
-			// sessione bannata contagia utente
-			if (!(loggedUser.isBanned())) {
-				authorsDAO.updateAuthorPassword(loggedUser, null);
-			}
-		}
-
-		if (loggedUser.isBanned()) {
-			// utente bannato contagia sessione
-			req.getSession().setAttribute(SESSION_IS_BANNED, "yes");
-		}
-	}
-
 	private String doDo(HttpServletRequest req, HttpServletResponse res, Action.Method method) throws Exception {
 
 		String servlet = this.getClass().getSimpleName();
@@ -168,10 +151,6 @@ public abstract class MainServlet extends HttpServlet {
 			// update loggedUser in session
 			AuthorDTO loggedUser = authorsDAO.getAuthor(loggedUserNick);
 			req.setAttribute(LOGGED_USER_REQ_ATTR, loggedUser);
-
-			userSessionBanContagion(req, loggedUser);
-
-
 			// sidebar status come attributo nel reques
 			sidebarStatus = loggedUser.getPreferences().get("sidebarStatus");
 			blockHeaderStatus = loggedUser.getPreferences().get("blockHeader");

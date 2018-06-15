@@ -125,7 +125,4 @@ public class ThreadDTO {
 		return isVisible;
 	}
 
-	public void modInfoException() {
-		if (isVisible < 0) isVisible = 0;
-	}
 }

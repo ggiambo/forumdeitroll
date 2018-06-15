@@ -20,14 +20,6 @@
         <url-pattern>/Threads</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>ModInfo</servlet-name>
-        <servlet-class>com.forumdeitroll.servlets.ModInfo</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ModInfo</servlet-name>
-        <url-pattern>/ModInfo</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <servlet-name>User</servlet-name>
         <servlet-class>com.forumdeitroll.servlets.User</servlet-class>
     </servlet>
@@ -129,7 +121,6 @@
         <url-pattern>/Threads/*</url-pattern>
         <url-pattern>/User/*</url-pattern>
         <url-pattern>/Pvt/*</url-pattern>
-        <url-pattern>/ModInfo/*</url-pattern>
         <url-pattern>/Bookmarks</url-pattern>
         <url-pattern>/Admin/*</url-pattern>
         <url-pattern>/Authors</url-pattern>

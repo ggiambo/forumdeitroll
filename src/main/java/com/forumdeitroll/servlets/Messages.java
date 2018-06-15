@@ -9,7 +9,6 @@ import com.forumdeitroll.persistence.*;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.taglibs.RenderTag;
 import com.forumdeitroll.util.CacheTorExitNodes;
-import com.forumdeitroll.util.IPMemStorage;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -174,14 +173,6 @@ public class Messages extends MainServlet {
 		msg.setText(req.getParameter("text"));
 		req.setAttribute("message", msg);
 		setWebsiteTitlePrefix(req, "Nuovo messaggi");
-		// faccine - ordinate per key
-		final String ip = IPMemStorage.requestToIP(req);
-		if (adminDAO.blockTorExitNodes()) {
-			if (CacheTorExitNodes.check(ip)) {
-				req.setAttribute("warnTorUser", "true");
-			}
-		}
-
 		req.setAttribute(Admin.ADMIN_NON_ANON_POST, miscDAO.getSysinfoValue(Admin.ADMIN_NON_ANON_POST));
 
 		return "newMessage.jsp";
@@ -410,11 +401,6 @@ public class Messages extends MainServlet {
 
 		if (mp.isAuthorDisabled()) {
 			insertMessageAjaxFail(res, "Questo utente non è abilitato");
-			return null;
-		}
-
-		if (mp.isBanned(req.getSession().getAttribute(SESSION_IS_BANNED), IPMemStorage.requestToIP(req), req)) {
-			insertMessageAjaxBan(res);
 			return null;
 		}
 
@@ -653,12 +639,6 @@ public class Messages extends MainServlet {
 	@Action
 	String mobileComposer(HttpServletRequest req, HttpServletResponse res) {
 		setWebsiteTitlePrefix(req, "Nuovo messaggio");
-		final String ip = IPMemStorage.requestToIP(req);
-		if (adminDAO.blockTorExitNodes()) {
-			if (CacheTorExitNodes.check(ip)) {
-				req.setAttribute("warnTorUser", "true");
-			}
-		}
 
 		String sMessageId = req.getParameter("messageId");
 		String sReplyToId = req.getParameter("replyToId");
