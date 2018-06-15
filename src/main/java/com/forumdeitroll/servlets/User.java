@@ -1,5 +1,6 @@
 package com.forumdeitroll.servlets;
 
+import com.forumdeitroll.FdTConfig;
 import com.forumdeitroll.PasswordUtils;
 import com.forumdeitroll.RandomPool;
 import com.forumdeitroll.ReCaptchaUtils;
@@ -218,6 +219,7 @@ public class User extends MainServlet {
 	String registerAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		req.removeAttribute(LOGGED_USER_REQ_ATTR);
 		setWebsiteTitlePrefix(req, "Registrazione");
+		req.setAttribute("captchakey", FdTConfig.getProperty("recaptcha.key.client"));
 		return "register.jsp";
 	}
 
@@ -230,6 +232,9 @@ public class User extends MainServlet {
 	 */
 	@Action
 	String registerNewUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
+
+		req.setAttribute("captchakey", FdTConfig.getProperty("recaptcha.key.client"));
+		
 		if (adminDAO.blockTorExitNodes()) {
 			if (CacheTorExitNodes.check(IPMemStorage.requestToIP(req))) {
 				if (!availableTorRegistrations.available()) {
