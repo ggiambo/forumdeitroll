@@ -26,10 +26,9 @@ sup {
 
 #body {
 	width: 80%;
-	margin: auto;
 	border: 1px solid;
 	box-shadow: 5px 5px 25px black;
-	margin-top: 1em;
+	margin: 1em auto auto;
 	background-color: white;
 	min-width: 900px;
 }
@@ -40,9 +39,7 @@ sup {
 }
 
 .pb {
-	background-image: url("../images/pb.png");
-	background-repeat: no-repeat;
-	background-position: top right;
+	background: url("../images/pb.png") no-repeat top right;
 }
 
 #headerimg {
@@ -111,7 +108,7 @@ h1 {
 #main {
 	float: left;
 	width: 68%;
-	padding: 0px;
+	padding: 0;
 	margin-left: 5px;
 }
 
@@ -138,8 +135,7 @@ h2 {
 }
 
 #sidebar ul {
-	list-style-image: url(../images/forum.gif);
-	list-style-position : inside;
+	list-style: inside url(../images/forum.gif);
 	margin: 0;
 	padding: 0;
 }
@@ -221,7 +217,7 @@ div.msgInfo {
 	display: table;
 	background-color: lightGray;
 	padding: 0.5em 0;
-	box-shadow: 0px 0px 4px gray;
+	box-shadow: 0 0 4px gray;
 }
 
 img.avatarImg {
@@ -290,28 +286,24 @@ div.msgTotalMsg {
 
 div.rankingClassPositive {
     display: block;
-    background-image: url("../images/emoextended/emoji.png");
-    width: 16px;
+	width: 16px;
     height: 16px;
-    background-repeat: no-repeat;
-    float: right;
+	float: right;
     vertical-align: bottom;
     border-style: none;
-    background-position: -236px -44px;
-    padding-left: 2px;
+	background: url("../images/emoextended/emoji.png") no-repeat -236px -44px;
+	padding-left: 2px;
 }
 
 div.rankingClassNegative {
     display: block;
-    background-image: url("../images/emoextended/emoji.png");
-    width: 16px;
+	width: 16px;
     height: 16px;
-    background-repeat: no-repeat;
-    float: right;
+	float: right;
     vertical-align: bottom;
     border-style: none;
-    background-position: -122px -62px;
-    padding-left: 2px;
+	background: url("../images/emoextended/emoji.png") no-repeat -122px -62px;
+	padding-left: 2px;
 }
 
 div.message {
@@ -326,24 +318,22 @@ div.message {
 	background-image: url('../images/pB40.png');
 	display: inline;
 	padding: 0 0.5em;
-	box-shadow: 0px 0px 5px black;
+	box-shadow: 0 0 5px black;
 	text-shadow: 1px 1px 2px black;
 	font-size: 85%;
 	font-weight: bold;
 }
 
 #quoteForum.quoteForumSmall {
-	background-color: white;
 	color: black;
 	box-shadow: none;
 	text-shadow: none;
-	background-image: none;
+	background: white none;
 }
 .messagesButtonBarLeft {
 	float: left;
 	background: #D6D6D6;
 	height: 21px;
-	display: box;
 	border-top-right-radius: 3px;
 	padding-right: 2px;
 	clear: left;
@@ -352,7 +342,6 @@ div.message {
 	float: right;
 	background: #D6D6D6;
 	height: 21px;
-	display: box;
 	border-top-left-radius: 3px;
 	padding-right: 2px;
 	clear: right;
@@ -360,10 +349,10 @@ div.message {
 
 div.buttonBarButton {
 	float: left;
-	margin: 3px 0px 0px 3px;
-	border-radius: 3px 3px 0px 0px;
+	margin: 3px 0 0 3px;
+	border-radius: 3px 3px 0 0;
 	background: #F6F6F6;
-	padding: 1px 5px 0px 0px;
+	padding: 1px 5px 0 0;
 	height: 16px;
 }
 
@@ -384,10 +373,9 @@ a.buttonBarLink:visited {
 
 span.buttonBarImg {
 	display: block;
-	background-image: url("images/ui-icons_222222_256x240.png");
 	width: 16px;
 	height: 14px;
-	background-repeat: no-repeat;
+	background: url("images/ui-icons_222222_256x240.png") no-repeat;
 	float: left;
 	vertical-align: middle;
 	border-style: none;
@@ -395,10 +383,9 @@ span.buttonBarImg {
 
 span.buttonBarImgAdmin {
 	display: block;
-	background-image: url("images/ui-icons_ef8c08_256x240.png");
 	width: 16px;
 	height: 16px;
-	background-repeat: no-repeat;
+	background: url("images/ui-icons_ef8c08_256x240.png") no-repeat;
 	float: left;
 	vertical-align: middle;
 }
@@ -444,11 +431,11 @@ span.buttonBarImgBookmark {
 }
 span.buttonBarImgParent {
 	width: 12px;
-	background-position: 0px -48px;
+	background-position: 0 -48px;
 }
 span.buttonBarImgUpvote {
 	width: 12px;
-	background-position: 0px -48px;
+	background-position: 0 -48px;
 }
 span.buttonBarImgDownvote {
 	width: 12px;
@@ -472,11 +459,11 @@ span.ranking {
 	width: 55%;
 	border: 1px solid gray;
 	margin-right: 3px;
-	box-shadow: 0px 0px 2px black;
+	box-shadow: 0 0 2px black;
 }
 
 #sidebarSearchForm input:hover, #sidebarSearchForm input:focus {
-	box-shadow: 0px 0px 4px darkRed;
+	box-shadow: 0 0 4px darkRed;
 }
 
 #sidebarSearchForm input[type="submit"] {
@@ -491,7 +478,7 @@ span.ranking {
 }
 
 #sidebarSearchForm input[type="submit"]:hover {
-	box-shadow: 0px 0px 4px darkRed;
+	box-shadow: 0 0 4px darkRed;
 }
 
 #bottomLine {
@@ -562,7 +549,7 @@ div.msgReply {
 	background-color: #D6D6D6;
 	padding: 5px;
 	margin: 10px 5px;
-	box-shadow: 0px 0px 4px gray;
+	box-shadow: 0 0 4px gray;
 }
 
 div.msgReply input {
@@ -695,7 +682,7 @@ div.loginForm {
 	background-color: #D6D6D6;
 	padding: 5px;
 	margin: 5px;
-	box-shadow: 0px 0px 4px gray;
+	box-shadow: 0 0 4px gray;
 	width: 25em;
 }
 
@@ -745,7 +732,7 @@ div.registrationForm {
 	background-color: #D6D6D6;
 	padding: 5px;
 	margin: 5px;
-	box-shadow: 0px 0px 4px gray;
+	box-shadow: 0 0 4px gray;
 	width: 25em;
 }
 
@@ -844,8 +831,7 @@ span.quoteLvl1 {
 
 div.quote-container {
 	height: 16px;
-	background-image: url(../images/plus_sign.gif);
-	background-repeat: no-repeat;
+	background: url(../images/plus_sign.gif) no-repeat;
 	cursor: pointer;
 }
 div.quote-container:after {
@@ -857,9 +843,7 @@ div.quote-container * {
 }
 
 div.quote-closer {
-	background-color: transparent;
-	background-image: url(../images/minus_sign.gif);
-	background-repeat: no-repeat;
+	background: transparent url(../images/minus_sign.gif) no-repeat;
 	cursor: pointer;
 	padding-top: 11px;
 }
@@ -878,7 +862,7 @@ div.userPanel, div.modInfoPanel {
 	background-color: #D6D6D6;
 	padding: 5px;
 	margin: 5px;
-	box-shadow: 0px 0px 4px gray;
+	box-shadow: 0 0 4px gray;
 }
 
 div.userPanel > table th {
@@ -967,7 +951,7 @@ div.userPanelSection input.sendUserPanel {
 	border: 1px solid #7BAAE7;
 	font-weight: bold;
 	font-size: 90%;
-	margin: 5px 0px 0px 5px;
+	margin: 5px 0 0 5px;
 }
 
 div.userPanelSection a.userPanelButton, div.modInfoPanelSection a.modInfoPanelButton {
@@ -1163,10 +1147,7 @@ ul.pager {
 
 ul.pager>li {
 	display: inline !important;
-	padding-top: 0.2em !important;
-	padding-bottom: 0.2em !important;
-	padding-left: 0.2em !important;
-	padding-right: 0.2em !important;
+	padding: 0.2em !important;
 }
 
 div.counter-container {
@@ -1369,13 +1350,13 @@ div.msgReply ul.tabs li {
 }
 
 div.msgReply ul.tabs li.selectedTab {
-	border-radius: 3px 3px 0px 0px;
+	border-radius: 3px 3px 0 0;
 	padding-bottom: 1px;
 	background: white;
 }
 
 div.msgReply ul.tabs li a {
-	border-radius: 3px 3px 0px 0px;
+	border-radius: 3px 3px 0 0;
 	padding: 0 1em;
 	font-weight: normal;
 	text-decoration: none;
@@ -1444,7 +1425,7 @@ span.searchHighlight {
 
 div.notifications {
 	background: #FFBABA;
-	margin: 5px 0px 5px 30px;
+	margin: 5px 0 5px 30px;
 	padding: 5px;
 	width: 350px;
 	font-size: 80%;
@@ -1528,11 +1509,9 @@ div.articleBox>a>img.avatar {
 
 span.add-tag {
 	display: inline;
-	background-image: url("images/ui-icons_222222_256x240.png");
-	background-position: -144px 0px;
 	width: 16px;
 	height: 14px;
-	background-repeat: no-repeat;
+	background: url("images/ui-icons_222222_256x240.png") no-repeat -144px 0;
 	vertical-align: middle;
 	border-style: none;
 	cursor: pointer;
@@ -1552,11 +1531,9 @@ span.tag>a {
 
 span.del-tag {
 	display: inline;
-	background-image: url("images/ui-icons_222222_256x240.png");
-	background-position: -80px -128px;
 	width: 16px;
 	height: 14px;
-	background-repeat: no-repeat;
+	background: url("images/ui-icons_222222_256x240.png") no-repeat -80px -128px;
 	vertical-align: middle;
 	border-style: none;
 	cursor: pointer;
@@ -1591,7 +1568,7 @@ span.fdtAd {
 	font-size: 13px;
 	line-height: 15px;
 	margin-right: 7px;
-	padding: 0px 3px;
+	padding: 0 3px;
 	vertical-align: baseline;
 	font-family: arial,sans-serif;
 }
@@ -1611,9 +1588,7 @@ span.fdtAd {
  */
 .row {
 	width: 100%;
-	margin: 0 auto;
 	display: block;
-	margin: 0;
 	padding: 0;
 	clear: both;
 }
