@@ -93,7 +93,7 @@ public class MessageDTO extends ThreadDTO {
 		sb.append("threadId:").append(threadId).append(",");
 		sb.append("text:");
 		if (text.length() > 50) {
-			sb.append(text.substring(0, 50));
+			sb.append(text, 0, 50);
 		} else {
 			sb.append(text);
 		}

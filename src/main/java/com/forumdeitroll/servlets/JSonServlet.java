@@ -1,5 +1,23 @@
 package com.forumdeitroll.servlets;
 
+import com.forumdeitroll.SingleValueCache;
+import com.forumdeitroll.markup.Emoticon;
+import com.forumdeitroll.markup.Emoticons;
+import com.forumdeitroll.markup.RenderOptions;
+import com.forumdeitroll.markup.Renderer;
+import com.forumdeitroll.persistence.*;
+import com.forumdeitroll.persistence.dao.ThreadsDAO;
+import com.forumdeitroll.util.VisitorCounters;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonWriter;
+import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -9,35 +27,8 @@ import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.output.StringBuilderWriter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import com.forumdeitroll.SingleValueCache;
-import com.forumdeitroll.markup.Emoticon;
-import com.forumdeitroll.markup.Emoticons;
-import com.forumdeitroll.markup.RenderOptions;
-import com.forumdeitroll.markup.Renderer;
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.DAOFactory;
-import com.forumdeitroll.persistence.MessageDTO;
-import com.forumdeitroll.persistence.MessagesDTO;
-import com.forumdeitroll.persistence.QuoteDTO;
-import com.forumdeitroll.persistence.ThreadDTO;
-import com.forumdeitroll.persistence.ThreadsDTO;
-import com.forumdeitroll.persistence.dao.ThreadsDAO;
-import com.forumdeitroll.util.VisitorCounters;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonWriter;
 
 public class JSonServlet extends HttpServlet {
 
@@ -65,7 +56,7 @@ public class JSonServlet extends HttpServlet {
 		StringBuilderWriter writer = new StringBuilderWriter();
 		try {
 			Method m = this.getClass().getDeclaredMethod(action, StringBuilderWriter.class, Map.class, Long.TYPE);
-			final Map<String, String[]> parmap = new HashMap<String, String[]>(req.getParameterMap());
+			final Map<String, String[]> parmap = new HashMap<>(req.getParameterMap());
 			m.invoke(this, writer, Collections.unmodifiableMap(parmap), time);
 		} catch (NoSuchMethodException e) {
 			printUsage(req, res);

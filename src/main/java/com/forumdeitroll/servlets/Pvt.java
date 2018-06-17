@@ -1,20 +1,17 @@
 package com.forumdeitroll.servlets;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO;
 import com.forumdeitroll.persistence.PrivateMsgDTO.ToNickDetailsDTO;
 import com.forumdeitroll.servlets.Action.Method;
 import com.google.gson.stream.JsonWriter;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Servlet implementation class Pvt
@@ -27,13 +24,13 @@ public class Pvt extends MainServlet {
 
 	@Override
 	@Action
-	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String init(HttpServletRequest req, HttpServletResponse res) {
 		return inbox(req, res);
 	}
 
 
 	@Action(method=Method.GET)
-	String inbox(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String inbox(HttpServletRequest req, HttpServletResponse res) {
 		setWebsiteTitlePrefix(req, "Messaggi privati - Ricevuti");
 		setNavigationMessage(req, NavigationMessage.info("Messaggi privati - Ricevuti"));
 		AuthorDTO author = login(req);
@@ -59,7 +56,7 @@ public class Pvt extends MainServlet {
 		try {
 			npage = Integer.parseInt(page);
 		} catch (Exception e) {
-			
+
 		}
 		String location = null;
 		for (PrivateMsgDTO pvt : privateMsgDAO.getInbox(author, PVT_PER_PAGE, npage)) {
@@ -80,7 +77,7 @@ public class Pvt extends MainServlet {
 	}
 
 	@Action(method=Method.GET)
-	String sendNew(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String sendNew(HttpServletRequest req, HttpServletResponse res) {
 		if (req.getParameter("action").equals("sendNew")) {
 			req.getSession().removeAttribute("mobileRecipients");
 			req.getSession().removeAttribute("mobileText");
@@ -96,7 +93,7 @@ public class Pvt extends MainServlet {
 	}
 
 	@Action(method=Method.POST)
-	String sendPvt(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String sendPvt(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO author = login(req);
 		req.getSession().setAttribute("mobileSubject", req.getParameter("subject"));
 		req.getSession().setAttribute("mobileText", req.getParameter("text"));
@@ -144,8 +141,7 @@ public class Pvt extends MainServlet {
 	}
 
 	@Action(method=Method.POST)
-	String notifyUnread(HttpServletRequest req, HttpServletResponse res)
-		throws Exception {
+	String notifyUnread(HttpServletRequest req, HttpServletResponse res) {
 		long id = Long.parseLong(req.getParameter("id"));
 		PrivateMsgDTO pvt = new PrivateMsgDTO();
 		pvt.setId(id);
@@ -159,8 +155,7 @@ public class Pvt extends MainServlet {
 	}
 
 	@Action(method=Method.GET)
-	String show(HttpServletRequest req, HttpServletResponse res)
-		throws Exception {
+	String show(HttpServletRequest req, HttpServletResponse res) {
 		setWebsiteTitlePrefix(req, "Messaggi privati - Visualizza Messaggio");
 		setNavigationMessage(req, NavigationMessage.info("Messaggi privati - Visualizza Messaggio"));
 		long id = Long.parseLong(req.getParameter("id"));
@@ -175,7 +170,7 @@ public class Pvt extends MainServlet {
 	}
 
 	@Action(method=Method.GET)
-	String delete(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String delete(HttpServletRequest req, HttpServletResponse res) {
 		if (login(req).isValid()) {
 			long id = Long.parseLong(req.getParameter("id"));
 			privateMsgDAO.deletePvt(id, login(req));
@@ -189,7 +184,7 @@ public class Pvt extends MainServlet {
 	}
 
 	@Action(method=Method.GET)
-	String outbox(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String outbox(HttpServletRequest req, HttpServletResponse res) {
 		setWebsiteTitlePrefix(req, "Messaggi privati - Inviati");
 		setNavigationMessage(req, NavigationMessage.info("Messaggi privati - Inviati"));
 		AuthorDTO author = login(req);
@@ -213,7 +208,7 @@ public class Pvt extends MainServlet {
 	 * Rispondi al mittente
 	 */
 	@Action(method=Method.GET)
-	String reply(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String reply(HttpServletRequest req, HttpServletResponse res) {
 		return reply(req, false);
 	}
 
@@ -221,11 +216,11 @@ public class Pvt extends MainServlet {
 	 * Rispondi al mittente e a tutti i destinatari, tranne che me
 	 */
 	@Action(method=Method.GET)
-	String replyAll(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String replyAll(HttpServletRequest req, HttpServletResponse res) {
 		return reply(req, true);
 	}
 
-	private String reply(HttpServletRequest req, boolean toAll)	throws Exception {
+	private String reply(HttpServletRequest req, boolean toAll) {
 		setWebsiteTitlePrefix(req, "Messaggi privati - Rispondi");
 		long id = Long.parseLong(req.getParameter("id"));
 		PrivateMsgDTO pvt = new PrivateMsgDTO();
@@ -233,12 +228,12 @@ public class Pvt extends MainServlet {
 		pvt = privateMsgDAO.getPvtDetails(id, login(req));
 		// prepara il reply
 		if (toAll) {
-			List<String> recipients = new ArrayList<String>();
+			List<String> recipients = new ArrayList<>();
 
 			recipients.add(pvt.getFromNick());
 			String me = login(req).getNick();
-			for (Iterator<ToNickDetailsDTO> itRec = pvt.getToNick().iterator(); itRec.hasNext();) {
-				String nick = itRec.next().getNick();
+			for (ToNickDetailsDTO toNickDetailsDTO : pvt.getToNick()) {
+				String nick = toNickDetailsDTO.getNick();
 				if (!me.equals(nick)) {
 					recipients.add(nick);
 				}
@@ -302,10 +297,10 @@ public class Pvt extends MainServlet {
 	}
 
 	@Action(method=Method.GET)
-	String mobileAddRecipientCallback(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String mobileAddRecipientCallback(HttpServletRequest req, HttpServletResponse res) {
 		ArrayList<String> recipients = (ArrayList<String>) req.getSession().getAttribute("mobileRecipients");
 		if (recipients == null) {
-			recipients = new ArrayList<String>();
+			recipients = new ArrayList<>();
 		}
 		if (!recipients.contains(req.getParameter("nick"))) {
 			recipients.add(req.getParameter("nick"));
@@ -315,10 +310,10 @@ public class Pvt extends MainServlet {
 	}
 
 	@Action(method=Method.POST)
-	String mobileRemoveRecipient(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String mobileRemoveRecipient(HttpServletRequest req, HttpServletResponse res) {
 		ArrayList<String> recipients = (ArrayList<String>) req.getSession().getAttribute("mobileRecipients");
 		if (recipients == null) {
-			recipients = new ArrayList<String>();
+			recipients = new ArrayList<>();
 		}
 		recipients.remove(req.getParameter("toRemove"));
 		req.getSession().setAttribute("mobileRecipients", recipients);

@@ -5,12 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class PrivateMsgDTO {
-	
+
 	public static class ToNickDetailsDTO {
 		public ToNickDetailsDTO() {}
-		public ToNickDetailsDTO(String nick) {
-			this.nick = nick;
-		}
+
 		private String nick;
 		private boolean read = false;
 		public String getNick() {
@@ -26,18 +24,18 @@ public class PrivateMsgDTO {
 			this.read = read;
 		}
 	}
-	
+
 	public PrivateMsgDTO() {}
-	
+
 	private long id;
 	private String fromNick;
-	private List<ToNickDetailsDTO> toNick = new LinkedList<ToNickDetailsDTO>();
+	private List<ToNickDetailsDTO> toNick = new LinkedList<>();
 	private String subject;
 	private Date date;
 	private String text;
 	private boolean read = false;
 	private long replyTo;
-	
+
 	public long getId() {
 		return id;
 	}

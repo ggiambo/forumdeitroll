@@ -51,10 +51,6 @@ public class Threads extends MainServlet {
 	/**
 	 * Recupera la discussione a partire da un messaggio in essa contenuto
 	 * Usato in conversione di url da .it a .com
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
 	String getByMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -105,7 +101,7 @@ public class Threads extends MainServlet {
 	Se il parametro forum non e` presente restituisce i thread di tutti i forum, se e` presente ma contiene la stringa vuota restituisce i thread del forum principale, altrimenti restituisce i thread del forum specificato
 	 */
 	@Action
-	String getThreads(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getThreads(HttpServletRequest req, HttpServletResponse res) {
 		return getThreads(req, res, NavigationMessage.info("Nuove discussioni"));
 	}
 
@@ -113,7 +109,7 @@ public class Threads extends MainServlet {
 	 * Ordinati per thread / ultimo post
 	 */
 	@Action
-	String getThreadsByLastPost(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getThreadsByLastPost(HttpServletRequest req, HttpServletResponse res) {
 		String forum = req.getParameter("forum");
 		ThreadsDTO messages = threadsDAO.getThreadsByLastPost(forum, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());
@@ -135,7 +131,7 @@ public class Threads extends MainServlet {
 	 * Ordinati per thread / ultimo post e per utente
 	 */
 	@Action
-	String getThreadsByLastPostGroupByUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getThreadsByLastPostGroupByUser(HttpServletRequest req, HttpServletResponse res) {
 		String forum = req.getParameter("forum");
 		ThreadsDTO messages = threadsDAO.getThreadsByLastPostGroupByUser(forum, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());
@@ -170,7 +166,7 @@ public class Threads extends MainServlet {
 		return "threads.jsp";
 	}
 
-	private String getThreads(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) throws Exception {
+	private String getThreads(HttpServletRequest req, HttpServletResponse res, NavigationMessage message) {
 		String forum = req.getParameter("forum");
 		ThreadsDTO messages = threadsDAO.getThreads(forum, PAGE_SIZE, getPageNr(req), hiddenForums(req));
 		req.setAttribute("messages", messages.getMessages());

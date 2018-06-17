@@ -11,7 +11,7 @@ public abstract class TokenMatcher implements MatchResult {
 	public abstract boolean atBeginningOfRegion();
 	public abstract void reset(String text);
 	public final String name;
-	protected TokenMatcher(String name) {
+	TokenMatcher(String name) {
 		this.name = name;
 	}
 	@Override public String toString() { // TODO: may throw IllegalStateException because of group(), start() or end()
@@ -20,7 +20,7 @@ public abstract class TokenMatcher implements MatchResult {
 	}
 	public static class Wrapper extends TokenMatcher {
 		private TokenMatcher matcher;
-		public Wrapper(String name, TokenMatcher matcher) {
+		Wrapper(String name, TokenMatcher matcher) {
 			super(name);
 			this.matcher = matcher;
 		}
@@ -64,15 +64,15 @@ public abstract class TokenMatcher implements MatchResult {
 		private final boolean atBeginning;
 		private Matcher matcher;
 		private int regionStart;
-		public Regex(String name, Pattern pattern) {
+		Regex(String name, Pattern pattern) {
 			super(name);
 			this.pattern = pattern;
 			this.atBeginning = pattern.pattern().startsWith("^");
 		}
-		public Regex(String name, String pattern) {
+		Regex(String name, String pattern) {
 			this(name, Pattern.compile(pattern));
 		}
-		public Regex(String name, String pattern, int flags) {
+		Regex(String name, String pattern, int flags) {
 			this(name, Pattern.compile(pattern, flags));
 		}
 		@Override public boolean atBeginningOfRegion() {
@@ -112,10 +112,10 @@ public abstract class TokenMatcher implements MatchResult {
 	}
 
 	public static class Section extends TokenMatcher {
-		public Section(String name) {
+		Section(String name) {
 			super(name);
 		}
-		protected String stringRef;
+		String stringRef;
 		protected int start, end;
 		@Override public int end() {
 			return end;
@@ -167,7 +167,7 @@ public abstract class TokenMatcher implements MatchResult {
 	            if (source.charAt(i) != first) {
 	                while (
 	                	++i <= max &&
-	                	(startWith ? i == sourceOffset : true) &&
+	                	(!startWith || i == sourceOffset) &&
 	                	(ignoreCase
 	                			? Character.toLowerCase(source.charAt(i)) != Character.toLowerCase(first)
 				                : source.charAt(i) != first)
@@ -216,7 +216,7 @@ public abstract class TokenMatcher implements MatchResult {
 
 	public static class Beginning extends Section {
 		private String needle;
-		public Beginning(String name, String needle) {
+		Beginning(String name, String needle) {
 			super(name);
 			this.needle = needle;
 		}
@@ -234,7 +234,7 @@ public abstract class TokenMatcher implements MatchResult {
 
 	public static class BeginningIgnoreCase extends Section {
 		private String needle;
-		public BeginningIgnoreCase(String name, String needle) {
+		BeginningIgnoreCase(String name, String needle) {
 			super(name);
 			this.needle = needle;
 		}
@@ -253,21 +253,21 @@ public abstract class TokenMatcher implements MatchResult {
 		}
 	}
 
-	public static class BBCodeOpen extends BeginningIgnoreCase {
-		public BBCodeOpen(String name) {
+	static class BBCodeOpen extends BeginningIgnoreCase {
+		BBCodeOpen(String name) {
 			super(name.toUpperCase() + "_OPEN", "[" + name + "]");
 		}
 	}
 
-	public static class BBCodeClose extends BeginningIgnoreCase {
-		public BBCodeClose(String name) {
+	static class BBCodeClose extends BeginningIgnoreCase {
+		BBCodeClose(String name) {
 			super(name.toUpperCase() + "_CLOSE", "[/" + name + "]");
 		}
 	}
 
 	public static class BeginningIgnoreCaseKeepRegion extends Section {
 		private String needle;
-		public BeginningIgnoreCaseKeepRegion(String name, String needle) {
+		BeginningIgnoreCaseKeepRegion(String name, String needle) {
 			super(name);
 			this.needle = needle;
 		}
@@ -285,32 +285,10 @@ public abstract class TokenMatcher implements MatchResult {
 		}
 	}
 
-	public static class InTheMiddle extends Section {
-		private String needle;
-		private boolean atBeginning;
-		public InTheMiddle(String name, String needle) {
-			super(name);
-			this.needle = needle;
-		}
-		@Override public boolean find() {
-			int index = stringRef.indexOf(needle, start);
-			if (index != -1 && index <= (end - needle.length())) {
-				atBeginning = index == start;
-				this.start = index;
-				this.end = index + needle.length();
-				return true;
-			}
-			return false;
-		}
-		@Override public boolean atBeginningOfRegion() {
-			return atBeginning;
-		}
-	}
-
 	public static class InTheMiddleIgnoreCase extends Section {
 		private String needle;
 		private boolean atBeginning;
-		public InTheMiddleIgnoreCase(String name, String needle) {
+		InTheMiddleIgnoreCase(String name, String needle) {
 			super(name);
 			this.needle = needle;
 		}

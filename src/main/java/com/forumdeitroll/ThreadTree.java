@@ -66,32 +66,6 @@ public class ThreadTree {
 			return children;
 		}
 
-		public void subjectElision(String prevTitle) {
-			if (content.getSubject().equals(prevTitle) || (content.getSubject().startsWith("Re: ") && content.getSubject().substring(4).equals(prevTitle))) {
-				content.setSubject("&#9632;");
-			} else {
-				prevTitle = content.getSubject();
-			}
-			for (final TreeNode child: children) {
-				child.subjectElision(prevTitle);
-			}
-		}
-
-		public Date sortChildByMostRecentDescendant() {
-			final Map<Long, Date> mrds = new HashMap<>();
-			Date mrd = getContent().getDate();
-			for (final TreeNode child: children) {
-				final Date cur = child.sortChildByMostRecentDescendant();
-				mrds.put(child.getContent().getId(), cur);
-				if (cur.compareTo(mrd) > 0) {
-					mrd = cur;
-				}
-			}
-			children.sort((n1, n2) -> -mrds.get(n1.getContent().getId()).compareTo(mrds.get(n2.getContent().getId())));
-			orderedChldren = true;
-			return mrd;
-		}
-
 		public TreeNode setNext(final MessageDTO prev) {
 			if (prev != null) {
 				prev.setNextId(this.content.getId());

@@ -2,7 +2,7 @@ package com.forumdeitroll.markup;
 
 public class Snippet {
 	public final String sequence;
-	public final String sequenceUpcase;
+	final String sequenceUpcase;
 	public final String htmlReplacement;
 	public Snippet(String sequence, String htmlReplacement) {
 		this.sequence = sequence.toLowerCase();

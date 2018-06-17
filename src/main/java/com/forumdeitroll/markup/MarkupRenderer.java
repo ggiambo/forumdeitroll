@@ -32,7 +32,6 @@ public class MarkupRenderer implements TokenListener {
 	private boolean codeTagOpen;
 	private boolean preTagCode;
 	private int[] tagsCounter;
-	private int lastOutStart;
 	private String urlHref;
 	private String urlHrefType;
 	private StringBuilder alternateOut;
@@ -54,15 +53,13 @@ public class MarkupRenderer implements TokenListener {
 		this.codeTagOpen = false;
 		this.preTagCode = false;
 		this.tagsCounter = new int[7]; // bisu + spoiler + color + carets
-		this.lastOutStart = 0;
 		this.urlHref = null;
 		this.urlHrefType = null;
 		this.alternateOut = null;
 		this.emotiCount = 0;
 	}
 
-	@Override public void on(TokenMatcher token, TokenMatcher additional) throws Exception {
-		int nextOutStart = out.length();
+	@Override public void on(TokenMatcher token, TokenMatcher additional) {
 		if (token.name.startsWith("QUOTES")) {
 			onQuotes(token);
 		} else if (token.name.equals("BR")) {
@@ -86,9 +83,8 @@ public class MarkupRenderer implements TokenListener {
 		} else if (token.name.startsWith("TEXT")) {
 			onText(token);
 		} else if (token.name.equals("VIDEO")) {
-			onVideo(token, additional);
+			onVideo(additional);
 		}
-		this.lastOutStart = nextOutStart;
 	}
 
 	private void finalizeRender() {
@@ -102,50 +98,50 @@ public class MarkupRenderer implements TokenListener {
 	private void onQuotes(TokenMatcher token) {
 		int newQuoteLevel = countQuoteLevel(token);
 		boolean scrittoda = token.name.endsWith("SCRITTO_DA");
-		if (quoteLevel == 0 && newQuoteLevel == 0) {
-			return;
-		} else if (quoteLevel != 0 && quoteLevel == newQuoteLevel) {
-			if (!scrittoda && !multiLineQuoteStarted && opts.collapseQuotes) {
+		if (quoteLevel != 0 || newQuoteLevel != 0) {
+			if (quoteLevel != 0 && quoteLevel == newQuoteLevel) {
+				if (!scrittoda && !multiLineQuoteStarted && opts.collapseQuotes) {
+					emitCloseTags();
+					emitCloseQuote();
+					emitOpenMultiLineQuote();
+					multiLineQuoteStarted = true;
+					emitOpenQuote();
+					emitOpenTags();
+					emitQuoteText(token);
+				} else {
+					emitQuoteText(token);
+				}
+			} else if (newQuoteLevel == 0) {
 				emitCloseTags();
 				emitCloseQuote();
-				emitOpenMultiLineQuote();
-				multiLineQuoteStarted = true;
-				emitOpenQuote(token);
+				if (multiLineQuoteStarted) {
+					emitCloseMultiLineQuote();
+					multiLineQuoteStarted = false;
+				}
+				emitOpenTags();
+				quoteLevel = 0;
+			} else if (quoteLevel == 0) {
+				if (!scrittoda && opts.collapseQuotes && !multiLineQuoteStarted) {
+					emitOpenMultiLineQuote();
+					multiLineQuoteStarted = true;
+				}
+				quoteLevel = newQuoteLevel;
+				emitCloseTags();
+				emitOpenQuote();
 				emitOpenTags();
 				emitQuoteText(token);
 			} else {
+				quoteLevel = newQuoteLevel;
+				emitCloseTags();
+				emitCloseQuote();
+				if (!scrittoda && opts.collapseQuotes && !multiLineQuoteStarted) {
+					emitOpenMultiLineQuote();
+					multiLineQuoteStarted = true;
+				}
+				emitOpenQuote();
+				emitOpenTags();
 				emitQuoteText(token);
 			}
-		} else if (newQuoteLevel == 0) {
-			emitCloseTags();
-			emitCloseQuote();
-			if (multiLineQuoteStarted) {
-				emitCloseMultiLineQuote();
-				multiLineQuoteStarted = false;
-			}
-			emitOpenTags();
-			quoteLevel = 0;
-		} else if (quoteLevel == 0) {
-			if (!scrittoda && opts.collapseQuotes && !multiLineQuoteStarted) {
-				emitOpenMultiLineQuote();
-				multiLineQuoteStarted = true;
-			}
-			quoteLevel = newQuoteLevel;
-			emitCloseTags();
-			emitOpenQuote(token);
-			emitOpenTags();
-			emitQuoteText(token);
-		} else {
-			quoteLevel = newQuoteLevel;
-			emitCloseTags();
-			emitCloseQuote();
-			if (!scrittoda && opts.collapseQuotes && !multiLineQuoteStarted) {
-				emitOpenMultiLineQuote();
-				multiLineQuoteStarted = true;
-			}
-			emitOpenQuote(token);
-			emitOpenTags();
-			emitQuoteText(token);
 		}
 	}
 
@@ -192,7 +188,7 @@ public class MarkupRenderer implements TokenListener {
 		out.append("</div></div>");
 	}
 
-	private void emitOpenQuote(TokenMatcher token) {
+	private void emitOpenQuote() {
 		out.append(String.format("<span class='quoteLvl%d'>", (quoteLevel % 4 == 0 ? 4 : quoteLevel % 4)));
 	}
 
@@ -361,22 +357,27 @@ public class MarkupRenderer implements TokenListener {
 	}
 
 	private void onUrl(TokenMatcher token, TokenMatcher additional) {
-		if (token.name.equals("URL")) {
-			emitLink(additional.group(), additional.name, null, false);
-		} else if (token.name.equals("URL_OPEN_WITH_LINK")) {
-			alternateOut = out;
-			out = new StringBuilder();
-			urlHref = additional.group();
-			urlHrefType = additional.name;
-		} else if (token.name.equals("URL_CLOSE")) {
-			String desc = out.toString();
-			out = alternateOut;
-			emitLink(urlHref, urlHrefType, desc, false);
-			urlHref = null;
-			urlHrefType = null;
-			alternateOut = null;
-		} else {
-			out.append(text, token.start(), token.end());
+		switch (token.name) {
+			case "URL":
+				emitLink(additional.group(), additional.name, null, false);
+				break;
+			case "URL_OPEN_WITH_LINK":
+				alternateOut = out;
+				out = new StringBuilder();
+				urlHref = additional.group();
+				urlHrefType = additional.name;
+				break;
+			case "URL_CLOSE":
+				String desc = out.toString();
+				out = alternateOut;
+				emitLink(urlHref, urlHrefType, desc, false);
+				urlHref = null;
+				urlHrefType = null;
+				alternateOut = null;
+				break;
+			default:
+				out.append(text, token.start(), token.end());
+				break;
 		}
 	}
 
@@ -404,20 +405,19 @@ public class MarkupRenderer implements TokenListener {
 			, link, desc != null ? escape(desc) : escape(orig)));
 		if (autolink) {
 			for (String domain : DOMAINS_STR) {
-				if (link.indexOf(domain) != -1) {
+				if (link.contains(domain)) {
 					boolean wwwWorkaround =domain.equals("repubblica.it");
 					out.append(String.format("<img src=\"http://%s%s/favicon.ico\" class=favicon>", wwwWorkaround ? "www." : "", domain));
 					break;
 				}
 			}
 		}
-		boolean shortenDesc = autolink;
 		if (desc == null) {
 			desc = orig;
 		}
 		int limit = URL_MAX_DESC_LENGTH;
-		if (shortenDesc && desc.length() > limit) {
-			out.append(desc.substring(0, limit)).append("...");
+		if (autolink && desc.length() > limit) {
+			out.append(desc, 0, limit).append("...");
 		} else {
 			out.append(desc);
 		}
@@ -492,7 +492,7 @@ public class MarkupRenderer implements TokenListener {
 		, "?start=" + start));
 	}
 
-	private static Pattern t_pattern = Pattern.compile("[&\\?#]t=([0-9]+m[0-9]+s|[0-9]+[ms]|[0-9]+)");
+	private static Pattern t_pattern = Pattern.compile("[&?#]t=([0-9]+m[0-9]+s|[0-9]+[ms]|[0-9]+)");
 	private String extractTFromYoutubeUrl(String link) {
 		Matcher matcher = t_pattern.matcher(link);
 		if (matcher.find()) {
@@ -536,7 +536,7 @@ public class MarkupRenderer implements TokenListener {
 		}
 	}
 
-	private void onVideo(TokenMatcher token, TokenMatcher additional) {
+	private void onVideo(TokenMatcher additional) {
 		String videoUrl = additional.group();
 		String cleanVideoUrl = escape(videoUrl);
 		out.append(String.format(
@@ -547,7 +547,7 @@ public class MarkupRenderer implements TokenListener {
 			+ "</span>", cleanVideoUrl));
 	}
 
-	private static ConcurrentHashMap<Long, String> titleCache = new ConcurrentHashMap<Long, String>();
+	private static ConcurrentHashMap<Long, String> titleCache = new ConcurrentHashMap<>();
 		private static String getMessageTitle(long id) {
 			if (titleCache.containsKey(id)) {
 				return titleCache.get(id);

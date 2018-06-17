@@ -31,7 +31,7 @@ public class Tappeto extends HttpServlet {
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
 		String queryString = req.getQueryString();
 		if (StringUtils.isEmpty(queryString)) {

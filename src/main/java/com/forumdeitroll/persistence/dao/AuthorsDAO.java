@@ -1,20 +1,19 @@
 package com.forumdeitroll.persistence.dao;
 
-import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
-import static com.forumdeitroll.persistence.jooq.Tables.PREFERENCES;
+import com.forumdeitroll.PasswordUtils;
+import com.forumdeitroll.persistence.AuthorDTO;
+import org.jooq.DSLContext;
+import org.jooq.Record1;
+import org.jooq.Record2;
+import org.jooq.Result;
 
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jooq.DSLContext;
-import org.jooq.Record1;
-import org.jooq.Record2;
-import org.jooq.Result;
-
-import com.forumdeitroll.PasswordUtils;
-import com.forumdeitroll.persistence.AuthorDTO;
+import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
+import static com.forumdeitroll.persistence.jooq.Tables.PREFERENCES;
 
 public class AuthorsDAO extends BaseDAO {
 
@@ -29,7 +28,7 @@ public class AuthorsDAO extends BaseDAO {
 			.where(AUTHORS.MESSAGES.greaterThan(0))
 			.orderBy(AUTHORS.MESSAGES.desc())
 			.fetch();
-		List<AuthorDTO> authors = new ArrayList<AuthorDTO>();
+		List<AuthorDTO> authors = new ArrayList<>();
 		for (Record2<String, Integer> record : result) {
 			AuthorDTO author = new AuthorDTO(null);
 			author.setNick(record.value1());
@@ -59,7 +58,7 @@ public class AuthorsDAO extends BaseDAO {
 					.fetch(AUTHORS.NICK);
 		}
 
-		List<AuthorDTO> res = new ArrayList<AuthorDTO>(nicks.size());
+		List<AuthorDTO> res = new ArrayList<>(nicks.size());
 		for (String nick : nicks) {
 			res.add(getAuthor(nick));
 		}
@@ -134,7 +133,7 @@ public class AuthorsDAO extends BaseDAO {
 	}
 
 	public List<String> getHiddenForums(AuthorDTO loggedUser) {
-		List<String> hiddenForums = new ArrayList<String>();
+		List<String> hiddenForums = new ArrayList<>();
 		Map<String, String> prefs = getPreferences(loggedUser);
 		for (Map.Entry<String, String> pref : prefs.entrySet()) {
 			if (pref.getKey().startsWith("hideForum.")) {
@@ -145,7 +144,7 @@ public class AuthorsDAO extends BaseDAO {
 	}
 
 	public List<String> searchAuthor(String searchString) {
-		List<String> res = new ArrayList<String>();
+		List<String> res = new ArrayList<>();
 		Result<Record1<String>> records = jooq.select(AUTHORS.NICK)
 			.from(AUTHORS)
 			.where(AUTHORS.NICK.like(searchString + "%"))

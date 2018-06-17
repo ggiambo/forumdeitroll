@@ -26,7 +26,7 @@ public class MiscDAO extends BaseDAO {
 			.orderBy(DSL.count(MESSAGES.ID).desc(), MESSAGES.FORUM.asc())
 			.fetch();
 
-		List<String> res = new ArrayList<String>(records.size());
+		List<String> res = new ArrayList<>(records.size());
 		for (Record1<String> record : records) {
 			res.add(record.getValue(MESSAGES.FORUM));
 		}
@@ -47,7 +47,7 @@ public class MiscDAO extends BaseDAO {
 		Result<NotificationRecord> records = where.orderBy(NOTIFICATION.ID.asc())
 				.fetch();
 
-		List<NotificationDTO> res = new ArrayList<NotificationDTO>(records.size());
+		List<NotificationDTO> res = new ArrayList<>(records.size());
 		for (NotificationRecord record : records) {
 			res.add(recordToDTO(record));
 		}
@@ -87,7 +87,7 @@ public class MiscDAO extends BaseDAO {
 		boolean oldVote = false;
 		if (oldVoteValue != null) {
 			hasVoted = true;
-			oldVote = oldVoteValue == 1 ? true : false;
+			oldVote = oldVoteValue == 1;
 		}
 
 		if (hasVoted && oldVote == upvote) {
@@ -144,7 +144,6 @@ public class MiscDAO extends BaseDAO {
 
 	private NotificationDTO recordToDTO(NotificationRecord record) {
 		NotificationDTO notification = new NotificationDTO();
-		notification = new NotificationDTO();
 		notification.setId(record.getId());
 		notification.setFromNick(record.getFromnick());
 		notification.setToNick(record.getTonick());

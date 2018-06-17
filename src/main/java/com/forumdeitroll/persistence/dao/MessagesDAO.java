@@ -2,9 +2,7 @@ package com.forumdeitroll.persistence.dao;
 
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.persistence.MessagesDTO;
-import com.forumdeitroll.persistence.SearchMessagesSort;
 import com.forumdeitroll.persistence.jooq.tables.records.MessagesRecord;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jooq.*;
@@ -45,7 +43,7 @@ public class MessagesDAO extends BaseDAO {
 			return new MessageDTO();
 		}
 
-		return recordToDTO(record, false);
+		return recordToDTO(record);
 
 	}
 
@@ -55,16 +53,12 @@ public class MessagesDAO extends BaseDAO {
 				.orderBy(MESSAGES.ID.asc())
 				.fetch();
 
-		List<MessageDTO> res = new ArrayList<MessageDTO>(records.size());
+		List<MessageDTO> res = new ArrayList<>(records.size());
 		for (MessagesRecord record : records) {
-			res.add(recordToDTO(record, false));
+			res.add(recordToDTO(record));
 		}
 
 		return res;
-	}
-
-	public List<MessageDTO> searchMessages(String search, SearchMessagesSort sort, int pageSize, int pageNr) {
-		return null; // TODO
 	}
 
 	public String getMessageTitle(long id) {
@@ -105,9 +99,9 @@ public class MessagesDAO extends BaseDAO {
 			}
 		}
 
-		List<MessageDTO> res = new ArrayList<MessageDTO>(records.size());
+		List<MessageDTO> res = new ArrayList<>(records.size());
 		for (MessagesRecord record : records) {
-			res.add(recordToDTO(record, false));
+			res.add(recordToDTO(record));
 		}
 
 		return new MessagesDTO(res, messagesCount);
@@ -212,7 +206,7 @@ public class MessagesDAO extends BaseDAO {
 
 	}
 
-	public void updateLastIdInThread(long threadId) {
+	void updateLastIdInThread(long threadId) {
 		int count = jooq.selectCount()
 					.from(THREADS)
 					.where(THREADS.THREADID.eq((int)threadId))
@@ -245,7 +239,7 @@ public class MessagesDAO extends BaseDAO {
 			.execute();
 	}
 
-	private MessageDTO recordToDTO(Record record, boolean search) {
+	private MessageDTO recordToDTO(Record record) {
 		MessageDTO message = new MessageDTO();
 		message.setId(record.getValue(MESSAGES.ID).longValue());
 		message.setParentId(record.getValue(MESSAGES.PARENTID).longValue());

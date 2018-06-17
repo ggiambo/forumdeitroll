@@ -25,7 +25,7 @@ public class BookmarksDAO extends BaseDAO {
 				.where(BOOKMARKS.NICK.eq(owner.getNick()))
 				.fetch();
 
-		List<BookmarkDTO> ret = new ArrayList<BookmarkDTO>(records.size());
+		List<BookmarkDTO> ret = new ArrayList<>(records.size());
 		for (BookmarksRecord record : records) {
 			ret.add(recordToDTO(record));
 		}

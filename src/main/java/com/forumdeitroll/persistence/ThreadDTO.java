@@ -16,8 +16,8 @@ public class ThreadDTO {
 	private int rank = 0;
 
 	public boolean isValid() {
-		boolean valid = true;
-		valid &= subject != null;
+		boolean valid;
+		valid = subject != null;
 		valid &= date != null;
 		return valid;
 	}

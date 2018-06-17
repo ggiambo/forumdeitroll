@@ -1,23 +1,19 @@
 package com.forumdeitroll.taglibs;
 
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.servlets.MainServlet;
+import org.apache.log4j.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import org.apache.log4j.Logger;
-
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.servlets.MainServlet;
 
 public class PagerTag extends TagSupport  {
 
@@ -39,14 +35,14 @@ public class PagerTag extends TagSupport  {
 	// quanti elementi dopo
 	private static final int TAIL = 4;
 
-	private static enum PagerType {
+	private enum PagerType {
 		CURRENT, PAGE, NEXT, LAST, FIRST, PREV
-	};
+	}
 
 	private static class PagerElem {
 		 public final PagerType type;
 		 public final int n;
-		 public PagerElem(int n, PagerType type) {
+		 PagerElem(int n, PagerType type) {
 			 this.type = type;
 			 this.n = n;
 		 }
@@ -59,7 +55,7 @@ public class PagerTag extends TagSupport  {
 	// porting di una versione in javascript ben testata, non dovrebbe avere errori qua dentro
 	private LinkedList<PagerElem> generatePager(int cur, int max) {
 		//LOG.debug("generatePager("+cur+","+max+")");
-		LinkedList<PagerElem> pager = new LinkedList<PagerTag.PagerElem>();
+		LinkedList<PagerElem> pager = new LinkedList<>();
 		if (HEAD - cur >= -1) {
 			int limit = cur + TAIL;
 			if (limit > max) limit = max;
@@ -104,8 +100,7 @@ public class PagerTag extends TagSupport  {
 		JspWriter out = pageContext.getOut();
 		out.write("<ul class='pager pager-"+pager.size()+"'>");
 		HttpServletRequest req = (HttpServletRequest)pageContext.getRequest();
-		for (Iterator<PagerElem> pagerIterator = pager.iterator(); pagerIterator.hasNext();) {
-			PagerElem page = pagerIterator.next();
+		for (PagerElem page : pager) {
 			if (page.type == PagerType.CURRENT) {
 				out.write("<li class='pager-current'>");
 				if (mobileView) {
@@ -117,36 +112,46 @@ public class PagerTag extends TagSupport  {
 			} else {
 				out.write("<li class='pager-");
 				switch (page.type) {
-				case FIRST:
-					out.write("first'><a href=\"");break;
-				case PREV:
-					out.write("prev'><a href=\"");break;
-				case NEXT:
-					out.write("next'><a href=\"");break;
-				case LAST:
-					out.write("last'><a href=\"");break;
-				case PAGE:
-					out.write("page'><a href=\"");break;
-				default:
-					break;
+					case FIRST:
+						out.write("first'><a href=\"");
+						break;
+					case PREV:
+						out.write("prev'><a href=\"");
+						break;
+					case NEXT:
+						out.write("next'><a href=\"");
+						break;
+					case LAST:
+						out.write("last'><a href=\"");
+						break;
+					case PAGE:
+						out.write("page'><a href=\"");
+						break;
+					default:
+						break;
 				}
 				out.write(handler.getLink(page.n, req)); //visualizza 1, usa 0 e cosi' via
 				if (mobileView) {
 					out.write("\" class=\"btn");
 				}
 				switch (page.type) {
-				case FIRST:
-					out.write("\">&#171;</a></li>");break;
-				case PREV:
-					out.write("\">&lt;</a></li>");break;
-				case NEXT:
-					out.write("\">&gt;</a></li>");break;
-				case LAST:
-					out.write("\">&#187;</a></li>");break;
-				case PAGE:
-					out.write(String.format("\">%d</a></li>", page.n + 1));break; //visualizza 1, usa 0 e cosi' via
-				default:
-					break;
+					case FIRST:
+						out.write("\">&#171;</a></li>");
+						break;
+					case PREV:
+						out.write("\">&lt;</a></li>");
+						break;
+					case NEXT:
+						out.write("\">&gt;</a></li>");
+						break;
+					case LAST:
+						out.write("\">&#187;</a></li>");
+						break;
+					case PAGE:
+						out.write(String.format("\">%d</a></li>", page.n + 1));
+						break; //visualizza 1, usa 0 e cosi' via
+					default:
+						break;
 				}
 			}
 		}
@@ -154,7 +159,7 @@ public class PagerTag extends TagSupport  {
 	}
 
 	@Override
-	public int doEndTag() throws JspException {
+	public int doEndTag() {
 		try {
 			PagerHandler pagerHandler = handlers.get(handler);
 			HttpServletRequest req = (HttpServletRequest)pageContext.getRequest();
@@ -211,7 +216,7 @@ public class PagerTag extends TagSupport  {
 				Integer resultSize = (Integer)req.getAttribute("resultSize");
 				if (resultSize != null && resultSize < MainServlet.PAGE_SIZE) {
 					return getCurrentPage(req);
-				} 
+				}
 				Integer totalSize = (Integer)req.getAttribute("totalSize");
 				if (totalSize == null) {
 					// vabbeh, io ci ho provato :$ ...
@@ -256,7 +261,7 @@ public class PagerTag extends TagSupport  {
 	}
 
 	private static abstract class PagerHandler {
-		public final int getCurrentPage(HttpServletRequest req) {
+		final int getCurrentPage(HttpServletRequest req) {
 			try {
 				return Integer.parseInt(req.getParameter("page"));
 			} catch (Exception e) {

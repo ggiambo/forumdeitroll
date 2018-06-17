@@ -1,17 +1,12 @@
 package com.forumdeitroll.persistence.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Record3;
-import org.jooq.Result;
-import org.jooq.SelectLimitStep;
-
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.QuoteDTO;
 import com.forumdeitroll.persistence.jooq.tables.records.QuotesRecord;
+import org.jooq.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
 import static com.forumdeitroll.persistence.jooq.Tables.QUOTES;
@@ -31,7 +26,7 @@ public class QuotesDAO extends BaseDAO {
 				.fetch();
 
 
-		List<QuoteDTO> out = new ArrayList<QuoteDTO>(records.size());
+		List<QuoteDTO> out = new ArrayList<>(records.size());
 		for (QuotesRecord record : records) {
 			out.add(recordToDTO(record));
 		}
@@ -42,7 +37,7 @@ public class QuotesDAO extends BaseDAO {
 	public List<QuoteDTO> getAllQuotes() {
 		return getAllQuotes(-1, -1);
 	}
-	
+
 	public List<QuoteDTO> getAllQuotes(int limit, int page) {
 
 		SelectLimitStep<Record3<Integer, String, String>> select = jooq.select(QUOTES.ID, AUTHORS.NICK, QUOTES.CONTENT)
@@ -58,10 +53,10 @@ public class QuotesDAO extends BaseDAO {
 					.limit(limit)
 					.offset(limit * page);
 		}
-			
+
 		records = select.fetch();
 
-		final List<QuoteDTO> out = new ArrayList<QuoteDTO>(records.size());
+		final List<QuoteDTO> out = new ArrayList<>(records.size());
 		for (Record record : records) {
 			QuoteDTO dto = new QuoteDTO();
 			dto.setId(record.getValue(QUOTES.ID).longValue());
@@ -88,8 +83,7 @@ public class QuotesDAO extends BaseDAO {
 				.execute();
 	}
 
-	private long updateQuote(QuoteDTO quote) {
-
+	private void updateQuote(QuoteDTO quote) {
 		jooq.update(QUOTES)
 				.set(QUOTES.NICK, quote.getNick())
 				.set(QUOTES.CONTENT, mb4safe(quote.getContent()))
@@ -97,22 +91,14 @@ public class QuotesDAO extends BaseDAO {
 				.and(QUOTES.NICK.equal(quote.getNick()))
 				.execute();
 
-		return quote.getId();
 	}
 
-	private long insertQuote(QuoteDTO quote) {
-
-//		QuotesRecord quotesRecord = jooq.insertInto(QUOTES, QUOTES.NICK, QUOTES.CONTENT)
-//				.values(quote.getNick(), mb4safe(quote.getContent()))
-//				.returning(QUOTES.ID)
-//				.fetchOne();
-		QuotesRecord quotesRecord = jooq.insertInto(QUOTES)
+	private void insertQuote(QuoteDTO quote) {
+		jooq.insertInto(QUOTES)
 				.set(QUOTES.NICK,quote.getNick())
 				.set(QUOTES.CONTENT, mb4safe(quote.getContent()))
 				.returning(QUOTES.ID)
 				.fetchOne();
-
-		return quotesRecord.getId();
 	}
 
 	private QuoteDTO recordToDTO(QuotesRecord record) {

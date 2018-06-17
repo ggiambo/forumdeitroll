@@ -17,14 +17,14 @@ public class RandomPool {
 
 	static String hex(final byte[] input, final boolean padding) {
 		BigInteger hash = new BigInteger(1, input);
-		String result = hash.toString(16);
+		StringBuilder result = new StringBuilder(hash.toString(16));
 		if (padding) {
 			while (result.length() < 32) {
-				result = "0" + result;
+				result.insert(0, "0");
 			}
 		}
 
-		return result;
+		return result.toString();
 	}
 
 	public static int insecureInt(int n) {

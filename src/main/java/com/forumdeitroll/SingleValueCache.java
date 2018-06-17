@@ -6,7 +6,7 @@ public abstract class SingleValueCache<V> {
 	private final long interval;
 	protected volatile long timestamp = -1;
 
-	public SingleValueCache(final long interval) {
+	protected SingleValueCache(final long interval) {
 		this.interval = interval;
 	}
 

@@ -1,11 +1,11 @@
 package com.forumdeitroll.markup;
 
-public class Tokenizer {
+class Tokenizer {
 	private final TokenMatcher[][] matchers = TokenCatalog.get();
 
-	public void tokenize(String text, TokenListener handler) throws Exception {
+	void tokenize(String text, TokenListener handler) throws Exception {
 		reset(text);
-		TokenMatcher token = null;
+		TokenMatcher token;
 		int last = 0;
 		while ((token = next()) != null) {
 			if (token.start() != last) {
@@ -37,9 +37,9 @@ public class Tokenizer {
 		this.additional = null;
 		this.limit = 50000; //id 915608: 251kb, ~47k tokens
 		this.skipBow = false;
-		for (int i = 0; i < matchers.length; i++) {
-			for (int j = 0; j < matchers[i].length; j++) {
-				matchers[i][j].reset(text);
+		for (TokenMatcher[] matcher : matchers) {
+			for (TokenMatcher aMatcher : matcher) {
+				aMatcher.reset(text);
 			}
 		}
 	}
@@ -210,8 +210,7 @@ public class Tokenizer {
 //		System.out.println("tryMatch("+mode+") of "+text.substring(start, end));
 		TokenMatcher[] modeMatchers = matchers[mode.ordinal()];
 		TokenMatcher tmp = null;
-		for (int i = 0; i < modeMatchers.length; i++) {
-			TokenMatcher currentMatch = modeMatchers[i];
+		for (TokenMatcher currentMatch : modeMatchers) {
 			currentMatch.region(start, end);
 			if (currentMatch.find()) {
 				if (currentMatch.atBeginningOfRegion()) {

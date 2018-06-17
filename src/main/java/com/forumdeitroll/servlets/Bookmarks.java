@@ -1,11 +1,11 @@
 package com.forumdeitroll.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.BookmarkDTO;
 import com.forumdeitroll.servlets.Action.Method;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class Bookmarks extends MainServlet {
 
@@ -13,12 +13,12 @@ public class Bookmarks extends MainServlet {
 
 	@Override
 	@Action(method=Method.GET)
-	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String init(HttpServletRequest req, HttpServletResponse res) {
 		return list(req, res);
 	}
 
 	@Action(method=Method.GET)
-	String list(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String list(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = login(req);
 		if (loggedUser == null || !loggedUser.isValid()) return null;
 		req.setAttribute("bookmarks", bookmarksDAO.getBookmarks(loggedUser));
@@ -26,7 +26,7 @@ public class Bookmarks extends MainServlet {
 	}
 
 	@Action(method=Method.GET)
-	String add(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String add(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = login(req);
 		if (loggedUser == null || !loggedUser.isValid()) return null;
 		Long msgId = Long.parseLong(req.getParameter("msgId"));
@@ -44,7 +44,7 @@ public class Bookmarks extends MainServlet {
 	}
 
 	@Action(method=Method.POST)
-	String confirmAdd(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String confirmAdd(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = login(req);
 		if (loggedUser == null || !loggedUser.isValid()) return null;
 		String msgId = req.getParameter("msgId");
@@ -61,7 +61,7 @@ public class Bookmarks extends MainServlet {
 	}
 
 	@Action(method=Method.POST)
-	String delete(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String delete(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = login(req);
 		if (loggedUser == null || !loggedUser.isValid()) return null;
 		String msgId = req.getParameter("msgId");
@@ -73,7 +73,7 @@ public class Bookmarks extends MainServlet {
 	}
 
 	@Action(method=Method.POST)
-	String edit(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String edit(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = login(req);
 		if (loggedUser == null || !loggedUser.isValid()) return null;
 		String msgId = req.getParameter("msgId");

@@ -13,11 +13,10 @@ import java.util.Properties;
 public class DAOFactory {
 
 	public static final String FORUM_PROC = "Proc di Catania";
-	public static final String FORUM_ASHES = "Cenere";
 
 	private static final Logger LOG = Logger.getLogger(DAOFactory.class);
 
-	static DAOFactory instance;
+	private static DAOFactory instance;
 
 	private AuthorsDAO authorsDAO;
 	private ThreadsDAO threadsDAO;
@@ -29,9 +28,7 @@ public class DAOFactory {
 	private PrivateMsgDAO privateMsgDAO;
 	private LoginsDAO loginsDAO;
 
-    BasicDataSource dataSource;
-
-	DAOFactory() throws ClassNotFoundException {
+	private DAOFactory() {
 	}
 
 	static synchronized DAOFactory getInstance() {
@@ -48,7 +45,7 @@ public class DAOFactory {
 		return instance;
 	}
 
-	void init(Properties databaseConfig) throws ClassNotFoundException {
+	private void init(Properties databaseConfig) throws ClassNotFoundException {
 		String driver = databaseConfig.getProperty("driverclass");
 		Class.forName(driver);
 
@@ -56,7 +53,7 @@ public class DAOFactory {
 		String password = databaseConfig.getProperty("password");
 		String url = databaseConfig.getProperty("url");
 
-		dataSource = new BasicDataSource();
+		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setMaxTotal(15);
 		dataSource.setMaxIdle(10);
 		dataSource.setMinIdle(3);
@@ -82,39 +79,39 @@ public class DAOFactory {
 		loginsDAO = new LoginsDAO(jooq);
 	}
 
-	public static final AuthorsDAO getAuthorsDAO() {
+	public static AuthorsDAO getAuthorsDAO() {
 		return getInstance().authorsDAO;
 	}
 
-	public static final ThreadsDAO getThreadsDAO() {
+	public static ThreadsDAO getThreadsDAO() {
 		return getInstance().threadsDAO;
 	}
 
-	public static final MessagesDAO getMessagesDAO() {
+	public static MessagesDAO getMessagesDAO() {
 		return getInstance().messagesDAO;
 	}
 
-	public static final QuotesDAO getQuotesDAO() {
+	public static QuotesDAO getQuotesDAO() {
 		return getInstance().quotesDAO;
 	}
 
-	public static final BookmarksDAO getBookmarksDAO() {
+	public static BookmarksDAO getBookmarksDAO() {
 		return getInstance().bookmarksDAO;
 	}
 
-	public static final AdminDAO getAdminDAO() {
+	public static AdminDAO getAdminDAO() {
 		return getInstance().adminDAO;
 	}
 
-	public static final MiscDAO getMiscDAO() {
+	public static MiscDAO getMiscDAO() {
 		return getInstance().miscDAO;
 	}
 
-	public static final PrivateMsgDAO getPrivateMsgDAO() {
+	public static PrivateMsgDAO getPrivateMsgDAO() {
 		return getInstance().privateMsgDAO;
 	}
 
-	public static final LoginsDAO getLoginsDAO() {
+	public static LoginsDAO getLoginsDAO() {
 		return getInstance().loginsDAO;
 	}
 

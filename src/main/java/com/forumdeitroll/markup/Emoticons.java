@@ -12,15 +12,15 @@ public class Emoticons {
 			me = new Emoticons();
 		return me;
 	}
-	
-	public static final int MAX_EMOTICONS = 200;
-	
+
+	static final int MAX_EMOTICONS = 200;
+
 	public static final List<Emoticon> serieClassica = new ArrayList<Emoticon>() {
-		
+
 		private void addEmo(String imgName, String sequence, String altText) {
 			add(Emoticon.make(imgName, sequence, altText));
 		}
-		
+
 		{
 			addEmo("1", " :)", "Sorride");
 			addEmo("2", " :d", "A bocca aperta");
@@ -61,13 +61,13 @@ public class Emoticons {
 			addEmo("troll", "(troll)", "Troll");
 
 	}};
-	
+
 	public static final List<Emoticon> serieEstesa = new ArrayList<Emoticon>() {
-		
+
 		private void addEmo(String imgName, String sequence, String altText) {
 			add(Emoticon.makeExt(imgName, sequence, altText));
 		}
-		
+
 		{
 			addEmo("keroppi", "$keroppi", "Keroppi");
 			addEmo("lich", "$lich", "Licchione");
@@ -81,22 +81,11 @@ public class Emoticons {
 			addEmo("foco", "$foco", "Datte f&ograve;co");
 			addEmo("poop", "$poop", "Evacua");
 	}};
-	
+
 	public static final List<Emoticon> tutte = new ArrayList<Emoticon>() {{
 		addAll(serieClassica);
 		addAll(serieEstesa);
 	}};
-	
-	// usato per aggiornare pagina di markup
-	public static void main(String[] args) throws Exception {
-		int count = 0;
-		for (Emoticon e : getInstance().tutte) {
-			System.out.print("<li><code>");
-			System.out.print(e.sequence);
-			System.out.print("</code> -&gt; ");
-			System.out.print(e.htmlReplacement.replace("src='", "src='http://forumdeitroll.com/"));
-			System.out.println();
-		}
-	}
+
 }
 

@@ -1,24 +1,23 @@
 package com.forumdeitroll.taglibs;
 
-import java.io.IOException;
-
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import java.io.IOException;
 
 public class DelayedScriptTag extends BodyTagSupport {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	/*
 	 * come si usa
-	 * 
+	 *
 	 * <fdt:delayedScript>
 	 * $.ready(......${anche.jstl}....<%= e jsp %>....)...
 	 * </fdt:delayedScript>
 
 	 */
-	
+
 	private String dump;
 	public String getDump() {
 		return dump;
@@ -29,7 +28,7 @@ public class DelayedScriptTag extends BodyTagSupport {
 
 	public int doAfterBody() throws JspTagException {
 		StringBuilder delayedScripts = (StringBuilder) pageContext.getRequest().getAttribute("delayedScripts");
-		if (dump != null && Boolean.parseBoolean(dump)) {
+		if (Boolean.parseBoolean(dump)) {
 			if (delayedScripts != null) {
 				try {
 					JspWriter out = getBodyContent().getEnclosingWriter();

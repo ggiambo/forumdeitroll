@@ -25,22 +25,22 @@ public class AdminDAO extends BaseDAO {
 		int rootMessageId = (int)msg.getId();
 
 		// tutti i children di questo messaggio, lui compreso
-		Stack<Integer> parents = new Stack<Integer>();
-		ArrayList<Integer> messages = new ArrayList<Integer>();
+		Stack<Integer> parents = new Stack<>();
+		ArrayList<Integer> messages = new ArrayList<>();
 		parents.push(rootMessageId);
-		int currentId = rootMessageId;
+		int currentId;
 		while (!parents.isEmpty()) {
 			currentId = parents.pop();
 			messages.add(currentId);
 
 			Result<Record1<Integer>> records = jooq.select(MESSAGES.ID)
 					.from(MESSAGES)
-					.where(MESSAGES.PARENTID.eq((int)currentId))
+					.where(MESSAGES.PARENTID.eq(currentId))
 					.fetch();
 
 			for (Record1<Integer> record : records) {
 				Integer id = record.getValue(MESSAGES.ID);
-				if (id.intValue() != currentId) {
+				if (id != currentId) {
 					parents.push(id);
 				}
 			}
@@ -89,7 +89,7 @@ public class AdminDAO extends BaseDAO {
 			.orderBy(SYSINFO.KEY.asc())
 			.fetch();
 
-		List<String> ret = new ArrayList<String>(records.size());
+		List<String> ret = new ArrayList<>(records.size());
 		for (Record record : records) {
 			ret.add(record.getValue(SYSINFO.VALUE));
 		}
@@ -117,10 +117,6 @@ public class AdminDAO extends BaseDAO {
 				.from(PREFERENCES)
 				.where(PREFERENCES.KEY.like("super"))
 				.fetch(PREFERENCES.NICK);
-	}
-
-	public boolean blockTorExitNodes() {
-		return "checked".equals(getSysinfoValue("blockTorExitNodes"));
 	}
 
 }

@@ -28,24 +28,28 @@ public class RenderTag extends TagSupport {
 		AuthorDTO loggedUser = (AuthorDTO) pageContext.getRequest().getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		String text = null;
 		final RenderOptions opts = loggedUserRenderOptions(loggedUser);
-		if (target.equals("message")) {
-			MessageDTO message = (MessageDTO) pageContext.findAttribute("message");
-			//LOG.debug("rendering message " + message.getId());
-			text = message.getText();
-			opts.authorIsAnonymous = message.getAuthor() == null || message.getAuthor().getNick() == null;
-		} else if (target.equals("privateMessage")) {
-			PrivateMsgDTO pvt = (PrivateMsgDTO) pageContext.findAttribute("privateMessage");
-			//LOG.debug("rendering private message" + pvt.getId());
-			text = pvt.getText();
-			opts.authorIsAnonymous = false;
-		} else if (target.equals("signature")) {
-			MessageDTO referencedMessage = (MessageDTO) pageContext.findAttribute("message");
-			//LOG.debug("rendering signature for author " + referencedMessage.getAuthor());
-			text = referencedMessage.getAuthor().getPreferences().get("signature");
-			opts.authorIsAnonymous = false;
-			opts.renderImages = false;
-			opts.renderYoutube = false;
-			opts.collapseQuotes = false;
+		switch (target) {
+			case "message":
+				MessageDTO message = (MessageDTO) pageContext.findAttribute("message");
+				//LOG.debug("rendering message " + message.getId());
+				text = message.getText();
+				opts.authorIsAnonymous = message.getAuthor() == null || message.getAuthor().getNick() == null;
+				break;
+			case "privateMessage":
+				PrivateMsgDTO pvt = (PrivateMsgDTO) pageContext.findAttribute("privateMessage");
+				//LOG.debug("rendering private message" + pvt.getId());
+				text = pvt.getText();
+				opts.authorIsAnonymous = false;
+				break;
+			case "signature":
+				MessageDTO referencedMessage = (MessageDTO) pageContext.findAttribute("message");
+				//LOG.debug("rendering signature for author " + referencedMessage.getAuthor());
+				text = referencedMessage.getAuthor().getPreferences().get("signature");
+				opts.authorIsAnonymous = false;
+				opts.renderImages = false;
+				opts.renderYoutube = false;
+				opts.collapseQuotes = false;
+				break;
 		}
 		try {
 			String html = com.forumdeitroll.markup.Renderer.render(text, opts);
@@ -70,7 +74,7 @@ public class RenderTag extends TagSupport {
 		return out.toString();
 	}
 
-	public static RenderOptions loggedUserRenderOptions(final AuthorDTO loggedUser) {
+	private static RenderOptions loggedUserRenderOptions(final AuthorDTO loggedUser) {
 		final boolean luv = loggedUser != null && loggedUser.getNick() != null;
 		final RenderOptions opts = new RenderOptions();
 		opts.collapseQuotes =

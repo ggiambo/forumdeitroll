@@ -8,7 +8,6 @@ import com.forumdeitroll.markup.Renderer;
 import com.forumdeitroll.persistence.*;
 import com.forumdeitroll.servlets.Action.Method;
 import com.forumdeitroll.taglibs.RenderTag;
-import com.forumdeitroll.util.CacheTorExitNodes;
 import com.google.gson.stream.JsonWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -31,8 +30,6 @@ public class Messages extends MainServlet {
 	private static final List<String> REFRESHABLE_ACTIONS = Collections.singletonList("getMessages");
 
 	private static final Pattern PATTERN_QUOTE = Pattern.compile("<BR> *(&gt; ?)*");
-
-	public static final Set<String> BANNED_IPs = new HashSet<>();
 
 	public static final int MAX_MESSAGE_LENGTH = 40000;
 	public static final int MAX_SUBJECT_LENGTH = 80;
@@ -117,7 +114,7 @@ public class Messages extends MainServlet {
 	 * Questo singolo messaggio
 	 */
 	@Action
-	String getById(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getById(HttpServletRequest req, HttpServletResponse res) {
 		Long msgId = Long.parseLong(req.getParameter("msgId"));
 		setWebsiteTitlePrefix(req, "Singolo messaggio");
 		List<MessageDTO> messages = new ArrayList<>();
@@ -518,7 +515,7 @@ public class Messages extends MainServlet {
 	 * Nascondi questo orrifico messaggio agli occhi dei poveri troll.
 	 */
 	@Action(method=Method.GET)
-	String hideMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String hideMessage(HttpServletRequest req, HttpServletResponse res) {
         return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 0);
 	}
 
@@ -526,7 +523,7 @@ public class Messages extends MainServlet {
 	 * Abilita alla visione questo angelico messaggio
 	 */
 	@Action(method=Method.GET)
-	String restoreHiddenMessage(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String restoreHiddenMessage(HttpServletRequest req, HttpServletResponse res) {
 		return restoreOrHideMessage(req, res, Long.parseLong(req.getParameter("msgId")), 1);
 	}
 
@@ -628,12 +625,6 @@ public class Messages extends MainServlet {
 		setNavigationMessage(req, message);
 		setAntiXssToken(req);
 		return "messages.jsp";
-	}
-
-	static void banIP(final String ip) {
-		synchronized(BANNED_IPs) {
-			BANNED_IPs.add(ip);
-		}
 	}
 
 	@Action

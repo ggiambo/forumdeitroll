@@ -52,12 +52,9 @@ public class User extends MainServlet {
 
 	public static final List<String> PREF_THEMES = Arrays.asList("Classico", "Scuro", "Flat");
 
-	public static final String ALL_FORUMS = "allForums";
+	private static final String ALL_FORUMS = "allForums";
 
-	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
-
-	public static final int LOGIN_TIME_LIMIT = 3 * 60 * 1000;
-	public static final int LOGIN_NUMBER_LIMIT = 5;
+	private static final String ANTI_XSS_TOKEN = "anti-xss-token";
 
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
@@ -83,24 +80,18 @@ public class User extends MainServlet {
 
 	/**
 	 * Mostra la pagina di login
-	 * @param req
-	 * @param res
-	 * @return
 	 */
 	@Action
-	String loginAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String loginAction(HttpServletRequest req, HttpServletResponse res) {
 		setWebsiteTitlePrefix(req, "Login");
 		return "login.jsp";
 	}
 
 	/**
 	 * Update della password
-	 * @param req
-	 * @param res
-	 * @return
 	 */
 	@Action
-	String updatePass(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String updatePass(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
@@ -142,9 +133,6 @@ public class User extends MainServlet {
 
 	/**
 	 * Update avatar
-	 * @param req
-	 * @param res
-	 * @return
 	 */
 	@Action
 	String updateAvatar(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -199,13 +187,9 @@ public class User extends MainServlet {
 
 	/**
 	 * Pagina per registrare un nuovo user
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String registerAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String registerAction(HttpServletRequest req, HttpServletResponse res) {
 		req.removeAttribute(LOGGED_USER_REQ_ATTR);
 		setWebsiteTitlePrefix(req, "Registrazione");
 		req.setAttribute("captchakey", FdTConfig.getProperty("recaptcha.key.client"));
@@ -214,15 +198,11 @@ public class User extends MainServlet {
 
 	/**
 	 * Registra nuovo user
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String registerNewUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String registerNewUser(HttpServletRequest req, HttpServletResponse res) {
 		req.setAttribute("captchakey", FdTConfig.getProperty("recaptcha.key.client"));
-		
+
 		String nick = req.getParameter("nick");
 		req.setAttribute("nick", nick);
 		// check del captcha
@@ -254,13 +234,9 @@ public class User extends MainServlet {
 
 	/**
 	 * Carica le frasi celebri dal database
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String getQuotes(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getQuotes(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
@@ -283,13 +259,9 @@ public class User extends MainServlet {
 
 	/**
 	 * Update di una frase celebre
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String updateQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String updateQuote(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
@@ -314,13 +286,9 @@ public class User extends MainServlet {
 
 	/**
 	 * Cancella una quote
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String removeQuote(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String removeQuote(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
@@ -338,13 +306,9 @@ public class User extends MainServlet {
 
 	/**
 	 * Tutte le informazioni dell'utente
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
 	 */
 	@Action
-	String getUserInfo(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getUserInfo(HttpServletRequest req, HttpServletResponse res) {
 		String nick = req.getParameter("nick");
 		AuthorDTO author = authorsDAO.getAuthor(nick);
 		req.setAttribute("author", author);
@@ -361,13 +325,6 @@ public class User extends MainServlet {
 		return "userInfo.jsp";
 	}
 
-	/**
-	 *
-	 * @param req
-	 * @param res
-	 * @return
-	 * @throws Exception
-	 */
 	@Action(method=Method.POST)
 	String edit(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
@@ -384,7 +341,7 @@ public class User extends MainServlet {
 		final String token = (String)req.getSession().getAttribute(ANTI_XSS_TOKEN);
 		final String inToken = req.getParameter("token");
 
-		if ((token == null) || (inToken == null) || !token.equals(inToken)) {
+		if ((token == null) || !token.equals(inToken)) {
 			setNavigationMessage(req, NavigationMessage.warn("Verifica token fallita"));
 			return getUserInfo(req,  res);
 		}
@@ -435,7 +392,7 @@ public class User extends MainServlet {
 	 * Cambia le preferences
 	 */
 	@Action
-	String updatePreferences(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String updatePreferences(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
@@ -461,7 +418,7 @@ public class User extends MainServlet {
 		}
 
 		String[] hiddenForums = req.getParameterValues(PREF_HIDDEN_FORUMS);
-		List<String> forumsToHide = new ArrayList<String>();
+		List<String> forumsToHide = new ArrayList<>();
 		if (hiddenForums != null) {
 			forumsToHide.addAll(Arrays.asList(hiddenForums));
 		}
@@ -489,12 +446,9 @@ public class User extends MainServlet {
 
 	/**
 	 * Mostra le notifiche
-	 * @param req
-	 * @param res
-	 * @return
 	 */
 	@Action
-	String getNotifications(HttpServletRequest req, HttpServletResponse res) throws Exception {
+	String getNotifications(HttpServletRequest req, HttpServletResponse res) {
 		AuthorDTO loggedUser = (AuthorDTO)req.getAttribute(MainServlet.LOGGED_USER_REQ_ATTR);
 		if (loggedUser == null || !loggedUser.isValid()) {
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
@@ -510,9 +464,6 @@ public class User extends MainServlet {
 
 	/**
 	 * Mostra le notifiche
-	 * @param req
-	 * @param res
-	 * @return
 	 */
 	@Action(method=Method.POST)
 	String removeNotification(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -532,9 +483,6 @@ public class User extends MainServlet {
 
 	/**
 	 * Notifica un utente
-	 * @param req
-	 * @param res
-	 * @return
 	 */
 	@Action(method=Method.POST)
 	String notifyUser(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -596,9 +544,6 @@ public class User extends MainServlet {
 
 	/**
 	 * Firma
-	 * @param req
-	 * @param res
-	 * @return
 	 */
 	@Action(method=Method.POST)
 	String updateSignature(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -614,9 +559,7 @@ public class User extends MainServlet {
 		fileItemFactory.setSizeThreshold(MAX_SIZE_SIGNATURE_BYTES); // grandezza massima 512Kbytes
 		fileItemFactory.setRepository(new File(System.getProperty("java.io.tmpdir")));
 		ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
-		for (@SuppressWarnings("unchecked")
-		Iterator<FileItem> it = uploadHandler.parseRequest(req).iterator(); it.hasNext(); ) {
-			FileItem item = it.next();
+		for (FileItem item : uploadHandler.parseRequest(req)) {
 			if (item.isFormField()) {
 				if (item.getFieldName().equals("submitBtn")) {
 					submitBtn = item.getString();
@@ -689,39 +632,6 @@ public class User extends MainServlet {
 		return null;
 	}
 
-	protected static final class AvailableTorRegistrations {
-		protected int available = 1;
-		protected long lastUpdate = System.currentTimeMillis();
-		protected static final double HOURLY_PROBABILITY = 0.2;
-		protected static final int MAX_HOURS = 6;
-
-		public boolean available() {
-			synchronized(this) {
-				if (available > 0) {
-					--available;
-					return true;
-				}
-
-				final long now = System.currentTimeMillis();
-				final long interval = now - lastUpdate;
-
-				long intervalInHours = interval  / (60 * 60 * 1000);
-
-				if (intervalInHours <= 0) return false;
-
-				lastUpdate = now;
-
-				if (intervalInHours > MAX_HOURS) intervalInHours = MAX_HOURS;
-
-				for (int i = 0; i < intervalInHours; ++i) {
-					if (Math.random() < HOURLY_PROBABILITY) ++available;
-				}
-
-				return available();
-			}
-		}
-	}
-
 	private void notifyNewUser(AuthorDTO newUser, String motivation) {
 		PrivateMsgDTO msg = new PrivateMsgDTO();
 		msg.setSubject("Nuova supplica di " + newUser.getNick());
@@ -731,8 +641,7 @@ public class User extends MainServlet {
 
 		AuthorDTO suora = adminDAO.getAuthor("::1");
 		Collection<String> admins = adminDAO.getAdmins();
-		privateMsgDAO.sendAPvtForGreatGoods(suora, msg, admins.toArray(new String[admins.size()]));
+		privateMsgDAO.sendAPvtForGreatGoods(suora, msg, admins.toArray(new String[0]));
 	}
 
-	protected static AvailableTorRegistrations availableTorRegistrations = new AvailableTorRegistrations();
 }

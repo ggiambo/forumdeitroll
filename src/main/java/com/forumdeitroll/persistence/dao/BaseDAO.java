@@ -1,22 +1,19 @@
 package com.forumdeitroll.persistence.dao;
 
-import static com.forumdeitroll.persistence.jooq.Tables.AUTHORS;
-import static com.forumdeitroll.persistence.jooq.Tables.PREFERENCES;
-import static com.forumdeitroll.persistence.jooq.Tables.SYSINFO;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.forumdeitroll.persistence.AuthorDTO;
+import com.forumdeitroll.persistence.jooq.tables.records.AuthorsRecord;
+import com.forumdeitroll.persistence.jooq.tables.records.PreferencesRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.jooq.Result;
 
-import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.persistence.jooq.tables.records.AuthorsRecord;
-import com.forumdeitroll.persistence.jooq.tables.records.PreferencesRecord;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.forumdeitroll.persistence.jooq.Tables.*;
 
 public abstract class BaseDAO {
 
@@ -60,7 +57,7 @@ public abstract class BaseDAO {
 	public Map<String, String> getPreferences(AuthorDTO user) {
 
 		if (user == null || !user.isValid()) {
-			return new ConcurrentHashMap<String, String>();
+			return new ConcurrentHashMap<>();
 		}
 
 		Result<PreferencesRecord> records = jooq.selectFrom(PREFERENCES)
@@ -68,30 +65,30 @@ public abstract class BaseDAO {
 				.fetch();
 
 		if (records.isEmpty()) {
-			return new ConcurrentHashMap<String, String>();
+			return new ConcurrentHashMap<>();
 		}
 
-		Map<String, String> res = new HashMap<String, String>();
+		Map<String, String> res = new HashMap<>();
 		for (PreferencesRecord record : records) {
 			res.put(record.getKey(), record.getValue());
 		}
 
-		return new ConcurrentHashMap<String, String>(res);
+		return new ConcurrentHashMap<>(res);
 	}
 
-	protected void increaseNumberOfMessagesFor(String forumName, int increaseValue) {
+	void increaseNumberOfMessagesFor(String forumName, int increaseValue) {
 		increaseNumber("messages.forum." + forumName, increaseValue);
 	}
 
-	protected void increaseNumberOfThreadsFor(String forumName, int increaseValue) {
+	void increaseNumberOfThreadsFor(String forumName, int increaseValue) {
 		increaseNumber("threads.forum." + forumName, increaseValue);
 	}
 
-	protected void increaseTotalNumberOfMessagess() {
+	void increaseTotalNumberOfMessagess() {
 		increaseNumber("messages.total", 1);
 	}
 
-	protected void increaseTotalNumberOfThreads() {
+	void increaseTotalNumberOfThreads() {
 		increaseNumber("threads.total", 1);
 	}
 

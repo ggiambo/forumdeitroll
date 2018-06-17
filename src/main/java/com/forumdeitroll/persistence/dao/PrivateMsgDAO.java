@@ -34,7 +34,7 @@ public class PrivateMsgDAO extends BaseDAO {
 			.offset(limit*pageNr)
 			.fetch();
 
-		List<PrivateMsgDTO> result = new LinkedList<PrivateMsgDTO>();
+		List<PrivateMsgDTO> result = new LinkedList<>();
 
 		for (Record3<Integer, String, Timestamp> record : records) {
 				PrivateMsgDTO msg = new PrivateMsgDTO();
@@ -51,7 +51,7 @@ public class PrivateMsgDAO extends BaseDAO {
 	}
 
 	public List<PrivateMsgDTO> getInbox(AuthorDTO user, int limit, int pageNr) {
-		List<PrivateMsgDTO> result = new LinkedList<PrivateMsgDTO>();
+		List<PrivateMsgDTO> result = new LinkedList<>();
 
 		Result<Record3<Integer, Integer, Timestamp>> records = jooq.select(PVT_RECIPIENT.PVT_ID, PVT_RECIPIENT.READ, PVT_CONTENT.SENDDATE)
 			.from(PVT_RECIPIENT)
@@ -244,14 +244,11 @@ public class PrivateMsgDAO extends BaseDAO {
 	}
 
 	private void notifyPvt(AuthorDTO recipient, PrivateMsgDTO privateMsg, boolean read) {
-		int result = jooq.update(PVT_RECIPIENT)
+		jooq.update(PVT_RECIPIENT)
 				.set(PVT_RECIPIENT.READ, read ? 1 : 0)
 				.where(PVT_RECIPIENT.RECIPIENT.eq(recipient.getNick()))
 				.and(PVT_RECIPIENT.PVT_ID.eq((int) privateMsg.getId()))
 				.execute();
-		if (result > 1) { // 0 == messaggio gia' letto
-			//throw new Exception("Le scimmie presto! "+recipient.getNick()+"ha aggiornato "+result+" records!");
-		}
 	}
 
 	private boolean existsRecipient(String recipient)  {
@@ -272,7 +269,7 @@ public class PrivateMsgDAO extends BaseDAO {
 				.where(PVT_RECIPIENT.PVT_ID.eq(msgId))
 				.fetch();
 
-		List<ToNickDetailsDTO> res = new ArrayList<ToNickDetailsDTO>(records.size());
+		List<ToNickDetailsDTO> res = new ArrayList<>(records.size());
 		for (Record2<String, Integer> record2 : records) {
 			ToNickDetailsDTO toNick = new ToNickDetailsDTO();
 			toNick.setNick(record2.getValue(PVT_RECIPIENT.RECIPIENT));

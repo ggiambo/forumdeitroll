@@ -19,11 +19,6 @@ public class Admin extends MainServlet {
 	public static final String ADMIN_NON_ANON_POST = "adminNonAnonPost";
 	public static final String ADMIN_WEBSITE_TITLES = "websiteTitles";
 
-	public static final String ANTI_XSS_TOKEN = "anti-xss-token";
-
-	public static final int LOGIN_TIME_LIMIT = 3 * 60 * 1000;
-	public static final int LOGIN_NUMBER_LIMIT = 5;
-
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		req.setAttribute(ADMIN_PREF_BLOCK_TOR, miscDAO.getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
@@ -51,9 +46,6 @@ public class Admin extends MainServlet {
 
 	/**
 	 * Mostra la pagina di login
-	 * @param req
-	 * @param res
-	 * @return
 	 */
 	@Action
 	String loginAction(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -105,7 +97,7 @@ public class Admin extends MainServlet {
 		req.setAttribute("javascript", javascript);
 
 		String[] websiteTitles = req.getParameterValues(ADMIN_WEBSITE_TITLES);
-		List<String> titles = new ArrayList<String>();
+		List<String> titles = new ArrayList<>();
 		if (websiteTitles != null) {
 			for (String title : websiteTitles) {
 				if (StringUtils.isNotEmpty(title)) {

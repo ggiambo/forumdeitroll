@@ -1,11 +1,9 @@
 package com.forumdeitroll.taglibs;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class LessPrettyDateTag extends TagSupport {
 	private static final long serialVersionUID = 1L;
@@ -29,7 +27,7 @@ public class LessPrettyDateTag extends TagSupport {
 					shortFmt.format(date)
 				);
 			}
-			
+
 		} catch (Exception e) {
 			throw new JspException(e);
 		}

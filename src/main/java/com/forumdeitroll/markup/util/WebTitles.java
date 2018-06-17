@@ -1,6 +1,7 @@
 package com.forumdeitroll.markup.util;
 
 import com.forumdeitroll.LRACache;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,12 +13,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WebTitles {
-	protected static final int BUFFER_SIZE = 8 * 1024;
-	protected static final Pattern TITLE_REGEX = Pattern.compile("(?i)<title>([^<]*?)</title>");
-	protected static final int CONNECT_TIMEOUT = 400;
-	protected static final int READ_TIMEOUT = 1000;
-	protected static final int MAX_REDIRECT = 3;
-	protected static final int CACHE_SIZE = 1000;
+
+	private static final Logger LOG = Logger.getLogger(WebTitles.class);
+
+	private static final int BUFFER_SIZE = 8 * 1024;
+	private static final Pattern TITLE_REGEX = Pattern.compile("(?i)<title>([^<]*?)</title>");
+	private static final int CONNECT_TIMEOUT = 400;
+	private static final int READ_TIMEOUT = 1000;
+	private static final int MAX_REDIRECT = 3;
+	private static final int CACHE_SIZE = 1000;
 
 	public static String get(final String url) {
 		try {
@@ -96,12 +100,14 @@ public class WebTitles {
 				try {
 					in.close();
 				} catch (Exception e) {
+					LOG.error(e);
 				}
 			}
 			if (c != null) {
 				try {
 					c.disconnect();
 				} catch (Exception e) {
+					LOG.error(e);
 				}
 			}
 		}
@@ -114,24 +120,4 @@ public class WebTitles {
 		}
 	};
 
-	protected static final long testMeasure(final String url) {
-		final long start = System.currentTimeMillis();
-		final String title = Cache.lookup(url);
-		final long end = System.currentTimeMillis();
-		return end - start;
-	}
-
-	public static void main(final String[] argv) {
-		if (argv[0].equals("cache-test")) {
-			for (int i = 0; i < 300; i++) {
-				long t = testMeasure("http://www.youtube.com/" + i);
-				System.out.println("" + i + " new: " + t);
-				t = testMeasure("http://www.youtube.com/0");
-				System.out.println("" + i + " old: " + t);
-			}
-		} else {
-			final String s = get(argv[0]);
-			System.out.println("Title: " + argv[0] + " <" + s + ">");
-		}
-	}
 }

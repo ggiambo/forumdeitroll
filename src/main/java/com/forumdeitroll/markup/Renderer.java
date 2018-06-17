@@ -3,11 +3,9 @@ package com.forumdeitroll.markup;
 import java.io.Reader;
 import java.io.Writer;
 
-import com.forumdeitroll.markup.RenderOptions;
-
 public class Renderer {
-	private static ThreadLocal<MarkupRenderer> mrTl = new ThreadLocal<MarkupRenderer>();
-	private static ThreadLocal<char[]> bufTl = new ThreadLocal<char[]>();
+	private static ThreadLocal<MarkupRenderer> mrTl = new ThreadLocal<>();
+	private static ThreadLocal<char[]> bufTl = new ThreadLocal<>();
 
 	public static void render(Reader in, Writer out, RenderOptions opts) throws Exception {
 		char[] buffer;

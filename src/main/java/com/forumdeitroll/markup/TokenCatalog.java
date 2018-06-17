@@ -70,8 +70,8 @@ public class TokenCatalog {
 			new TokenMatcher.BeginningIgnoreCaseKeepRegion("LINK_FTP", "ftp://"),
 			new TokenMatcher.Regex("LINK_TLD", "^(([a-z][a-z0-9\\-]{1,61}[a-z0-9]\\.)+(it|com|org|net|info|de|fr|co\\.uk|es|eu|biz|name|edu|gov|mil)(/.*)?)", Pattern.CASE_INSENSITIVE),
 		};
-		ArrayList<TokenMatcher> tmText = new ArrayList<TokenMatcher>();
-		ArrayList<TokenMatcher> tmBeginningWord = new ArrayList<TokenMatcher>();
+		ArrayList<TokenMatcher> tmText = new ArrayList<>();
+		ArrayList<TokenMatcher> tmBeginningWord = new ArrayList<>();
 		for (Emoticon emoticon : Emoticons.tutte) {
 			if (emoticon.sequenceStartWithSpace) {
 				tmBeginningWord.add(new TokenMatcher.BeginningIgnoreCase("TEXT_EMOTICON_" + emoticon.imgName, emoticon.initialSequence));

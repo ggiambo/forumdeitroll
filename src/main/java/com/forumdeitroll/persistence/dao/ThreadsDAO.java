@@ -21,8 +21,7 @@ public class ThreadsDAO extends BaseDAO {
 
 	public ThreadsDTO getThreadsByLastPost(String forum, int limit, int page, List<String> hiddenForums) {
 
-		List<Field<?>> fields = new ArrayList<Field<?>>();
-		fields.addAll(Arrays.asList(MESSAGES.fields()));
+		List<Field<?>> fields = new ArrayList<>(Arrays.asList(MESSAGES.fields()));
 		fields.add(THREADS.LASTID);
 
 		SelectConditionStep<Record> where = jooq.select(fields)
@@ -55,7 +54,7 @@ public class ThreadsDAO extends BaseDAO {
 			}
 		}
 
-		List<ThreadDTO> res = new ArrayList<ThreadDTO>(records.size());
+		List<ThreadDTO> res = new ArrayList<>(records.size());
 		for (Record record : records) {
 			res.add(recordToDTO(record, true));
 		}
@@ -99,7 +98,7 @@ public class ThreadsDAO extends BaseDAO {
 			}
 		}
 
-		List<ThreadDTO> res = new ArrayList<ThreadDTO>(records.size());
+		List<ThreadDTO> res = new ArrayList<>(records.size());
 		for (Record record : records) {
 			res.add(recordToDTO(record, false));
 		}
@@ -138,7 +137,7 @@ public class ThreadsDAO extends BaseDAO {
 			}
 		}
 
-		List<ThreadDTO> res = new ArrayList<ThreadDTO>(records.size());
+		List<ThreadDTO> res = new ArrayList<>(records.size());
 		for (MessagesRecord record : records) {
 			res.add(recordToDTO(record, false));
 		}
@@ -151,8 +150,7 @@ public class ThreadsDAO extends BaseDAO {
 		Messages lastRow = MESSAGES.as("lastRow");
 		Messages authorRows = MESSAGES.as("authorRows");
 
-		List<Field<?>> fields = new ArrayList<Field<?>>();
-		fields.addAll(Arrays.asList(lastRow.fields()));
+		List<Field<?>> fields = new ArrayList<>(Arrays.asList(lastRow.fields()));
 		fields.add(THREADS.LASTID);
 
 		SelectConditionStep<Record> where = jooq.select(fields)
@@ -173,7 +171,7 @@ public class ThreadsDAO extends BaseDAO {
 				.offset(limit * page)
 				.fetch();
 
-		List<ThreadDTO> res = new ArrayList<ThreadDTO>(records.size());
+		List<ThreadDTO> res = new ArrayList<>(records.size());
 		for (Record record : records) {
 			res.add(recordToDTO(record, true));
 		}

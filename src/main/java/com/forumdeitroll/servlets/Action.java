@@ -12,10 +12,10 @@ public @interface Action {
 		POST("POST"),
 		GETPOST("GETPOST");
 
-		String method = null;
+		String method;
 		Method(String method) {
 			this.method = method;
-		};
+		}
 
 		@Override
 		public String toString() {

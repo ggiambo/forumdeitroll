@@ -375,7 +375,7 @@ public abstract class MainServlet extends HttpServlet {
 	public static class NavigationMessage {
 
 		enum TYPE {
-			INFO, WARN, ERROR;
+			INFO, WARN, ERROR
 		}
 
 		private String content;
