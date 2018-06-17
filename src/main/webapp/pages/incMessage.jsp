@@ -20,7 +20,7 @@
 		<div id="msgWarning${msg.id}" style="padding:5px;">
 			<img src="images/warning.png" style="float:right; margin-right:10px"/>
 			Questo messaggio e' stato catalogato come "Exiled Nigerian princess".<br/>
-			Clicka <a href="#" onClick="showHIddenMessage(${msg.id});return false;">qui</a> per vederlo, e che Dio onnipotente possa aver piet&agrave; della tua anima.
+			Clicka <a href="#" onClick="showHiddenMessage(${msg.id});return false;">qui</a> per vederlo, e che Dio onnipotente possa aver piet&agrave; della tua anima.
 		</div>
 	</c:otherwise>
 </c:choose>
