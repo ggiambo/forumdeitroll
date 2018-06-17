@@ -5,11 +5,8 @@ import com.forumdeitroll.persistence.AuthorDTO;
 import com.forumdeitroll.persistence.DAOFactory;
 import com.forumdeitroll.persistence.MessageDTO;
 import com.forumdeitroll.servlets.Messages;
-import com.forumdeitroll.util.CacheTorExitNodes;
-import com.forumdeitroll.util.IPMemStorage;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -27,10 +24,6 @@ public class MessagePenetrator {
 	private AuthorDTO author;
 	private String fakeAuthor;
 	private String type;
-	private String ip;
-	private HttpServletRequest req;
-	private boolean banned = false;
-	private boolean isBannedCalled = false;
 
 	private String error;
 
@@ -197,41 +190,6 @@ public class MessagePenetrator {
 		return this;
 	}
 
-	private boolean authorIsBanned(final AuthorDTO author, final Object sessionIsBanned, final String ip, HttpServletRequest req) {
-		if (author.isBanned()) return true;
-		if (sessionIsBanned != null) return true;
-
-		this.ip = ip;
-		this.req = req;
-
-		if (ip == null) {
-			setError("No IP?!");
-			return false;
-		}
-
-		if (Messages.BANNED_IPs.contains(ip)) return true;
-
-		// check se ANOnimo usa TOR
-		if (!author.isValid()) {
-			if (DAOFactory.getAdminDAO().blockTorExitNodes()) {
-				return CacheTorExitNodes.check(ip);
-			}
-		}
-
-		return false;
-	}
-
-	public boolean isBanned(final Object sessionIsBanned, final String ip, final HttpServletRequest req) {
-		if (error != null) return false;
-		isBannedCalled = true;
-		if (author == null) return false;
-		if (authorIsBanned(author, sessionIsBanned, ip, req)) {
-			banned = true;
-			return true;
-		}
-		return false;
-	}
-
 	public MessageDTO penetrate() {
 		if (error != null) return null;
 		if (forum == null) {
@@ -254,10 +212,6 @@ public class MessagePenetrator {
 			setError("Errore interno: chiamare setType o deduceType");
 			return null;
 		}
-		if (!isBannedCalled) {
-			setError("Errore interno: chiamare isBanned");
-			return null;
-		}
 
 		if (!author.isEnabled()) {
 			setError("Non sei ancora abilitato, abbi pazienza !");
@@ -275,9 +229,7 @@ public class MessagePenetrator {
 
 			text += "<BR><BR><b>**Modificato dall'autore il " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()) + "**</b>";
 			msg.setText(text);
-			if (!banned) {
-				msg.setSubject(subject);
-			}
+			msg.setSubject(subject);
 		} else {
 			msg = new MessageDTO();
 			msg.setAuthor(author);
@@ -285,7 +237,6 @@ public class MessagePenetrator {
 			msg.setParentId(parentId);
 			msg.setDate(new Date());
 			msg.setText(text);
-			if (banned) msg.setIsVisible(-1);
 			msg.setSubject(subject);
 
 			if ("reply".equals(type)) {
@@ -298,17 +249,11 @@ public class MessagePenetrator {
 					DAOFactory.getAuthorsDAO().updateAuthor(author);
 				}
 
-				if (banned) {
-					msg.setSubject(replyMsg.getSubjectReal());
-				}
 			} else if ("new".equals(type)) {
 				if (StringUtils.isEmpty(forum)) {
 					forum = null;
 				} else {
 					forum = InputSanitizer.sanitizeForum(forum);
-				}
-				if (banned) {
-					forum = DAOFactory.FORUM_ASHES;
 				}
 				msg.setForum(forum);
 				msg.setThreadId(-1);
@@ -321,8 +266,6 @@ public class MessagePenetrator {
 		}
 
 		msg = DAOFactory.getMessagesDAO().insertMessage(msg);
-		final String m_id = Long.toString(msg.getId());
-		IPMemStorage.store(ip, m_id, author);
 
 		return msg;
 	}

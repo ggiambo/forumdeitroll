@@ -1,8 +1,6 @@
 package com.forumdeitroll.servlets;
 
 import com.forumdeitroll.persistence.AuthorDTO;
-import com.forumdeitroll.util.IPMemStorage;
-import com.forumdeitroll.util.Ratelimiter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -26,9 +24,6 @@ public class Admin extends MainServlet {
 	public static final int LOGIN_TIME_LIMIT = 3 * 60 * 1000;
 	public static final int LOGIN_NUMBER_LIMIT = 5;
 
-	protected final Ratelimiter<String> loginRatelimiter = new Ratelimiter<String>(LOGIN_TIME_LIMIT, LOGIN_NUMBER_LIMIT);
-
-
 	@Override
 	public void doBefore(HttpServletRequest req, HttpServletResponse res) {
 		req.setAttribute(ADMIN_PREF_BLOCK_TOR, miscDAO.getSysinfoValue(ADMIN_PREF_BLOCK_TOR));
@@ -38,15 +33,9 @@ public class Admin extends MainServlet {
 
 	@Action
 	String init(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		if (loginRatelimiter.limited(IPMemStorage.requestToIP(req))) {
-			setNavigationMessage(req, NavigationMessage.warn("Hai rotto il cazzo"));
-			return loginAction(req, res);
-		}
-
 		AuthorDTO loggedUser = login(req);
 		setWebsiteTitlePrefix(req, "");
 		if (loggedUser == null || !loggedUser.isValid()) {
-			loginRatelimiter.increment(IPMemStorage.requestToIP(req));
 			setNavigationMessage(req, NavigationMessage.warn("Passuord ezzere sbaliata !"));
 			return loginAction(req,  res);
 		}
